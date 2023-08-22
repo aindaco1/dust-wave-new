@@ -9037,6 +9037,16 @@ img {
     .test {
       background-image: url("/img/intro-small.gif"); } }
 
+.news {
+  background-image: url("/img/news.gif");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-color: rgba(0, 0, 0, 0.5);
+  text-shadow: 2px 2px #000000;
+  color: white !important; }
+
 .white-text {
   color: white !important; }
 
@@ -9075,6 +9085,9 @@ body:has(.They-Came-From-Planet-X:hover) {
 
 body:has(.Gumshoe:hover) {
   background-image: url(/img/gumshoe.gif); }
+
+body:has(.Fumbled-Not-Stirred:hover) {
+  background-image: url(/img/fumblednotstirred.gif); }
 
 .drop-shadow {
   filter: drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.6)); }
