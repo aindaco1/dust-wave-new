@@ -31,4 +31,4 @@ If you are done with your dev work and happy with it it's time to deploy your st
 ```
 npm run build
 ```
-That will output the full site, with purged and minified CSS and minified html. The output will be stored in the `/public` folder. That folder is what will be deployed via Github Pages.
+That will output the full site, with purged and minified CSS and minified html. The output will be stored in the `/docs` folder. That folder is what will be deployed via Github Pages.
