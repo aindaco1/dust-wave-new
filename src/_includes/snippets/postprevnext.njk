@@ -3,15 +3,15 @@
 {% set nextPost = collections.posts | getNextCollectionItem %}
 <div class="col  border-top border-end py-vh-3 d-flex align-items-center">
   {% if previousPost %}
-      {% include 'svg/arrow-left.svg' %} <a href="{{ previousPost.url }}" class=" link-fancy gambado ms-2 display-7">{{ previousPost.data.title }}</a>
+      <a href="{{ previousPost.url }}" class=" link-fancy gambado ms-2 display-7">{% include 'svg/arrow-left.svg' %}</a> <a href="{{ previousPost.url }}" class=" link-fancy gambado ms-2 display-7">{{ previousPost.data.title }}</a>
       {% else %}
-      <div class="h1 display-7 opacity-25 fw-bolder p-3">The End!</div>
+      <div class="gambado display-6 opacity-25 fw-bolder p-3">The End!</div>
   {% endif %}
 </div>
 <div class="col border-top text-end py-vh-3 d-flex align-items-center justify-content-end">
   {% if nextPost %}
-  <a href="{{ nextPost.url }}" class="me-2 display-7 gambado link-fancy">{{ nextPost.data.title }}</a>{% include 'svg/arrow-right.svg' %}
+  <a href="{{ nextPost.url }}" class="me-2 display-7 gambado link-fancy">{{ nextPost.data.title }}</a> <a href="{{ nextPost.url }}" class="me-2 display-7 gambado link-fancy">{% include 'svg/arrow-right.svg' %}</a>
 {% else %}
-<div class="h1 display-7 opacity-25 fw-bolder p-3">The Beginning!</div>
+<div class="gambado display-6 opacity-25 fw-bolder p-3">The Beginning!</div>
   {% endif %}
 </div>

@@ -124,7 +124,7 @@ letter-spacing:-.02rem;
 // }
 
 .test {
-  background-image: url("/img/intro.gif");
+  background-image: url("../img/intro.gif");
   background-size:cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -133,13 +133,13 @@ letter-spacing:-.02rem;
   text-shadow: 2px 2px #000000;
   color:white !important;
   @media only screen and (max-width: 1024px) 
-    { background-image: url("/img/intro-medium.gif"); }
+    { background-image: url("../img/intro-medium.gif"); }
   @media only screen and (max-width: 512px) 
-    { background-image: url("/img/intro-small.gif"); }
+    { background-image: url("../img/intro-small.gif"); }
 }
 
 .news {
-  background-image: url("/img/news.gif");
+  background-image: url("../img/news.gif");
   background-size:cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -160,51 +160,51 @@ article h2 {
 // GIF hover
 
 body:has(.Red-Pillow:hover) {
-  background-image: url(/img/redpillow.gif);   
+  background-image: url(../img/redpillow.gif);   
 }
 
 body:has(.High-Times-at-the-Ranger-Bowl-a-Rama:hover) {
-  background-image: url(/img/hightimes.gif);   
+  background-image: url(../img/hightimes.gif);   
 }
 
 body:has(.VitaLife©-Chips:hover) {
-  background-image: url(/img/vitalife.gif);   
+  background-image: url(../img/vitalife.gif);   
 }
 
 body:has(.La-Grima:hover) {
-  background-image: url(/img/lagrima.gif);   
+  background-image: url(../img/lagrima.gif);   
 }
 
 body:has(.Mike-Mysteries:hover) {
-  background-image: url(/img/mikemysteries.gif);   
+  background-image: url(../img/mikemysteries.gif);   
 }
 
 body:has(.Fronteras-Micro-film-Festival:hover) {
-  background-image: url(/img/fronteras.gif);   
+  background-image: url(../img/fronteras.gif);   
 }
 
 body:has(.Bag-Check:hover) {
-  background-image: url(/img/bagcheck.gif);   
+  background-image: url(../img/bagcheck.gif);   
 }
 
 body:has(.The-Green-Chile-Bagel:hover) {
-  background-image: url(/img/greenchilebagel.gif);   
+  background-image: url(../img/greenchilebagel.gif);   
 }
 
 body:has(.The-Darkest-Place:hover) {
-  background-image: url(/img/darkestplace.gif);   
+  background-image: url(../img/darkestplace.gif);   
 }
 
 body:has(.They-Came-From-Planet-X:hover) {
-  background-image: url(/img/planetx.gif);   
+  background-image: url(../img/planetx.gif);   
 }
 
 body:has(.Gumshoe:hover) {
-  background-image: url(/img/gumshoe.gif);   
+  background-image: url(../img/gumshoe.gif);   
 }
 
 body:has(.Fumbled-Not-Stirred:hover) {
-  background-image: url(/img/fumblednotstirred.gif);   
+  background-image: url(../img/fumblednotstirred.gif);   
 }
 
 .drop-shadow {

@@ -3,7 +3,6 @@ title: Gumshoe
 date: 2023-08-14
 img: gumshoestill
 summary: Sci-fi noir short
-permalink: gumshoe.html
 gif: /img/gumshoe.gif
 tags:
   - sci-fi
