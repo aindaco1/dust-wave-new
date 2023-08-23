@@ -9260,6 +9260,42 @@ ol li::marker {
 ol li {
   padding-inline-start: 15px; }
 
+.image_wrapper {
+  position: relative; }
+
+.overlay {
+  position: absolute;
+  background: rgba(57, 57, 57, 0.5);
+  /* center overlay text */
+  display: flex;
+  align-items: center;
+  justify-content: center; }
+  @media only screen and (max-width: 1024px) {
+    .overlay {
+      align-items: end; } }
+
+.overlay_3 {
+  left: 0;
+  bottom: 100%;
+  height: 0;
+  width: 100%;
+  overflow: hidden;
+  backdrop-filter: blur(8px) brightness(80%);
+  transition: all .3s ease-in-out; }
+  @media only screen and (max-width: 1024px) {
+    .overlay_3 {
+      bottom: 0;
+      height: 100%;
+      backdrop-filter: blur(0px) brightness(99%); } }
+
+@media only screen and (max-width: 1024px) {
+  .overlay_3 h3, .overlay_3 .h3 {
+    margin-bottom: 25px; } }
+
+.image_wrapper:hover .overlay_3 {
+  bottom: 0;
+  height: 100%; }
+
 .btn-xl {
   --bs-btn-padding-y: calc(.75rem + .5vh);
   --bs-btn-padding-x: calc(1rem + 2vw);
