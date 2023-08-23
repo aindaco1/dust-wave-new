@@ -4,6 +4,8 @@ const rssPlugin = require('@11ty/eleventy-plugin-rss');
 const Image = require("@11ty/eleventy-img");
 const EleventyFetch = require("@11ty/eleventy-fetch");
 const { EleventyHtmlBasePlugin } = require("@11ty/eleventy");
+const pluginRss = require("@11ty/eleventy-plugin-rss");
+
 
 module.exports = function(eleventyConfig) {
   // Universal Shortcodes (Adds to Liquid, Nunjucks, Handlebars)
@@ -14,6 +16,9 @@ module.exports = function(eleventyConfig) {
 
   //Base Plugin
     eleventyConfig.addPlugin(EleventyHtmlBasePlugin);
+
+  // RSS
+    eleventyConfig.addPlugin(pluginRss);
 
   // blogposts collection
     eleventyConfig.addCollection("components", function (collection) {
