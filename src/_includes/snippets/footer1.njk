@@ -56,15 +56,21 @@
 		// Show the popup after a delay of 10 seconds
 		setTimeout(function() {
 			popup.classList.add('show');
-		}, 10000);
+		}, 30000);
 
 		// Close the popup when the close button is clicked
 		closeBtn.addEventListener('click', function() {
 			popup.classList.remove('show');
 		});
 	</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.3.0/quicklink.umd.js"></script>
+	<script>
+		window.addEventListener('load', () => {
+  			quicklink.listen();
+		});
+	</script>
     {% if footerScripts %}
-  <script src="{{ '/js/bootstrap.bundle.min.js' | url }}"></script>
-  {% endif %}
+  		<script src="{{ '/js/bootstrap.bundle.min.js' | url }}"></script>
+  	{% endif %}
 
 </footer>

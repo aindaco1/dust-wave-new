@@ -4,7 +4,9 @@
   <head>
       <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
-  <meta name="description" content="Dust Wave film collective website">
+  
+    <meta name="description" content="Dust Wave film collective website">
+  
   <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
@@ -24,9 +26,6 @@
   <link rel="stylesheet" href="https://use.typekit.net/hoj2yet.css">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
   <link href="//cdn-images.mailchimp.com/embedcode/classic-071822.css" rel="stylesheet" type="text/css">
-
-
-
 
 
 
@@ -76,7 +75,7 @@
     <div class="col-12 text-center py-vh-3">
       <h1>What We Believe In</h1>
     </div>
-    <div class="col-11 col-lg-10 col-xl-6 border-bottom border-top py-vh-3">
+    <div class="col-10 col-lg-10 col-xl-9 border-bottom border-top py-vh-3">
       <div class="row">
         <ol>
           <li>A positive, empathetic, supportive, collaborative, free and open creative environment is the best one to help us, both collectively and individually, achieve our artistic goals and ambitions.</li><br>
@@ -184,11 +183,17 @@
 		// Show the popup after a delay of 10 seconds
 		setTimeout(function() {
 			popup.classList.add('show');
-		}, 10000);
+		}, 30000);
 
 		// Close the popup when the close button is clicked
 		closeBtn.addEventListener('click', function() {
 			popup.classList.remove('show');
+		});
+	</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.3.0/quicklink.umd.js"></script>
+	<script>
+		window.addEventListener('load', () => {
+  			quicklink.listen();
 		});
 	</script>
     
