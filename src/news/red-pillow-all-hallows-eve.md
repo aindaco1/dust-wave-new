@@ -6,7 +6,7 @@ img: redpillowwonstill
 ---
 </br>
 
-Our horror parody infomercial, [Red Pillow](/red-pillow.html), won Best Kill, Best Directing, and 1st Place at the [2022 All Hallows' Eve Halloween Short Film Contest](https://www.youtube.com/watch?v=AwuGuXriOOs)!
+Our horror parody infomercial, [Red Pillow](/project/red-pillow.html), won Best Kill, Best Directing, and 1st Place at the [2022 All Hallows' Eve Halloween Short Film Contest](https://www.youtube.com/watch?v=AwuGuXriOOs)!
 </br></br>
 <div class="row g-2">
   <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
@@ -38,4 +38,4 @@ Thanks to the judges and organizers, and shout out to our whole crew!
 * **Jo Indacochea**
 * **Jacqueline Hosek**
 
-More info on the film [here](/red-pillow.html).
+More info on the film [here](/project/red-pillow.html).

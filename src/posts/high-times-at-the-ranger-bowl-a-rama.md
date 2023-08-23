@@ -41,13 +41,13 @@ Special Thanks - <a href="https://allthingsmood.com" target="_blank">MOOD</a> & 
     <img src="/img/high_times_at_the_ranger_bowl-a-rama/high_times1.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
     <img src="/img/high_times_at_the_ranger_bowl-a-rama/high_times2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
     <img src="/img/high_times_at_the_ranger_bowl-a-rama/high_times3.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/high_times_at_the_ranger_bowl-a-rama/high_times4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
+    <img src="/img/high_times_at_the_ranger_bowl-a-rama/high_times8.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
   </div>
   <div class="col-lg-6 mb-6 mb-lg-0">
     <img src="/img/high_times_at_the_ranger_bowl-a-rama/high_times5.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
     <img src="/img/high_times_at_the_ranger_bowl-a-rama/high_times6.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
+    <img src="/img/high_times_at_the_ranger_bowl-a-rama/high_times4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
     <img src="/img/high_times_at_the_ranger_bowl-a-rama/high_times7.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/high_times_at_the_ranger_bowl-a-rama/high_times8.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
   </div>
 </div>
 <br><br>

@@ -12,7 +12,6 @@ tags:
 
 _Fumbled Not Stirred_ is our YouTube mixology tutorial series. We wanted to create evergreen content for the [Film Fumblers YouTube channel](https://www.youtube.com/channel/UCawu2pOm_jmtAss4dN7z2KQ) and decided to tie in to the [Film Fumblers review podcast](https://filmfumblers.com). Each episode is shot at the Fumbler Ranch in Corrales, New Mexico.
 </br>
-</br>
 
 ### Crew
 
@@ -24,7 +23,6 @@ Adrian Lopez</br>
 Taryn Bernicke</br>
 Original music by Matthew Atkins
 </br>
-</br>
 
 ### Episodes
 
@@ -34,7 +32,6 @@ Original music by Matthew Atkins
 * [The Space Jam](https://www.youtube.com/watch?v=BuMBY_9EupE)
 * [The Moloko Plus](https://www.youtube.com/watch?v=-SG5uNdHzbs)
 * [The Blood of Kali](https://www.youtube.com/watch?v=JHykulmuHR8)
-</br>
 </br>
 
 ### Behind the scenes

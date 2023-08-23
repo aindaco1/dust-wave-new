@@ -63,8 +63,8 @@ Extras -- Ryuichiro Morgan, Jordyn Bernicke, Kasha Sanderson & Isaac Guereque
 ### Awards
 
 [2023 Albuquerque 48 Hour Film Project](https://www.48hourfilm.com/en/albuquerque-nm)
-* Best Poster
-* Best Trailer
+* Best Poster, Group B
+* Best Trailer, Group B
 * Best Acting Ensemble
 </br>
 </br>

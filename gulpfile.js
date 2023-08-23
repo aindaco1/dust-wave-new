@@ -24,6 +24,11 @@ gulp.task('dist-assets', function (done) {
       done();
 });
 
+gulp.task('copy-CNAME', function() {
+  return gulp.src('./CNAME')
+    .pipe(gulp.dest('./docs/'));
+});
+
 gulp.task('prod-copy', function (done) {
     gulp.src('./dev/**/**.*')
     .pipe(gulp.dest('./docs/'));

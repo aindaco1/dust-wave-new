@@ -6,7 +6,7 @@ img: mikemysteriesstill
 ---
 </br>
 
-We did it! 1 month after a mad, 48-hour dash of creating, performing, shooting, editing, and submitting our mockumentary, [Mike Mysteries](/mike-mysteries.html), we won a bunch of awards!
+We did it! 1 month after a mad, 48-hour dash of creating, performing, shooting, editing, and submitting our mockumentary, [Mike Mysteries](/project/mike-mysteries.html), we won a bunch of awards!
 
 * Best Performance in Comedic Supporting Role - James Rodriguez
 * Audience Award, Group A
@@ -55,4 +55,4 @@ And special shout out to our award-winning actor, James Rodriguez!
 
 Also -- thanks to [Blue Sky Landscape Services](https://www.facebook.com/BlueSkyLandscapeServices) and [Willin and Chillin Arts](https://www.instagram.com/willinandchillinarts) for their support.
 
-More info on the film [here](/mike-mysteries.html).
+More info on the film [here](/project/mike-mysteries.html).

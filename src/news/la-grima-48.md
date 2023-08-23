@@ -6,7 +6,7 @@ img: lagrimastill
 ---
 </br>
 
-After another 48 hour dash of creating, performing, shooting, editing, and submitting our climate drama, [La Grima](/la-grima.html), we won a bunch of awards!
+After another 48 hour dash of creating, performing, shooting, editing, and submitting our climate drama, [La Grima](/project/la-grima.html), we won a bunch of awards!
 
 * Best Performer - John Dewar
 * Audience Award, Group C
@@ -60,4 +60,4 @@ And special shout out to our award-winning actor, John Dewar!
 
 Also -- thanks to [Blue Sky Landscape Services](https://www.facebook.com/BlueSkyLandscapeServices), [Harwood Art Center](https://www.harwoodartcenter.org) and [MOOD Productions](https://allthingsmood.com) for their support.
 
-More info on the film [here](/la-grima.html).
+More info on the film [here](/project/la-grima.html).

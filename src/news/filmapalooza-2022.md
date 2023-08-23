@@ -5,7 +5,7 @@ summary: Five of us went to Filmapalooza 2022 in Washington D.C. to see our 48 H
 img: filmapaloozastill
 ---
 
-In August of 2021, a 15 person crew made a very silly mockumentary for the 2021 Albuquerque 48 Hour Film Project. What we could not have possibly imagined is that our film would [win five awards, including Best Film!](/blog/48-hour-we-won) So as a result, our team was invited to [Filmapalooza 2022](https://48hourfilmproj.zohobackstage.com/Filmapalooza2022-WashingtonDC#), so our film, [Mike Mysteries](/project/mike-mysteries), could screen in competition. Five brave souls made the trip, and this is our story.
+In August of 2021, a 15 person crew made a very silly mockumentary for the 2021 Albuquerque 48 Hour Film Project. What we could not have possibly imagined is that our film would [win five awards, including Best Film!](/mike-mysteries-wins-best-film-at-2021-albuquerque-48-hour-film-project.html) So as a result, our team was invited to [Filmapalooza 2022](https://48hourfilmproj.zohobackstage.com/Filmapalooza2022-WashingtonDC#), so our film, [Mike Mysteries](/project/mike-mysteries.html), could screen in competition. Five brave souls made the trip, and this is our story.
 
 From the get-go, we knew we were in for a fun time. After traveling 8 hours on two flights from Albuquerque, we arrived at the reception ceremony excited to meet our fellow filmmakers and talk cinema. From the panels, to the screenings, to the super-hype karaoke, to the impromptu hangouts with different teams, we really had a ball.
 </br>

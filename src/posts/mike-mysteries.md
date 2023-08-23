@@ -12,7 +12,6 @@ tags:
 
 _Mike Mysteries_ is a mockumentary created for submission to the [48 Hour Film Project Albuquerque 2021](https://www.48hourfilm.com/en/albuquerque-nm/48hfp/2021) contest. Shot in multiple locations in Albuquerque, New Mexico.
 </br>
-</br>
 
 ### Crew
 
@@ -29,8 +28,6 @@ Production Assistant — Nathan Moats</br>
 Original music by Matthew Atkins
 
 Special Thanks - Blue Sky Landscape Services, Willin and Chillin Arts
-
-</br>
 </br>
 
 ### Cast
@@ -45,7 +42,6 @@ Sally Sanders - Jacklyn Le</br>
 Jeff Jenkins - Ryan Lewis</br>
 RV Enthusiast - Jay Renteria
 </br>
-</br>
 
 ### Awards
 
@@ -57,7 +53,6 @@ RV Enthusiast - Jay Renteria
 * Best Film
 
 [2022 Albuquerque 48 Hour Film Project Horror Extravaganza](https://www.youtube.com/watch?v=uJXB8tw_jpA) -- Selected for Screening
-</br>
 </br>
 
 ### Behind the scenes
