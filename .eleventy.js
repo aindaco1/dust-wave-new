@@ -5,6 +5,7 @@ const Image = require("@11ty/eleventy-img");
 const EleventyFetch = require("@11ty/eleventy-fetch");
 const { EleventyHtmlBasePlugin } = require("@11ty/eleventy");
 const pluginRss = require("@11ty/eleventy-plugin-rss");
+const sitemap = require("@quasibit/eleventy-plugin-sitemap");
 
 
 module.exports = function(eleventyConfig) {
@@ -20,6 +21,12 @@ module.exports = function(eleventyConfig) {
   // RSS
     eleventyConfig.addPlugin(pluginRss);
 
+  // Sitemap
+    eleventyConfig.addPlugin(sitemap, {
+      sitemap: {
+        hostname: "https://dustwave.xyz",
+      },
+    });
   // blogposts collection
     eleventyConfig.addCollection("components", function (collection) {
       return collection.getFilteredByGlob("./src/components/*.njk").reverse();

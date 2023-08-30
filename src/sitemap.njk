@@ -1,22 +1,6 @@
 ---
 permalink: /sitemap.xml
+layout: null
 eleventyExcludeFromCollections: true
 ---
-<?xml version="1.0" encoding="utf-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-    {%- for page in collections.all %}
-        {% set absoluteUrl %}{{ page.url | url | absoluteUrl(metadata.url) }}{% endset %}
-        <url>
-            <loc>{{ absoluteUrl }}</loc>
-            <lastmod>{{ page.date | htmlDateString }}</lastmod>
-        </url>
-    {%- endfor %}
-    <url>
-        <loc>{{metadata.url}}/contact.html</loc>
-        <lastmod>2023-08-22</lastmod>
-    </url>
-    <url>
-        <loc>{{metadata.url}}/about.html</loc>
-        <lastmod>2023-08-28</lastmod>
-    </url>
-</urlset>
+{% sitemap collections.all %}
