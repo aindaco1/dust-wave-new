@@ -9296,6 +9296,86 @@ ol li {
   bottom: 0;
   height: 100%; }
 
+button i {
+  padding-right: .3vw; }
+
+#sticky-button {
+  background-color: black;
+  color: white;
+  position: absolute;
+  border-color: white;
+  border-radius: 3px;
+  opacity: 0.4;
+  animation: ball 25s infinite linear; }
+  @media screen and (max-width: 1024px) {
+    #sticky-button {
+      animation: unset;
+      opacity: 1;
+      position: relative;
+      display: block;
+      margin: 0 auto;
+      margin-top: 40px;
+      transform: none; } }
+
+#sticky-button:hover {
+  transition: all 0.5s ease-in-out 0s;
+  transform: scale(1.05, 1.05);
+  opacity: 1;
+  animation-play-state: paused; }
+
+@keyframes ball {
+  0% {
+    top: 40%;
+    left: 10%;
+    opacity: 0.1; }
+  10% {
+    top: 60%;
+    left: 5%;
+    opacity: 1; }
+  20% {
+    top: 80%;
+    left: 7%;
+    opacity: 0.1; }
+  30% {
+    top: 66%;
+    left: 2%;
+    opacity: 1; }
+  40% {
+    top: 55%;
+    left: 27%;
+    opacity: 0.1; }
+  50% {
+    top: 44%;
+    left: 65%;
+    opacity: 1; }
+  60% {
+    top: 60%;
+    left: 70%;
+    opacity: 0.1; }
+  70% {
+    top: 55%;
+    left: 75%;
+    opacity: 1; }
+  80% {
+    top: 68%;
+    left: 65%;
+    opacity: 0.1; }
+  90% {
+    top: 35%;
+    left: 80%;
+    opacity: 1; }
+  100% {
+    top: 40%;
+    left: 10%;
+    opacity: 0.1; } }
+
+a:has(button) {
+  text-decoration: none; }
+
+.center-span {
+  display: table;
+  margin: 0 auto; }
+
 .btn-xl {
   --bs-btn-padding-y: calc(.75rem + .5vh);
   --bs-btn-padding-x: calc(1rem + 2vw);
