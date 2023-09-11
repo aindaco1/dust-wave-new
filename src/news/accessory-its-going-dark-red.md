@@ -16,7 +16,6 @@ Congratulations to everyone in the productions of "Accessory to Murder" and "It'
   </div>
   <div class="col-lg-6 mb-6 mb-lg-0">
 	<img src="/img/news/all_right_poster.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-	<img src="/img/news/accessory_still.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
   </div>
 </div>
 
