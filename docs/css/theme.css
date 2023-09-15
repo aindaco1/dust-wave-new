@@ -9376,6 +9376,9 @@ a:has(button) {
   display: table;
   margin: 0 auto; }
 
+li p {
+  margin-bottom: 0; }
+
 .btn-xl {
   --bs-btn-padding-y: calc(.75rem + .5vh);
   --bs-btn-padding-x: calc(1rem + 2vw);

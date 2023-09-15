@@ -1,5 +1,5 @@
 ---
-title: Gumshoe wins multiple awards at 2023 Albuquerque 48 Hour Film Project
+title: Gumshoe wins multiple awards at the 2023 Albuquerque 48 Hour Film Project
 date: 2023-07-07
 summary: We won Best Poster, Best Trailer, and Best Acting Ensemble at the 2023 Albuquerque 48 Hour Film Project.
 img: gumshoestill
