@@ -1,0 +1,50 @@
+---
+title: Contact
+layout: layouts/default.njk
+navbar: navbar1
+footer: footer1
+colorModifier: dark
+permalink: contact.html
+---
+<div class="container">
+  <div class="row d-flex justify-content-center">
+    <div class="col-12 text-center py-vh-3">
+      <h1>{{title}}</h1>
+    </div>
+    <div class="col-11 col-lg-10 col-xl-6 border-bottom border-top py-vh-3">
+      <div class="contact-form">
+
+        <form method="post" action="https://formspree.io/f/xrgrjbwo" id="contact-form">
+
+          <div class="contact-form__item">
+            <label class="contact-form__label">Email Address *</label>
+            <input type="text" name="email" placeholder="Your email address..." class="contact-form__input">
+          </div>
+
+          <div class="contact-form__item">
+            <label class="contact-form__label">Name *</label>
+            <input type="text" name="name" placeholder="Your name..." class="contact-form__input">
+          </div>
+
+          <div class="contact-form__item">
+            <label class="contact-form__label">Message *</label>
+            <textarea name="message" placeholder="Your message..." class="contact-form__textarea"></textarea>
+          </div>
+          <br><br>
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAAAAudwxAIPEUguw8" data-callback="javascriptCallback" data-theme="light"></div>
+
+          <input type="hidden" name="_next" value="/thanks" />
+          <input type="hidden" name="_subject" value="Dust Wave contact form submission" />
+
+          <div class="contact-form__item">
+            <input type="submit" value="Submit" class="button button--large border-color-white">
+          </div>
+
+        </form>
+
+      </div>
+
+      <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    </div>
+  </div>
+</div>
