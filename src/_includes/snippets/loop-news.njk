@@ -1,6 +1,0 @@
-{%- for new in news -%}
-    <article class="col-12 border-top px-0 py-4 d-flex justify-content-between align-items-center {{ new.data.title | replace(" ", "-")}}">
-      <h2 class="h4 lh-1 mb-0"><a href="{{ new.url }}" class="white-text text-decoration-none">{{ new.data.title }}</a></h2>
-      <time datetime="{{ new.date | htmlDateString }}">{{ new.date | readableDate }}</time>
-    </article>
-  {% endfor %}
