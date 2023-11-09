@@ -8,9 +8,9 @@ img: lagrimastill
 
 After another 48 hour dash of creating, performing, shooting, editing, and submitting our climate drama, [La Grima](/project/la-grima.html), we won a bunch of awards!
 
-* Best Performer - John Dewar
-* Audience Award, Group C
-* Best Cinematography & Sound
+* **Best Performer (John Dewar)**
+* **Audience Award, Group C**
+* **Best Cinematography & Sound**
 * **2nd Best Film**
 
 </br>

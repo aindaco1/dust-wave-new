@@ -8,10 +8,10 @@ img: mikemysteriesstill
 
 We did it! 1 month after a mad, 48-hour dash of creating, performing, shooting, editing, and submitting our mockumentary, [Mike Mysteries](/project/mike-mysteries.html), we won a bunch of awards!
 
-* Best Performance in Comedic Supporting Role - James Rodriguez
-* Audience Award, Group A
-* Best Editing
-* Best Directing
+* **Best Performance in Comedic Supporting Role (James Rodriguez)**
+* **Audience Award, Group A**
+* **Best Editing**
+* **Best Directing**
 * **Best Film**
 
 </br>

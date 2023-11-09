@@ -8,9 +8,9 @@ img: gumshoestill
 
 After yet another 48 hour dash of creating, performing, shooting, editing, and submitting our sci-fi noir short, [Gumshoe](/project/gumshoe.html), we won a bunch of awards!
 
-* Best Poster, Group B
-* Best Trailer, Group B
-* Best Acting Ensemble
+* **Best Poster, Group B**
+* **Best Trailer, Group B**
+* **Best Acting Ensemble**
 
 </br>
 <div class="row g-2">
