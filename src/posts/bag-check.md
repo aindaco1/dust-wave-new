@@ -50,6 +50,13 @@ Guard #2 -- Taryn Bernicke
 </br>
 </br>
 
+### Awards
+
+* Official Selection -- [2023 Peoria Film Fest](https://www.peoriafilmfest.com/schedule)
+* Official Selection -- [2023 SISFA Film Festival](https://www.sisfafest.com/)
+</br>
+</br>
+
 ### Behind the scenes
 
 <div class="row g-2">

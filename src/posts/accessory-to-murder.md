@@ -53,8 +53,7 @@ Voice of the fetus — Kaidin Jarjusey
 
 ### Awards
 
-[2023 Dark Red Horror Film Festival](https://www.darkredhorror.com)
-* Official Selection
+* Official Selection -- [2023 Dark Red Horror Film Festival](https://www.darkredhorror.com)
 </br>
 </br>
 
