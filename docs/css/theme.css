@@ -10007,6 +10007,9 @@ body:has(.Fumbled-Not-Stirred:hover) {
 body:has(.Accessory-to-Murder:hover) {
   background-image: url(../img/accessory.gif); }
 
+body:has(.The-Converger:hover) {
+  background-image: url(../img/converger.gif); }
+
 .drop-shadow {
   filter: drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.6)); }
 
