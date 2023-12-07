@@ -6,7 +6,7 @@ img: theconvergerstill
 ---
 </br>
 
-Dust Wave's latest 48 Hour film, "The Converger", won a bunch of awards at the 2023 Albuquerque Sci-fi/Horror 48 Hour Film Project, including [**Best Film**](https://www.48hourfilm.com/albuquerque/scifi_horror)!
+Dust Wave's latest 48 Hour film, ["The Converger"](/project/the-converger.html), won a bunch of awards at the 2023 Albuquerque Sci-fi/Horror 48 Hour Film Project, including [**Best Film**](https://www.48hourfilm.com/albuquerque/scifi_horror)!
 
 <iframe width="100%" height="400vh" src="https://www.youtube.com/embed/84wtd10Muvg?si=FkLKfbinq4FIuQK5" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
@@ -76,7 +76,7 @@ And a special thanks to:
 * **Blue Sky Landscape Services**
 * **MOOD**
 
-And we would be remiss to not mention -- Dust Wave members Brandon Carter and Camille Carlson, AKA [Space Age Daydream](https://www.instagram.com/spaceagedaydreamfilms/) made a brand new fantastic short, "Saturday Night Slice V"! Their film won the following awards:
+And we would be remiss to not mention -- Dust Wave members Brandon Carter and Camille Carlson, AKA [Space Age Daydream](https://www.instagram.com/spaceagedaydreamfilms/) made a brand-new fantastic short, "Saturday Night Slice V"! Their film won the following awards:
 
 * **Best Writing (Brandon Carter)**
 * **Best Editing (Brandon Carter)**
