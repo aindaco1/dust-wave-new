@@ -1,0 +1,147 @@
+---
+title: Survey
+layout: layouts/default.njk
+navbar: navbar1
+footer: footer1
+colorModifier: dark
+permalink: survey.html
+eleventyExcludeFromCollections: true
+---
+<script>
+  var password = "waveofdust!";
+  (function promptPass() {
+    var psw = prompt("Enter your Password");
+    while (psw !== password) {
+      alert("Incorrect Password");
+      return promptPass();
+    }
+  }());
+</script>
+
+<div class="container-full">
+  <div class="row d-flex justify-content-center">
+    <div class="col-12 text-center py-vh-3">
+      <h1>{{title}}</h1>
+    </div>
+    <div class="col-11 col-lg-10 col-xl-8 border-bottom border-top py-vh-3">
+      <div class="contact-form survey">
+
+        <form method="post" action="https://formspree.io/f/xqkraazw" id="contact-form">
+
+          <div class="contact-form__item">
+            <h3><label class="contact-form__label">Name *</label></h3>
+            <input type="text" name="name" placeholder="Your name ..." class="contact-form__input">
+          </div>
+          <br>
+          <div class="contact-form__item">
+            <h3>Do you have a project for 2024?</h3>
+            <input type="checkbox" id="project1" name="project1" value="Writing">
+            <label for="project1"><strong>Writing</strong></label><br>
+            <input type="checkbox" id="project2" name="project2" value="Screenplay">
+            <label for="project2"><strong>Screenplay</strong></label><br>
+            <input type="checkbox" id="project3" name="project3" value="Filming">
+            <label for="project3"><strong>Filming</strong></label><br>
+            <input type="checkbox" id="project4" name="project4" value="Screening">
+            <label for="project4"><strong>Screening</strong></label><br>
+            <input type="checkbox" id="project5" name="project5" value="Other">
+            <label for="project5"><strong>Other</strong></label><br>
+          </div>
+          <br>
+          <div class="contact-form__item">
+            <h3>Do you need technical assistance with ...</h3>
+            <input type="checkbox" id="project1" name="project1" value="Writing">
+            <label for="project1"><strong>Writing</strong></label><br>
+            <input type="checkbox" id="project2" name="project2" value="Screenplay">
+            <label for="project2"><strong>Screenplay</strong></label><br>
+            <input type="checkbox" id="project3" name="project3" value="Filming">
+            <label for="project3"><strong>Filming</strong></label><br>
+            <input type="checkbox" id="project4" name="project4" value="Screening">
+            <label for="project4"><strong>Screening</strong></label><br>
+            <input type="checkbox" id="project5" name="project5" value="Other">
+            <label for="project5"><strong>Other</strong></label><br>
+          </div>
+          <br>
+          <div class="contact-form__item">
+            <h3><label class="contact-form__label">Name of project(s) or co-producers to not double-count</label></h3>
+            <textarea name="message" placeholder="Your projects..." class="contact-form__textarea"></textarea>
+          </div>
+          <br>
+          <div class="contact-form__item">
+            <h3>What expenses do you anticipate for your project?</h3>
+            <input type="checkbox" id="location" name="location" value="Location">
+            <label for="location"><strong>Location/travel/permits</strong></label><br>
+            <input type="checkbox" id="equipment" name="equipment" value="Equipment">
+            <label for="equipment"><strong>Equipment rental/props/wardrobe</strong></label><br>
+            <input type="checkbox" id="catering" name="catering" value="Catering">
+            <label for="catering"><strong>Catering/crafty</strong></label><br>
+            <input type="checkbox" id="marketing" name="marketing" value="Marketing">
+            <label for="marketing"><strong>Marketing/screening/festivals</strong></label><br>
+            <input type="checkbox" id="other" name="other" value="Other">
+            <label for="other"><strong>Other</strong></label><br>
+          </div>
+          <br>
+          <div class="contact-form__item">
+            <h3>What fundraising activities appeal to you? (i.e., which ones would you attend if a friend invited you?)</h3>
+            <input type="checkbox" id="appeal" name="appeal" value="Appeal">
+            <label for="appeal"><strong>Direct appeal</strong></label><br>
+            <input type="checkbox" id="crowdfunding" name="crowdfunding" value="Crowdfunding">
+            <label for="crowdfunding"><strong>Crowdfunding</strong></label><br>
+            <input type="checkbox" id="bake" name="bake" value="Bake">
+            <label for="bake"><strong>Bake sale</strong></label><br>
+            <input type="checkbox" id="restaurant" name="restaurant" value="Restaurant">
+            <label for="restaurant"><strong>Restaurant fundraisers</strong></label><br>
+            <p style="font-size:x-small;padding-left:1.7em;margin:unset;">(i.e. a restaurant sponsors a time window, DW receives a % of sales during that window)</p>
+            <input type="checkbox" id="silent" name="silent" value="Silent">
+            <label for="silent"><strong>Silent auction</strong></label><br>
+            <input type="checkbox" id="events" name="events" value="Events">
+            <label for="events"><strong>Events/movie screenings/festivals</strong></label><br>
+            <input type="checkbox" id="grants" name="grants" value="Grants">
+            <label for="grants"><strong>Grant partnerships with nonprofits</strong></label><br>
+            <input type="checkbox" id="merch" name="merch" value="Merch">
+            <label for="merch"><strong>Merchandise</strong></label><br>
+            <input type="checkbox" id="other" name="other" value="Other">
+            <label for="other"><strong>Other</strong></label><br>
+          </div>
+          <br>
+          <div class="contact-form__item">
+            <h3>What ways would you contribute to a Dust Wave fundraising event?</h3>
+            <input type="checkbox" id="appeal" name="appeal" value="Appeal">
+            <label for="appeal"><strong>Making stuff</strong></label><br>
+            <p style="font-size:x-small;padding-left:1.7em;margin:unset;">(like food, art, decorations, films, copy, marketing materials)</p>
+            <input type="checkbox" id="networking" name="networking" value="Networking">
+            <label for="networking"><strong>Networking</strong></label><br>
+            <p style="font-size:x-small;padding-left:1.7em;margin:unset;">(asking potential donors to donate in-kind goods or services, asking friends to attend events, posting about Dust Wave campaigns on personal social media)</p>
+            <input type="checkbox" id="volunteering" name="volunteering" value="Volunteering">
+            <label for="volunteering"><strong>Volunteering</strong></label><br>
+            <p style="font-size:x-small;padding-left:1.7em;margin:unset;">(event planning, transportation or delivery, event staffing)</p>
+            <input type="checkbox" id="donation" name="donation" value="Donation">
+            <label for="donation"><strong>Giving money</strong></label><br>
+          </div>
+          <br>
+          <div class="contact-form__item">
+            <h3><label class="contact-form__label">Other fundraising ideas</label></h3>
+            <textarea name="message" placeholder="Your fundraising ideas ..." class="contact-form__textarea"></textarea>
+          </div>
+          <br>
+          <div class="contact-form__item">
+            <h3><label class="contact-form__label"> Guesstimate a 2024 annual budget amount for Dust Wave (for 4 shorts, 3 competition films, 1 screening event)</label></h3>
+            <input type="text" name="guess" placeholder="Your guess ..." class="contact-form__input">
+          </div>
+          <br>
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAAAAudwxAIPEUguw8" data-callback="javascriptCallback" data-theme="light"></div>
+
+          <input type="hidden" name="_next" value="/thanks" />
+          <input type="hidden" name="_subject" value="Dust Wave survey submission" />
+
+          <div class="contact-form__item">
+            <input type="submit" value="Submit" class="button button--large border-color-white">
+          </div>
+
+        </form>
+
+      </div>
+
+      <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    </div>
+  </div>
+</div>

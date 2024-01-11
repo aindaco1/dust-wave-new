@@ -10300,6 +10300,9 @@ a:has(button) {
 li p {
   margin-bottom: 0; }
 
+.survey .contact-form__item label {
+  font-size: smaller; }
+
 .btn-xl {
   --bs-btn-padding-y: calc(.75rem + .5vh);
   --bs-btn-padding-x: calc(1rem + 2vw);
