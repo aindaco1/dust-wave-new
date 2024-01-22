@@ -1,0 +1,18 @@
+<!doctype html>
+<html class="h-100" lang="{{ metadata.language }}">
+
+  <head>
+    {% include 'snippets/head.njk' %}
+  </head>
+
+  <body {% if (bodyModifier) %} class="{{ bodyModifier }}" {% endif %} {% if title == "DUST WAVE" or title == "Projects" %} class="test" {% endif %} {% if title == "News" %} class="news" {% endif %} data-bs-spy="scroll"  data-bs-target="#navScroll">
+    {% include 'snippets/sticky.njk' %}
+
+    {% include "snippets/navbar1.njk" %}
+      <main>
+        {{ content | safe }}
+      </main>
+
+    {% include "snippets/" + footer + ".njk" %}
+  </body>
+</html>

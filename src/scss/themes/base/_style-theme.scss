@@ -1,0 +1,581 @@
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: black;
+  color: $white;
+  cursor: url("/img/dust-wave-square-cursor.png"), auto !important;
+}
+
+body.fixednav {
+  margin-top:108px;
+}
+
+.btn,
+.navbar-collapse.collapsing,
+.megamenu.show,
+.nav-link.collapsed,
+.scrolled,
+.shadow,
+.shadow-light,
+.preloader,
+.navbar,
+a,
+a.link-line,
+a.link-line:before,
+a.hover-hide,
+a.hover-content,
+a.hover-hide::before,
+a.hover-hide .hover-content,
+.navbar-collapse.collapse.show,
+.navbar-light a.nav-link,
+img {
+  transition: all 0.5s ease-in-out 0s;
+}
+
+.transform-scale:hover {
+  transform: scale(1.5,1.5);
+}
+
+.intro-content::first-letter {
+    float: left;
+    font-size: 4.5em;
+    padding: .15em .25em 0 0;
+    line-height: 4.5rem;
+}
+
+.bg-cover {
+  background-size:cover;
+  background-position:center center
+}
+.navbar {
+  padding-top:32px;
+  padding-bottom:32px;
+}
+.navbar.scrolled {
+  padding-top:12px;
+  padding-bottom:12px;
+  background-color: rgba(255,255,255,.9);
+}
+
+.display-big {font-size:7rem;}
+
+.link-fancy {
+  color: $white;
+  text-decoration: none !important;
+  display: inline-block;
+  position: relative;
+}
+
+.link-fancy:hover {
+  color: $gray-600;
+}
+
+.link-fancy:before {
+  content: '';
+  display: block;
+  height: 1px;
+  width: 100%;
+  transform-origin: left;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  // background-image: linear-gradient(90deg, $primary 0, $primary 25%, transparent 0, transparent 50%, $primary 0, $primary 75%, transparent 0, transparent);
+  background-repeat: no-repeat;
+  background-position: 0;
+  background-size: 400% 1px;
+  transition: background-position 0.8s ease-in-out;
+}
+
+.link-fancy:hover:before {
+  background-position: 100%;
+}
+
+.navbar-collapse.collapsing, .navbar-collapse.collapse.show {
+  background-color:$white;
+  padding:10px;
+}
+
+.blockquote-xl {
+  font-size: calc(1rem + 1vw);
+  font-style: italic;
+  font-weight:bolder;
+}
+
+.display-huge {
+    font-size: calc(2.5rem + 1.5vw);
+    font-weight:700;
+letter-spacing:-.02rem;
+}
+
+.navbar-light a.nav-link {
+  color:$black;
+    border-bottom:2px solid transparent;
+    margin:0 1rem;
+    font-size:1.33rem;
+}
+.navbar-expand-lg .navbar-nav a.nav-link {
+  padding-left:0rem;
+      padding-right:0rem;
+}
+// .navbar-light a.nav-link:hover {
+//   border-bottom:2px solid $black;
+// }
+
+.test {
+  background-image: url("../img/intro.gif");
+  background-size:cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-color: black;
+  text-shadow: 2px 2px #000000;
+  color:white !important;
+  @media only screen and (max-width: 1024px) 
+    { background-image: url("../img/intro-medium.gif"); }
+  @media only screen and (max-width: 512px) 
+    { background-image: url("../img/intro-small.gif"); }
+}
+
+.news {
+  background-image: url("../img/news.gif");
+  background-size:cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-color: black;
+  text-shadow: 2px 2px #000000;
+  color:white !important;
+}
+
+.white-text {
+  color:white !important;
+}
+
+article h2 {
+  width: 62%;
+}
+
+// GIF hover
+
+body:has(.Red-Pillow:hover) {
+  background-image: url(../img/redpillow.gif);   
+}
+
+body:has(.High-Times-at-the-Ranger-Bowl-a-Rama:hover) {
+  background-image: url(../img/hightimes.gif);   
+}
+
+body:has(.VitaLife©-Chips:hover) {
+  background-image: url(../img/vitalife.gif);   
+}
+
+body:has(.La-Grima:hover) {
+  background-image: url(../img/lagrima.gif);   
+}
+
+body:has(.Mike-Mysteries:hover) {
+  background-image: url(../img/mikemysteries.gif);   
+}
+
+body:has(.Fronteras-Micro-film-Festival:hover) {
+  background-image: url(../img/fronteras.gif);   
+}
+
+body:has(.Bag-Check:hover) {
+  background-image: url(../img/bagcheck.gif);   
+}
+
+body:has(.The-Green-Chile-Bagel:hover) {
+  background-image: url(../img/greenchilebagel.gif);   
+}
+
+body:has(.The-Darkest-Place:hover) {
+  background-image: url(../img/darkestplace.gif);   
+}
+
+body:has(.They-Came-From-Planet-X:hover) {
+  background-image: url(../img/planetx.gif);   
+}
+
+body:has(.Gumshoe:hover) {
+  background-image: url(../img/gumshoe.gif);   
+}
+
+body:has(.Fumbled-Not-Stirred:hover) {
+  background-image: url(../img/fumblednotstirred.gif);   
+}
+
+body:has(.Accessory-to-Murder:hover) {
+  background-image: url(../img/accessory.gif);   
+}
+
+body:has(.The-Converger:hover) {
+  background-image: url(../img/converger.gif);   
+}
+
+.drop-shadow {
+  filter: drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.6)); 
+}
+
+a {
+  color: $white !important;
+}
+
+a:hover {
+  color: gray !important;
+}
+
+.container {
+  width: 90% !important;
+}
+
+// Mailchimp signup
+
+#mc_embed_signup {
+	max-width: 600px;
+	clear: left;
+	font-size: smaller;
+}
+
+.brandingLogo {
+	display: none;
+}
+
+#popup {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: 0;
+	opacity: 0;
+	transition: all 0.3s ease-in-out;
+	z-index: 9999;
+}
+  
+#popup.show {
+	height: auto;
+	opacity: 1;
+}
+  
+.popup-content {
+	background-color: #f5f5f5;
+	border: 1px solid #cccccc;
+	border-radius: 5px;
+	box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+	margin: 0 auto;
+	padding: 10px;
+	max-width: 500px;
+	position: relative;
+  color: black !important;
+  text-shadow: none !important;
+}
+  
+.close-btn {
+	position: absolute;
+	top: 5px;
+	right: 10px;
+	font-size: 24px;
+	font-weight: bold;
+	background-color: transparent;
+	border: none;
+	outline: none;
+	cursor: pointer;
+}
+  
+.lazyload {
+	visibility: hidden;
+	opacity: 0;
+	transition: visibility 0s, opacity 0.5s ease;
+}
+  
+.lazyload.show {
+	visibility: visible;
+	opacity: 1;
+}
+
+input[type=submit] {
+	font-family: 'Gambado-Sans', sans-serif;
+	background-color: black !important;
+  color: white !important;
+  margin-top: 10px;
+  border-color: black;
+	border-radius: 4px;
+  padding: 0 22px;
+  line-height: 32px;
+}
+
+.mce_inline_error {
+  background-color: #f5f5f5 !important;
+}
+
+#mce-EMAIL-HELPERTEXT {
+  background-color: #f5f5f5 !important;
+}
+
+h1 {
+  font-family: 'Gambado-Sans', sans-serif;
+}
+
+.mc-field-group {
+  padding-top: 3%;
+}
+
+.gambado {
+  font-family: 'Gambado-Sans', sans-serif;
+}
+
+.container-100 {
+  width: 100% !important;
+  padding: 0 2% 0 2%;
+}
+
+.no-bs-gutter {
+--bs-gutter-x: 0;
+}
+
+main h1, main h2, main h3, main h4, main h5, main h6 {
+  font-family: 'Gambado-Sans', sans-serif;
+}
+
+.dropshadow {
+  border: solid 1px #CCC;
+  -moz-box-shadow: 3px 3px 1px #f5f5f5;
+  -webkit-box-shadow: 3px 3px 1px #f5f5f5;
+  box-shadow: 3px 3px 1px #f5f5f5;
+  border-radius: 5px;
+}
+
+// Contact form
+
+.contact-form {
+	margin: 20px auto;
+	margin-top: 0;
+	width: 100%;
+	max-width: 90%;
+	padding: 20px;
+
+	&:first-child {
+		margin-top: 0;
+	}
+}
+
+.contact-form__item {
+	margin-top: 15px;
+
+	&:first-child {
+		margin-top: 0;
+	}
+}
+
+.contact-form__item--error {
+
+	.contact-form__input,
+	.contact-form__textarea {
+		border-color: red;
+	}
+}
+
+.contact-form__label {
+	display: block;
+}
+
+.contact-form__input,
+.contact-form__textarea {
+	width: 100%;
+	margin-top: 8px;
+	border: 2px solid;
+	border-radius: 2px;
+	padding: 10px 12px;
+	line-height: 1.4;
+	@include transition(all 0.15s ease-in-out);
+
+	&:focus {
+		outline: none;
+	}
+}
+
+::-webkit-input-placeholder {
+	color: grey;
+}
+::-moz-placeholder {
+	color: grey;
+}
+:-ms-input-placeholder {
+	color: grey;
+}
+:-moz-placeholder {
+	color: grey;
+}
+
+.contact-form__textarea {
+	min-height: 200px;
+	resize: none;
+}
+
+.border-color-white {
+  border-color: white !important;
+}
+
+ol li::marker {
+  font-weight: bold;
+}
+
+ol li {
+  padding-inline-start: 15px;
+}
+
+.image_wrapper {
+  position: relative;
+}
+
+
+.overlay {
+  position: absolute; 
+  background: rgba(57, 57, 57, 0.5);
+
+  /* center overlay text */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @media only screen and (max-width: 1024px) 
+    { align-items: end;
+    }
+}
+
+.overlay_3 {
+  left: 0;
+  bottom: 100%;
+  height: 0;
+  width: 100%;
+  overflow: hidden;
+  backdrop-filter: blur(2px) brightness(80%);
+  transition: all .3s ease-in-out;
+  @media only screen and (max-width: 1024px) {
+      bottom: 0;
+      height: 100%;
+      backdrop-filter: blur(0px) brightness(99%);
+    }
+}
+
+.overlay_3 h3 {
+  @media only screen and (max-width: 1024px) {
+  margin-bottom: 25px;
+  }
+}
+
+.image_wrapper:hover .overlay_3 {
+  bottom: 0;
+  height: 100%;
+}
+
+button i {
+  padding-right: .3vw;
+}
+
+.newsletter-button {
+  background-color: white;
+}
+
+#sticky-button {
+  background-color: black;
+  color: white;
+  position: absolute;
+  border-color: white;
+  border-radius: 3px;
+  opacity: 0.4;
+  animation: ball 25s infinite linear;
+  @media screen and (max-width: 1024px) {
+    animation: unset;
+    opacity: 1;
+    position: relative;
+    display: block;
+    margin: 0 auto;
+    margin-top: 40px;
+    transform: none;
+    }
+}
+
+#sticky-button:hover {
+  transition: all 0.5s ease-in-out 0s;
+  transform: scale(1.05,1.05);
+  opacity: 1;
+  animation-play-state: paused;
+}
+
+@keyframes ball {
+	0% { // start in the middle
+		top: 40%;
+		left: 10%;
+    opacity: 0.1;
+	}
+	10% { // pong
+		top: 60%;
+		left: 5%;
+    opacity: 1;
+	}
+	20% { // ping
+		top: 80%;
+		left: 7%;
+    opacity: 0.1;
+	}
+	30% {
+		top: 66%;
+		left: 2%;
+    opacity: 1;
+	}
+	40% { // pong
+		top: 55%;
+		left: 27%;
+    opacity: 0.1;
+	}
+	50% { // ping
+		top: 44%;
+		left: 65%;
+    opacity: 1;
+	}
+	60% { //pong
+		top: 60%;
+		left: 70%;
+    opacity: 0.1;
+	}
+	70% {
+		top: 55%;
+		left: 75%;
+    opacity: 1;
+	}
+	80% { // ping
+		top: 68%;
+		left: 65%;
+    opacity: 0.1;
+	}
+	90% { // ping
+		top: 35%;
+		left: 80%;
+    opacity: 1;
+	}
+	100% { // back to center
+		top: 40%;
+		left: 10%;
+    opacity: 0.1;
+	}
+}
+
+a:has(button) {
+  text-decoration: none;
+}
+
+.center-span {
+  display: table;
+  margin: 0 auto;
+}
+
+li p {
+  margin-bottom: 0;
+}
+
+.survey .contact-form__item label {
+  font-size: smaller;
+}
