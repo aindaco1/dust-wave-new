@@ -6,7 +6,7 @@ html {
 body {
   background-color: black;
   color: $white;
-  cursor: url("/img/dust-wave-square-cursor.png"), auto !important;
+  cursor: url("/img/dust-wave-square-cursor.svg"), auto !important;
 }
 
 body.fixednav {
@@ -579,3 +579,4 @@ li p {
 .survey .contact-form__item label {
   font-size: smaller;
 }
+

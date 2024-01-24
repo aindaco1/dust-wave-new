@@ -9836,7 +9836,7 @@ html {
 body {
   background-color: black;
   color: #fff;
-  cursor: url("/img/dust-wave-square-cursor.png"), auto !important; }
+  cursor: url("/img/dust-wave-square-cursor.svg"), auto !important; }
 
 body.fixednav {
   margin-top: 108px; }
