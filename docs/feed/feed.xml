@@ -5,7 +5,7 @@
 	
 	<link href="https://dustwave.xyz/" rel="self"/>
 	<link href="https://dustwave.xyz"/>
-	<updated>2023-10-31T00:00:00Z</updated>
+	<updated>2023-11-10T00:00:00Z</updated>
 	<id></id>
 	<author>
 		<name></name>
@@ -806,5 +806,34 @@ Voice of the fetus — Kaidin Jarjusey
 &lt;br /&gt;
 &lt;h2&gt;Sitcom Edit&lt;/h2&gt;
 &lt;center&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/43BZ3HYVcbA&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/center&gt;</content>
+    </entry>
+    
+    <entry>
+      <title>The Dust Wave Show</title>
+      <link href="https://dustwave.xyz/project/the-dust-wave-show.html"/>
+      <updated>2023-11-10T00:00:00Z</updated>
+      <id>https://dustwave.xyz/project/the-dust-wave-show.html</id>
+      <content type="html">&lt;p&gt;&lt;em&gt;The Dust Wave Show&lt;/em&gt; is our anthology series produced for Albuquerque local public access &lt;a href=&quot;https://www.cabq.gov/artsculture/albuquerque-community-media/channels/local-origination-channel-26&quot;&gt;Channel 26&lt;/a&gt;. Each episode is a compilation of films created by members of Dust Wave. Host segments shot at &lt;a href=&quot;https://allthingsmood.com/&quot;&gt;MOOD&lt;/a&gt; in Albuquerque, New Mexico.
+&lt;br /&gt;&lt;/p&gt;
+&lt;h3&gt;Host Segments Crew&lt;/h3&gt;
+&lt;p&gt;Hosted and Narrated by Brandon Carter&lt;br /&gt;
+Written by Alonso Indacochea&lt;br /&gt;
+Directed by Jay Renteria&lt;br /&gt;
+VFX Assist by Brandon Carter&lt;br /&gt;&lt;/p&gt;
+&lt;h3&gt;Behind the scenes&lt;/h3&gt;
+&lt;div class=&quot;row g-2&quot;&gt;
+  &lt;div class=&quot;col-lg-6 col-md-12 mb-6 mb-lg-0&quot;&gt;
+    &lt;img src=&quot;https://dustwave.xyz/img/the_dust_wave_show/behind_1.jpg&quot; class=&quot;w-100 shadow-1-strong rounded mb-2&quot; alt=&quot;Behind the Scenes&quot; /&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;col-lg-6 mb-6 mb-lg-0&quot;&gt;
+    &lt;img src=&quot;https://dustwave.xyz/img/the_dust_wave_show/behind_3.jpg&quot; class=&quot;w-100 shadow-1-strong rounded mb-2&quot; alt=&quot;Behind the Scenes&quot; /&gt;
+    &lt;img src=&quot;https://dustwave.xyz/img/the_dust_wave_show/behind_2.jpg&quot; class=&quot;w-100 shadow-1-strong rounded mb-2&quot; alt=&quot;Behind the Scenes&quot; /&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;br /&gt;&lt;br /&gt;
+&lt;h3&gt;Episode 1&lt;/h3&gt;
+&lt;center&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/qBAWS-vyIxQ?si=F--ZIcP8Sh2eHU5y&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/center&gt;
+&lt;h3&gt;Episode 2&lt;/h3&gt;
+&lt;center&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/6lyA6mppezc?si=4w2KPjhu9eqnMnkD&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/center&gt;</content>
     </entry>
 </feed>
