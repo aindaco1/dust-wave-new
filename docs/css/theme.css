@@ -9931,7 +9931,7 @@ img {
   color: #151515;
   border-bottom: 2px solid transparent;
   margin: 0 1.4rem;
-  font-size: 1.4rem; }
+  font-size: 1.2rem; }
   @media only screen and (max-width: 600px) {
     .navbar-light a.nav-link {
       margin: 0 1rem;
@@ -9987,7 +9987,7 @@ img {
   color: white !important; }
 
 article h2, article .h2 {
-  width: 62%; }
+  width: 60%; }
 
 body:has(.Red-Pillow:hover) {
   background-image: url(../img/redpillow.gif); }

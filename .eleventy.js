@@ -7,48 +7,44 @@ const { EleventyHtmlBasePlugin } = require("@11ty/eleventy");
 const pluginRss = require("@11ty/eleventy-plugin-rss");
 const sitemap = require("@quasibit/eleventy-plugin-sitemap");
 
-
 module.exports = function(eleventyConfig) {
   // Universal Shortcodes (Adds to Liquid, Nunjucks, Handlebars)
   eleventyConfig.addShortcode("bgImg", function(imgName, test) {
     return `  style="background-image: url('./img/webp/${imgName}.webp');"`;
   });
 
-
   //Base Plugin
-    eleventyConfig.addPlugin(EleventyHtmlBasePlugin);
+  eleventyConfig.addPlugin(EleventyHtmlBasePlugin);
 
   // RSS
-    eleventyConfig.addPlugin(pluginRss);
+  eleventyConfig.addPlugin(pluginRss);
 
   // Sitemap
-    eleventyConfig.addPlugin(sitemap, {
-      sitemap: {
-        hostname: "https://dustwave.xyz",
-      },
-    });
-  // blogposts collection
-    eleventyConfig.addCollection("components", function (collection) {
-      return collection.getFilteredByGlob("./src/components/*.njk").reverse();
-    });
+  eleventyConfig.addPlugin(sitemap, {
+    sitemap: {
+      hostname: "https://dustwave.xyz",
+    },
+  });
 
-  function filterTagList(tags) {
-    return (tags || []).filter(tag => ["all", "nav"].indexOf(tag) === -1);
-  }
+  // events collection
+  eleventyConfig.addCollection("events", function (collectionAPI) {
+    return collectionAPI.getFilteredByGlob("./src/events/*.md").reverse();
+  });
+
   eleventyConfig.setDataDeepMerge(true);
 
   function filterTagList(tags) {
-    return (tags || []).filter(tag => ["all", "nav", "post", "posts"].indexOf(tag) === -1);
-  }
+    return (tags || []).filter(tag => ["all", "nav", "post", "posts", "event", "event", "new", "news"].indexOf(tag) === -1);
+  };
 
-  eleventyConfig.addFilter("filterTagList", filterTagList)
+  eleventyConfig.addFilter("filterTagList", filterTagList);
   eleventyConfig.addPassthroughCopy("src/fonts");
-  eleventyConfig.addCollection("tagList", collection => {
+  eleventyConfig.addCollection("tagList", collectionAPI => {
     const tagsObject = {}
-    collection.getAll().forEach(item => {
+    collectionAPI.getAll().forEach(item => {
       if (!item.data.tags) return;
       item.data.tags
-        .filter(tag => !['post', 'all'].includes(tag))
+        .filter(tag => !['post', 'new', 'event', 'all'].includes(tag))
         .forEach(tag => {
           if(typeof tagsObject[tag] === 'undefined') {
             tagsObject[tag] = 1
@@ -62,6 +58,7 @@ module.exports = function(eleventyConfig) {
     Object.keys(tagsObject).forEach(tag => {
       tagList.push({ tagName: tag, tagCount: tagsObject[tag] })
     })
+
     return tagList.sort((a, b) => b.tagCount - a.tagCount)
 
   });
@@ -70,7 +67,7 @@ module.exports = function(eleventyConfig) {
   // Add a filter using the Config API
   eleventyConfig.addWatchTarget("./src/scss/");
   eleventyConfig.setBrowserSyncConfig({
-    reloadDelay: 400
+    reloadDelay: 1000
   });
 
   eleventyConfig.addFilter("readableDate", dateObj => {
@@ -78,10 +75,6 @@ module.exports = function(eleventyConfig) {
       zone: 'utc'
     }).toFormat("dd LLL yyyy");
   });
-
-  eleventyConfig.addCollection('componentstotal', (collection) => {
-    return collection.getFilteredByGlob('_components/**/*.njk');
-});
 
   // https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-date-string
   eleventyConfig.addFilter('htmlDateString', (dateObj) => {
@@ -95,5 +88,4 @@ module.exports = function(eleventyConfig) {
       output: "dev"
     }
   };
-
 };

@@ -1,0 +1,22 @@
+{# {% set currentDate = new Date() %} #}
+<div class="container-100">
+<h2>Upcoming</h2><br><br>
+{% for event in events %}
+    {# {% if new Date(event.date) >= currentDate %} #}
+      <article class="col-12 border-top px-0 py-4 d-flex justify-content-between align-items-center {{ event.data.title | replace(" ", "-")}}">
+        <h2 class="h4 lh-1 mb-0"><a href="{{ event.url }}" class="white-text text-decoration-none">{{ event.data.title }}</a></h2>
+        <time datetime="{{ event.date | htmlDateString }}">{{ event.date | readableDate }}</time>
+      </article>
+    {# {% endif %} #}
+{% endfor %}
+<br><br>
+<h2>Past</h2><br><br>
+{% for event in events %}
+    {# {% if new Date(event.date) < currentDate %} #}
+      <article class="col-12 border-top px-0 py-4 d-flex justify-content-between align-items-center {{ event.data.title | replace(" ", "-")}}">
+        <h2 class="h4 lh-1 mb-0"><a href="{{ event.url }}" class="white-text text-decoration-none">{{ event.data.title }}</a></h2>
+        <time datetime="{{ event.date | htmlDateString }}">{{ event.date | readableDate }}</time>
+      </article>
+    {# {% endif %} #}
+{% endfor %}
+</div>
