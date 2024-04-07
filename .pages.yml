@@ -7,9 +7,9 @@ content:
     fields:
       - { name: title, label: Title, type: string }
       - { name: date, label: Date, type: date, options: { format: YYYY-MM-DD } }
-      - { name: img, label: Image, type: image }
+      - { name: img, label: Image, type: image, options: { input: src/img } }
       - { name: summary, label: Description, type: string, options: { maxlength:160 } }
-      - { name: gif, label: GIF, type: image, options: { extensions: [ gif ] } }
+      - { name: gif, label: GIF, type: image, options: { input: src/img, extensions: [ gif ] } }
       - { name: tags, label: Tags, type: string }
       - { name: body, label: Body, type: code }
   - name: news
