@@ -11,4 +11,4 @@ content:
       - { name: summary, label: Description, type: string, options: { maxlength:160 } }
       - { name: gif, label: GIF, type: image, options: { extensions: [ gif ] } }
       - { name: tags, label: Tags, type: string }
-      - { name: body, label: Body, type: rich-text }
+      - { name: body, label: Body, type: code }
