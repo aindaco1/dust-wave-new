@@ -18,7 +18,7 @@ content:
     path: src/news
     fields:
       - { name: title, label: Title, type: string }
-      - { name: date, label: Date, type: date }
+      - { name: date, label: Date, type: date, options: { format: YYYY-MM-DD } }
       - { name: summary, label: Description, type: string, options: { maxlength:160 } }
       - { name: img, label: Image, type: image }
       - { name: body, label: Body, type: code }
