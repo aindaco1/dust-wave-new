@@ -10034,6 +10034,9 @@ body:has(.The-Converger:hover) {
 body:has(.The-Dust-Wave-Show:hover) {
   background-image: url(../img/thedustwaveshow.gif); }
 
+body:has(.The-Haunters:hover) {
+  background-image: url(../img/haunters.gif); }
+
 .drop-shadow {
   filter: drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.6)); }
 

@@ -11,7 +11,7 @@ tags:
   - released
 ---
 
-_Accessory to Murder_ is a horror comedy short shot in December 2022 at the Corrales Community Library in Corrales, New Mexico. We created two different edits: one for festivals and one invoking sitcoms of the 80s and 90s.accessory
+_Accessory to Murder_ is a horror comedy short shot in December 2022 at the Corrales Community Library in Corrales, New Mexico. We created two different edits: one for festivals and one invoking sitcoms of the 80s and 90s.
 </br>
 </br>
 

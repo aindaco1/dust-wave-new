@@ -39,3 +39,7 @@ VFX Assist by Brandon Carter</br>
 ### Episode 2
 
 <center><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/6lyA6mppezc?si=4w2KPjhu9eqnMnkD" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></center>
+
+### Episode 3
+
+<center><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/D6ij6CzH3-A?si=0gyW6jgeLh4XphMn" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></center>
