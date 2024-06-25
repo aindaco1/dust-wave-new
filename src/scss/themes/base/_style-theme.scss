@@ -246,6 +246,10 @@ body:has(.The-Haunters:hover) {
   background-image: url(../img/haunters.gif);   
 }
 
+body:has(.Earworm:hover) {
+  background-image: url(../img/earworm.gif);   
+}
+
 .drop-shadow {
   filter: drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.6)); 
 }
