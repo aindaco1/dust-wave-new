@@ -250,6 +250,10 @@ body:has(.Earworm:hover) {
   background-image: url(../img/earworm.gif);   
 }
 
+body:has(.Dive-In-Movies:hover) {
+  background-image: url(../img/divein.gif);   
+}
+
 .drop-shadow {
   filter: drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.6)); 
 }

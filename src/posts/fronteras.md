@@ -32,7 +32,7 @@ Our festival serves two audiences: (1) emergent short filmmakers not supported o
 
 **June 16-18, 2023** -- [Currents New Media](https://currentsnewmedia.org/festivals/currents-new-media-2023), Santa Fe, New Mexico
 
-TBD 2024 -- [MOOD](https://allthingsmood.com), Albuquerque, New Mexico
+**March 1, 2024** -- [MOOD](https://allthingsmood.com), Albuquerque, New Mexico
 </br>
 
 ## Behind the Scenes
