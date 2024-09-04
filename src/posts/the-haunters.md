@@ -68,16 +68,16 @@ Lady Ghost -- Jade Stokes</br>
 * **Best Short Film**
 
 [2024 Mindfield Film Festival](https://mindfieldff.com/index.html)
-* **[Best New Mexico Short, Diamond Award](https://mindfieldff.com/winners.html)**
+* **[Best Short Film, Platinum Award](https://mindfieldff.com/winnerslive2024.html)**
 </br>
 </br>
 
 ### Behind the scenes
 
-<center><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/lvc0oG-P19w?si=OAOw-RvRrYE0v-W8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></center>
+<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/lvc0oG-P19w?si=OAOw-RvRrYE0v-W8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
 
 <br><br>
 
 ## Film
 
-**Coming Soon ...**
+<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe src='https://www.youtube.com/embed/p7rSKSSQx6w' frameborder='0' allowfullscreen></iframe></div>

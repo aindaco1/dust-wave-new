@@ -51,7 +51,7 @@ Original music by Matthew Atkins
 &lt;/div&gt;
 &lt;br /&gt;&lt;br /&gt;
 &lt;h2&gt;Show&lt;/h2&gt;
-&lt;center&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/JHykulmuHR8&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/center&gt;</content>
+&lt;style&gt;.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }&lt;/style&gt;&lt;div class=&quot;embed-container&quot;&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/JHykulmuHR8&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;</content>
     </entry>
     
     <entry>
@@ -111,7 +111,7 @@ RV Enthusiast - Jay Renteria
 &lt;/div&gt;
 &lt;br /&gt;&lt;br /&gt;
 &lt;h2&gt;Movie&lt;/h2&gt;
-&lt;center&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/JFGP4nQMhzI&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/center&gt;</content>
+&lt;style&gt;.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }&lt;/style&gt;&lt;div class=&quot;embed-container&quot;&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/JFGP4nQMhzI&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;</content>
     </entry>
     
     <entry>
@@ -162,11 +162,11 @@ Waiter -- Taryn Bernicke
 &lt;/div&gt;
 &lt;br /&gt;&lt;br /&gt;
 &lt;h2&gt;Movie&lt;/h2&gt;
-&lt;center&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/dRiuvkiifl8&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/center&gt;
+&lt;style&gt;.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }&lt;/style&gt;&lt;div class=&quot;embed-container&quot;&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/dRiuvkiifl8&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;
 &lt;br /&gt;
 &lt;br /&gt;
 &lt;h2&gt;Blooper Reel&lt;/h2&gt;
-&lt;center&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/gKnrEQ5MUzs&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/center&gt;</content>
+&lt;style&gt;.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }&lt;/style&gt;&lt;div class=&quot;embed-container&quot;&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/gKnrEQ5MUzs&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;</content>
     </entry>
     
     <entry>
@@ -267,7 +267,7 @@ Brawler in Line #2 — James Rodriguez
 &lt;/div&gt;
 &lt;br /&gt;&lt;br /&gt;
 &lt;h2&gt;Movie&lt;/h2&gt;
-&lt;center&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/5JyyQVF0cAI&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/center&gt;
+&lt;style&gt;.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }&lt;/style&gt;&lt;div class=&quot;embed-container&quot;&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/5JyyQVF0cAI&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;
 </content>
     </entry>
     
@@ -333,7 +333,7 @@ George&#39;s child - Jo Indacochea
 &lt;/div&gt;
 &lt;br /&gt;&lt;br /&gt;
 &lt;h2&gt;Movie&lt;/h2&gt;
-&lt;center&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/3l1Q3u9gli4&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/center&gt;
+&lt;style&gt;.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }&lt;/style&gt;&lt;div class=&quot;embed-container&quot;&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/3l1Q3u9gli4&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;
 </content>
     </entry>
     
@@ -371,7 +371,7 @@ George&#39;s child - Jo Indacochea
 &lt;/div&gt;
 &lt;br /&gt;&lt;br /&gt;
 &lt;h2&gt;Movie&lt;/h2&gt;
-&lt;center&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/zSydQMCbsQw&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/center&gt;
+&lt;style&gt;.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }&lt;/style&gt;&lt;div class=&quot;embed-container&quot;&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/zSydQMCbsQw&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;
 </content>
     </entry>
     
@@ -416,7 +416,7 @@ Behind the Scenes — &lt;a href=&quot;https://cherritathaosphotography.pic-time
 &lt;/div&gt;
 &lt;br /&gt;&lt;br /&gt;
 &lt;h2&gt;Movie&lt;/h2&gt;
-&lt;center&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/KTE8uLA8Yw8&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/center&gt;
+&lt;style&gt;.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }&lt;/style&gt;&lt;div class=&quot;embed-container&quot;&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/KTE8uLA8Yw8&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;
 </content>
     </entry>
     
@@ -466,10 +466,10 @@ Board Member #3 - James Rodriguez&lt;br /&gt;
 &lt;/div&gt;
 &lt;br /&gt;&lt;br /&gt;
 &lt;h2&gt;Movie&lt;/h2&gt;
-&lt;center&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/rAeSdcI_L3A&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/center&gt;
-&lt;br /&gt;&lt;br /&gt;
+&lt;style&gt;.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }&lt;/style&gt;&lt;div class=&quot;embed-container&quot;&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/rAeSdcI_L3A&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;h2&gt;Alternate Ending&lt;/h2&gt;
-&lt;center&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/1KoyUJ0QEso&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/center&gt;</content>
+&lt;style&gt;.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }&lt;/style&gt;&lt;div class=&quot;embed-container&quot;&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/1KoyUJ0QEso&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;</content>
     </entry>
     
     <entry>
@@ -503,7 +503,7 @@ Public domain footage courtesy of &lt;a href=&quot;https://nasa.gov/&quot;&gt;NA
 &lt;/div&gt;
 &lt;br /&gt;&lt;br /&gt;
 &lt;h2&gt;Movie&lt;/h2&gt;
-&lt;center&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/U6rcBOWV3h8&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/center&gt;
+&lt;style&gt;.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }&lt;/style&gt;&lt;div class=&quot;embed-container&quot;&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/U6rcBOWV3h8&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;
 </content>
     </entry>
     
@@ -520,7 +520,7 @@ Public domain footage courtesy of &lt;a href=&quot;https://nasa.gov/&quot;&gt;NA
 &lt;p&gt;Written, Directed and Edited by Brandon Carter&lt;br /&gt;
 &lt;br /&gt;&lt;/p&gt;
 &lt;h2&gt;Movie&lt;/h2&gt;
-&lt;center&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/sj78a7oQKQ0&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/center&gt;
+&lt;style&gt;.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }&lt;/style&gt;&lt;div class=&quot;embed-container&quot;&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/sj78a7oQKQ0&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;
 </content>
     </entry>
     
@@ -582,7 +582,7 @@ Guard #2 -- Taryn Bernicke
 &lt;/div&gt;
 &lt;br /&gt;&lt;br /&gt;
 &lt;h2&gt;Movie&lt;/h2&gt;
-&lt;center&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/xYigF-7vbPI&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/center&gt;
+&lt;style&gt;.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }&lt;/style&gt;&lt;div class=&quot;embed-container&quot;&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/xYigF-7vbPI&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;
 </content>
     </entry>
     
@@ -658,7 +658,7 @@ Extras -- Ryuichiro Morgan, Jordyn Bernicke, Kasha Sanderson &amp;amp; Isaac Gue
 &lt;/div&gt;
 &lt;br /&gt;&lt;br /&gt;
 &lt;h2&gt;Movie&lt;/h2&gt;
-&lt;center&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/xjZNDMDGW_I&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/center&gt;</content>
+&lt;style&gt;.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }&lt;/style&gt;&lt;div class=&quot;embed-container&quot;&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/xjZNDMDGW_I&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;</content>
     </entry>
     
     <entry>
@@ -742,7 +742,7 @@ Gee&#39;s Doppelgänger -- Gary Shaw
 &lt;/div&gt;
 &lt;br /&gt;&lt;br /&gt;
 &lt;h2&gt;Trailer&lt;/h2&gt;
-&lt;center&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/Drc3I2FFqo8?si=mM7qC9uBR8qGpqWL&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/center&gt;</content>
+&lt;style&gt;.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }&lt;/style&gt;&lt;div class=&quot;embed-container&quot;&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/Drc3I2FFqo8?si=mM7qC9uBR8qGpqWL&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;</content>
     </entry>
     
     <entry>
@@ -802,10 +802,10 @@ Voice of the fetus — Kaidin Jarjusey
 &lt;/div&gt;
 &lt;br /&gt;&lt;br /&gt;
 &lt;h2&gt;Festival Edit&lt;/h2&gt;
-&lt;center&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/i7PqaCg32Gw&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/center&gt;
+&lt;style&gt;.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }&lt;/style&gt;&lt;div class=&quot;embed-container&quot;&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/i7PqaCg32Gw&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;
 &lt;br /&gt;
 &lt;h2&gt;Sitcom Edit&lt;/h2&gt;
-&lt;center&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/43BZ3HYVcbA&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/center&gt;</content>
+&lt;style&gt;.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }&lt;/style&gt;&lt;div class=&quot;embed-container&quot;&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/43BZ3HYVcbA&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;</content>
     </entry>
     
     <entry>
@@ -832,11 +832,11 @@ VFX Assist by Brandon Carter&lt;br /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;br /&gt;&lt;br /&gt;
 &lt;h3&gt;Episode 1&lt;/h3&gt;
-&lt;center&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/qBAWS-vyIxQ?si=F--ZIcP8Sh2eHU5y&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/center&gt;
+&lt;style&gt;.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }&lt;/style&gt;&lt;div class=&quot;embed-container&quot;&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/qBAWS-vyIxQ?si=F--ZIcP8Sh2eHU5y&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;
 &lt;h3&gt;Episode 2&lt;/h3&gt;
-&lt;center&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/6lyA6mppezc?si=4w2KPjhu9eqnMnkD&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/center&gt;
+&lt;style&gt;.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }&lt;/style&gt;&lt;div class=&quot;embed-container&quot;&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/6lyA6mppezc?si=4w2KPjhu9eqnMnkD&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;
 &lt;h3&gt;Episode 3&lt;/h3&gt;
-&lt;center&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/D6ij6CzH3-A?si=0gyW6jgeLh4XphMn&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/center&gt;</content>
+&lt;style&gt;.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }&lt;/style&gt;&lt;div class=&quot;embed-container&quot;&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/D6ij6CzH3-A?si=0gyW6jgeLh4XphMn&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;</content>
     </entry>
     
     <entry>
@@ -893,16 +893,15 @@ Lady Ghost -- Jade Stokes&lt;br /&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;a href=&quot;https://mindfieldff.com/index.html&quot;&gt;2024 Mindfield Film Festival&lt;/a&gt;&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;&lt;a href=&quot;https://mindfieldff.com/winners.html&quot;&gt;Best New Mexico Short, Diamond Award&lt;/a&gt;&lt;/strong&gt;
+&lt;li&gt;&lt;strong&gt;&lt;a href=&quot;https://mindfieldff.com/winnerslive2024.html&quot;&gt;Best Short Film, Platinum Award&lt;/a&gt;&lt;/strong&gt;
 &lt;br /&gt;
 &lt;br /&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h3&gt;Behind the scenes&lt;/h3&gt;
-&lt;center&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/lvc0oG-P19w?si=OAOw-RvRrYE0v-W8&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/center&gt;
+&lt;style&gt;.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }&lt;/style&gt;&lt;div class=&quot;embed-container&quot;&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/lvc0oG-P19w?si=OAOw-RvRrYE0v-W8&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;
 &lt;p&gt;&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;h2&gt;Film&lt;/h2&gt;
-&lt;p&gt;&lt;strong&gt;Coming Soon ...&lt;/strong&gt;&lt;/p&gt;
-</content>
+&lt;style&gt;.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }&lt;/style&gt;&lt;div class=&quot;embed-container&quot;&gt;&lt;iframe src=&quot;https://www.youtube.com/embed/p7rSKSSQx6w&quot; frameborder=&quot;0&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;</content>
     </entry>
     
     <entry>
@@ -966,13 +965,13 @@ Gerald -- JP&lt;/p&gt;
 &lt;/div&gt;
 &lt;br /&gt;&lt;br /&gt;
 &lt;h2&gt;Trailer&lt;/h2&gt;
-&lt;center&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/_FkpPXmKyec?si=qeMQRV5YMVoK7D5A&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/center&gt;</content>
+&lt;style&gt;.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }&lt;/style&gt;&lt;div class=&quot;embed-container&quot;&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/_FkpPXmKyec?si=qeMQRV5YMVoK7D5A&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;</content>
     </entry>
     
     <entry>
       <title>Dive-In Movies</title>
       <link href="https://dustwave.xyz/project/dive-in-movies.html"/>
-      <updated>2024-08-30T00:00:00Z</updated>
+      <updated>2024-08-29T00:00:00Z</updated>
       <id>https://dustwave.xyz/project/dive-in-movies.html</id>
       <content type="html">&lt;p&gt;&lt;a href=&quot;https://diveinmovies.xyz/&quot;&gt;Dive-In Movies&lt;/a&gt; is simple — a pool adventure with a movie screening at the &lt;a href=&quot;https://www.hotelzazz.com/&quot;&gt;Hotel Zazz&lt;/a&gt; pool! There’s a bar (courtesy of &lt;a href=&quot;https://www.hotelzazz.com/zlounge&quot;&gt;Z Lounge&lt;/a&gt;), popcorn and other goodies for sale. Mingling and swimming before the movie, swimming and chilling during. Doors open at 7:00pm, movie starts at sunset.&lt;/p&gt;
 &lt;p&gt;From May 2 to August 29, 2024, along with our awesome partners at &lt;a href=&quot;https://www.sopapillaproductions.com/&quot;&gt;Sopapilla Productions&lt;/a&gt;, we screened movies every Thursday night (except July 4th).&lt;/p&gt;
@@ -1001,7 +1000,79 @@ Gerald -- JP&lt;/p&gt;
 &lt;/div&gt;
 &lt;br /&gt;&lt;br /&gt;
 &lt;h2&gt;The Do&#39;s and Don&#39;t of Dive-In&lt;/h2&gt;
-&lt;center&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/lvt_LvrI2ns&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/center&gt;
+&lt;style&gt;.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }&lt;/style&gt;&lt;div class=&quot;embed-container&quot;&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/lvt_LvrI2ns&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;
+</content>
+    </entry>
+    
+    <entry>
+      <title>Movie Monsters</title>
+      <link href="https://dustwave.xyz/project/movie-monsters.html"/>
+      <updated>2024-08-30T00:00:00Z</updated>
+      <id>https://dustwave.xyz/project/movie-monsters.html</id>
+      <content type="html">&lt;p&gt;&lt;em&gt;Movie Monsters&lt;/em&gt; is a kaiju comedy short created in partnership with &lt;a href=&quot;https://www.instagram.com/spaceagedaydreamfilms&quot;&gt;Space Age Daydream&lt;/a&gt;. Shot at Studio 519 and MOOD Studios in Albuquerque, New Mexico.
+&lt;br /&gt;
+&lt;br /&gt;&lt;/p&gt;
+&lt;h3&gt;Crew&lt;/h3&gt;
+&lt;p&gt;Written, Directed, and Edited by Brandon Carter&lt;br /&gt;
+First Assitant Director -- Camille Carlson&lt;br /&gt;
+Story by Nick Flemens&lt;br /&gt;
+Produced by Alonso Indacochea&lt;br /&gt;&lt;/p&gt;
+&lt;p&gt;Director of Photography -- Cherrita Thao&lt;br /&gt;
+First Assistant Camera -- Austin Madrid&lt;br /&gt;
+Second Assistant Camera -- Adrian Pijoan&lt;br /&gt;
+Camera Operators -- Devin Holloway &amp;amp; Luca Silver &lt;br /&gt;
+Stunt Coordinator -- Harrison Sim&lt;br /&gt;
+Makeup -- Chelsea Ambrose&lt;br /&gt;
+Composer -- Matthew Atkins&lt;br /&gt;
+Production Sound Mixers -- Matthew Atkins &amp;amp; Frank Rangel&lt;br /&gt;
+Gaffer -- Bailey Grady&lt;br /&gt;
+Catering -- Tina Timelord&lt;br /&gt;
+BTS Photography -- Noah Tucker&lt;br /&gt;
+Production Design -- Laura Morris&lt;br /&gt;
+Smoke Wrangler -- Shea Jarjusey&lt;br /&gt;
+Location Managers -- Keith Allen &amp;amp; Felicia Masias&lt;br /&gt;
+Production Assistants -- Luca Silver, Paul Thompson, Taryn Bernicke, Shea Jarjusey &amp;amp; Nate Moats&lt;br /&gt;
+Costume Team -- Adrian Pijoan, Beck Elbrecht, Chelsea Ambrose, Laura Morris, Kaidin Jarjusey, Brandon Carter, Camille Carlson&lt;br /&gt;
+City Construction Team -- Laura Morris, Alonso Indacochea, Cherrita Thao, Beck Elbrecht, Kaidin Jarjusey, Shea Jarjusey, Jacklyn Le, James Rodriguez, Taryn Bernicke, Matthew Atkins, Bailey Grady, Stepan Casey, Devin Holloway, Adrian Pijoan, Will Geusz, Nate Moats&lt;br /&gt;&lt;/p&gt;
+&lt;p&gt;Special Thanks -- Sopapilla Productions, Studio 519, MOOD, The Deen Family &amp;amp; Devin Miles
+&lt;br /&gt;
+&lt;br /&gt;&lt;/p&gt;
+&lt;h3&gt;Cast&lt;/h3&gt;
+&lt;p&gt;Ray Gunn -- Kaidin Jarjusey&lt;br /&gt;
+Schwartz -- James Rodriguez&lt;br /&gt;
+Boomer -- Jazzmin Zama&lt;br /&gt;
+Not Nancy -- Jacklyn Le&lt;br /&gt;
+Director Whatshisname -- Dusty Deen&lt;/p&gt;
+&lt;p&gt;Extras -- JP Mark, Ginny Leise, Jay Renteria, Gary Shaw, Jordyn Bernicke, Nico Bernicke &amp;amp; Adrian Lopez
+&lt;br /&gt;
+&lt;br /&gt;&lt;/p&gt;
+&lt;h3&gt;Awards&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&quot;https://diveinmovies.xyz/&quot;&gt;2024 Dive-In Movies Film Fiesta&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Official Selection
+&lt;br /&gt;
+&lt;br /&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Behind the scenes&lt;/h3&gt;
+&lt;div class=&quot;row g-2&quot;&gt;
+  &lt;div class=&quot;col-lg-6 col-md-12 mb-6 mb-lg-0&quot;&gt;
+	&lt;img src=&quot;https://dustwave.xyz/img/movie-monsters/behind_the_scenes4.jpg&quot; class=&quot;w-100 shadow-1-strong rounded mb-2&quot; alt=&quot;behind the scenes&quot; /&gt;
+  	&lt;img src=&quot;https://dustwave.xyz/img/movie-monsters/behind_the_scenes1.jpg&quot; class=&quot;w-100 shadow-1-strong rounded mb-2&quot; alt=&quot;behind the scenes&quot; /&gt;
+  	&lt;img src=&quot;https://dustwave.xyz/img/movie-monsters/behind_the_scenes5.jpg&quot; class=&quot;w-100 shadow-1-strong rounded mb-2&quot; alt=&quot;behind the scenes&quot; /&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;col-lg-6 mb-6 mb-lg-0&quot;&gt;
+	&lt;img src=&quot;https://dustwave.xyz/img/movie-monsters/behind_the_scenes2.jpg&quot; class=&quot;w-100 shadow-1-strong rounded mb-2&quot; alt=&quot;behind the scenes&quot; /&gt;
+  	&lt;img src=&quot;https://dustwave.xyz/img/movie-monsters/behind_the_scenes3.jpg&quot; class=&quot;w-100 shadow-1-strong rounded mb-2&quot; alt=&quot;behind the scenes&quot; /&gt;
+  	&lt;img src=&quot;https://dustwave.xyz/img/movie-monsters/behind_the_scenes7.jpg&quot; class=&quot;w-100 shadow-1-strong rounded mb-2&quot; alt=&quot;behind the scenes&quot; /&gt;
+	&lt;img src=&quot;https://dustwave.xyz/img/movie-monsters/behind_the_scenes6.jpg&quot; class=&quot;w-100 shadow-1-strong rounded mb-2&quot; alt=&quot;behind the scenes&quot; /&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;br /&gt;&lt;br /&gt;
+&lt;h2&gt;Trailer&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Coming Soon ...&lt;/strong&gt;
+&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;h2&gt;Movie&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Coming Soon ...&lt;/strong&gt;&lt;/p&gt;
 </content>
     </entry>
 </feed>

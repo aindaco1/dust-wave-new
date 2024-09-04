@@ -8,8 +8,9 @@ img: thehauntersstill
 
 Written and directed by the incomparable [Kaidin Jarjusey](https://www.instagram.com/qwaeofficial), a talented filmmaker and Dust Wave regular, [The Haunters](/the-haunters) recently won two awards:
 
-* **Best New Mexico Short, Diamond Award** at the [Mindfield Film Festival](https://mindfieldff.com)
+* **Best Short, Platinum Award** at the [Mindfield Film Festival](https://mindfieldff.com)
 </br>
+
 * **Best Short Film** at the [Albuquerque Film Festival](https://albuquerquefilmfestival.com)
 
 </br>
@@ -30,4 +31,4 @@ Congratulations to Kaidin and the whole cast + crew! 🎉
 </br>
 </br>
 
-<center><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/lvc0oG-P19w?si=OAOw-RvRrYE0v-W8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></center>
+<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/lvc0oG-P19w?si=OAOw-RvRrYE0v-W8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
