@@ -2,7 +2,7 @@
 title: The Haunters wins at Mindfield & Albuquerque Film Festival!
 date: 2024-06-04
 summary: We won some awards!
-img: thehauntersstill
+img: thehauntersminefield
 ---
 </br>
 
