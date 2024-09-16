@@ -9962,40 +9962,58 @@ img {
   padding-right: 0rem; }
 
 .test {
+  text-shadow: 2px 2px #000000;
+  color: white !important;
+  background-color: black; }
+
+.test-background {
   background-image: url("../img/intro.gif");
   background-size: cover;
-  background-position: center center;
   background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-color: black;
-  text-shadow: 2px 2px #000000;
-  color: white !important; }
+  background-position: center center;
+  height: 100vh;
+  width: 100vw;
+  top: 0;
+  position: fixed;
+  z-index: -1; }
   @media only screen and (max-width: 1024px) {
-    .test {
+    .test-background {
       background-image: url("../img/intro-medium.gif"); } }
   @media only screen and (max-width: 512px) {
-    .test {
+    .test-background {
       background-image: url("../img/intro-small.gif"); } }
 
 .news {
+  text-shadow: 2px 2px #000000;
+  color: white !important;
+  background-color: black; }
+
+.news-background {
   background-image: url("../img/news.gif");
   background-size: cover;
-  background-position: center center;
   background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-color: black;
-  text-shadow: 2px 2px #000000;
-  color: white !important; }
+  background-position: center center;
+  height: 100vh;
+  width: 100vw;
+  top: 0;
+  position: fixed;
+  z-index: -1; }
 
 .partners {
+  text-shadow: 2px 2px #000000;
+  color: white !important;
+  background-color: black; }
+
+.partners-background {
   background-image: url("../img/partners.gif");
   background-size: cover;
-  background-position: center center;
   background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-color: black;
-  text-shadow: 2px 2px #000000;
-  color: white !important; }
+  background-position: center center;
+  height: 100vh;
+  width: 100vw;
+  top: 0;
+  position: fixed;
+  z-index: -1; }
 
 .white-text {
   color: white !important; }
@@ -10003,61 +10021,61 @@ img {
 article h2, article .h2 {
   width: 60%; }
 
-body:has(.Red-Pillow:hover) {
+html:has(.Red-Pillow:hover) .test-background {
   background-image: url(../img/redpillow.gif); }
 
-body:has(.High-Times-at-the-Ranger-Bowl-a-Rama:hover) {
+html:has(.High-Times-at-the-Ranger-Bowl-a-Rama:hover) .test-background {
   background-image: url(../img/hightimes.gif); }
 
-body:has(.VitaLife©-Chips:hover) {
+html:has(.VitaLife©-Chips:hover) .test-background {
   background-image: url(../img/vitalife.gif); }
 
-body:has(.La-Grima:hover) {
+html:has(.La-Grima:hover) .test-background {
   background-image: url(../img/lagrima.gif); }
 
-body:has(.Mike-Mysteries:hover) {
+html:has(.Mike-Mysteries:hover) .test-background {
   background-image: url(../img/mikemysteries.gif); }
 
-body:has(.Fronteras-Micro-film-Festival:hover) {
+html:has(.Fronteras-Micro-film-Festival:hover) .test-background {
   background-image: url(../img/fronteras.gif); }
 
-body:has(.Bag-Check:hover) {
+html:has(.Bag-Check:hover) .test-background {
   background-image: url(../img/bagcheck.gif); }
 
-body:has(.The-Green-Chile-Bagel:hover) {
+html:has(.The-Green-Chile-Bagel:hover) .test-background {
   background-image: url(../img/greenchilebagel.gif); }
 
-body:has(.The-Darkest-Place:hover) {
+html:has(.The-Darkest-Place:hover) .test-background {
   background-image: url(../img/darkestplace.gif); }
 
-body:has(.They-Came-From-Planet-X:hover) {
+html:has(.They-Came-From-Planet-X:hover) .test-background {
   background-image: url(../img/planetx.gif); }
 
-body:has(.Gumshoe:hover) {
+html:has(.Gumshoe:hover) .test-background {
   background-image: url(../img/gumshoe.gif); }
 
-body:has(.Fumbled-Not-Stirred:hover) {
+html:has(.Fumbled-Not-Stirred:hover) .test-background {
   background-image: url(../img/fumblednotstirred.gif); }
 
-body:has(.Accessory-to-Murder:hover) {
+html:has(.Accessory-to-Murder:hover) .test-background {
   background-image: url(../img/accessory.gif); }
 
-body:has(.The-Converger:hover) {
+html:has(.The-Converger:hover) .test-background {
   background-image: url(../img/converger.gif); }
 
-body:has(.The-Dust-Wave-Show:hover) {
+html:has(.The-Dust-Wave-Show:hover) .test-background {
   background-image: url(../img/thedustwaveshow.gif); }
 
-body:has(.The-Haunters:hover) {
+html:has(.The-Haunters:hover) .test-background {
   background-image: url(../img/haunters.gif); }
 
-body:has(.Earworm:hover) {
+html:has(.Earworm:hover) .test-background {
   background-image: url(../img/earworm.gif); }
 
-body:has(.Dive-In-Movies:hover) {
+html:has(.Dive-In-Movies:hover) .test-background {
   background-image: url(../img/divein.gif); }
 
-body:has(.Movie-Monsters:hover) {
+html:has(.Movie-Monsters:hover) .test-background {
   background-image: url(../img/moviemonsters.gif); }
 
 .drop-shadow {

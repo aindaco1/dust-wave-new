@@ -151,40 +151,61 @@ letter-spacing:-.02rem;
 // }
 
 .test {
-  background-image: url("../img/intro.gif");
-  background-size:cover;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-color: black;
   text-shadow: 2px 2px #000000;
   color:white !important;
+  background-color: black;
+}
+
+.test-background {
+  background-image: url("../img/intro.gif");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  height: 100vh;
+  width: 100vw;
+  top: 0;
+  position: fixed;
   @media only screen and (max-width: 1024px) 
-    { background-image: url("../img/intro-medium.gif"); }
+  { background-image: url("../img/intro-medium.gif"); }
   @media only screen and (max-width: 512px) 
-    { background-image: url("../img/intro-small.gif"); }
+  { background-image: url("../img/intro-small.gif"); }
+  z-index: -1;
 }
 
 .news {
-  background-image: url("../img/news.gif");
-  background-size:cover;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-color: black;
   text-shadow: 2px 2px #000000;
   color:white !important;
+  background-color: black;
+}
+
+.news-background {
+  background-image: url("../img/news.gif");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  height: 100vh;
+  width: 100vw;
+  top: 0;
+  position: fixed;
+  z-index: -1;
 }
 
 .partners {
-  background-image: url("../img/partners.gif");
-  background-size:cover;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-color: black;
   text-shadow: 2px 2px #000000;
   color:white !important;
+  background-color: black;
+}
+
+.partners-background {
+  background-image: url("../img/partners.gif");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  height: 100vh;
+  width: 100vw;
+  top: 0;
+  position: fixed;
+  z-index: -1;
 }
 
 .white-text {
@@ -197,80 +218,118 @@ article h2 {
 
 // GIF hover
 
-body:has(.Red-Pillow:hover) {
-  background-image: url(../img/redpillow.gif);   
-}
+html:has(.Red-Pillow:hover) {
+  .test-background {
+    background-image: url(../img/redpillow.gif);
+    }
+  }
 
-body:has(.High-Times-at-the-Ranger-Bowl-a-Rama:hover) {
-  background-image: url(../img/hightimes.gif);   
-}
+html:has(.High-Times-at-the-Ranger-Bowl-a-Rama:hover) {
+  .test-background {
+    background-image: url(../img/hightimes.gif);
+    }
+  }
 
-body:has(.VitaLife©-Chips:hover) {
-  background-image: url(../img/vitalife.gif);   
-}
+html:has(.VitaLife©-Chips:hover) {
+  .test-background {
+    background-image: url(../img/vitalife.gif);
+    }
+  }
 
-body:has(.La-Grima:hover) {
-  background-image: url(../img/lagrima.gif);   
-}
+html:has(.La-Grima:hover) {
+  .test-background {
+    background-image: url(../img/lagrima.gif);
+    }
+  }
 
-body:has(.Mike-Mysteries:hover) {
-  background-image: url(../img/mikemysteries.gif);   
-}
+html:has(.Mike-Mysteries:hover) {
+  .test-background {
+    background-image: url(../img/mikemysteries.gif);
+    }
+  }
 
-body:has(.Fronteras-Micro-film-Festival:hover) {
-  background-image: url(../img/fronteras.gif);   
-}
+html:has(.Fronteras-Micro-film-Festival:hover) {
+  .test-background {
+    background-image: url(../img/fronteras.gif);
+    }
+  }
 
-body:has(.Bag-Check:hover) {
-  background-image: url(../img/bagcheck.gif);   
-}
+html:has(.Bag-Check:hover) {
+  .test-background {
+    background-image: url(../img/bagcheck.gif);
+    }
+  }
 
-body:has(.The-Green-Chile-Bagel:hover) {
-  background-image: url(../img/greenchilebagel.gif);   
-}
+html:has(.The-Green-Chile-Bagel:hover) {
+  .test-background {
+    background-image: url(../img/greenchilebagel.gif);
+    }
+  }
 
-body:has(.The-Darkest-Place:hover) {
-  background-image: url(../img/darkestplace.gif);   
-}
+html:has(.The-Darkest-Place:hover) {
+  .test-background {
+    background-image: url(../img/darkestplace.gif);
+    }
+  }
 
-body:has(.They-Came-From-Planet-X:hover) {
-  background-image: url(../img/planetx.gif);   
-}
+html:has(.They-Came-From-Planet-X:hover) {
+  .test-background {
+    background-image: url(../img/planetx.gif);
+    }
+  }
 
-body:has(.Gumshoe:hover) {
-  background-image: url(../img/gumshoe.gif);   
-}
+html:has(.Gumshoe:hover) {
+  .test-background {
+    background-image: url(../img/gumshoe.gif);
+    }
+  }
 
-body:has(.Fumbled-Not-Stirred:hover) {
-  background-image: url(../img/fumblednotstirred.gif);   
-}
+html:has(.Fumbled-Not-Stirred:hover) {
+  .test-background {
+    background-image: url(../img/fumblednotstirred.gif);
+    }
+  }
 
-body:has(.Accessory-to-Murder:hover) {
-  background-image: url(../img/accessory.gif);   
-}
+html:has(.Accessory-to-Murder:hover) {
+  .test-background {
+    background-image: url(../img/accessory.gif);
+    }
+  }
 
-body:has(.The-Converger:hover) {
-  background-image: url(../img/converger.gif);   
-}
+html:has(.The-Converger:hover) {
+  .test-background {
+    background-image: url(../img/converger.gif);
+    }
+  }
 
-body:has(.The-Dust-Wave-Show:hover) {
-  background-image: url(../img/thedustwaveshow.gif);   
-}
+html:has(.The-Dust-Wave-Show:hover) {
+  .test-background {
+    background-image: url(../img/thedustwaveshow.gif);
+    }
+  }
 
-body:has(.The-Haunters:hover) {
-  background-image: url(../img/haunters.gif);   
-}
+html:has(.The-Haunters:hover) {
+  .test-background {
+    background-image: url(../img/haunters.gif);
+    }
+  }
 
-body:has(.Earworm:hover) {
-  background-image: url(../img/earworm.gif);   
-}
+html:has(.Earworm:hover) {
+  .test-background {
+    background-image: url(../img/earworm.gif);
+    }
+  }
 
-body:has(.Dive-In-Movies:hover) {
-  background-image: url(../img/divein.gif);   
-}
+html:has(.Dive-In-Movies:hover) {
+  .test-background {
+    background-image: url(../img/divein.gif);
+    }
+  }
 
-body:has(.Movie-Monsters:hover) {
-  background-image: url(../img/moviemonsters.gif);   
+html:has(.Movie-Monsters:hover) {
+  .test-background {
+    background-image: url(../img/moviemonsters.gif);
+  }
 }
 
 .drop-shadow {
