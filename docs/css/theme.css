@@ -9932,26 +9932,30 @@ img {
   border-bottom: 2px solid transparent;
   margin: 0 1.4rem;
   font-size: 1.2rem; }
+  @media only screen and (max-width: 900px) {
+    .navbar-light a.nav-link {
+      margin: 0 1rem;
+      font-size: 0.87rem; } }
   @media only screen and (max-width: 600px) {
     .navbar-light a.nav-link {
       margin: 0 1rem;
-      font-size: 1.2rem; } }
+      font-size: 0.83rem; } }
   @media only screen and (max-width: 515px) {
     .navbar-light a.nav-link {
       margin: 0 0.8rem;
-      font-size: 1rem; } }
+      font-size: 0.63rem; } }
   @media only screen and (max-width: 390px) {
     .navbar-light a.nav-link {
       margin: 0 0.67rem;
-      font-size: 0.87rem; } }
+      font-size: 0.6rem; } }
   @media only screen and (max-width: 360px) {
     .navbar-light a.nav-link {
       margin: 0 0.6rem;
-      font-size: 0.8rem; } }
+      font-size: 0.56rem; } }
   @media only screen and (max-width: 335px) {
     .navbar-light a.nav-link {
       margin: 0 0.55rem;
-      font-size: 0.75rem; } }
+      font-size: 0.54rem; } }
 
 .navbar-expand-lg .navbar-nav a.nav-link {
   padding-left: 0rem;
@@ -9975,6 +9979,16 @@ img {
 
 .news {
   background-image: url("../img/news.gif");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-color: black;
+  text-shadow: 2px 2px #000000;
+  color: white !important; }
+
+.partners {
+  background-image: url("../img/partners.gif");
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -10220,6 +10234,9 @@ ol li {
 .image_wrapper {
   position: relative; }
 
+.partners .image_wrapper img {
+  padding: 10px; }
+
 .overlay {
   position: absolute;
   background: rgba(57, 57, 57, 0.5);
@@ -10244,6 +10261,26 @@ ol li {
       bottom: 0;
       height: 100%;
       backdrop-filter: blur(0px) brightness(99%); } }
+
+.overlay-partner {
+  flex-direction: column;
+  background: transparent;
+  backdrop-filter: blur(5px) brightness(40%);
+  border-radius: 5px; }
+  @media only screen and (max-width: 1024px) {
+    .overlay-partner {
+      flex-direction: row; } }
+  @media only screen and (max-width: 1024px) {
+    .overlay-partner {
+      bottom: 0;
+      height: 100%;
+      backdrop-filter: blur(0px) brightness(99%); } }
+
+.overlay-partner .partner-title {
+  padding: 10px; }
+  @media only screen and (max-width: 1024px) {
+    .overlay-partner .partner-title {
+      display: none; } }
 
 @media only screen and (max-width: 1024px) {
   .overlay_3 h3, .overlay_3 .h3 {
