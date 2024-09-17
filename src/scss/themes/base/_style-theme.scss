@@ -595,10 +595,13 @@ ol li {
   }
 }
 
-.overlay-partner .partner-title {
+.overlay-partner {
   @media only screen and (max-width: 1024px) {
     display: none;
   }
+}
+
+.overlay-partner .partner-title {
   padding: 10px;
 }
 

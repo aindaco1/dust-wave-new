@@ -10295,11 +10295,12 @@ ol li {
       height: 100%;
       backdrop-filter: blur(0px) brightness(99%); } }
 
+@media only screen and (max-width: 1024px) {
+  .overlay-partner {
+    display: none; } }
+
 .overlay-partner .partner-title {
   padding: 10px; }
-  @media only screen and (max-width: 1024px) {
-    .overlay-partner .partner-title {
-      display: none; } }
 
 @media only screen and (max-width: 1024px) {
   .overlay_3 h3, .overlay_3 .h3 {
