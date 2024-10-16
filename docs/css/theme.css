@@ -10082,6 +10082,9 @@ html:has(.Movie-Monsters:hover) .test-background {
 html:has(.Softening:hover) .test-background {
   background-image: url(../img/softening.gif); }
 
+html:has(.Shellfish-Knish:hover) .test-background {
+  background-image: url(../img/shellfishknish.gif); }
+
 .drop-shadow {
   filter: drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.6)); }
 
