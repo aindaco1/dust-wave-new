@@ -345,6 +345,18 @@ html:has(.Shellfish-Knish:hover) {
   }
 }
 
+html:has(.An-Evening-of-Frights-and-Delights:hover) {
+  .test-background {
+    background-image: url(../img/evening.gif);
+  }
+}
+
+html:has(.Frograiser:hover) {
+  .test-background {
+    background-image: url(../img/frograiser.gif);
+  }
+}
+
 .drop-shadow {
   filter: drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.6)); 
 }
