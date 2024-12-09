@@ -9,7 +9,7 @@ tags:
   - released
 ---
 
-_Earworm_ is a horror short created for submission to the [2024 Albuquerque 48 Hour Film Project](https://www.48hourfilm.com/albuquerque) contest. We attempted to stick to [Dogme 95](https://en.wikipedia.org/wiki/Dogme_95#Goals_and_rules) rules as best as we could (many sins commmitted though). Shot at MOOD Studios in Albuquerque, New Mexico.
+_Earworm_ is a horror short created for submission to the [2024 Albuquerque 48 Hour Film Project](https://www.48hourfilm.com/albuquerque) contest. We attempted to stick to [Dogme 95](https://en.wikipedia.org/wiki/Dogme_95#Goals_and_rules) rules as best as we could (many sins committed though). Shot at MOOD Studios in Albuquerque, New Mexico.
 </br>
 </br>
 
@@ -78,3 +78,8 @@ Extras -- Jazzy Zama, Shea Jarjusey, Bailey Grady, Elizabeth Malone, Chelsea Amb
 ## Trailer
 
 <style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/_FkpPXmKyec?si=qeMQRV5YMVoK7D5A" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+<br><br>
+
+## Movie
+
+<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/aAfcCThJYX4?si=4PFlSYmmrCOdhDt3" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
