@@ -9,7 +9,7 @@ content:
     path: src/posts
     fields:
       - { name: title, label: Title, type: string }
-      - { name: date, label: Date, type: date, options: { format: yyyy-MM-DD } }
+      - { name: date, label: Date, type: date, options: { format: yyyy-mm-dd } }
       - { name: img, label: Image, type: image }
       - { name: summary, label: Description, type: string, options: { maxlength:160 } }
       - { name: gif, label: GIF, type: image, options: { extensions: [ gif ] } }
@@ -21,7 +21,7 @@ content:
     path: src/news
     fields:
       - { name: title, label: Title, type: string }
-      - { name: date, label: Date, type: date, options: { format: yyyy-MM-DD } }
+      - { name: date, label: Date, type: date, options: { format: yyyy-mm-dd } }
       - { name: summary, label: Description, type: string, options: { maxlength:160 } }
       - { name: img, label: Image, type: image }
       - { name: body, label: Body, type: code }
