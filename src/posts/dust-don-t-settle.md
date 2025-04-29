@@ -1,0 +1,37 @@
+---
+title: Dust Don't Settle
+date: 2025-04-15
+img: dustdontsettlestill
+summary: New Mexico DIY film documentary short
+gif: /img/dustdontsettle.gif
+tags:
+  - documentary
+---
+
+_Dust Don't Settle_ is a documentary short incorporating live-action and experimental elements to tell the unique story of how indie films are made in New Mexico.
+
+"I, like many other creatives, came to New Mexico on the promise of a booming film industry with jobs, lower cost of living, and opportunities for new creative challenges. What I found was an industry that hasn’t quite figured itself out just yet, and while it can bring some opportunities for the creatives that call New Mexico home, the reality isn’t quite what it seems. The story isn’t one of big-budget productions like _Oppenheimer_ or _Better Call Saul_ and _Breaking Bad_. The story is the individuals who create their art in any way they can, without the backing of large budgets or studio resources. They are scrappy, creative, and inspiring to me in ways I never knew possible.
+
+That is the heart of this state. New Mexico is entirely unique - beautiful, tragic, timeless, pained, forgotten, and clinging to the hope of something just past the horizon. To share it with the world is an honor and a responsibility that I don’t take lightly. The spirit of creativity and identity in this place is wholly unique and needs to be shared uniquely."
+
+-- [David Jennings](https://www.instagram.com/javid_dennings/)
+
+</br>
+
+### Crew
+
+David Jennings - Director</br>
+Devin Holloway - Director of Photography</br>
+Noah Tucker - Camera Operator</br>
+Elizabeth Jennings - Editor</br>
+Anna Buan - Editor</br>
+Tina Timelord - Producer</br>
+Chelsea Swisher - Associate Producer</br>
+Jeanette Aguilar-Harris - Associate Producer</br>
+Alonso Indacochea - Executive Producer
+</br>
+</br>
+
+## Teaser
+
+<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/NljrN3bUajw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
