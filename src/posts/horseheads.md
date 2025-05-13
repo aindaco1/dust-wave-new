@@ -17,7 +17,7 @@ _Horseheads_ is a crime comedy short shot in February 2025 in Albuquerque, New M
 ### Crew
 
 Written and Directed by Noah Tucker</br>
-Executive Producer -- Alonso Indacochea
+Executive Producer -- Alonso Indacochea</br>
 Produced by Anna Buan & Michael Madrigal</br>
 
 Director of Photography -- Nata Aguilar</br>
