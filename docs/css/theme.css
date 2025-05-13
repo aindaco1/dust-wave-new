@@ -10071,6 +10071,9 @@ html:has(.Frograiser:hover) .test-background {
 html:has(.Dust-Dont-Settle:hover) .test-background {
   background-image: url(../img/dustdontsettle.gif); }
 
+html:has(.Horseheads:hover) .test-background {
+  background-image: url(../img/horseheads.gif); }
+
 .drop-shadow {
   filter: drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.6)); }
 
