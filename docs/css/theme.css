@@ -10074,6 +10074,9 @@ html:has(.Dust-Dont-Settle:hover) .test-background {
 html:has(.Horseheads:hover) .test-background {
   background-image: url(../img/horseheads.gif); }
 
+html:has(.Horse-vs-Vamp:hover) .test-background {
+  background-image: url(../img/horsevsvamp.gif); }
+
 .drop-shadow {
   filter: drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.6)); }
 
