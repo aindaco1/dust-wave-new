@@ -23,7 +23,7 @@ That is the heart of this state. New Mexico is entirely unique - beautiful, trag
 David Jennings - Director</br>
 Devin Holloway - Director of Photography</br>
 Noah Tucker - Camera Operator</br>
-Elizabeth Jennings - Editor</br>
+Elizabeth Malone - Editor</br>
 Anna Buan - Editor</br>
 Tina Timelord - Producer</br>
 Chelsea Swisher - Associate Producer</br>
@@ -40,4 +40,4 @@ Alonso Indacochea - Executive Producer
 
 ## Teaser
 
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/NljrN3bUajw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/ioR3uABTpck" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
