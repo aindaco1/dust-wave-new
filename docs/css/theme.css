@@ -10107,10 +10107,6 @@ a:hover {
   transition: all 0.3s ease-in-out;
   z-index: 9999; }
 
-#popup.show {
-  height: auto;
-  opacity: 1; }
-
 .popup-content {
   background-color: #f5f5f5;
   border: 1px solid #cccccc;
@@ -10122,6 +10118,21 @@ a:hover {
   position: relative;
   color: black !important;
   text-shadow: none !important; }
+
+@media (min-width: 700px) {
+  #popup {
+    width: 480px;
+    max-width: 95vw;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%); }
+  .popup-content {
+    max-height: 70vh;
+    overflow-y: auto; } }
+
+#popup.show {
+  height: auto;
+  opacity: 1; }
 
 .close-btn {
   position: absolute;
