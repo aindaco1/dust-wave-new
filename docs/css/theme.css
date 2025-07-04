@@ -10552,6 +10552,15 @@ li {
     padding-top: 10px;
     padding-bottom: 10px; } }
 
+.caption {
+  text-align: center;
+  font-size: smaller; }
+
+.date-written {
+  text-align: left;
+  font-style: italic;
+  font-size: smaller; }
+
 .btn-xl {
   --bs-btn-padding-y: calc(.75rem + .5vh);
   --bs-btn-padding-x: calc(1rem + 2vw);
