@@ -230,6 +230,47 @@ Thanks to the judges and organizers, and shout out to our whole crew!
 			popup.classList.remove('show');
 		});
 	</script>
+	<script>
+	document.addEventListener('DOMContentLoaded', () => {
+		const target = document.getElementById('glitch-target');
+		if (target) {
+		startGlitchLoop(target);
+		} else {
+		console.warn('Glitch target not found in DOM');
+		}
+	});
+
+	function startGlitchLoop(targetElement) {
+		function triggerGlitch(duration = Math.random() * 250 + 100) {
+			if (!targetElement.classList.contains('glitching')) {
+			targetElement.classList.add('glitching');
+			setTimeout(() => {
+				targetElement.classList.remove('glitching');
+			}, duration);
+		}
+	}
+
+	function randomGlitchLoop() {
+		if (Math.random() < 0.2) { // 20% chance
+		triggerGlitch();
+		}
+		const next = Math.random() * 8000 + 8000; // 8–16 sec
+		setTimeout(randomGlitchLoop, next);
+	}
+
+
+	// Trigger manually on click or touch
+	targetElement.addEventListener('click', () => triggerGlitch(200));
+	targetElement.addEventListener('touchstart', () => triggerGlitch(200));
+
+	// Start the loop
+	randomGlitchLoop();
+	}
+	</script>
+	<script>
+		const target = document.getElementById('glitch-target');
+		startGlitchLoop(target);
+	</script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.3.0/quicklink.umd.js"></script>
 	<script>
 		window.addEventListener('load', () => {
