@@ -1139,8 +1139,8 @@ Shiva Attendees -- Shea Jarjusey, Laura Siân Morris, Alonso Indacochea, Jade St
 &lt;/div&gt;
 &lt;br /&gt;&lt;br /&gt;
 &lt;h2&gt;Trailer&lt;/h2&gt;
-&lt;p&gt;&lt;strong&gt;Coming Soon ...&lt;/strong&gt;
-&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;style&gt;.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }&lt;/style&gt;&lt;div class=&quot;embed-container&quot;&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/kpJ6ybpMK5A&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;h2&gt;Movie&lt;/h2&gt;
 &lt;p&gt;&lt;strong&gt;Coming Soon ...&lt;/strong&gt;&lt;/p&gt;
 </content>
@@ -1310,6 +1310,9 @@ John Dewar as The Narrator
   &lt;/div&gt;
 &lt;/div&gt;
 &lt;br /&gt;&lt;br /&gt;
+&lt;h2&gt;Trailer&lt;/h2&gt;
+&lt;style&gt;.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }&lt;/style&gt;&lt;div class=&quot;embed-container&quot;&gt;&lt;iframe width=&quot;100%&quot; height=&quot;400vh&quot; src=&quot;https://www.youtube.com/embed/t6gWcsX-XvI&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;h2&gt;Movie&lt;/h2&gt;
 &lt;p&gt;&lt;strong&gt;Coming Soon ...&lt;/strong&gt;&lt;/p&gt;
 </content>
