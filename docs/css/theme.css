@@ -10080,6 +10080,9 @@ html:has(.Horse-vs-Vamp:hover) .test-background {
 html:has(.Long-Night:hover) .test-background {
   background-image: url(../img/longnight.gif); }
 
+html:has(.Pandoras-Greenhouse:hover) .test-background {
+  background-image: url(../img/pandora.gif); }
+
 .drop-shadow {
   filter: drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.6)); }
 

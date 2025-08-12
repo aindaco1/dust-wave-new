@@ -12,7 +12,7 @@ tags:
   - released
 ---
 
-_Long Night_ is a horror romance short written and directed by the incomparable Bailey Grady. Shot at several locations in Albuquerque, New Mexico.
+_Long Night_ is a horror romance short written and directed by the incomparable [Bailey Grady](https://www.instagram.com/londone_fog). Shot at several locations in Albuquerque, New Mexico.
 </br>
 </br>
 
