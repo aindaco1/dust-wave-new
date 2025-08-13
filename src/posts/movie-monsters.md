@@ -66,17 +66,23 @@ Extras -- JP Mark, Ginny Leise, Jay Renteria, Gary Shaw, Jordyn Bernicke, Nico B
 
 <div class="row g-2">
   <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-	<img src="/img/movie-monsters/behind_the_scenes4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  	<img src="/img/movie-monsters/behind_the_scenes1.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  	<img src="/img/movie-monsters/behind_the_scenes5.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
+	<img src="/img/movie_monsters/behind_the_scenes4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
+  	<img src="/img/movie_monsters/behind_the_scenes1.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
+  	<img src="/img/movie_monsters/behind_the_scenes5.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
   </div>
   <div class="col-lg-6 mb-6 mb-lg-0">
-	<img src="/img/movie-monsters/behind_the_scenes2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  	<img src="/img/movie-monsters/behind_the_scenes3.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  	<img src="/img/movie-monsters/behind_the_scenes7.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-	<img src="/img/movie-monsters/behind_the_scenes6.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
+	<img src="/img/movie_monsters/behind_the_scenes2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
+  	<img src="/img/movie_monsters/behind_the_scenes3.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
+  	<img src="/img/movie_monsters/behind_the_scenes7.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
+	<img src="/img/movie_monsters/behind_the_scenes6.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
   </div>
 </div>
+<br><br>
+
+### Poster
+<br>
+<img src="/img/movie_monsters/poster.jpg" class="w-75 shadow-1-strong rounded mb-2" alt="poster">
+
 <br><br>
 
 ## Trailer

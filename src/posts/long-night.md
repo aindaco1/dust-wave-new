@@ -74,6 +74,12 @@ Cheryl - Kim S. Monti
 </div>
 <br><br>
 
+### Poster
+<br>
+<img src="/img/long_night/poster.jpg" class="w-75 shadow-1-strong rounded mb-2" alt="poster">
+
+<br><br>
+
 ## Movie
 
 **Coming Soon ...**
