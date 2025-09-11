@@ -580,7 +580,6 @@ Voice of the fetus — Kaidin Jarjusey
 
 		function qsa(sel, root=document){ return Array.from(root.querySelectorAll(sel)); }
 
-		// Equalize the Nth-left with Nth-right within a grid
 		function equalizeGridRows(gridId) {
 			const grid = document.getElementById(gridId);
 			if (!grid) return;
@@ -588,66 +587,64 @@ Voice of the fetus — Kaidin Jarjusey
 			const leftCards  = qsa('.col-left  .digest-card', grid);
 			const rightCards = qsa('.col-right .digest-card', grid);
 
-			// Clear old heights first so we measure natural sizes
+			// clear first
 			[...leftCards, ...rightCards].forEach(c => c.style.minHeight = '');
 
-			// If we’re below desktop breakpoint, don’t force equal heights
 			if (window.innerWidth < DESKTOP_BP) return;
 
 			const maxLen = Math.max(leftCards.length, rightCards.length);
-
 			for (let i = 0; i < maxLen; i++) {
 			const L = leftCards[i];
 			const R = rightCards[i];
 			if (!L && !R) continue;
 
-			// Measure; fallback to the one that exists if uneven columns
 			const lh = L ? L.offsetHeight : 0;
 			const rh = R ? R.offsetHeight : 0;
 			const h  = Math.max(lh, rh);
 
-			if (L) L.style.minHeight = h + 'px';
-			if (R) R.style.minHeight = h + 'px';
+			// write only if changed
+			if (L && L.style.minHeight !== h + 'px') L.style.minHeight = h + 'px';
+			if (R && R.style.minHeight !== h + 'px') R.style.minHeight = h + 'px';
 			}
 		}
 
 		function equalizeAll() {
-			// Use rAF to let layout settle before measuring
-			window.requestAnimationFrame(() => {
+			requestAnimationFrame(() => {
 			equalizeGridRows('articles-grid');
 			equalizeGridRows('av-grid');
-			// trailers-grid is embeds + captions; skip equalizing there
 			});
 		}
 
-		// Debounced resize handler
+		// Debounced resize
 		let resizeTO = null;
 		window.addEventListener('resize', () => {
 			clearTimeout(resizeTO);
 			resizeTO = setTimeout(equalizeAll, 120);
 		});
 
-		// Run after DOM, fonts, and (most) images
+		// Run after DOM & fonts; again on window load
 		document.addEventListener('DOMContentLoaded', () => {
-			// If fonts API exists, wait for them for more stable heights
 			const whenFonts = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
 			whenFonts.then(() => {
-			// Run once DOM & fonts are ready
 			equalizeAll();
-
-			// Run again on full window load (images finished)
 			window.addEventListener('load', equalizeAll, { once: true });
 
-			// Observe for card content changes (e.g., pending → placed)
+			// ✅ Observe only childList changes (no attributes!)
 			const grids = ['articles-grid', 'av-grid']
 				.map(id => document.getElementById(id))
 				.filter(Boolean);
 
-			const mo = new MutationObserver(() => equalizeAll());
-			grids.forEach(g => mo.observe(g, { childList: true, subtree: true, attributes: true }));
+			let scheduled = false;
+			const mo = new MutationObserver(muts => {
+				// only react to card adds/removes to reduce noise
+				const relevant = muts.some(m => m.type === 'childList' && (m.addedNodes.length || m.removedNodes.length));
+				if (!relevant) return;
+				if (scheduled) return;
+				scheduled = true;
+				requestAnimationFrame(() => { scheduled = false; equalizeAll(); });
+			});
 
-			// Optional: if you manually remove .pending via JS elsewhere,
-			// also call equalizeAll() right after that operation.
+			grids.forEach(g => mo.observe(g, { childList: true, subtree: true }));
 			});
 		});
 		})();
