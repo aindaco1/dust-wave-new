@@ -478,7 +478,7 @@ Welcome to this week’s *DIY Filmmaker Digest* — part syllabus, part mixtape,
     </div>
     <div class="caption">
       **<a href="https://www.imdb.com/title/tt27706317/" target="_blank">Diciannove</a>**  
-      Dir. <a href="https://www.imdb.com/name/nm5373939/" target="_blank">Giovanni Tortorici</a>, 109 min  
+      Dir. <a href="https://www.imdb.com/name/nm12329659/" target="_blank">Giovanni Tortorici</a>, 109 min  
       Italy, Drama  
       In theaters Feb. 27, 2025
     </div>
@@ -535,7 +535,7 @@ Welcome to this week’s *DIY Filmmaker Digest* — part syllabus, part mixtape,
     <div class="caption">
       **<a href="https://www.imdb.com/title/tt27817389/" target="_blank">The Last Viking</a>**  
       Dir. <a href="https://www.imdb.com/name/nm0421314/" target="_blank">Anders Thomas Jensen</a>, TBD  
-      Norway, Dark Comedy  
+      Denmark, Dark Comedy  
       In theaters (Denmark) Oct. 9, 2025
     </div>
 
@@ -593,8 +593,8 @@ Welcome to this week’s *DIY Filmmaker Digest* — part syllabus, part mixtape,
       <iframe src="https://www.youtube-nocookie.com/embed/bKDPrhkG4LI?color=white&rel=0&iv_load_policy=3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" loading="lazy" allowfullscreen></iframe>
     </div>
     <div class="caption">
-      **<a href="https://www.imdb.com/title/tt30287175/" target="_blank">Kill the Jockey</a>**  
-      Dir. <a href="https://www.imdb.com/name/nm1240419/" target="_blank">Luis Ortega</a>, 110 min  
+      **<a href="https://www.imdb.com/title/tt28231777/" target="_blank">Kill the Jockey</a>**  
+      Dir. <a href="https://www.imdb.com/name/nm1166781/" target="_blank">Luis Ortega</a>, 110 min  
       Argentina, Crime-Drama  
       In theaters Jul. 2, 2025  
       Starring <a href="https://www.imdb.com/name/nm1465580/" target="_blank">Nahuel Pérez Biscayart</a>, <a href="https://www.imdb.com/name/nm2216549/" target="_blank">Úrsula Corberó</a>
@@ -621,7 +621,7 @@ Welcome to this week’s *DIY Filmmaker Digest* — part syllabus, part mixtape,
       Dir. <a href="https://www.imdb.com/name/nm0014707/" target="_blank">Karim Aïnouz</a>, 115 min  
       Brazil, Erotic-Thriller  
       In theaters Aug. 29, 2025  
-      Starring <a href="https://www.imdb.com/name/nm15124656/" target="_blank">Iago Xavier</a>, <a href="https://www.imdb.com/name/nm12121102/" target="_blank">Nataly Rocha</a>
+      Starring <a href="https://www.imdb.com/name/nm15124656/" target="_blank">Iago Xavier</a>, <a href="https://www.imdb.com/name/nm4472370/" target="_blank">Nataly Rocha</a>
     </div>
 
     <!-- #8 One Battle After Another -->
