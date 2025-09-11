@@ -533,10 +533,10 @@ Welcome to this week’s *DIY Filmmaker Digest* — part syllabus, part mixtape,
       <iframe src="https://www.youtube-nocookie.com/embed/9Phbk7seNn4?color=white&rel=0&iv_load_policy=3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" loading="lazy" allowfullscreen></iframe>
     </div>
     <div class="caption">
-      **<a href="https://www.imdb.com/title/tt30034276/" target="_blank">The Last Viking</a>**  
-      Dir. <a href="https://www.imdb.com/name/nm0378947/" target="_blank">Nils Gaup</a>, TBD  
-      Norway, Historical Adventure  
-      Theatrical: TBD
+      **<a href="https://www.imdb.com/title/tt27817389/" target="_blank">The Last Viking</a>**  
+      Dir. <a href="https://www.imdb.com/name/nm0421314/" target="_blank">Anders Thomas Jensen</a>, TBD  
+      Norway, Dark Comedy  
+      In theaters (Denmark) Oct. 9, 2025
     </div>
 
     <!-- #13 In the Hand of Dante -->
@@ -555,8 +555,8 @@ Welcome to this week’s *DIY Filmmaker Digest* — part syllabus, part mixtape,
       <iframe src="https://www.youtube-nocookie.com/embed/rYWdP4Um6MQ?color=white&rel=0&iv_load_policy=3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" loading="lazy" allowfullscreen></iframe>
     </div>
     <div class="caption">
-      **<a href="https://www.imdb.com/title/tt17653208/" target="_blank">The President’s Cake</a>**  
-      Dir. <a href="https://www.imdb.com/name/nm10123880/" target="_blank">Sahim Omar Kalifa</a>, 84 min  
+      **<a href="https://www.imdb.com/title/tt36580119/" target="_blank">The President’s Cake</a>**  
+      Dir. <a href="https://www.imdb.com/name/nm11244976/" target="_blank">Hasan Hadi</a>, 102 min  
       Iraq, Drama  
       Release: TBD
     </div>
@@ -566,8 +566,8 @@ Welcome to this week’s *DIY Filmmaker Digest* — part syllabus, part mixtape,
       <iframe src="https://www.youtube-nocookie.com/embed/-1NOr9c0EOw?color=white&rel=0&iv_load_policy=3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" loading="lazy" allowfullscreen></iframe>
     </div>
     <div class="caption">
-      **<a href="https://www.imdb.com/title/tt32438648/" target="_blank">Once Upon a Time in Gaza</a>**  
-      Dir. <a href="https://www.imdb.com/name/nm0980271/" target="_blank">Annemarie Jacir</a>, TBD  
+      **<a href="https://www.imdb.com/title/tt34734841/" target="_blank">Once Upon a Time in Gaza</a>**  
+      Dir. <a href="https://www.imdb.com/name/nm5584045/" target="_blank">Arab Nasser</a> and <a href="https://www.imdb.com/name/nm5657422/" target="_blank">Tarzan Nasser</a>, 87 min  
       Palestine, Drama  
       Release: TBD
     </div>
@@ -688,8 +688,8 @@ Welcome to this week’s *DIY Filmmaker Digest* — part syllabus, part mixtape,
       <iframe src="https://www.youtube-nocookie.com/embed/UpRagagfRK0?color=white&rel=0&iv_load_policy=3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" loading="lazy" allowfullscreen></iframe>
     </div>
     <div class="caption">
-      **<a href="https://www.imdb.com/title/tt32238153/" target="_blank">It Was Just an Accident</a>**  
-      Dir. <a href="https://www.imdb.com/name/nm0658935/" target="_blank">Jafar Panahi</a>, TBD  
+      **<a href="https://www.imdb.com/title/tt36491653/" target="_blank">It Was Just an Accident</a>**  
+      Dir. <a href="https://www.imdb.com/name/nm0070159/" target="_blank">Jafar Panahi</a>, 105 min  
       Iran, Drama  
       Release: TBD
     </div>
@@ -699,8 +699,8 @@ Welcome to this week’s *DIY Filmmaker Digest* — part syllabus, part mixtape,
       <iframe src="https://www.youtube-nocookie.com/embed/Cz5A7GyWrN4?color=white&rel=0&iv_load_policy=3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" loading="lazy" allowfullscreen></iframe>
     </div>
     <div class="caption">
-      **<a href="https://www.imdb.com/title/tt31193238/" target="_blank">Sentimental Value</a>**  
-      Dir. <a href="https://www.imdb.com/name/nm0878763/" target="_blank">Joachim Trier</a>, TBD  
+      **<a href="https://www.imdb.com/title/tt27714581/" target="_blank">Sentimental Value</a>**  
+      Dir. <a href="https://www.imdb.com/name/nm1258686/" target="_blank">Joachim Trier</a>, 133 min  
       Norway, Drama  
       Release: TBD
     </div>
