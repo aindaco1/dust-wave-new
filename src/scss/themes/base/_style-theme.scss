@@ -977,3 +977,424 @@ li {
 .glitching {
   animation: glitch-anim 0.25s linear infinite alternate-reverse;
 }
+
+/* ================================
+   DIY Filmmaker Digest — Styles
+   (append to end of _style-theme.scss)
+   ================================ */
+
+/* Generic responsive embed helper so you can stop inlining */
+.embed-container {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 */
+  height: 0;
+  overflow: hidden;
+  max-width: 100%;
+  border-radius: .5rem; /* match rounded */
+}
+.embed-container iframe,
+.embed-container object,
+.embed-container embed {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border: 0;
+  border-radius: .5rem;
+  padding: 10px;
+}
+
+/* Grid columns used by the auto-balancer */
+#articles-grid.equalize,
+#trailers-grid.equalize,
+#av-grid.equalize {
+  /* nothing required here; classes are markers for JS */
+}
+
+/* Make columns true columns that can accept moved nodes */
+#articles-grid .col-left,
+#articles-grid .col-right,
+#trailers-grid .col-left,
+#trailers-grid .col-right,
+#av-grid .col-left,
+#av-grid .col-right {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* matches your mb-4 visually */
+}
+
+/* Ensure cards stretch naturally; let content size them */
+#articles-grid .digest-card,
+#av-grid .digest-card {
+  height: auto;
+}
+
+/* Hide cards while they’re pending placement; JS removes .pending */
+.card.pending {
+  visibility: hidden;
+  opacity: 0;
+}
+.card.pending * {
+  pointer-events: none;
+}
+
+.equalize-ready .card.pending {
+  visibility: visible; /* if you ever add this class, it will reveal */
+}
+
+/* The digest card block */
+.digest-card {
+  background-color: unset;
+  color: unset;
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: .5rem;
+  box-shadow: 0 6px 16px rgba(0,0,0,.08);
+}
+
+/* Top image should clip to the rounded card */
+.digest-card img.rounded-top,
+.digest-card > img {
+  display: block;
+  border-radius: .5rem;
+}
+
+/* Typography inside the light card */
+.digest-card h4,
+.digest-card h5,
+.digest-card h6,
+.digest-card p,
+.digest-card li,
+.digest-card blockquote {
+  text-shadow: none !important;
+}
+
+/* Links inside digest cards must override global white links */
+.digest-card a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+.digest-card a:hover {
+  color: #555 !important;
+}
+
+/* Blockquote style for pull-quotes */
+.digest-card blockquote {
+  font-style: italic;
+  font-weight: 700;
+  line-height: 1.35;
+  margin: 0 0 .75rem 0;
+  padding: .5rem 0 .5rem 1rem;
+  border-left: 4px solid #111;
+}
+
+/* Lists inside cards—tighter and readable on white */
+.digest-card ul {
+  margin: .5rem 0 1rem;
+  padding-left: 1.15rem;
+}
+.digest-card li {
+  margin-left: 0 !important; /* override site-wide li margins */
+  margin-bottom: .25rem !important;
+}
+
+/* Captions below trailers can inherit site style; tweak readability */
+#trailers-grid .caption {
+  line-height: 1.4;
+}
+
+#trailers-grid .caption a:hover {
+  color: #bbb !important;
+}
+
+/* Mobile spacing & stacking niceties */
+@media (max-width: 991.98px) {
+  #articles-grid .col-left,
+  #articles-grid .col-right,
+  #trailers-grid .col-left,
+  #trailers-grid .col-right,
+  #av-grid .col-left,
+  #av-grid .col-right {
+    gap: 1rem;
+  }
+  .digest-card {
+    box-shadow: 0 4px 12px rgba(0,0,0,.1);
+  }
+}
+
+.digest-card iframe[src*="open.spotify.com"] {
+  background: transparent;
+  border-radius: .5rem;
+}
+
+.digest-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(0,0,0,.12);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+/* Lite embed (YouTube) */
+.embed-lite__ratio {
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
+  border-radius: .5rem;
+  box-shadow: 0 6px 16px rgba(0,0,0,.08);
+}
+
+.embed-lite,
+.embed-lite__iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.embed-lite {
+  display: block;
+  border: 0;
+  background: #000;
+  cursor: pointer;
+  border-radius: .5rem;
+}
+
+.embed-lite__thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(.8);
+  border-radius: .5rem;
+}
+
+.embed-lite__play {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 68px; height: 48px;
+  transform: translate(-50%, -50%);
+  opacity: .9;
+  transition: transform .2s ease, opacity .2s ease;
+  /* white YouTube triangle in a rounded dark rect */
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="68" height="48" viewBox="0 0 68 48"><path fill="%23000" d="M66.52 7.66a8 8 0 0 0-5.64-5.66C56.1.8 34 .8 34 .8s-22.1 0-26.88 1.2A8 8 0 0 0 1.48 7.66C.3 12.46.3 24 .3 24s0 11.54 1.18 16.34a8 8 0 0 0 5.64 5.66C12.9 47.2 35 47.2 35 47.2s22.1 0 26.88-1.2a8 8 0 0 0 5.64-5.66C68.7 35.54 68.7 24 68.7 24s0-11.54-1.18-16.34Z"/><path fill="%23fff" d="M27 34V14l18 10-18 10z"/></svg>') center / contain no-repeat;
+}
+
+.embed-lite:hover .embed-lite__play { transform: translate(-50%, -50%) scale(1.05); opacity: 1; }
+
+/* Don’t paint offscreen trailers until needed */
+#trailers-grid .col-left,
+#trailers-grid .col-right {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 2000px; /* prevents big jumps while estimating */
+}
+
+/* A/V grid: smooth paint + stable card layout */
+#av-grid .col-left,
+#av-grid .col-right {
+  content-visibility: auto;              /* don’t paint offscreen */
+  contain-intrinsic-size: 1px 1200px;    /* prevents big jumps while estimating */
+}
+
+#av-grid .digest-card {
+  display: flex;               /* let content stretch evenly */
+  flex-direction: column;
+  min-height: 0;               /* avoid overflow surprises */
+}
+
+/* AV grid cards use the same light style as articles */
+#av-grid .digest-card .embed-container {
+  margin-bottom: .5rem;
+}
+
+/* Put the embed at the top with a fixed aspect; text fills the rest */
+#av-grid .digest-card > .embed-container {
+  aspect-ratio: 16 / 9;        /* modern browsers */
+  flex: 0 0 auto;
+  margin-top: 0;               /* already topmost, no extra gap */
+}
+
+#av-grid .digest-card > .p-3 {
+  flex: 1 1 auto;              /* text block expands to fill card */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Don’t leave an extra gap at the end of the text stack */
+#av-grid .digest-card .mb-2:last-child { margin-bottom: 0 !important; }
+
+/* If someone disables motion, skip hover lifts to reduce repaints */
+@media (prefers-reduced-motion: reduce) {
+  #av-grid .digest-card:hover { transform: none; box-shadow: none; }
+}
+
+/* TOC layout */
+.digest-toc { margin-bottom: 1.25rem; }
+.digest-toc h4 { font-size: 1.15rem; line-height: 1.2; }
+.digest-toc section + section h3 {
+  margin-top: 2rem;  /* extra space before next section heading */
+}
+
+/* List + bullets — prevent odd baseline alignment on long titles */
+.digest-toc__list {
+  list-style: disc outside;
+  margin: .25rem 0 1rem 1.25rem; /* indent bullets */
+  padding: 0;
+}
+.digest-toc__item {
+  line-height: 1.35;
+  margin: .25rem 0;
+  /* keep bullet aligned with first line of wrapped text */
+  display: list-item;
+}
+
+/* Links — underline, hover, visited */
+.digest-toc__link {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+  color: inherit; /* keep your white-on-black theme */
+}
+.digest-toc__link:hover {
+  text-decoration-thickness: 2px;
+  color: #bbb !important; /* matches your card hover tone */
+}
+.digest-toc__link:visited {
+  opacity: .85;
+}
+
+/* To-Do lists → static checkboxes with hover highlight */
+.todo-list {
+  list-style: none;
+  margin: .5rem 0 1rem;
+  padding-left: 1.15rem; // aligns with your .digest-card ul
+}
+
+.todo-list li {
+  position: relative;
+  margin-left: 0 !important;      // keep card lists aligned
+  margin-bottom: .25rem !important;
+  padding-left: 1.6rem;            // space for the box
+  line-height: 1.4;
+  transition: transform .08s ease; // tiny lift on hover
+}
+
+.todo-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: .28rem;                     // vertical align with first line
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid currentColor;  // works on dark or light cards
+  border-radius: 3px;
+  box-sizing: border-box;
+  transition: background-color .15s ease,
+              box-shadow .15s ease,
+              transform .08s ease;
+}
+
+.todo-list li:hover::before {
+  background-color: currentColor;
+  box-shadow: 0 0 0 1px currentColor inset;
+}
+
+/* Keyboard focus (links inside li) — keep it accessible */
+.todo-list li:focus-within::before {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.todo-list li.checked::before {
+  background-color: currentColor;
+  box-shadow: 0 0 0 1px currentColor inset;
+}
+
+.todo-list li.checked {
+  text-decoration: line-through;
+  opacity: 0.8;
+}
+
+/* =======================================
+   Digest refinements: spacing + dividers
+   ======================================= */
+
+/* 1) Reduce space under embeds and above titles (desktop heavier) */
+@media (min-width: 992px) {
+  /* A/V cards use an embed before the text block */
+  #av-grid .digest-card > .embed-container { margin-bottom: .25rem; } /* was .5rem via .mb-2 */
+  #av-grid .digest-card > .p-3 { padding-top: .5rem; }                /* was 1rem via .p-3 */
+
+  /* Article cards have an <img> then .p-3; trim that top padding too */
+  #articles-grid .digest-card > .p-3 { padding-top: .5rem; }          /* was 1rem via .p-3 */
+
+  /* Optional: remove inner padding inside iframes to avoid extra “breathing room” */
+  .embed-container iframe,
+  .embed-container object,
+  .embed-container embed { padding: 0; } /* was 10px */
+}
+
+/* Keep things a touch looser on small screens so it doesn’t feel cramped */
+@media (max-width: 991.98px) {
+  #av-grid .digest-card > .embed-container { margin-bottom: .5rem; }
+  #av-grid .digest-card > .p-3,
+  #articles-grid .digest-card > .p-3 { padding-top: .75rem; }
+}
+
+/* 2) Subtle dividers between stacked cards (Articles + A/V) */
+#articles-grid .col-left .digest-card + .digest-card,
+#articles-grid .col-right .digest-card + .digest-card,
+#av-grid .col-left .digest-card + .digest-card,
+#av-grid .col-right .digest-card + .digest-card {
+  position: relative;          /* anchor the pseudo-element */
+  margin-top: .25rem;          /* tiny separation above the line */
+  padding-top: 2rem;           /* space after the line */
+}
+
+#articles-grid .col-left .digest-card + .digest-card::before,
+#articles-grid .col-right .digest-card + .digest-card::before,
+#av-grid .col-left .digest-card + .digest-card::before,
+#av-grid .col-right .digest-card + .digest-card::before {
+  content: "";
+  position: absolute;
+  top: 0;                      /* sits at the top edge of the card */
+  left: 5rem;                  /* inset from the left edge */
+  right: 5rem;                 /* inset from the right edge */
+  height: 1px;
+  background-color: rgba(255,255,255,0.6);  /* white-ish line for dark bg */
+}
+
+/* 3) Trailers: nudge the caption up a bit under the player on desktop */
+@media (min-width: 992px) {
+  #trailers-grid .embed-container { margin-bottom: .35rem; }
+  #trailers-grid .caption { margin-top: .25rem; }
+}
+
+/* ============================
+   Digest: uniform cards (desktop)
+   ============================ */
+:root {
+  --digest-card-h: 520px;       /* total card height on desktop */
+  --digest-img-ratio: 16/9;     /* image/embed aspect ratio */
+}
+
+  /* Standardize top media block: article images */
+  #articles-grid .digest-card > img {
+    width: 100%;
+    aspect-ratio: var(--digest-img-ratio);
+    object-fit: cover;
+    flex: 0 0 auto;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  /* Standardize top media block: A/V embeds */
+  #av-grid .digest-card > .embed-container {
+    aspect-ratio: var(--digest-img-ratio);
+    flex: 0 0 auto;
+    margin-bottom: .25rem; /* your tightened spacing */
+  }
+
+#articles-grid .digest-card,
+#av-grid .digest-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 0; // allows inner flex children to shrink if needed
+}

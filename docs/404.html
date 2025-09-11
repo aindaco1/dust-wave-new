@@ -11,6 +11,12 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
   <link rel="icon" type="image/png" sizes="96x96" href="/img/favicon.png">
+  <link rel="preconnect" href="https://www.youtube-nocookie.com" crossorigin>
+  <link rel="preconnect" href="https://www.youtube.com" crossorigin>
+  <link rel="preconnect" href="https://i.ytimg.com" crossorigin>
+  <link rel="preconnect" href="https://www.google.com" crossorigin>
+  <link rel="dns-prefetch" href="https://www.youtube-nocookie.com">
+  <link rel="dns-prefetch" href="https://i.ytimg.com">
   <meta name="author" content="Dust Wave">
   <meta name="generator" content="Eleventy v2.0.1">
   <meta name="HandheldFriendly" content="true">
@@ -218,6 +224,354 @@
 		});
 	</script>
   	<script src="/js/bootstrap.bundle.min.js"></script>
+
+	<script>
+	/* Lite YouTube — upgrade iframes to click-to-load */
+	(function(){
+	'use strict';
+
+		function makeLiteFromIframe(ifr) {
+			const src = ifr.getAttribute('src') || '';
+			const match = src.match(/\/embed\/([a-zA-Z0-9_-]{6,})/);
+			const vid = match && match[1];
+			if (!vid) return; // not a standard embed
+
+			const title = ifr.getAttribute('title') || 'YouTube video';
+			const poster = `https://i.ytimg.com/vi/${vid}/hqdefault.jpg`;
+
+			// Shell with aspect-ratio
+			const ratio = document.createElement('div');
+			ratio.className = 'embed-lite__ratio';
+
+			// Clickable poster
+			const btn = document.createElement('button');
+			btn.type = 'button';
+			btn.className = 'embed-lite';
+			btn.setAttribute('aria-label', `Play video: ${title}`);
+			btn.innerHTML =
+			`<img class="embed-lite__thumb" alt="" loading="lazy" decoding="async" src="${poster}">` +
+			`<span class="embed-lite__play" aria-hidden="true"></span>`;
+
+			// On click, swap in the real iframe (autoplay 1)
+			btn.addEventListener('click', () => {
+			const real = document.createElement('iframe');
+			real.className = 'embed-lite__iframe';
+			real.setAttribute('allowfullscreen', '');
+			real.setAttribute('title', title);
+			real.setAttribute('loading', 'eager'); // now we actually want it
+			real.referrerPolicy = 'strict-origin-when-cross-origin';
+			const sep = src.includes('?') ? '&' : '?';
+			real.src = `${src}${sep}autoplay=1`;
+			real.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+			ratio.replaceChild(real, btn);
+			}, { once:true });
+
+			ratio.appendChild(btn);
+			ifr.parentNode.replaceChild(ratio, ifr);
+		}
+
+		function upgradeAll(scope) {
+			const selector = [
+			'iframe[src*="youtube.com/embed/"]',
+			'iframe[src*="youtube-nocookie.com/embed/"]'
+			].join(',');
+			document.querySelectorAll(selector).forEach(makeLiteFromIframe);
+		}
+
+		if (document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', () => upgradeAll(document), { once:true });
+		} else {
+			upgradeAll(document);
+		}
+		})();
+	</script>
+
+	<script>
+	/* Fast column balancer (articles, A/V, trailers)
+	- One-time height estimate per card
+	- Greedy pack to the lighter column using virtual tallies
+	- Batched DOM writes via DocumentFragment
+	*/
+		(function(){
+		'use strict';
+
+		function sectionEls(id){
+			const section = document.getElementById(id);
+			if (!section) return {};
+			return {
+			section,
+			left:  section.querySelector('.col-left'),
+			right: section.querySelector('.col-right')
+			};
+		}
+
+		function estimateCardHeight(card){
+			// Try an actual measurement first
+			let h = card.getBoundingClientRect().height;
+			if (h && h > 0) return h;
+
+			// Fallback guesses (keeps us from waiting on media)
+			// Heuristic: trailer/embed cards are taller
+			if (card.querySelector('.embed-container, iframe')) return 420;
+			return 260; // text/image card
+		}
+
+		function balanceColumns(sectionId){
+		const { section, left, right } = sectionEls(sectionId);
+		if (!section || !left || !right) return;
+
+		const cards = Array.from(section.querySelectorAll('.card.pending'));
+		if (!cards.length) return;
+
+		// Precompute heights once
+		const items = cards.map(c => ({ el: c, h: estimateCardHeight(c) }));
+
+		// Start from empty columns so tallies are 0 (not existing DOM height)
+		const fragL = document.createDocumentFragment();
+		const fragR = document.createDocumentFragment();
+		let leftH = 0, rightH = 0;
+
+		// Greedy pack
+		for (const it of items){
+			if (leftH <= rightH){ fragL.appendChild(it.el); leftH += it.h; }
+			else { fragR.appendChild(it.el); rightH += it.h; }
+		}
+
+		// Clear and write once per column
+		left.textContent = '';
+		right.textContent = '';
+		left.appendChild(fragL);
+		right.appendChild(fragR);
+
+		requestAnimationFrame(() => items.forEach(it => it.el.classList.remove('pending')));
+		}
+
+		function init(){
+			// Guard against duplicate IDs by de-duping the list
+			['articles-grid','av-grid','trailers-grid']
+			.filter((id, idx, arr) => arr.indexOf(id) === idx)
+			.forEach(balanceColumns);
+		}
+
+		if (document.readyState === 'loading'){
+			document.addEventListener('DOMContentLoaded', init, { once:true });
+		} else {
+			init();
+		}
+
+		// Manual hook for dynamic inserts
+		window.DWBalance = { rebalance: balanceColumns };
+		})();
+	</script>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+		const tocBody = document.getElementById('digest-toc-body');
+		if (!tocBody) return;
+
+		const slugify = s => (s || '')
+			.toLowerCase()
+			.replace(/<[^>]+>/g,'')
+			.replace(/&[a-z]+;?/g,'')
+			.replace(/[^a-z0-9]+/g,'-')
+			.replace(/(^-|-$)/g,'')
+			.slice(0,80);
+
+		const makeListSection = (titleText) => {
+			const wrap = document.createElement('section');
+			const h = document.createElement('h3');
+			h.className = 'gambado mb-2';
+			h.textContent = titleText;
+			const ul = document.createElement('ul');
+			ul.className = 'digest-toc__list';
+			wrap.append(h, ul);
+			return { wrap, ul, h };
+		};
+
+		const addItem = (ul, href, text) => {
+			const li = document.createElement('li');
+			li.className = 'digest-toc__item';
+			const a = document.createElement('a');
+			a.href = href;
+			a.className = 'digest-toc__link';
+			a.textContent = text;
+			li.appendChild(a);
+			ul.appendChild(li);
+		};
+
+		// ===== Articles (each card becomes a bullet) =====
+		const articleCards = Array.from(document.querySelectorAll('#articles-grid .digest-card'));
+		if (articleCards.length) {
+			const { wrap, ul } = makeListSection('Articles');
+			articleCards.forEach(card => {
+			const prev = card.previousElementSibling;
+			const anchorName = (prev && prev.tagName === 'A' && prev.hasAttribute('name')) ? prev.getAttribute('name') : null;
+			const titleA = card.querySelector('h4 a');
+			const titleText = titleA ? titleA.textContent.trim() : 'Untitled';
+			if (!anchorName) {
+				if (!card.id) card.id = slugify(titleText) || ('article-' + Math.random().toString(36).slice(2,8));
+			}
+			addItem(ul, anchorName ? ('#' + anchorName) : ('#' + card.id), titleText);
+			});
+			tocBody.appendChild(wrap);
+		}
+
+		// ===== Podcasts & Videos (list each item individually) =====
+		const avGrid = document.getElementById('av-grid');
+		if (avGrid) {
+			const cards = Array.from(avGrid.querySelectorAll('.digest-card'));
+			if (cards.length) {
+			const { wrap, ul } = makeListSection('Podcasts & Videos');
+			cards.forEach((card, idx) => {
+				const titleA = card.querySelector('h4 a');
+				const titleText = titleA ? titleA.textContent.trim() : ('A/V Item ' + (idx+1));
+				// ensure an anchor for each card
+				if (!card.id) card.id = slugify(titleText) || ('av-' + Math.random().toString(36).slice(2,8));
+				addItem(ul, '#' + card.id, titleText);
+			});
+			tocBody.appendChild(wrap);
+			}
+		}
+
+		// ===== Trailers (make the heading itself the link; no list) =====
+		(function () {
+			const trailersAnchor = document.querySelector('a[name="trailers"]');
+			const trailersTarget = trailersAnchor ? '#trailers' : (document.getElementById('trailers-grid') ? '#trailers-grid' : null);
+			if (!trailersTarget) return;
+
+			const wrap = document.createElement('section');
+			const h = document.createElement('h3');
+			h.className = 'gambado mb-2';
+			const a = document.createElement('a');
+			a.href = trailersTarget;
+			a.className = 'digest-toc__link';
+			a.textContent = 'Trailers';
+			h.appendChild(a);
+			wrap.appendChild(h);
+			tocBody.appendChild(wrap);
+		})();
+		});
+	</script>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+		// Find <p><strong>To-Dos</strong></p> (or "DIY To-Dos") followed by a <ul>
+			const labels = Array.from(document.querySelectorAll('p > strong'));
+			labels.forEach((strong) => {
+				const txt = (strong.textContent || '').trim().toLowerCase();
+				if (txt === 'to-dos' || txt === 'diy to-dos') {
+					const p = strong.closest('p');
+					const ul = p && p.nextElementSibling;
+					if (ul && ul.tagName === 'UL') {
+						ul.classList.add('todo-list');
+					}
+				}
+			});
+		});
+	</script>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+		// Tag To-Do lists
+		const labels = Array.from(document.querySelectorAll('p > strong'));
+		labels.forEach((strong) => {
+			const txt = (strong.textContent || '').trim().toLowerCase();
+			if (txt === 'to-dos' || txt === 'diy to-dos') {
+				const p = strong.closest('p');
+				const ul = p && p.nextElementSibling;
+				if (ul && ul.tagName === 'UL') {
+					ul.classList.add('todo-list');
+				}
+			}
+		});
+
+		// Make items toggle checked state
+		document.querySelectorAll('.todo-list li').forEach(li => {
+				li.addEventListener('click', () => {
+					li.classList.toggle('checked');
+				});
+			});
+		});
+	</script>
+
+	<script>
+		(function () {
+		const DESKTOP_BP = 992;
+
+		function qsa(sel, root=document){ return Array.from(root.querySelectorAll(sel)); }
+
+		// Equalize the Nth-left with Nth-right within a grid
+		function equalizeGridRows(gridId) {
+			const grid = document.getElementById(gridId);
+			if (!grid) return;
+
+			const leftCards  = qsa('.col-left  .digest-card', grid);
+			const rightCards = qsa('.col-right .digest-card', grid);
+
+			// Clear old heights first so we measure natural sizes
+			[...leftCards, ...rightCards].forEach(c => c.style.minHeight = '');
+
+			// If we’re below desktop breakpoint, don’t force equal heights
+			if (window.innerWidth < DESKTOP_BP) return;
+
+			const maxLen = Math.max(leftCards.length, rightCards.length);
+
+			for (let i = 0; i < maxLen; i++) {
+			const L = leftCards[i];
+			const R = rightCards[i];
+			if (!L && !R) continue;
+
+			// Measure; fallback to the one that exists if uneven columns
+			const lh = L ? L.offsetHeight : 0;
+			const rh = R ? R.offsetHeight : 0;
+			const h  = Math.max(lh, rh);
+
+			if (L) L.style.minHeight = h + 'px';
+			if (R) R.style.minHeight = h + 'px';
+			}
+		}
+
+		function equalizeAll() {
+			// Use rAF to let layout settle before measuring
+			window.requestAnimationFrame(() => {
+			equalizeGridRows('articles-grid');
+			equalizeGridRows('av-grid');
+			// trailers-grid is embeds + captions; skip equalizing there
+			});
+		}
+
+		// Debounced resize handler
+		let resizeTO = null;
+		window.addEventListener('resize', () => {
+			clearTimeout(resizeTO);
+			resizeTO = setTimeout(equalizeAll, 120);
+		});
+
+		// Run after DOM, fonts, and (most) images
+		document.addEventListener('DOMContentLoaded', () => {
+			// If fonts API exists, wait for them for more stable heights
+			const whenFonts = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
+			whenFonts.then(() => {
+			// Run once DOM & fonts are ready
+			equalizeAll();
+
+			// Run again on full window load (images finished)
+			window.addEventListener('load', equalizeAll, { once: true });
+
+			// Observe for card content changes (e.g., pending → placed)
+			const grids = ['articles-grid', 'av-grid']
+				.map(id => document.getElementById(id))
+				.filter(Boolean);
+
+			const mo = new MutationObserver(() => equalizeAll());
+			grids.forEach(g => mo.observe(g, { childList: true, subtree: true, attributes: true }));
+
+			// Optional: if you manually remove .pending via JS elsewhere,
+			// also call equalizeAll() right after that operation.
+			});
+		});
+		})();
+	</script>
 
 </div></footer>
 

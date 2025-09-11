@@ -1,147 +1,155 @@
-var gulp = require('gulp');
-var plumber = require('gulp-plumber');
-var cleanCSS = require('gulp-clean-css');
-var sass = require('gulp-dart-sass');
-var clean = require('gulp-clean');
-var browserSync = require('browser-sync').create();
-var rename = require('gulp-rename');
-var imgopt = require('gulp-smushit');
+// Core
+const { src, dest, watch, series, parallel } = require('gulp');
+const gulp = require('gulp');
+
+// Utilities
+const cleanCSS = require('gulp-clean-css');
+const sass = require('gulp-dart-sass');
+const clean = require('gulp-clean');
+const browserSync = require('browser-sync').create();
+const rename = require('gulp-rename');
+const imgopt = require('gulp-smushit');
 const purgecss = require('gulp-purgecss');
 const htmlmin = require('gulp-htmlmin');
-var htmlreplace = require('gulp-html-replace');
-var reload      = browserSync.reload;
-// Configuration file to keep your code DRY
-var cfg = require( './gulpconfig.json' );
-var paths = cfg.paths;
+const htmlreplace = require('gulp-html-replace');
 
-sass.compiler = require('node-sass');
+// Load (and gently normalize) config
+const cfg = require('./gulpconfig.json');
+const paths = cfg.paths || {};
 
-gulp.task('dist-assets', function (done) {
-    gulp.src('./src/js/**.*')
-        .pipe(gulp.dest('./dev/js'));
-    gulp.src('./src/img/**/**.*')
-        .pipe(gulp.dest('./dev/img'));
-      done();
-});
+// Directories
+const DIR = {
+  src: 'src',
+  dev: 'dev',   // local output served by BrowserSync
+  dist: 'docs', // production output (GitHub Pages)
+  node: paths.node || './node_modules'
+};
 
-gulp.task('copy-CNAME', function() {
-  return gulp.src('./CNAME')
-    .pipe(gulp.dest('./docs/'));
-});
+// ============ Clean tasks ============
+function cleanDev() {
+  return src(`${DIR.dev}/*`, { read: false, allowEmpty: true }).pipe(clean());
+}
+function cleanDist() {
+  return src(`${DIR.dist}/*`, { read: false, allowEmpty: true }).pipe(clean());
+}
 
-gulp.task('prod-copy', function (done) {
-    gulp.src('./dev/**/**.*')
-    .pipe(gulp.dest('./docs/'));
-    done();
-});
+// ============ Dev asset tasks ============
+function copyJs() {
+  return src(`${DIR.src}/js/**/*.*`).pipe(dest(`${DIR.dev}/js`));
+}
+function copyImg() {
+  return src(`${DIR.src}/img/**/*.*`).pipe(dest(`${DIR.dev}/img`));
+}
+gulp.task('dist-assets', parallel(copyJs, copyImg)); // keep task name for scripts
 
-gulp.task('minify-css', () => {
-  return gulp
-    .src('dev/css/*.css')
-    .pipe(cleanCSS({
-      compatibility: 'ie8'
-    }))
-    .pipe( rename( { suffix: '.min' } ) )
-    .pipe(gulp.dest('dev/css'))
-    .pipe(browserSync.stream());
-});
-
-// minifies HTML
-gulp.task('minify-html', () => {
-  return gulp.src('docs/*.html')
-    .pipe(htmlmin({ collapseWhitespace: false, removeComments: true }))
-    .pipe(gulp.dest('docs'));
-});
-
-
-// Purging unused CSS
-gulp.task('purgecss', () => {
-    return gulp.src('docs/css/theme.min.css')
-        .pipe(purgecss({
-            content: ['docs/**/*.html'],
-            safelist: ['collapsed', 'collapse', 'active', 'show', 'collapsing' ]
-        }))
-        .pipe(gulp.dest('docs/css'))
-})
-
-gulp.task('clean-dist', function() {
-  return gulp.src('dist', {
-      read: false
-    })
-    .on('error', function(err) {
-      console.log(err.toString());
-
-      this.emit('end');
-    })
-    .pipe(clean());
-});
-
-gulp.task('clean', function() {
-  return gulp.src('dev/scss', {
-      read: false
-    })
-    .on('error', function(err) {
-      console.log(err.toString());
-
-      this.emit('end');
-    })
-    .pipe(clean());
-});
-
-gulp.task('browser-sync', function(done) {
-    browserSync.init({
-        server: {
-            baseDir: "./dev"
-        }
-    });
-gulp.watch("dev/**/*.*").on('change', browserSync.reload);
-});
-
-// Compile sass to css
-gulp.task('sass', function () {
-  return gulp.src('src/scss/theme.scss')
+// Sass → CSS
+gulp.task('sass', function sassTask() {
+  return src(`${DIR.src}/scss/theme.scss`)
     .pipe(sass().on('error', sass.logError))
-    .pipe(gulp.dest('dev/css'))
+    .pipe(dest(`${DIR.dev}/css`));
 });
 
-gulp.task('inject-min-css', function(done) {
-  gulp.src('./docs/**/*.html')
-    .pipe(htmlreplace({
-        'css': '/css/theme.min.css'
-    }))
-    .pipe(gulp.dest('./docs'));
-         done();
+// Minify + inject CSS
+gulp.task('minify-css', function minifyCssTask() {
+  return src(`${DIR.dev}/css/*.css`)
+    .pipe(cleanCSS({ compatibility: 'ie8' }))
+    .pipe(rename({ suffix: '.min' }))
+    .pipe(dest(`${DIR.dev}/css`))
+    .pipe(browserSync.stream({ match: '**/*.css' }));
 });
 
-gulp.task('imgopt', function () {
-    return gulp.src('src/img/*.{jpg,png}')
-        .pipe(imgopt())
-        .pipe(gulp.dest('docs/img'));
+// ============ Production tasks ============
+gulp.task('copy-CNAME', function copyCNAME() {
+  return src('./CNAME', { allowEmpty: true }).pipe(dest(`${DIR.dist}/`));
 });
-////////////////// All Bootstrap SASS  Assets /////////////////////////
-gulp.task( 'copy-assets', function( done ) {
-	////////////////// All Bootstrap 4 Assets /////////////////////////
-	// Copy all JS files
-	var stream = gulp
-		.src( paths.node + '/bootstrap/dist/js/**/*.*' )
-		.pipe( gulp.dest( paths.dev + '/js' ) );
 
-	// Copy all Bootstrap SCSS files
-	gulp
-		.src( paths.node + '/bootstrap/scss/**/*.scss' )
-		.pipe( gulp.dest( paths.dev + '/scss/assets/bootstrap' ) );
+gulp.task('prod-copy', function prodCopy(done) {
+  // Copy everything from dev → docs
+  src(`${DIR.dev}/**/**.*`).pipe(dest(`${DIR.dist}/`));
+  done();
+});
 
-    // Copy all Animate on Scroll css files
-  	gulp
-  		.src( paths.node + '/aos/dist/**/*.css' )
-  		.pipe( gulp.dest( paths.dev + '/scss/assets/aos' ) );
+// Minify HTML in docs
+gulp.task('minify-html', function minHtml() {
+  return src(`${DIR.dist}/*.html`)
+    .pipe(htmlmin({ collapseWhitespace: false, removeComments: true }))
+    .pipe(dest(`${DIR.dist}`));
+});
 
-      // Copy all Animate on Scroll css files
-    	gulp
-    		.src( paths.node + '/aos/dist/**/*.js' )
-    		.pipe( gulp.dest( paths.dev + '/js' ) );
+// Replace CSS reference in docs HTML
+gulp.task('inject-min-css', function injectCss(done) {
+  src(`${DIR.dist}/**/*.html`)
+    .pipe(
+      htmlreplace({
+        css: '/css/theme.min.css'
+      })
+    )
+    .pipe(dest(`${DIR.dist}`));
+  done();
+});
 
-	////////////////// End Bootstrap 4 Assets /////////////////////////
+// Purge unused CSS in production bundle
+gulp.task('purgecss', function purgeCssTask() {
+  return src(`${DIR.dist}/css/theme.min.css`)
+    .pipe(
+      purgecss({
+        content: [`${DIR.dist}/**/*.html`],
+        safelist: ['collapsed', 'collapse', 'active', 'show', 'collapsing']
+      })
+    )
+    .pipe(dest(`${DIR.dist}/css`));
+});
 
-	done();
-} );
+// Optional image optimization into docs
+gulp.task('imgopt', function imgOptTask() {
+  return src(`${DIR.src}/img/*.{jpg,png}`).pipe(imgopt()).pipe(dest(`${DIR.dist}/img`));
+});
+
+// ============ Vendor assets (Bootstrap/AOS) ============
+gulp.task('copy-assets', function vendorAssets(done) {
+  // JS (Bootstrap dist)
+  src(`${DIR.node}/bootstrap/dist/js/**/*.*`).pipe(dest(`${DIR.dev}/js`));
+
+  // Bootstrap SCSS sources for local customization
+  src(`${DIR.node}/bootstrap/scss/**/*.scss`).pipe(dest(`${DIR.dev}/scss/assets/bootstrap`));
+
+  // AOS CSS & JS
+  src(`${DIR.node}/aos/dist/**/*.css`).pipe(dest(`${DIR.dev}/scss/assets/aos`));
+  src(`${DIR.node}/aos/dist/**/*.js`).pipe(dest(`${DIR.dev}/js`));
+
+  done();
+});
+
+// ============ BrowserSync (watch sources only) ============
+gulp.task('browser-sync', function browserSyncTask(done) {
+  browserSync.init({
+    server: { baseDir: `./${DIR.dev}` },
+    notify: false,
+    files: [], // we control reloads manually to avoid storms
+    // Debounce FS write storms (Eleventy, WSL, network drives)
+    watchOptions: {
+      ignoreInitial: true,
+      awaitWriteFinish: { stabilityThreshold: 400, pollInterval: 80 }
+    }
+  });
+
+  // Watch SOURCES → build → inject/reload
+  watch(`${DIR.src}/scss/**/*.scss`, series('sass', 'minify-css')); // CSS inject only
+  watch(`${DIR.src}/js/**/*.*`, series(copyJs, browserSync.reload)); // one reload
+  watch(`${DIR.src}/img/**/*.*`, series(copyImg, browserSync.reload)); // one reload
+
+  // If Eleventy writes HTML into dev/, BrowserSync will pick up changes
+  // via reloads triggered by your Eleventy watch/serve (recommended).
+  // If you want to copy raw HTML from src → dev, uncomment below:
+  // function copyHtml() { return src(`${DIR.src}/**/*.html`).pipe(dest(`${DIR.dev}`)); }
+  // watch(`${DIR.src}/**/*.html`, series(copyHtml, browserSync.reload));
+
+  done();
+});
+
+// ============ Clean convenience ============
+gulp.task('clean', cleanDev);
+gulp.task('clean-dist', cleanDist);
+
+// ============ Notes ============
+// - Run `npm run dev` as suggested in scripts (Eleventy --watch to dev + gulp browser-sync).
