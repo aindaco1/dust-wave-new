@@ -34,13 +34,20 @@ function cleanDist() {
 }
 
 // ============ Dev asset tasks ============
+
+function copyPeaks() {
+  // copies src/peaks/**/* to dev/peaks
+  return src(`${DIR.src}/peaks/**/*.*`, { allowEmpty: true })
+    .pipe(dest(`${DIR.dev}/peaks`));
+}
+
 function copyJs() {
   return src(`${DIR.src}/js/**/*.*`).pipe(dest(`${DIR.dev}/js`));
 }
 function copyImg() {
   return src(`${DIR.src}/img/**/*.*`).pipe(dest(`${DIR.dev}/img`));
 }
-gulp.task('dist-assets', parallel(copyJs, copyImg)); // keep task name for scripts
+gulp.task('dist-assets', parallel(copyPeaks, copyJs, copyImg)); // keep task name for scripts
 
 // Sass → CSS
 gulp.task('sass', function sassTask() {
@@ -137,6 +144,7 @@ gulp.task('browser-sync', function browserSyncTask(done) {
   watch(`${DIR.src}/scss/**/*.scss`, series('sass', 'minify-css')); // CSS inject only
   watch(`${DIR.src}/js/**/*.*`, series(copyJs, browserSync.reload)); // one reload
   watch(`${DIR.src}/img/**/*.*`, series(copyImg, browserSync.reload)); // one reload
+  watch(`${DIR.src}/peaks/**/*.*`, series(copyPeaks, browserSync.reload));
 
   // If Eleventy writes HTML into dev/, BrowserSync will pick up changes
   // via reloads triggered by your Eleventy watch/serve (recommended).

@@ -312,7 +312,17 @@ Board Member #3 - James Rodriguez</br>
 	(() => {
 	window.addEventListener('load', () => {
 		if (window.quicklink && typeof quicklink.listen === 'function') {
-		quicklink.listen();
+		// Ignore any links inside audio cards (prevents early audio/network fetches)
+		const ignoreAudioCardLinks = (uri, elem) =>
+			!!elem?.closest?.('.audio-card');
+
+		// Also ignore explicit download links
+		const ignoreDownloads = (uri, elem) =>
+			!!(elem?.hasAttribute?.('download') || elem?.classList?.contains('download'));
+
+		quicklink.listen({
+			ignores: [ignoreAudioCardLinks, ignoreDownloads]
+		});
 		}
 	});
 	})();
@@ -792,7 +802,7 @@ Board Member #3 - James Rodriguez</br>
 		const ctrls = card.querySelector('.controls');
 		if (!ctrls) return;
 
-		// Ensure play/pause button exists & is hardened
+		// Ensure play/pause exists & hardened
 		let ppBtn = ctrls.querySelector('.playpause');
 		if (!ppBtn) {
 		ppBtn = document.createElement('button');
@@ -801,7 +811,7 @@ Board Member #3 - James Rodriguez</br>
 		ppBtn.setAttribute('aria-label', 'Play');
 		ctrls.insertBefore(ppBtn, ctrls.firstChild);
 		}
-		(function harden(btn){ // local harden to keep logic intact
+		(function harden(btn){
 		if (!btn) return;
 		if (btn.tagName === 'A') {
 			const b = document.createElement('button');
@@ -827,8 +837,30 @@ Board Member #3 - James Rodriguez</br>
 
 		bindThrottled(ppBtn, 'click', () => {
 		if (ws) {
-			if (ws.isPlaying()) ws.pause();
-			else window.__safePlay?.(() => ws.play());
+			// 🔧 CHANGED: lazy-attach audio src on first play
+			const mediaEl = ws.getMediaElement ? ws.getMediaElement() : null;           // 🔧
+			const waveEl  = ws.getWrapper ? ws.getWrapper() : null;                     // 🔧
+			const audioUrl = waveEl?.dataset?.audioSrc;                                 // 🔧
+
+			if (ws.isPlaying()) {
+			ws.pause();
+			return;
+			}
+
+			if (mediaEl && !mediaEl.src && audioUrl) {                                  // 🔧
+			mediaEl.preload = 'none';                                                 // 🔧
+			mediaEl.src = audioUrl;                                                   // 🔧
+			try { mediaEl.load(); } catch {}                                          // 🔧
+			const start = () => { window.__safePlay?.(() => ws.play()); };            // 🔧
+			if (mediaEl.readyState >= 2) start();                                     // 🔧
+			else {
+				const onReady = () => { mediaEl.removeEventListener('canplay', onReady); start(); };
+				mediaEl.addEventListener('canplay', onReady, { once: true });
+			}
+			return;
+			}
+
+			window.__safePlay?.(() => ws.play());
 			return;
 		}
 		// Fallback to hidden <audio> pre-WS
@@ -882,7 +914,7 @@ Board Member #3 - James Rodriguez</br>
 		}
 	}
 
-	function createWaveForCard(card, opts={eager:false}) {
+	async function createWaveForCard(card, opts={eager:false}) {
 		const waveEl = card.querySelector(".wave");
 		if (!waveEl || waveEl.dataset.wsReady === "1") return;
 
@@ -891,19 +923,19 @@ Board Member #3 - James Rodriguez</br>
 
 		ensureArtCol(card);
 
-		// hidden <audio> to enable instant play
+		// hidden <audio> to enable play; keep MP3 off the wire until needed
 		let media = card.querySelector('audio[id]');
 		if (!media) {
-		media = document.createElement('audio');
-		media.src = url;
-		media.preload = opts.eager ? 'auto' : 'metadata';
-		media.crossOrigin = 'anonymous';
-		media.playsInline = true;
-		media.style.display = 'none';
-		waveEl.insertAdjacentElement('afterend', media);
+			media = document.createElement('audio');
+			media.src = url;
+			media.preload = opts.eager ? 'metadata' : 'none'; // ← key change
+			media.crossOrigin = 'anonymous';
+			media.playsInline = true;
+			media.style.display = 'none';
+			waveEl.insertAdjacentElement('afterend', media);
 		} else {
-		media.preload = opts.eager ? 'auto' : (media.preload || 'metadata');
-		media.crossOrigin = media.crossOrigin || 'anonymous';
+			media.preload = opts.eager ? 'metadata' : (media.preload || 'none');
+			media.crossOrigin = media.crossOrigin || 'anonymous';
 		}
 
 		// skeleton + fallback progress + overlay
@@ -914,19 +946,21 @@ Board Member #3 - James Rodriguez</br>
 
 		// coordinate with scroll squelch (Arc/Safari)
 		['pointerdown','mousedown','touchstart'].forEach(t =>
-		hint.addEventListener(t, () => {
+			hint.addEventListener(t, () => {
 			window.__armAudioSquelch?.();
 			const ae = document.activeElement;
 			if (ae && ae !== document.body && ae !== hint) { try { ae.blur(); } catch {} }
-		}, { capture: true, passive: true })
+			}, { capture: true, passive: true })
 		);
 
 		hint.addEventListener('click', (e) => {
-		e.preventDefault(); e.stopPropagation();
-		window.__safeMediaPlay(media);
-		try { if (card._ws && !card._ws.isPlaying()) card._ws.play(); } catch {}
-		hint.classList.add('hidden');
-		setTimeout(() => hint.remove(), 300);
+			e.preventDefault(); e.stopPropagation();
+			// allow audio to load now that user interacted
+			media.preload = 'auto'; try { media.load?.(); } catch {}
+			window.__safeMediaPlay(media);
+			try { if (card._ws && !card._ws.isPlaying()) card._ws.play(); } catch {}
+			hint.classList.add('hidden');
+			setTimeout(() => hint.remove(), 300);
 		});
 
 		const overlay = document.createElement('div');
@@ -937,53 +971,69 @@ Board Member #3 - James Rodriguez</br>
 		waveEl.append(fb, hint, overlay);
 
 		const updateFallback = () => {
-		const d = media.duration || 0;
-		const t = media.currentTime || 0;
-		const p = d > 0 ? Math.min(1, Math.max(0, t / d)) : 0;
-		fb.style.transform = `scaleX(${p})`;
+			const d = media.duration || 0;
+			const t = media.currentTime || 0;
+			const p = d > 0 ? Math.min(1, Math.max(0, t / d)) : 0;
+			fb.style.transform = `scaleX(${p})`;
 		};
 		media.addEventListener('timeupdate',      updateFallback);
 		media.addEventListener('loadedmetadata',  updateFallback);
 		media.addEventListener('progress',        updateFallback);
 
+		// ── NEW: fetch peaks and wait for them before creating WS ─────────────
+		let precomputedPeaks = undefined;
+		const peaksUrl = waveEl.dataset.peaksSrc;
+		if (peaksUrl) {
+			try {
+			// default cache behavior is fine; 'force-cache' can mask updates
+			const res = await fetch(peaksUrl, { cache: 'default' });
+			if (res.ok) {
+				const j = await res.json();
+				precomputedPeaks = j.data || j.samples || j.peaks || undefined;
+			}
+			} catch {}
+		}
+		// ──────────────────────────────────────────────────────────────────────
+
 		const ws = WaveSurfer.create({
-		container: waveEl,
-		media,
-		height: Math.round(parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--audio-h")) * 0.6),
-		waveColor:     getVar("--wave-backdrop", "rgba(255,255,255,.2)"),
-		progressColor: getVar("--wave-progress", "#f2f2f2"),
-		cursorColor:   getVar("--wave-cursor", "#ffd54d"),
-		cursorWidth: 2,
-		barWidth: 2,
-		barGap: 1.5,
-		barRadius: 2,
-		dragToSeek: false,
-		interact: true,
-		normalize: true,
-		minPxPerSec: 0.001,
-		autoplay: false,
-		hideScrollbar: true,
-		fillParent: true,
-		autoCenter: false,
-		autoScroll: false
+			container: waveEl,
+			media,
+			height: Math.round(parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--audio-h")) * 0.6),
+			waveColor:     getVar("--wave-backdrop", "rgba(255,255,255,.2)"),
+			progressColor: getVar("--wave-progress", "#f2f2f2"),
+			cursorColor:   getVar("--wave-cursor", "#ffd54d"),
+			cursorWidth: 2,
+			barWidth: 2,
+			barGap: 1.5,
+			barRadius: 2,
+			dragToSeek: false,
+			interact: true,
+			normalize: true,
+			minPxPerSec: 0.001,
+			autoplay: false,
+			hideScrollbar: true,
+			fillParent: true,
+			autoCenter: false,
+			autoScroll: false,
+			peaks: precomputedPeaks // ← will be undefined if not found
 		});
 
 		waveEl.dataset.wsReady = "1";
 		ws.setPlaybackRate?.(1);
 
 		ws.on('ready', () => {
-		zoomWaveToContainer(ws, waveEl);
-		observeWaveResize(ws, waveEl);
-		waveEl.classList.remove("wave--skeleton","wave--fallback","wave--loading");
-		try { fb.remove(); hint.remove(); overlay.remove(); } catch {}
-		media.removeEventListener('timeupdate',     updateFallback);
-		media.removeEventListener('loadedmetadata', updateFallback);
-		media.removeEventListener('progress',       updateFallback);
-		setupHoverTooltip(waveEl, ws);
+			zoomWaveToContainer(ws, waveEl);
+			observeWaveResize(ws, waveEl);
+			waveEl.classList.remove("wave--skeleton","wave--fallback","wave--loading");
+			try { fb.remove(); hint.remove(); overlay.remove(); } catch {}
+			media.removeEventListener('timeupdate',     updateFallback);
+			media.removeEventListener('loadedmetadata', updateFallback);
+			media.removeEventListener('progress',       updateFallback);
+			setupHoverTooltip(waveEl, ws);
 		});
 		ws.on('error', () => {
-		waveEl.classList.remove("wave--skeleton","wave--fallback","wave--loading");
-		try { fb.remove(); hint.remove(); overlay.remove(); } catch {}
+			waveEl.classList.remove("wave--skeleton","wave--fallback","wave--loading");
+			try { fb.remove(); hint.remove(); overlay.remove(); } catch {}
 		});
 
 		wireControls(card, ws);
@@ -1001,7 +1051,7 @@ Board Member #3 - James Rodriguez</br>
 		const cards = Array.from(document.querySelectorAll(".audio-card"));
 		if (!cards.length) return;
 
-		// Eager init first two
+		// Eager init first two (still eager UI, but no audio fetch until Play)
 		const eagerCount = Math.min(2, cards.length);
 		for (let i = 0; i < eagerCount; i++) createWaveForCard(cards[i], { eager:true });
 

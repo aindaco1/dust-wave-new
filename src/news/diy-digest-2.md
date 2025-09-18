@@ -493,7 +493,7 @@ Welcome to this week’s *DIY Filmmaker Digest* — part syllabus, part mixtape,
             <div class="audio-card">
       <img src="/img/podcasts/wtf-with-marc-maron.jpg" alt="WTF with Marc Maron artwork" loading="lazy" decoding="async">
       <div>
-        <div class="wave" id="wave_overcast-aasvdyayudi" data-audio-id="audio_overcast-aasvdyayudi" data-audio-src="https://sphinx.acast.com/p/open/s/62a222737c02140013aa4c03/e/68b936e3a742b7c8466f069c/media.mp3"></div>
+        <div class="wave" id="wave_overcast-aasvdyayudi" data-audio-id="audio_overcast-aasvdyayudi" data-audio-src="https://sphinx.acast.com/p/open/s/62a222737c02140013aa4c03/e/68b936e3a742b7c8466f069c/media.mp3" data-peaks-src="/peaks/overcast-aasvdyayudi.json"></div>
         <audio id="audio_overcast-aasvdyayudi" preload="none" src="https://sphinx.acast.com/p/open/s/62a222737c02140013aa4c03/e/68b936e3a742b7c8466f069c/media.mp3" style="display:none"></audio>
         
     <div class="controls">
@@ -546,7 +546,7 @@ Welcome to this week’s *DIY Filmmaker Digest* — part syllabus, part mixtape,
             <div class="audio-card">
       <img src="/img/podcasts/eye-of-the-duck.jpg" alt="Eye of the Duck artwork" loading="lazy" decoding="async">
       <div>
-        <div class="wave" id="wave_overcast-aa0natidycc" data-audio-id="audio_overcast-aa0natidycc" data-audio-src="https://stitcher.simplecastaudio.com/a45adc7c-00f0-441e-ba04-b597645c7a15/episodes/baebcaf2-0bc5-4f23-bb2c-ad119e88b882/audio/128/default.mp3"></div>
+        <div class="wave" id="wave_overcast-aa0natidycc" data-audio-id="audio_overcast-aa0natidycc" data-audio-src="https://stitcher.simplecastaudio.com/a45adc7c-00f0-441e-ba04-b597645c7a15/episodes/baebcaf2-0bc5-4f23-bb2c-ad119e88b882/audio/128/default.mp3" data-peaks-src="/peaks/overcast-aa0natidycc.json"></div>
         <audio id="audio_overcast-aa0natidycc" preload="none" src="https://stitcher.simplecastaudio.com/a45adc7c-00f0-441e-ba04-b597645c7a15/episodes/baebcaf2-0bc5-4f23-bb2c-ad119e88b882/audio/128/default.mp3" style="display:none"></audio>
         
     <div class="controls">
@@ -619,7 +619,7 @@ Welcome to this week’s *DIY Filmmaker Digest* — part syllabus, part mixtape,
             <div class="audio-card">
       <img src="/img/podcasts/struggle-session.jpg" alt="Struggle Session artwork" loading="lazy" decoding="async">
       <div>
-        <div class="wave" id="wave_overcast-aapwqgwk38" data-audio-id="audio_overcast-aapwqgwk38" data-audio-src="https://api.spreaker.com/v2/episodes/66108225/download.mp3"></div>
+        <div class="wave" id="wave_overcast-aapwqgwk38" data-audio-id="audio_overcast-aapwqgwk38" data-audio-src="https://api.spreaker.com/v2/episodes/66108225/download.mp3" data-peaks-src="/peaks/overcast-aapwqgwk38.json"></div>
         <audio id="audio_overcast-aapwqgwk38" preload="none" src="https://api.spreaker.com/v2/episodes/66108225/download.mp3" style="display:none"></audio>
         
     <div class="controls">
@@ -672,7 +672,7 @@ Welcome to this week’s *DIY Filmmaker Digest* — part syllabus, part mixtape,
             <div class="audio-card">
       <img src="/img/podcasts/the-lack.jpg" alt="The Lack artwork" loading="lazy" decoding="async">
       <div>
-        <div class="wave" id="wave_overcast-aa7lcwlfyqm" data-audio-id="audio_overcast-aa7lcwlfyqm" data-audio-src="https://mcdn.podbean.com/mf/download/q3czahwbya33mifu/The_Lack_152_A_mixdown8zqee.mp3"></div>
+        <div class="wave" id="wave_overcast-aa7lcwlfyqm" data-audio-id="audio_overcast-aa7lcwlfyqm" data-audio-src="https://mcdn.podbean.com/mf/download/q3czahwbya33mifu/The_Lack_152_A_mixdown8zqee.mp3" data-peaks-src="/peaks/overcast-aa7lcwlfyqm.json"></div>
         <audio id="audio_overcast-aa7lcwlfyqm" preload="none" src="https://mcdn.podbean.com/mf/download/q3czahwbya33mifu/The_Lack_152_A_mixdown8zqee.mp3" style="display:none"></audio>
         
     <div class="controls">
@@ -857,7 +857,7 @@ Welcome to this week’s *DIY Filmmaker Digest* — part syllabus, part mixtape,
 
 ---
 
-That’s a wrap on our second _DIY Filmmaker Digest_. At Dust Wave, everything we share is chosen with the same compass: **collectivity over ego, experiments over formulas, access over gatekeeping.**
+That’s a wrap on our very first _DIY Filmmaker Digest_. At Dust Wave, everything we share is chosen with the same compass: **collectivity over ego, experiments over formulas, access over gatekeeping.**
 
 Keep making what only you can make, keep passing the torch sideways, and keep stitching together the world we actually want to live in.
 
