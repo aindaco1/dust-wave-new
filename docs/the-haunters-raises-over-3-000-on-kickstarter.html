@@ -14,6 +14,10 @@
   <link rel="preconnect" href="https://www.youtube.com" crossorigin>
   <link rel="preconnect" href="https://i.ytimg.com" crossorigin>
   <link rel="preconnect" href="https://www.google.com" crossorigin>
+  <link rel="preconnect" href="https://stitcher.simplecastaudio.com" crossorigin>
+  <link rel="preconnect" href="https://mcdn.podbean.com" crossorigin>
+  <link rel="preconnect" href="https://traffic.megaphone.fm" crossorigin>
+  <link rel="preconnect" href="https://dts.podtrac.com" crossorigin>
   <link rel="dns-prefetch" href="https://www.youtube-nocookie.com">
   <link rel="dns-prefetch" href="https://i.ytimg.com">
   <meta name="author" content="Dust Wave">
@@ -157,21 +161,21 @@
 
     </div>
     <footer>
-  <div id="footer-items-column" class="container-100 text-center initialism py-vh-3 row no-bs-gutter">
-    <div class="text-left col-5">
-      <span>(ɔ) DUST WAVE</span>
-    </div>
-    <div class="col-2">
-      <a href="https://instagram.com/waveofdust" class="link-fancy" target="_blank"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a><span> | </span>
-      <a href="https://www.youtube.com/@dustwavecollective/videos" class="link-fancy" target="_blank"><i class="fa-brands fa-youtube" aria-hidden="true"></i></a><span> | </span>
-      <a href="https://www.tiktok.com/@waveofdust" class="link-fancy" target="_blank"><i class="fa-brands fa-tiktok" aria-hidden="true"></i></a>
-    </div>
-    <div class="col-5">
-		<a class="link-fancy" href="/newsletter.html"><span>NEWSLETTER</span></a>
-    </div>
-  </div>
-  
-  <div class="wrap">
+	<div id="footer-items-column" class="container-100 text-center initialism py-vh-3 row no-bs-gutter">
+		<div class="text-left col-5">
+		<span>(ɔ) DUST WAVE</span>
+		</div>
+		<div class="col-2">
+		<a href="https://instagram.com/waveofdust" class="link-fancy" target="_blank"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a><span> | </span>
+		<a href="https://www.youtube.com/@dustwavecollective/videos" class="link-fancy" target="_blank"><i class="fa-brands fa-youtube" aria-hidden="true"></i></a><span> | </span>
+		<a href="https://www.tiktok.com/@waveofdust" class="link-fancy" target="_blank"><i class="fa-brands fa-tiktok" aria-hidden="true"></i></a>
+		</div>
+		<div class="col-5">
+			<a class="link-fancy" href="/newsletter.html"><span>NEWSLETTER</span></a>
+		</div>
+	</div>
+	
+	<div class="wrap">
 		<div id="popup" class="lazyload">
 			<div class="popup-content">
 				<div id="mc_embed_signup">
@@ -181,7 +185,7 @@
 				<div class="mc-field-group">
 					<label for="mce-EMAIL">Email Address  <span class="asterisk">*</span>
 				</label>
-					<input type="email" value="" name="EMAIL" class="required email" id="mce-EMAIL" required>
+					<input type="email" value="" required aria-required="true" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" name="EMAIL" class="required email" id="mce-EMAIL" required>
 					<span id="mce-EMAIL-HELPERTEXT" class="helper_text"></span>
 				</div>
 				<div hidden="true"><input type="hidden" name="tags" value="7333681"></div>
@@ -207,415 +211,873 @@
 		</script>
 	</div>
 
-	<script>
-		const popup = document.getElementById('popup');
-		const closeBtn = document.getElementById('close-btn');
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.3.0/quicklink.umd.js"></script>
+	<script src="/js/bootstrap.bundle.min.js"></script>
 
-		// Show the popup after a delay of 10 seconds
-		setTimeout(function() {
-			popup.classList.add('show');
-		}, 60000);
-
-		// Close the popup when the close button is clicked
-		closeBtn.addEventListener('click', function() {
-			popup.classList.remove('show');
-		});
-	</script>
+	
 	<script>
-	document.addEventListener('DOMContentLoaded', () => {
-		const target = document.getElementById('glitch-target');
-		if (target) {
-		startGlitchLoop(target);
-		} else {
-		console.warn('Glitch target not found in DOM');
+	/* =========================================================================
+	1) Mailchimp popup (delayed show + close)
+	========================================================================= */
+	(() => {
+	const popup   = document.getElementById('popup');
+	const closeBtn = document.getElementById('close-btn');
+
+	// Show after 60s (if markup exists)
+	if (popup) setTimeout(() => popup.classList.add('show'), 60000);
+
+	// Close handler (if markup exists)
+	if (popup && closeBtn) {
+		closeBtn.addEventListener('click', () => popup.classList.remove('show'));
+	}
+	})();
+
+	/* =========================================================================
+	2) Home-page glitch loop
+	- Runs only when <body class="test"> is present and #glitch-target exists
+	========================================================================= */
+	(() => {
+	if (!document.body.classList.contains('test')) return;
+
+	function startGlitchLoop(target) {
+		if (!target) return;
+
+		const triggerGlitch = (ms = Math.random() * 250 + 100) => {
+		if (!target.classList.contains('glitching')) {
+			target.classList.add('glitching');
+			setTimeout(() => target.classList.remove('glitching'), ms);
+		}
+		};
+
+		// periodic loop (2–4s)
+		const intervalId = setInterval(() => triggerGlitch(), 2000 + Math.random() * 2000);
+
+		// random extra loop (8–16s)
+		let randomTimeoutId = null;
+		(function randomLoop() {
+		if (Math.random() < 0.2) triggerGlitch();
+		randomTimeoutId = setTimeout(randomLoop, Math.random() * 8000 + 8000);
+		})();
+
+		// gesture triggers — capture if body
+		const isBody = target === document.body;
+		const clickOpts = isBody ? { capture: true } : undefined;
+		const touchOpts = isBody ? { capture: true, passive: true } : { passive: true };
+
+		target.addEventListener('click',      () => triggerGlitch(200), clickOpts);
+		target.addEventListener('touchstart', () => triggerGlitch(200), touchOpts);
+
+		// tidy up on page hide
+		window.addEventListener('pagehide', () => {
+		clearInterval(intervalId);
+		if (randomTimeoutId) clearTimeout(randomTimeoutId);
+		}, { once: true });
+	}
+
+	// Start when DOM is ready
+	const go = () => startGlitchLoop(document.getElementById('glitch-target'));
+	(document.readyState === 'loading')
+		? document.addEventListener('DOMContentLoaded', go, { once:true })
+		: go();
+	})();
+
+	/* =========================================================================
+	3) quicklink prefetch (safe guard)
+	========================================================================= */
+	(() => {
+	window.addEventListener('load', () => {
+		if (window.quicklink && typeof quicklink.listen === 'function') {
+		quicklink.listen();
 		}
 	});
+	})();
 
-	function startGlitchLoop(targetElement) {
-		function triggerGlitch(duration = Math.random() * 250 + 100) {
-			if (!targetElement.classList.contains('glitching')) {
-			targetElement.classList.add('glitching');
-			setTimeout(() => {
-				targetElement.classList.remove('glitching');
-			}, duration);
-		}
-	}
-
-	function randomGlitchLoop() {
-		if (Math.random() < 0.2) { // 20% chance
-		triggerGlitch();
-		}
-		const next = Math.random() * 8000 + 8000; // 8–16 sec
-		setTimeout(randomGlitchLoop, next);
-	}
-
-
-	// Trigger manually on click or touch
-	targetElement.addEventListener('click', () => triggerGlitch(200));
-	targetElement.addEventListener('touchstart', () => triggerGlitch(200));
-
-	// Start the loop
-	randomGlitchLoop();
-	}
-	</script>
-	<script>
-		const target = document.getElementById('glitch-target');
-		startGlitchLoop(target);
-	</script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.3.0/quicklink.umd.js"></script>
-	<script>
-		window.addEventListener('load', () => {
-  			quicklink.listen();
-		});
-	</script>
-  	<script src="/js/bootstrap.bundle.min.js"></script>
-
-	<script>
-	/* Lite YouTube — upgrade iframes to click-to-load */
-	(function(){
+	/* =========================================================================
+	4) Lite YouTube — upgrade iframes to click-to-load
+	========================================================================= */
+	(() => {
 	'use strict';
 
-		function makeLiteFromIframe(ifr) {
-			const src = ifr.getAttribute('src') || '';
-			const match = src.match(/\/embed\/([a-zA-Z0-9_-]{6,})/);
-			const vid = match && match[1];
-			if (!vid) return; // not a standard embed
+	function makeLiteFromIframe(ifr) {
+		const src = ifr.getAttribute('src') || '';
+		const match = src.match(/\/embed\/([a-zA-Z0-9_-]{6,})/);
+		const vid = match && match[1];
+		if (!vid) return;
 
-			const title = ifr.getAttribute('title') || 'YouTube video';
-			const poster = `https://i.ytimg.com/vi/${vid}/hqdefault.jpg`;
+		const title  = ifr.getAttribute('title') || 'YouTube video';
+		const poster = `https://i.ytimg.com/vi/${vid}/hqdefault.jpg`;
 
-			// Shell with aspect-ratio
-			const ratio = document.createElement('div');
-			ratio.className = 'embed-lite__ratio';
+		const ratio = document.createElement('div');
+		ratio.className = 'embed-lite__ratio';
 
-			// Clickable poster
-			const btn = document.createElement('button');
-			btn.type = 'button';
-			btn.className = 'embed-lite';
-			btn.setAttribute('aria-label', `Play video: ${title}`);
-			btn.innerHTML =
-			`<img class="embed-lite__thumb" alt="" loading="lazy" decoding="async" src="${poster}">` +
-			`<span class="embed-lite__play" aria-hidden="true"></span>`;
+		const btn = document.createElement('button');
+		btn.type = 'button';
+		btn.className = 'embed-lite';
+		btn.setAttribute('aria-label', `Play video: ${title}`);
+		btn.innerHTML =
+		`<img class="embed-lite__thumb" alt="" loading="lazy" decoding="async" src="${poster}">` +
+		`<span class="embed-lite__play" aria-hidden="true"></span>`;
 
-			// On click, swap in the real iframe (autoplay 1)
-			btn.addEventListener('click', () => {
-			const real = document.createElement('iframe');
-			real.className = 'embed-lite__iframe';
-			real.setAttribute('allowfullscreen', '');
-			real.setAttribute('title', title);
-			real.setAttribute('loading', 'eager'); // now we actually want it
-			real.referrerPolicy = 'strict-origin-when-cross-origin';
-			const sep = src.includes('?') ? '&' : '?';
-			real.src = `${src}${sep}autoplay=1`;
-			real.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
-			ratio.replaceChild(real, btn);
-			}, { once:true });
+		btn.addEventListener('click', () => {
+		const real = document.createElement('iframe');
+		real.className = 'embed-lite__iframe';
+		real.setAttribute('allowfullscreen', '');
+		real.setAttribute('title', title);
+		real.setAttribute('loading', 'eager');
+		real.referrerPolicy = 'strict-origin-when-cross-origin';
+		const sep = src.includes('?') ? '&' : '?';
+		real.src = `${src}${sep}autoplay=1`;
+		real.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+		ratio.replaceChild(real, btn);
+		}, { once:true });
 
-			ratio.appendChild(btn);
-			ifr.parentNode.replaceChild(ratio, ifr);
-		}
+		ratio.appendChild(btn);
+		ifr.parentNode.replaceChild(ratio, ifr);
+	}
 
-		function upgradeAll(scope) {
-			const selector = [
-			'iframe[src*="youtube.com/embed/"]',
-			'iframe[src*="youtube-nocookie.com/embed/"]'
-			].join(',');
-			document.querySelectorAll(selector).forEach(makeLiteFromIframe);
-		}
+	function upgradeAll() {
+		document
+		.querySelectorAll('iframe[src*="youtube.com/embed/"], iframe[src*="youtube-nocookie.com/embed/"]')
+		.forEach(makeLiteFromIframe);
+	}
 
-		if (document.readyState === 'loading') {
-			document.addEventListener('DOMContentLoaded', () => upgradeAll(document), { once:true });
-		} else {
-			upgradeAll(document);
-		}
-		})();
-	</script>
+	(document.readyState === 'loading')
+		? document.addEventListener('DOMContentLoaded', upgradeAll, { once:true })
+		: upgradeAll();
+	})();
 
-	<script>
-	/* Fast column balancer (articles, A/V, trailers)
-	- One-time height estimate per card
-	- Greedy pack to the lighter column using virtual tallies
-	- Batched DOM writes via DocumentFragment
-	*/
-		(function(){
-		'use strict';
+	/* =========================================================================
+	5) Fast column balancer (moves .card.pending into two columns)
+	========================================================================= */
+	(() => {
+	'use strict';
 
-		function sectionEls(id){
-			const section = document.getElementById(id);
-			if (!section) return {};
-			return {
-			section,
-			left:  section.querySelector('.col-left'),
-			right: section.querySelector('.col-right')
-			};
-		}
+	const sectionEls = (id) => {
+		const section = document.getElementById(id);
+		if (!section) return {};
+		return {
+		section,
+		left:  section.querySelector('.col-left'),
+		right: section.querySelector('.col-right')
+		};
+	};
 
-		function estimateCardHeight(card){
-			// Try an actual measurement first
-			let h = card.getBoundingClientRect().height;
-			if (h && h > 0) return h;
+	const estimateCardHeight = (card) => {
+		const h = card.getBoundingClientRect().height;
+		if (h && h > 0) return h;
+		if (card.querySelector('.embed-container, iframe')) return 420;
+		return 260;
+	};
 
-			// Fallback guesses (keeps us from waiting on media)
-			// Heuristic: trailer/embed cards are taller
-			if (card.querySelector('.embed-container, iframe')) return 420;
-			return 260; // text/image card
-		}
-
-		function balanceColumns(sectionId){
+	const balanceColumns = (sectionId) => {
 		const { section, left, right } = sectionEls(sectionId);
 		if (!section || !left || !right) return;
 
 		const cards = Array.from(section.querySelectorAll('.card.pending'));
 		if (!cards.length) return;
 
-		// Precompute heights once
 		const items = cards.map(c => ({ el: c, h: estimateCardHeight(c) }));
 
-		// Start from empty columns so tallies are 0 (not existing DOM height)
 		const fragL = document.createDocumentFragment();
 		const fragR = document.createDocumentFragment();
 		let leftH = 0, rightH = 0;
 
-		// Greedy pack
-		for (const it of items){
-			if (leftH <= rightH){ fragL.appendChild(it.el); leftH += it.h; }
-			else { fragR.appendChild(it.el); rightH += it.h; }
+		for (const it of items) {
+		if (leftH <= rightH) { fragL.appendChild(it.el); leftH += it.h; }
+		else                  { fragR.appendChild(it.el); rightH += it.h; }
 		}
 
-		// Clear and write once per column
 		left.textContent = '';
 		right.textContent = '';
 		left.appendChild(fragL);
 		right.appendChild(fragR);
 
 		requestAnimationFrame(() => items.forEach(it => it.el.classList.remove('pending')));
-		}
+	};
 
-		function init(){
-			// Guard against duplicate IDs by de-duping the list
-			['articles-grid','av-grid','trailers-grid']
-			.filter((id, idx, arr) => arr.indexOf(id) === idx)
-			.forEach(balanceColumns);
-		}
+	const init = () => ['articles-grid','av-grid','trailers-grid']
+		.filter((id, i, arr) => arr.indexOf(id) === i)
+		.forEach(balanceColumns);
 
-		if (document.readyState === 'loading'){
-			document.addEventListener('DOMContentLoaded', init, { once:true });
-		} else {
-			init();
-		}
+	(document.readyState === 'loading')
+		? document.addEventListener('DOMContentLoaded', init, { once:true })
+		: init();
 
-		// Manual hook for dynamic inserts
-		window.DWBalance = { rebalance: balanceColumns };
-		})();
-	</script>
+	// tiny public hook (unchanged)
+	window.DWBalance = { rebalance: balanceColumns };
+	})();
 
-	<script>
-		document.addEventListener('DOMContentLoaded', function () {
+	/* =========================================================================
+	6) Digest TOC builder
+	========================================================================= */
+	(() => {
+	const onReady = () => {
 		const tocBody = document.getElementById('digest-toc-body');
 		if (!tocBody) return;
 
 		const slugify = s => (s || '')
-			.toLowerCase()
-			.replace(/<[^>]+>/g,'')
-			.replace(/&[a-z]+;?/g,'')
-			.replace(/[^a-z0-9]+/g,'-')
-			.replace(/(^-|-$)/g,'')
-			.slice(0,80);
+		.toLowerCase().replace(/<[^>]+>/g,'')
+		.replace(/&[a-z]+;?/g,'')
+		.replace(/[^a-z0-9]+/g,'-')
+		.replace(/(^-|-$)/g,'').slice(0,80);
 
 		const makeListSection = (titleText) => {
-			const wrap = document.createElement('section');
-			const h = document.createElement('h3');
-			h.className = 'gambado mb-2';
-			h.textContent = titleText;
-			const ul = document.createElement('ul');
-			ul.className = 'digest-toc__list';
-			wrap.append(h, ul);
-			return { wrap, ul, h };
+		const wrap = document.createElement('section');
+		const h = document.createElement('h3');
+		h.className = 'gambado mb-2';
+		h.textContent = titleText;
+		const ul = document.createElement('ul');
+		ul.className = 'digest-toc__list';
+		wrap.append(h, ul);
+		return { wrap, ul };
 		};
 
 		const addItem = (ul, href, text) => {
-			const li = document.createElement('li');
-			li.className = 'digest-toc__item';
-			const a = document.createElement('a');
-			a.href = href;
-			a.className = 'digest-toc__link';
-			a.textContent = text;
-			li.appendChild(a);
-			ul.appendChild(li);
+		const li = document.createElement('li');
+		li.className = 'digest-toc__item';
+		const a = document.createElement('a');
+		a.href = href;
+		a.className = 'digest-toc__link';
+		a.textContent = text;
+		li.appendChild(a);
+		ul.appendChild(li);
 		};
 
-		// ===== Articles (each card becomes a bullet) =====
+		// Articles
 		const articleCards = Array.from(document.querySelectorAll('#articles-grid .digest-card'));
 		if (articleCards.length) {
-			const { wrap, ul } = makeListSection('Articles');
-			articleCards.forEach(card => {
+		const { wrap, ul } = makeListSection('Articles');
+		articleCards.forEach(card => {
 			const prev = card.previousElementSibling;
 			const anchorName = (prev && prev.tagName === 'A' && prev.hasAttribute('name')) ? prev.getAttribute('name') : null;
 			const titleA = card.querySelector('h4 a');
 			const titleText = titleA ? titleA.textContent.trim() : 'Untitled';
-			if (!anchorName) {
-				if (!card.id) card.id = slugify(titleText) || ('article-' + Math.random().toString(36).slice(2,8));
-			}
+			if (!anchorName && !card.id) card.id = slugify(titleText) || ('article-' + Math.random().toString(36).slice(2,8));
 			addItem(ul, anchorName ? ('#' + anchorName) : ('#' + card.id), titleText);
-			});
-			tocBody.appendChild(wrap);
+		});
+		tocBody.appendChild(wrap);
 		}
 
-		// ===== Podcasts & Videos (list each item individually) =====
+		// Podcasts & Videos
 		const avGrid = document.getElementById('av-grid');
 		if (avGrid) {
-			const cards = Array.from(avGrid.querySelectorAll('.digest-card'));
-			if (cards.length) {
+		const cards = Array.from(avGrid.querySelectorAll('.digest-card'));
+		if (cards.length) {
 			const { wrap, ul } = makeListSection('Podcasts & Videos');
 			cards.forEach((card, idx) => {
-				const titleA = card.querySelector('h4 a');
-				const titleText = titleA ? titleA.textContent.trim() : ('A/V Item ' + (idx+1));
-				// ensure an anchor for each card
-				if (!card.id) card.id = slugify(titleText) || ('av-' + Math.random().toString(36).slice(2,8));
-				addItem(ul, '#' + card.id, titleText);
+			const titleA = card.querySelector('h4 a');
+			const titleText = titleA ? titleA.textContent.trim() : ('A/V Item ' + (idx+1));
+			if (!card.id) card.id = slugify(titleText) || ('av-' + Math.random().toString(36).slice(2,8));
+			addItem(ul, '#' + card.id, titleText);
 			});
 			tocBody.appendChild(wrap);
-			}
+		}
 		}
 
-		// ===== Trailers (make the heading itself the link; no list) =====
-		(function () {
-			const trailersAnchor = document.querySelector('a[name="trailers"]');
-			const trailersTarget = trailersAnchor ? '#trailers' : (document.getElementById('trailers-grid') ? '#trailers-grid' : null);
-			if (!trailersTarget) return;
+		// Trailers anchor
+		(() => {
+		const trailersAnchor = document.querySelector('a[name="trailers"]');
+		const trailersTarget = trailersAnchor ? '#trailers' : (document.getElementById('trailers-grid') ? '#trailers-grid' : null);
+		if (!trailersTarget) return;
 
-			const wrap = document.createElement('section');
-			const h = document.createElement('h3');
-			h.className = 'gambado mb-2';
-			const a = document.createElement('a');
-			a.href = trailersTarget;
-			a.className = 'digest-toc__link';
-			a.textContent = 'Trailers';
-			h.appendChild(a);
-			wrap.appendChild(h);
-			tocBody.appendChild(wrap);
+		const wrap = document.createElement('section');
+		const h = document.createElement('h3');
+		h.className = 'gambado mb-2';
+		const a = document.createElement('a');
+		a.href = trailersTarget;
+		a.className = 'digest-toc__link';
+		a.textContent = 'Trailers';
+		h.appendChild(a);
+		wrap.appendChild(h);
+		tocBody.appendChild(wrap);
 		})();
-		});
-	</script>
+	};
 
-	<script>
-		document.addEventListener('DOMContentLoaded', () => {
-		// Find <p><strong>To-Dos</strong></p> (or "DIY To-Dos") followed by a <ul>
-			const labels = Array.from(document.querySelectorAll('p > strong'));
-			labels.forEach((strong) => {
-				const txt = (strong.textContent || '').trim().toLowerCase();
-				if (txt === 'to-dos' || txt === 'diy to-dos') {
-					const p = strong.closest('p');
-					const ul = p && p.nextElementSibling;
-					if (ul && ul.tagName === 'UL') {
-						ul.classList.add('todo-list');
-					}
-				}
-			});
-		});
-	</script>
+	(document.readyState === 'loading')
+		? document.addEventListener('DOMContentLoaded', onReady, { once:true })
+		: onReady();
+	})();
 
-	<script>
-		document.addEventListener('DOMContentLoaded', () => {
-		// Tag To-Do lists
-		const labels = Array.from(document.querySelectorAll('p > strong'));
-		labels.forEach((strong) => {
-			const txt = (strong.textContent || '').trim().toLowerCase();
-			if (txt === 'to-dos' || txt === 'diy to-dos') {
-				const p = strong.closest('p');
-				const ul = p && p.nextElementSibling;
-				if (ul && ul.tagName === 'UL') {
-					ul.classList.add('todo-list');
-				}
-			}
+	/* =========================================================================
+	7) To-Do lists: tag + toggle
+	========================================================================= */
+	(() => {
+	const onReady = () => {
+		// Tag lists following "To-Dos" / "DIY To-Dos"
+		document.querySelectorAll('p > strong').forEach((strong) => {
+		const txt = (strong.textContent || '').trim().toLowerCase();
+		if (txt === 'to-dos' || txt === 'diy to-dos') {
+			const p = strong.closest('p');
+			const ul = p && p.nextElementSibling;
+			if (ul && ul.tagName === 'UL') ul.classList.add('todo-list');
+		}
 		});
 
-		// Make items toggle checked state
+		// Toggle checked state
 		document.querySelectorAll('.todo-list li').forEach(li => {
-				li.addEventListener('click', () => {
-					li.classList.toggle('checked');
-				});
-			});
+		li.addEventListener('click', () => li.classList.toggle('checked'));
 		});
-	</script>
+	};
 
-	<script>
-		(function () {
-		const DESKTOP_BP = 992;
+	(document.readyState === 'loading')
+		? document.addEventListener('DOMContentLoaded', onReady, { once:true })
+		: onReady();
+	})();
 
-		function qsa(sel, root=document){ return Array.from(root.querySelectorAll(sel)); }
+	/* =========================================================================
+	8) Equalize grid row heights (desktop only)
+	- Keeps row pairs the same height after content settles
+	========================================================================= */
+	(() => {
+	const DESKTOP_BP = 992;
+	const qsa = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
-		function equalizeGridRows(gridId) {
-			const grid = document.getElementById(gridId);
-			if (!grid) return;
+	function equalizeGridRows(gridId) {
+		const grid = document.getElementById(gridId);
+		if (!grid) return;
 
-			const leftCards  = qsa('.col-left  .digest-card', grid);
-			const rightCards = qsa('.col-right .digest-card', grid);
+		const leftCards  = qsa('.col-left  .digest-card', grid);
+		const rightCards = qsa('.col-right .digest-card', grid);
 
-			// clear first
-			[...leftCards, ...rightCards].forEach(c => c.style.minHeight = '');
+		// clear first
+		[...leftCards, ...rightCards].forEach(c => c.style.minHeight = '');
 
-			if (window.innerWidth < DESKTOP_BP) return;
+		if (window.innerWidth < DESKTOP_BP) return;
 
-			const maxLen = Math.max(leftCards.length, rightCards.length);
-			for (let i = 0; i < maxLen; i++) {
-			const L = leftCards[i];
-			const R = rightCards[i];
-			if (!L && !R) continue;
+		const maxLen = Math.max(leftCards.length, rightCards.length);
+		for (let i = 0; i < maxLen; i++) {
+		const L = leftCards[i];
+		const R = rightCards[i];
+		if (!L && !R) continue;
 
-			const lh = L ? L.offsetHeight : 0;
-			const rh = R ? R.offsetHeight : 0;
-			const h  = Math.max(lh, rh);
+		const h = Math.max(L ? L.offsetHeight : 0, R ? R.offsetHeight : 0);
+		if (L) L.style.minHeight = h + 'px';
+		if (R) R.style.minHeight = h + 'px';
+		}
+	}
 
-			// write only if changed
-			if (L && L.style.minHeight !== h + 'px') L.style.minHeight = h + 'px';
-			if (R && R.style.minHeight !== h + 'px') R.style.minHeight = h + 'px';
-			}
+	const equalizeAll = () => requestAnimationFrame(() => {
+		equalizeGridRows('articles-grid');
+		equalizeGridRows('av-grid');
+	});
+
+	// Debounced resize
+	let resizeTO = null;
+	window.addEventListener('resize', () => {
+		clearTimeout(resizeTO);
+		resizeTO = setTimeout(equalizeAll, 120);
+	});
+
+	// Run after DOM & fonts; again on window load; watch grid mutations
+	const onReady = () => {
+		const whenFonts = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
+		whenFonts.then(() => {
+		equalizeAll();
+		window.addEventListener('load', equalizeAll, { once: true });
+
+		const grids = ['articles-grid', 'av-grid']
+			.map(id => document.getElementById(id))
+			.filter(Boolean);
+
+		const mo = new MutationObserver(equalizeAll);
+		grids.forEach(g => mo.observe(g, { childList: true, subtree: true }));
+		});
+	};
+
+	(document.readyState === 'loading')
+		? document.addEventListener('DOMContentLoaded', onReady, { once:true })
+		: onReady();
+	})();
+
+	/* =========================================================================
+	9) AUDIO: unlock & safe play helpers (global hooks preserved)
+	========================================================================= */
+	(() => {
+	let unlocked = false;
+	const pending = [];
+
+	function flushPending() {
+		while (pending.length) { try { pending.shift()(); } catch {} }
+	}
+
+	async function unlock() {
+		if (unlocked) return;
+		unlocked = true;
+
+		// Resume WebAudio (if used by WS)
+		try {
+		if (window.AudioContext || window.webkitAudioContext) {
+			const ctx = window.__dgAudioCtx || new (window.AudioContext || window.webkitAudioContext)();
+			window.__dgAudioCtx = ctx;
+			if (ctx.state === 'suspended') { await ctx.resume().catch(()=>{}); }
+		}
+		} catch {}
+
+		flushPending();
+
+		// stop listening once unlocked
+		['pointerdown','touchstart','keydown'].forEach(t =>
+		document.removeEventListener(t, unlock, true)
+		);
+	}
+
+	// Arm unlock early (capture)
+	['pointerdown','touchstart','keydown'].forEach(t =>
+		document.addEventListener(t, unlock, true)
+	);
+
+	// Public helpers (as before)
+	window.__safePlay = (fn) => { if (unlocked) { try { fn(); } catch {} } else { pending.push(fn); } };
+	window.__safeMediaPlay = (media) => { if (media) window.__safePlay(() => media.play().catch(()=>{})); };
+	})();
+
+	/* =========================================================================
+	10) AUDIO player — WaveSurfer wiring (unchanged behavior, tidied)
+	========================================================================= */
+	(() => {
+	const WAVESURFER_CDN = "https://unpkg.com/wavesurfer.js@7/dist/wavesurfer.min.js";
+
+	// ----- utils -----
+	function ensureWavesurferLoaded() {
+		return new Promise((resolve, reject) => {
+		if (window.WaveSurfer) return resolve();
+		const s = document.createElement("script");
+		s.src = WAVESURFER_CDN;
+		s.async = true;
+		s.onload = () => resolve();
+		s.onerror = () => reject(new Error("Failed to load WaveSurfer"));
+		document.head.appendChild(s);
+		});
+	}
+	const getVar = (name, fallback) => {
+		const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+		return v || fallback;
+	};
+	function hardenControl(btn) {
+		if (!btn) return;
+		if (btn.tagName === 'A') {
+		const b = document.createElement('button');
+		b.type = 'button';
+		b.className = btn.className;
+		b.innerHTML = btn.innerHTML;
+		[...btn.attributes].forEach(a => { if (!['href','role'].includes(a.name)) b.setAttribute(a.name, a.value); });
+		btn.replaceWith(b);
+		btn = b;
+		} else if (btn.tagName === 'BUTTON' && btn.type !== 'button') {
+		btn.type = 'button';
+		}
+		btn.style.touchAction = 'manipulation';
+		btn.addEventListener('mousedown', (e) => { e.preventDefault(); }, { passive: false });
+		btn.addEventListener('click', (e) => { e.stopPropagation(); });
+		if (btn.getAttribute('tabindex') === '-1') btn.removeAttribute('tabindex');
+		return btn;
+	}
+	function bindThrottled(el, type, fn, key, ms = 180) {
+		if (!el) return;
+		const k = `__bound_${type}_${key}`;
+		if (el[k]) return;
+		let last = 0;
+		const wrapped = (e) => {
+		const now = performance.now();
+		if (now - last < ms) return;
+		last = now;
+		fn(e);
+		};
+		el.addEventListener(type, wrapped);
+		el[k] = wrapped;
+	}
+
+	// anti-autoscroll focus guard (kept)
+	let lastInputWasKeyboard = false;
+	window.addEventListener('keydown', () => { lastInputWasKeyboard = true; }, { capture: true });
+	['pointerdown','mousedown','touchstart'].forEach(t =>
+		window.addEventListener(t, () => { lastInputWasKeyboard = false; }, { capture: true })
+	);
+	document.addEventListener('focusin', (e) => {
+		if (lastInputWasKeyboard) return;
+		const t = e.target;
+		if (!(t instanceof HTMLElement)) return;
+		if (t.closest('.audio-card .controls')) t.blur();
+	}, { capture: true });
+
+	function ensureArtCol(card) {
+		const topImg = card.querySelector(":scope > img");
+		let col = card.querySelector(":scope > .art-col");
+		if (!col) {
+		col = document.createElement("div");
+		col.className = "art-col";
+		if (topImg) { topImg.replaceWith(col); col.appendChild(topImg); }
+		else { card.insertAdjacentElement("afterbegin", col); }
+		} else if (topImg && !col.contains(topImg)) {
+		col.insertAdjacentElement("afterbegin", topImg);
+		}
+		return col;
+	}
+
+	function skipSeconds(ws, deltaSec) {
+		if (!ws) return;
+		const d = ws.getDuration();
+		if (!d || !isFinite(d)) return;
+		const t = ws.getCurrentTime();
+		const next = Math.max(0, Math.min(d - 0.01, t + deltaSec));
+		ws.seekTo(next / d);
+	}
+
+	function zoomWaveToContainer(ws, el) {
+		const dur = ws.getDuration() || 0;
+		if (!el || dur <= 0) return;
+		const pxPerSec = el.clientWidth / dur;
+		ws.setOptions?.({ minPxPerSec: Math.max(0.001, pxPerSec) });
+		ws.zoom?.(pxPerSec);
+	}
+	function observeWaveResize(ws, el) {
+		if (!window.ResizeObserver) return;
+		const ro = new ResizeObserver(() => zoomWaveToContainer(ws, el));
+		ro.observe(el);
+		el.__wsRO = ro;
+	}
+
+	const fmt = (t) => {
+		if (!isFinite(t)) return '0:00';
+		const s = Math.max(0, Math.floor(t));
+		const m = Math.floor(s/60), r = s%60;
+		return m + ':' + String(r).padStart(2,'0');
+	};
+	function setupHoverTooltip(el, ws){
+		const tip = document.createElement('div');
+		tip.className = 'ws-hover';
+		el.appendChild(tip);
+		const update = (e) => {
+		const rect = el.getBoundingClientRect();
+		const clientX = (e.touches ? e.touches[0].clientX : e.clientX);
+		const x = Math.min(Math.max(clientX - rect.left, 0), rect.width);
+		const dur = ws.getDuration() || 0;
+		const time = dur ? (x / rect.width * dur) : 0;
+		tip.style.left = x + 'px';
+		tip.textContent = fmt(time);
+		};
+		el.addEventListener('mousemove',  (e) => { tip.style.display='block'; update(e); });
+		el.addEventListener('mouseleave', () => { tip.style.display='none'; });
+		el.addEventListener('touchstart', (e) => { tip.style.display='block'; update(e); }, {passive:true});
+		el.addEventListener('touchmove',  (e) => { update(e); }, {passive:true});
+		el.addEventListener('touchend',   () => { tip.style.display='none'; });
+	}
+
+	function wireControls(card, ws) {
+		const ctrls = card.querySelector('.controls');
+		if (!ctrls) return;
+
+		// Ensure play/pause button exists & is hardened
+		let ppBtn = ctrls.querySelector('.playpause');
+		if (!ppBtn) {
+		ppBtn = document.createElement('button');
+		ppBtn.className = 'playpause';
+		ppBtn.type = 'button';
+		ppBtn.setAttribute('aria-label', 'Play');
+		ctrls.insertBefore(ppBtn, ctrls.firstChild);
+		}
+		(function harden(btn){ // local harden to keep logic intact
+		if (!btn) return;
+		if (btn.tagName === 'A') {
+			const b = document.createElement('button');
+			b.type = 'button'; b.className = btn.className; b.innerHTML = btn.innerHTML;
+			[...btn.attributes].forEach(a => { if (!['href','role'].includes(a.name)) b.setAttribute(a.name, a.value); });
+			btn.replaceWith(b); btn = b;
+		} else if (btn.tagName === 'BUTTON' && btn.type !== 'button') { btn.type = 'button'; }
+		btn.style.touchAction = 'manipulation';
+		btn.addEventListener('mousedown', (e) => { e.preventDefault(); }, { passive:false });
+		btn.addEventListener('click', (e) => { e.stopPropagation(); });
+		if (btn.getAttribute('tabindex') === '-1') btn.removeAttribute('tabindex');
+		return btn;
+		})(ppBtn);
+
+		const svgPlay  = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5v14l11-7z"></path></svg>`;
+		const svgPause = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6 5h4v14H6zm8 0h4v14h-4z"></path></svg>`;
+		const setState = (playing) => {
+		ppBtn.setAttribute('data-state', playing ? 'playing' : 'paused');
+		ppBtn.innerHTML = playing ? svgPause : svgPlay;
+		ppBtn.setAttribute('aria-label', playing ? 'Pause' : 'Play');
+		};
+		setState(false);
+
+		bindThrottled(ppBtn, 'click', () => {
+		if (ws) {
+			if (ws.isPlaying()) ws.pause();
+			else window.__safePlay?.(() => ws.play());
+			return;
+		}
+		// Fallback to hidden <audio> pre-WS
+		const media = card.querySelector('audio');
+		if (media) {
+			if (media.paused) window.__safeMediaPlay?.(media);
+			else try { media.pause(); } catch {}
+		}
+		}, 'pp');
+
+		ws.on('play',   () => setState(true));
+		ws.on('pause',  () => setState(false));
+		ws.on('finish', () => setState(false));
+
+		// Skip buttons
+		let backBtn = hardenControl(ctrls.querySelector(".skip-back"));
+		let fwdBtn  = hardenControl(ctrls.querySelector(".skip-fwd"));
+		if (backBtn) bindThrottled(backBtn, "click", () => skipSeconds(ws, -10), "ws-skipback");
+		if (fwdBtn)  bindThrottled(fwdBtn,  "click", () => skipSeconds(ws, +30), "ws-skipfwd");
+
+		// Speed pill
+		let speedBtn = hardenControl(ctrls.querySelector("[data-audio-speed]"));
+		if (speedBtn) {
+		const rates = [1, 1.1, 1.25, 1.5, 2, 0.5];
+		const advanceRate = () => {
+			const current = ws.getPlaybackRate ? ws.getPlaybackRate() : 1;
+			const idx = rates.indexOf(current);
+			const next = rates[(idx + 1) % rates.length];
+			ws.setPlaybackRate(next);
+			speedBtn.textContent = `${next}x`;
+			speedBtn.setAttribute('aria-live', 'polite');
+			speedBtn.setAttribute('aria-label', `Playback speed: ${next}x`);
+		};
+		bindThrottled(speedBtn, "click",  advanceRate, "ws-speed-click");
+		bindThrottled(speedBtn, "keydown",(e) => {
+			if (e.key === "Enter" || e.key === " ") { e.preventDefault(); advanceRate(); }
+		}, "ws-speed-key");
+		speedBtn.textContent = "1x";
+		if (!speedBtn.__bound_playbackRate) {
+			ws.on?.("playback-rate", (r) => { speedBtn.textContent = `${r}x`; });
+			speedBtn.__bound_playbackRate = true;
+		}
 		}
 
-		function equalizeAll() {
-			requestAnimationFrame(() => {
-			equalizeGridRows('articles-grid');
-			equalizeGridRows('av-grid');
-			});
+		// Download (don’t bubble)
+		const dl = ctrls.querySelector('.download');
+		if (dl && !dl.__bound_dl) {
+		dl.addEventListener('click', (e) => e.stopPropagation());
+		dl.style.touchAction = 'manipulation';
+		dl.__bound_dl = true;
+		}
+	}
+
+	function createWaveForCard(card, opts={eager:false}) {
+		const waveEl = card.querySelector(".wave");
+		if (!waveEl || waveEl.dataset.wsReady === "1") return;
+
+		const url = waveEl.dataset.audioSrc;
+		if (!url) return;
+
+		ensureArtCol(card);
+
+		// hidden <audio> to enable instant play
+		let media = card.querySelector('audio[id]');
+		if (!media) {
+		media = document.createElement('audio');
+		media.src = url;
+		media.preload = opts.eager ? 'auto' : 'metadata';
+		media.crossOrigin = 'anonymous';
+		media.playsInline = true;
+		media.style.display = 'none';
+		waveEl.insertAdjacentElement('afterend', media);
+		} else {
+		media.preload = opts.eager ? 'auto' : (media.preload || 'metadata');
+		media.crossOrigin = media.crossOrigin || 'anonymous';
 		}
 
-		// Debounced resize
-		let resizeTO = null;
-		window.addEventListener('resize', () => {
-			clearTimeout(resizeTO);
-			resizeTO = setTimeout(equalizeAll, 120);
+		// skeleton + fallback progress + overlay
+		waveEl.classList.add("wave--skeleton","wave--fallback","wave--loading");
+		const fb   = document.createElement('div');  fb.className = 'fallback-bar';
+		const hint = document.createElement('button'); hint.className = 'play-hint'; hint.textContent = 'Play Now';
+		hardenControl(hint);
+
+		// coordinate with scroll squelch (Arc/Safari)
+		['pointerdown','mousedown','touchstart'].forEach(t =>
+		hint.addEventListener(t, () => {
+			window.__armAudioSquelch?.();
+			const ae = document.activeElement;
+			if (ae && ae !== document.body && ae !== hint) { try { ae.blur(); } catch {} }
+		}, { capture: true, passive: true })
+		);
+
+		hint.addEventListener('click', (e) => {
+		e.preventDefault(); e.stopPropagation();
+		window.__safeMediaPlay(media);
+		try { if (card._ws && !card._ws.isPlaying()) card._ws.play(); } catch {}
+		hint.classList.add('hidden');
+		setTimeout(() => hint.remove(), 300);
 		});
 
-		// Run after DOM & fonts; again on window load
-		document.addEventListener('DOMContentLoaded', () => {
-			const whenFonts = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
-			whenFonts.then(() => {
-			equalizeAll();
-			window.addEventListener('load', equalizeAll, { once: true });
+		const overlay = document.createElement('div');
+		overlay.className = 'wave__overlay';
+		overlay.addEventListener('wheel',      (e) => e.preventDefault(), { passive:false });
+		overlay.addEventListener('touchmove',  (e) => e.preventDefault(), { passive:false });
 
-			// ✅ Observe only childList changes (no attributes!)
-			const grids = ['articles-grid', 'av-grid']
-				.map(id => document.getElementById(id))
-				.filter(Boolean);
+		waveEl.append(fb, hint, overlay);
 
-			let scheduled = false;
-			const mo = new MutationObserver(muts => {
-				// only react to card adds/removes to reduce noise
-				const relevant = muts.some(m => m.type === 'childList' && (m.addedNodes.length || m.removedNodes.length));
-				if (!relevant) return;
-				if (scheduled) return;
-				scheduled = true;
-				requestAnimationFrame(() => { scheduled = false; equalizeAll(); });
-			});
+		const updateFallback = () => {
+		const d = media.duration || 0;
+		const t = media.currentTime || 0;
+		const p = d > 0 ? Math.min(1, Math.max(0, t / d)) : 0;
+		fb.style.transform = `scaleX(${p})`;
+		};
+		media.addEventListener('timeupdate',      updateFallback);
+		media.addEventListener('loadedmetadata',  updateFallback);
+		media.addEventListener('progress',        updateFallback);
 
-			grids.forEach(g => mo.observe(g, { childList: true, subtree: true }));
-			});
+		const ws = WaveSurfer.create({
+		container: waveEl,
+		media,
+		height: Math.round(parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--audio-h")) * 0.6),
+		waveColor:     getVar("--wave-backdrop", "rgba(255,255,255,.2)"),
+		progressColor: getVar("--wave-progress", "#f2f2f2"),
+		cursorColor:   getVar("--wave-cursor", "#ffd54d"),
+		cursorWidth: 2,
+		barWidth: 2,
+		barGap: 1.5,
+		barRadius: 2,
+		dragToSeek: false,
+		interact: true,
+		normalize: true,
+		minPxPerSec: 0.001,
+		autoplay: false,
+		hideScrollbar: true,
+		fillParent: true,
+		autoCenter: false,
+		autoScroll: false
 		});
-		})();
+
+		waveEl.dataset.wsReady = "1";
+		ws.setPlaybackRate?.(1);
+
+		ws.on('ready', () => {
+		zoomWaveToContainer(ws, waveEl);
+		observeWaveResize(ws, waveEl);
+		waveEl.classList.remove("wave--skeleton","wave--fallback","wave--loading");
+		try { fb.remove(); hint.remove(); overlay.remove(); } catch {}
+		media.removeEventListener('timeupdate',     updateFallback);
+		media.removeEventListener('loadedmetadata', updateFallback);
+		media.removeEventListener('progress',       updateFallback);
+		setupHoverTooltip(waveEl, ws);
+		});
+		ws.on('error', () => {
+		waveEl.classList.remove("wave--skeleton","wave--fallback","wave--loading");
+		try { fb.remove(); hint.remove(); overlay.remove(); } catch {}
+		});
+
+		wireControls(card, ws);
+
+		// reattach per-card squelch if global hook present
+		try { document.querySelectorAll('.audio-card').forEach(window.__AudioSquelchAttach?.bind(null) || (()=>{})); } catch {}
+
+		card._ws = ws;
+	}
+
+	async function boot() {
+		try { await ensureWavesurferLoaded(); }
+		catch (e) { console.error(e); return; }
+
+		const cards = Array.from(document.querySelectorAll(".audio-card"));
+		if (!cards.length) return;
+
+		// Eager init first two
+		const eagerCount = Math.min(2, cards.length);
+		for (let i = 0; i < eagerCount; i++) createWaveForCard(cards[i], { eager:true });
+
+		// IO preload others
+		if ("IntersectionObserver" in window) {
+		const io = new IntersectionObserver((entries, obs) => {
+			entries.forEach((entry) => {
+			if (entry.isIntersecting) { createWaveForCard(entry.target, { eager:false }); obs.unobserve(entry.target); }
+			});
+		}, { rootMargin: "800px 0px" });
+		cards.slice(eagerCount).forEach((card) => io.observe(card));
+		} else {
+		cards.forEach((c, idx) => createWaveForCard(c, { eager: idx < eagerCount }));
+		}
+
+		window.addEventListener("pagehide", () => {
+		cards.forEach((card) => {
+			const ws = card._ws;
+			if (ws && ws.destroy) { try { ws.destroy(); } catch {} }
+			const waveEl = card.querySelector('.wave');
+			if (waveEl?.__wsRO) { try { waveEl.__wsRO.disconnect(); } catch {} }
+		});
+		});
+	}
+
+	(document.readyState === "loading")
+		? document.addEventListener("DOMContentLoaded", boot, { once: true })
+		: boot();
+
+	// public reinit (unchanged contract)
+	window.DWDigestAudio = {
+		reinit() {
+		document.querySelectorAll(".audio-card .wave").forEach(w => { w.dataset.wsReady = "0"; });
+		try { document.querySelectorAll('.audio-card').forEach(window.__AudioSquelchAttach?.bind(null) || (()=>{})); } catch {}
+		boot();
+		}
+	};
+	})();
+
+	/* =========================================================================
+	11) Scroll squelch to prevent UA autoscroll when clicking audio controls
+	========================================================================= */
+	(() => {
+	let squelchUntil = 0;
+	const ARM_MS = 500;
+	const now = () => performance.now();
+
+	function armSquelch() {
+		squelchUntil = now() + ARM_MS;
+		// Disable scroll anchoring during the window
+		document.documentElement.style.overflowAnchor = 'none';
+		clearTimeout(armSquelch._t);
+		armSquelch._t = setTimeout(() => {
+		document.documentElement.style.overflowAnchor = '';
+		}, ARM_MS + 50);
+	}
+	function isSquelched() { return now() < squelchUntil; }
+
+	// Guard the big 3
+	const _scrollTo = window.scrollTo.bind(window);
+	window.scrollTo = function() { if (isSquelched()) return; return _scrollTo(...arguments); };
+
+	const _scrollBy = window.scrollBy.bind(window);
+	window.scrollBy = function() { if (isSquelched()) return; return _scrollBy(...arguments); };
+
+	const _siv = Element.prototype.scrollIntoView;
+	Element.prototype.scrollIntoView = function() { if (isSquelched()) return; return _siv.apply(this, arguments); };
+
+	// Blur focus pre-handlers on control interactions
+	function attachSquelchToCard(card) {
+		const ctrls = card.querySelectorAll('.controls .playpause, .controls button, .controls [data-audio-speed]');
+		ctrls.forEach(btn => {
+		['pointerdown','mousedown','touchstart'].forEach(t =>
+			btn.addEventListener(t, () => {
+			armSquelch();
+			const ae = document.activeElement;
+			if (ae && ae !== document.body && ae !== btn) { try { ae.blur(); } catch {} }
+			}, { passive: true, capture: true })
+		);
+		btn.addEventListener('click', () => { armSquelch(); }, { passive: true, capture: true });
+		});
+	}
+
+	// Prevent focus from sticking on controls while squelched
+	document.addEventListener('focusin', (e) => {
+		if (!isSquelched()) return;
+		const t = e.target;
+		if (t instanceof HTMLElement && t.closest('.audio-card .controls')) {
+		try { t.blur(); } catch {}
+		}
+	}, { capture: true });
+
+	// Apply to existing + expose for future
+	document.querySelectorAll('.audio-card').forEach(attachSquelchToCard);
+	window.__AudioSquelchAttach = attachSquelchToCard;
+
+	// Export armer so Play-hint can call it
+	window.__armAudioSquelch = armSquelch;
+	})();
 	</script>
-
 </div></footer>
-
   </body>
 </html>
