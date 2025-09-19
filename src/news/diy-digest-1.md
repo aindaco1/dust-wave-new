@@ -629,7 +629,7 @@ Welcome to this week’s *DIY Filmmaker Digest* — part syllabus, part mixtape,
       <iframe src="https://www.youtube-nocookie.com/embed/feOQFKv2Lw4?color=white&rel=0&iv_load_policy=3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" loading="lazy" allowfullscreen></iframe>
     </div>
     <div class="caption">
-      **<a href="https://www.imdb.com/title/tt30292945/" target="_blank">One Battle After Another</a>**  
+      **<a href="https://www.imdb.com/title/tt30144839/" target="_blank">One Battle After Another</a>**  
       Dir. <a href="https://www.imdb.com/name/nm0000759/" target="_blank">Paul Thomas Anderson</a>, TBD  
       USA, Drama  
       In theaters Sep. 26, 2025  
@@ -665,11 +665,11 @@ Welcome to this week’s *DIY Filmmaker Digest* — part syllabus, part mixtape,
       <iframe src="https://www.youtube-nocookie.com/embed/r5Iygg1COyA?color=white&rel=0&iv_load_policy=3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" loading="lazy" allowfullscreen></iframe>
     </div>
     <div class="caption">
-      **<a href="https://www.imdb.com/title/tt4823030/" target="_blank">Frankenstein</a>**  
+      **<a href="https://www.imdb.com/title/tt1312221/" target="_blank">Frankenstein</a>**  
       Dir. <a href="https://www.imdb.com/name/nm0868219/" target="_blank">Guillermo del Toro</a>, TBD  
       USA, Gothic Horror  
       Limited theatrical Oct. 2025; Netflix Nov. 7, 2025  
-      Starring <a href="https://www.imdb.com/name/nm1940449/" target="_blank">Mia Goth</a>, <a href="https://www.imdb.com/name/nm1209966/" target="_blank">Andrew Garfield</a>, <a href="https://www.imdb.com/name/nm0000696/" target="_blank">Oscar Isaac</a>
+      Starring <a href="https://www.imdb.com/name/nm5301405/" target="_blank">Mia Goth</a>, <a href="https://www.imdb.com/name/nm1940449/" target="_blank">Andrew Garfield</a>, <a href="https://www.imdb.com/name/nm1209966/" target="_blank">Oscar Isaac</a>
     </div>
 
     <!-- #16 The Secret Agent (2025) -->
@@ -677,9 +677,9 @@ Welcome to this week’s *DIY Filmmaker Digest* — part syllabus, part mixtape,
       <iframe src="https://www.youtube-nocookie.com/embed/pbzy7-RwhEs?color=white&rel=0&iv_load_policy=3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" loading="lazy" allowfullscreen></iframe>
     </div>
     <div class="caption">
-      **<a href="https://www.imdb.com/title/tt32158715/" target="_blank">The Secret Agent</a>**  
-      Dir. <a href="https://www.imdb.com/name/nm0582272/" target="_blank">Kleber Mendonça Filho</a>, TBD  
-      Brazil, Drama  
+      **<a href="https://www.imdb.com/title/tt27847051/" target="_blank">The Secret Agent</a>**  
+      Dir. <a href="https://www.imdb.com/name/nm2207625/" target="_blank">Kleber Mendonça Filho</a>, TBD  
+      Brazil, Drama
       Release: TBD
     </div>
 

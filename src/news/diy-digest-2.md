@@ -2,7 +2,7 @@
 title: DIY Filmmaker Digest 2 — Week of September 18, 2025
 date: 2025-09-18
 summary: A roundup of articles, insights, and to-dos for DIY filmmakers.
-img: digest-header
+img: digest-header-2
 ---
 </br>
 <div class="date-written">    
@@ -857,7 +857,7 @@ Welcome to this week’s *DIY Filmmaker Digest* — part syllabus, part mixtape,
 
 ---
 
-That’s a wrap on our very first _DIY Filmmaker Digest_. At Dust Wave, everything we share is chosen with the same compass: **collectivity over ego, experiments over formulas, access over gatekeeping.**
+That’s a wrap on our second _DIY Filmmaker Digest_. At Dust Wave, everything we share is chosen with the same compass: **collectivity over ego, experiments over formulas, access over gatekeeping.**
 
 Keep making what only you can make, keep passing the torch sideways, and keep stitching together the world we actually want to live in.
 
