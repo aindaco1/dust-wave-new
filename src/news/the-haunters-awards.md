@@ -6,7 +6,7 @@ img: thehauntersminefield
 ---
 </br>
 
-Written and directed by the incomparable [Kaidin Jarjusey](https://www.instagram.com/qwaeofficial), a talented filmmaker and Dust Wave regular, [The Haunters](/the-haunters) recently won two awards:
+Written and directed by the incomparable [Kaidin Jarjusey](https://www.instagram.com/qwaeofficial), a talented filmmaker and Dust Wave regular, [The Haunters](project/the-haunters.html) recently won two awards:
 
 * **Best Short, Platinum Award** at the [Mindfield Film Festival](https://mindfieldff.com)
 </br>

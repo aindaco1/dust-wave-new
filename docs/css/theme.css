@@ -14437,6 +14437,10 @@ article h2, article .h2 {
   display: none; /* JS toggles on hover */
 }
 
+.laurel {
+  background: white;
+}
+
 .btn-xl {
   --bs-btn-padding-y: calc(0.75rem + 0.5vh);
   --bs-btn-padding-x: calc(1rem + 2vw);

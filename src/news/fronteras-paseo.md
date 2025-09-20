@@ -18,6 +18,20 @@ The [2025 Fronteras Micro-film Festival](https://fronterasmicrofilm.com) has jus
 
 Funds from PASEO will go towards installation materials and fabrication costs, artist fees, filmmaker awards, and festival marketing.
 
+<br><br>
+
+### Behind the scenes
+
+<div class="row g-2">
+  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
+    <img src="/img/news/door_bts1.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
+  </div>
+  <div class="col-lg-6 mb-6 mb-lg-0">
+    <img src="/img/news/door_bts2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
+  </div>
+</div>
+<br><br>
+
 Congratulations to our fellow artists at PASEO 2025! We're honored to be part of this year's festival.
 
 More info [here](https://paseoproject.org/paseo2025).
