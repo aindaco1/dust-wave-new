@@ -328,7 +328,7 @@ Welcome to this week’s *DIY Filmmaker Digest* — part syllabus, part mixtape,
     <div class="card digest-card pending shadow-1-strong rounded mb-2">
       <img class="w-100 shadow-1-strong rounded mb-2"      src="/img/digest/2025-09-18/jacobin-long-walk-king-review.jpg" alt="Long Walk King review still"      loading="lazy" decoding="async" />
       <div class="p-3">
-        <h4 class="mb-2"><a href="https://jacobin.com/2025/09/long-walk-king-film-review/" target="_blank">The Long Walk Is a Long Slog</a></h4>
+        <h4 class="mb-2"><a href="https://jacobin.com/2025/09/long-walk-king-film-review/" target="_blank">_The Long Walk_ Is a Long Slog</a></h4>
         
         <blockquote class="mb-2">“This is a film about endurance as politics.”</blockquote>
         <p><strong>Key takeaways</strong></p>
