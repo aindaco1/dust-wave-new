@@ -57,6 +57,9 @@ Extras -- JP Mark, Ginny Leise, Jay Renteria, Gary Shaw, Jordyn Bernicke, Nico B
 
 ### Awards
 
+[2024 Dark Red Film Festival](https://www.darkredhorror.com/drff-2024)
+* Best Production Design -- [Laura Morris](https://www.instagram.com/kissmeimwelsh/)
+
 [2024 Dive-In Movies Film Fiesta](https://diveinmovies.xyz)
 * Official Selection
 </br>

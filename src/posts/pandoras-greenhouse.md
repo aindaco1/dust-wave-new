@@ -52,6 +52,16 @@ John Dewar as The Narrator
 </br>
 </br>
 
+### Awards
+
+[2025 Santa Fe International Film Festival](https://sfiff.eventive.org/schedule/68cd9c475612c91a57361d7a)
+* Official Selection
+
+[2025 Horrorigins Film Fest](https://horrorigins.com/index.html)
+* Official Selection
+</br>
+</br>
+
 ### Behind the scenes
 
 <div class="row g-2">

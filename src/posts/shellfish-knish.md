@@ -59,6 +59,9 @@ Shiva Attendees -- Shea Jarjusey, Laura Siân Morris, Alonso Indacochea, Jade St
 
 ### Awards
 
+[2025 Albuquerque Film & Music Experience](https://www.afmxnm.com/afmx-2025-film-selections#comp-md3z6gxv)
+* Selection, Narrative Short
+
 [2025 Mindfield Film Festival](https://mindfieldff.com)
 * Best New Mexico Short, Diamond
 

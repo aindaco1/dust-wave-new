@@ -66,6 +66,17 @@ Extras -- Alan De Lira-Richards, Alexis Padilla-Perez, Brian Tucker, Collin Luth
 </br>
 </br>
 
+### Awards
+
+[2025 Amarillo Film Festival](https://www.amarillofilmfestival.com/selections)
+* Selection, Student Short
+
+[2025 Mindfield Film Festival](https://mindfieldff.com)
+* Selection, Best New Mexico Short
+
+</br>
+</br>
+
 ### Behind the scenes
 
 <div class="row g-2">

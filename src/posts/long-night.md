@@ -58,6 +58,13 @@ Cheryl - Kim S. Monti
 </br>
 </br>
 
+### Awards
+
+[2025 Way Out West Film Fest](https://wayoutwestfilmfest.com/wp-content/uploads/2025/09/2025-WOWFF-Program-WEB.pdf)
+* Official Selection
+</br>
+</br>
+
 ### Behind the scenes
 
 <div class="row g-2">
