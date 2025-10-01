@@ -49,7 +49,7 @@ Courtesy of My Little Arrows Publishing</br>
 
 "Babylon" by Quinten Coblentz</br>
 
-Special Thanks - Blue Sky Landscape Services, MOOD
+Special Thanks -- Blue Sky Landscape Services, MOOD
 </br>
 </br>
 
