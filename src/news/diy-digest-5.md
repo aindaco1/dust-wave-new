@@ -10,13 +10,13 @@ img: digest-header-5
 
 </br></br>
 
-Welcome to this week’s *DIY Filmmaker Digest* -- part syllabus, part mixtape, part fever dream of cinema’s shifting ground. Below you will find: essays and interviews that ask what artists are tinkering with, what systems are breaking, and how you might improvise your own way forward. There’s a mild New Mexico bias, plus podcasts, videos, and trailers to keep your queue weird and your outlook restless.
+Welcome to this week's *DIY Filmmaker Digest* -- part syllabus, part mixtape, part fever dream of cinema's shifting ground. Below you will find: essays and interviews that ask what artists are tinkering with, what systems are breaking, and how you might improvise your own way forward. There's a mild New Mexico bias, plus podcasts, videos, and trailers to keep your queue weird and your outlook restless.
 
 But first, a little business: we have **two Kickstarters live** for future Dust Wave projects (both doing quite well but still needing your support) -- the first one is for [Just Hang On](https://www.kickstarter.com/projects/836858424/just-hang-on-a-short-film-about-survival-choice-and-hope), [Chelsea Ambrose](https://www.instagram.com/chelseaambrosemua)'s short drama about survival, choice, and hope. Chelsea is a longtime makeup and special effects artist, but this is her first time writing and directing a short film. **There's 7 days left in the campaign,** so **[go support Chelsea's project!](https://www.kickstarter.com/projects/836858424/just-hang-on-a-short-film-about-survival-choice-and-hope)**
 
 The second is for Jeanette Aguilar Harris's [Dancing Through the Darkness](https://www.kickstarter.com/projects/dustwave/dancing-through-the-darkness-an-alzheimers-ballet-story). [Jeanette](https://www.instagram.com/jeanetteaguilarharris) is a longtime actor and dancer and her short film is about faith, family, and the power of dance in the face of early onset Alzheimer's. **[Go support Jeanette's project!](https://www.kickstarter.com/projects/dustwave/dancing-through-the-darkness-an-alzheimers-ballet-story)**
 
-Also -- I've been having a great time meeting filmmakers at the [Santa Fe International Film Festival](https://santafe.film/). Shout out to [Johan Stavsjö](https://instagram.com/johanstavsjo), [Makaio Frazier](https://www.instagram.com/makaiofrazier/), [Yadid Licht](https://instagram.com/yadoodles_96), [Sarah Adelman](https://www.instagram.com/sarahadelman1/), [Otis Blum](https://www.instagram.com/otisblum/) -- much success with your films and endeavors. And of course to all the organizers, programmers, volunteers, and everyone that has made the festival go.
+Also -- I've been having a great time meeting filmmakers at the [Santa Fe International Film Festival](https://santafe.film/). Shout out to [Johan Stavsjö](https://instagram.com/johanstavsjo), [Makaio Frazier](https://www.instagram.com/makaiofrazier/), [Yadid Licht](https://instagram.com/yadoodles_96), [Sarah Adelman](https://www.instagram.com/sarahadelman1/), and [Otis Blum](https://www.instagram.com/otisblum/) -- much success with your films and endeavors. And of course to all the organizers, programmers, volunteers, and everyone that has made the festival go.
 
 And one more kudos to my friends [Adrián Pijoan](https://www.adrianpijoan.net/index.html) and [Ben Arndt](https://www.instagram.com/ben_carndt_/) for [their](/project/pandora-s-greenhouse.html) [films](https://www.youtube.com/watch?v=ZBHDJckI6tc) getting selected to screen at the festival -- truly creative, kind, brilliant filmmakers. This is just the beginning!
 
@@ -923,7 +923,7 @@ And now, the digest:
 
 And that's this week's digest. I want to give another special shout out to all of [Dust Wave's amazing filmmakers](/about.html) -- we have a special group of creative folks that make movies no matter what. Beauty and joy is our pursuit.
 
-I don't have a Letterboxd or anything, but here's a few movies I've watched (or rewatched) and enjoyed:
+I don't have a Letterboxd or anything, but here's a few movies I've watched (or rewatched) and enjoyed recently:
 
 <div id="trailers-grid" class="row g-2 equalize">
   <!-- Column 1 -->
