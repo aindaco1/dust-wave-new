@@ -923,7 +923,7 @@ And now, the digest:
 
 And that's this week's digest. I want to give another special shout out to all of [Dust Wave's amazing filmmakers](/about.html) -- we have a special group of creative folks that make movies no matter what. Beauty and joy is our pursuit.
 
-I don't have a Letterboxd or anything, but here's a few movies I've watched (or rewatched) and enjoyed recently:
+I don't have a Letterboxd or anything, but here are a few movies I've watched (or rewatched) and enjoyed recently:
 
 <div id="trailers-grid" class="row g-2 equalize">
   <!-- Column 1 -->
