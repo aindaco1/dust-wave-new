@@ -12,12 +12,26 @@ img: digest-header-7
 
 Welcome to this week’s *DIY Filmmaker Digest* — part syllabus, part mixtape, part fever dream of cinema’s shifting ground. Below you will find: essays and interviews that ask what artists are tinkering with, what systems are breaking, and how you might improvise your own way forward. There’s a mild New Mexico bias, plus podcasts, videos, and trailers to keep your queue weird and your outlook restless.
 
+<br>
+
+<div class="embed-container w-100 shadow-1-strong rounded mb-2">
+  <iframe src="https://www.kickstarter.com/projects/dustwave/tethered-girl-a-fantasy-western-short/widget/video.html" style="top: 0; left: 0; width: 100%; height: 100%; position: absolute; border: 0;" allowfullscreen scrolling="no" allow="encrypted-media *;"></iframe>
+</div>
+
+<br>
+
 But first, a little business: we have **a Kickstarter live right now** for a future Dust Wave project -- our friend [Melissa Flores](https://www.instagram.com/melissaflores0) needs your help to get [Tethered Girl](https://www.kickstarter.com/projects/dustwave/tethered-girl-a-fantasy-western-short) funded! Melissa is a Mexican-American filmmaker and Tethered Girl is her latest short film, a fantasy western performed entirely in Spanish with an all-Spanish-speaking crew! Don't worry _gringos_, there will be English subtitles 😉. **[Support Melissa and Tethered Girl!](https://www.kickstarter.com/projects/dustwave/tethered-girl-a-fantasy-western-short)**
 
-Also -- we're showing **[Annihilation](https://shop.dustwave.xyz/#annihilation-1)!** Come join us on **December 12th at 10:30pm** for a screening of the 2018 sci-fi horror classic -- **buy a ticket [here](https://shop.dustwave.xyz/#annihilation-1).**
+
+<br>
+
+<a href="https://shop.dustwave.xyz/#annihilation-1" target="_blank"><img class="w-100 shadow-1-strong rounded mb-2"      src="/img/news/annihilation-guild.jpg" alt="Illustration for Do most film festivals require premiere status?"      loading="lazy" decoding="async"/></a>
+<br><br>
+
+Also -- we're showing **[Annihilation](https://shop.dustwave.xyz/#annihilation-1)!** Come join us on **December 12th at 10:30pm at the [Guild Cinema](https://guildcinema.com)** for a screening of the 2018 sci-fi horror classic -- **buy a ticket [here](https://shop.dustwave.xyz/#annihilation-1).**
 
 And now, the digest:
-
+<br><br>
 
 <nav id="digest-toc" class="my-3 digest-toc">
   <h2 class="mb-2 gambado">Contents</h2>
@@ -53,7 +67,6 @@ And now, the digest:
         <p><strong>To-Dos</strong></p>
         <ul>
           <li>Sketch a simple map of your next project that shows who has creative power and who is doing the technical heavy lifting, then brainstorm one way to shift a bit more agency to the people doing the work.</li>
-          <li>Host a DIY screening night that celebrates films made without studio tech stacks, and trade tips on how those teams pulled off their best moments with limited means.</li>
         </ul>
       </div>
     </div>
@@ -954,11 +967,9 @@ And that's this week's digest. I want to give another special shout out to every
 <br>
 
 <img class="w-100 shadow-1-strong rounded mb-2"      src="/img/news/attack-wide.png" alt="Illustration for Do most film festivals require premiere status?"      loading="lazy" decoding="async" />
-
 <br><br>
-
 I don't have a Letterboxd or anything, but here are a few movies I've watched (or rewatched) and enjoyed recently:
-
+<br><br>
 <div id="trailers-grid" class="row g-2 equalize">
   <!-- Column 1 -->
   <div class="col-lg-6 col-md-12 mb-6 mb-lg-0 col-left">
