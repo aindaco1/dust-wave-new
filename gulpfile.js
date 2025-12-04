@@ -47,7 +47,10 @@ function copyJs() {
 function copyImg() {
   return src(`${DIR.src}/img/**/*.*`).pipe(dest(`${DIR.dev}/img`));
 }
-gulp.task('dist-assets', parallel(copyPeaks, copyJs, copyImg)); // keep task name for scripts
+function copyPdf() {
+  return src(`${DIR.src}/pdf/**/*.*`, { allowEmpty: true }).pipe(dest(`${DIR.dev}/pdf`));
+}
+gulp.task('dist-assets', parallel(copyPeaks, copyJs, copyImg, copyPdf)); // keep task name for scripts
 
 // Sass → CSS
 gulp.task('sass', function sassTask() {
