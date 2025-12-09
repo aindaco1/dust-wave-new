@@ -504,8 +504,8 @@ And now, the digest:
             <div class="audio-card">
       <img src="/img/podcasts/decoder-ring.png" alt="Decoder Ring artwork" loading="lazy" decoding="async">
       <div>
-        <div class="wave" id="wave_overcast-migjyciec" data-audio-id="audio_overcast-migjyciec" data-audio-src="https://www.podtrac.com/pts/redirect.mp3/pdst.fm/e/go.slate.me/p/pdrl.fm/b4b074/tracking.swap.fm/track/eyyXAri85YMcZmCU4WwO/mgln.ai/e/p29518/verifi.podscribe.com/rss/p/traffic.megaphone.fm/SLT9966528821.mp3?updated=1764693079" data-peaks-src="/peaks/overcast-migjyciec.json"></div>
-        <audio id="audio_overcast-migjyciec" preload="none" src="https://www.podtrac.com/pts/redirect.mp3/pdst.fm/e/go.slate.me/p/pdrl.fm/b4b074/tracking.swap.fm/track/eyyXAri85YMcZmCU4WwO/mgln.ai/e/p29518/verifi.podscribe.com/rss/p/traffic.megaphone.fm/SLT9966528821.mp3?updated=1764693079" style="display:none"></audio>
+        <div class="wave" id="wave_overcast-migjyciec" data-audio-id="audio_overcast-migjyciec" data-audio-src="https://wandering-mode-1856.jogo.workers.dev/?u=https://traffic.megaphone.fm/SLT9966528821.mp3" data-peaks-src="/peaks/overcast-migjyciec.json"></div>
+        <audio id="audio_overcast-migjyciec" preload="none" src="https://wandering-mode-1856.jogo.workers.dev/?u=https://traffic.megaphone.fm/SLT9966528821.mp3" style="display:none"></audio>
         
     <div class="controls">
       <button type="button" class="playpause" aria-label="Play" data-state="paused">
@@ -527,7 +527,7 @@ And now, the digest:
           <rect height="32" width="32"></rect>
         </svg>
       </button><button type="button" class="speed" data-audio-speed aria-label="Change playback speed" aria-live="polite">1x</button>
-      <a class="download" href="https://www.podtrac.com/pts/redirect.mp3/pdst.fm/e/go.slate.me/p/pdrl.fm/b4b074/tracking.swap.fm/track/eyyXAri85YMcZmCU4WwO/mgln.ai/e/p29518/verifi.podscribe.com/rss/p/traffic.megaphone.fm/SLT9966528821.mp3?updated=1764693079" download aria-label="Download episode">
+      <a class="download" href="https://wandering-mode-1856.jogo.workers.dev/?u=https://traffic.megaphone.fm/SLT9966528821.mp3" download aria-label="Download episode">
         <!-- download icon -->
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M5 20h14v-2H5v2zM12 2v10.59l3.3-3.3 1.4 1.41L12 16.41l-4.7-4.71 1.4-1.41L11 12.59V2h1z"/>
