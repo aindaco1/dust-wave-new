@@ -12888,6 +12888,10 @@ html:has(.Stalld:hover) body#glitch-target {
   --glitch-bg: url(../img/stalld.gif);
 }
 
+html:has(.Attack-of-the-50-Ft-Dust-Wave:hover) body#glitch-target {
+  --glitch-bg: url(../img/attack.gif);
+}
+
 /* =========================================================
    Sitewide transitions / micro-interactions
    ========================================================= */
