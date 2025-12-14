@@ -50,7 +50,6 @@ jobs:
           git push
 
       - name: Purge Cloudflare cache
-        if: ${{ secrets.CLOUDFLARE_ZONE != '' }}
         uses: jakejarvis/cloudflare-purge-action@master
         env:
           CLOUDFLARE_ZONE: ${{ secrets.CLOUDFLARE_ZONE }}
