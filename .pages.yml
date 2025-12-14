@@ -169,8 +169,7 @@ content:
   - name: digests
     label: 📜 DIY Digests
     type: collection
-    path: src/news
-    filename: "diy-digest-*.md"
+    path: src/news/digests
     view:
       fields: [title, date]
       primary: title
@@ -217,8 +216,7 @@ content:
     label: 📢 News (Regular)
     type: collection
     path: src/news
-    exclude:
-      - "diy-digest-*.md"
+    subfolders: false
     view:
       fields: [title, date]
       primary: title
