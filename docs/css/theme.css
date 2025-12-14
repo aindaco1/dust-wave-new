@@ -12772,126 +12772,128 @@ body#glitch-target.glitching::before {
   }
 }
 /* GIF hover swaps (scoped to body#glitch-target) */
-html:has(.Red-Pillow:hover) body#glitch-target {
-  --glitch-bg: url(../img/redpillow.gif);
-}
-
-html:has(.High-Times-at-the-Ranger-Bowl-a-Rama:hover) body#glitch-target {
-  --glitch-bg: url(../img/hightimes.gif);
-}
-
-html:has(.VitaLife©-Chips:hover) body#glitch-target {
-  --glitch-bg: url(../img/vitalife.gif);
-}
-
-html:has(.La-Grima:hover) body#glitch-target {
-  --glitch-bg: url(../img/lagrima.gif);
-}
-
-html:has(.Mike-Mysteries:hover) body#glitch-target {
-  --glitch-bg: url(../img/mikemysteries.gif);
-}
-
-html:has(.Fronteras-Micro-film-Festival:hover) body#glitch-target {
-  --glitch-bg: url(../img/fronteras.gif);
-}
-
-html:has(.Bag-Check:hover) body#glitch-target {
-  --glitch-bg: url(../img/bagcheck.gif);
-}
-
-html:has(.The-Green-Chile-Bagel:hover) body#glitch-target {
-  --glitch-bg: url(../img/greenchilebagel.gif);
-}
-
-html:has(.The-Darkest-Place:hover) body#glitch-target {
-  --glitch-bg: url(../img/darkestplace.gif);
-}
-
-html:has(.They-Came-From-Planet-X:hover) body#glitch-target {
-  --glitch-bg: url(../img/planetx.gif);
-}
-
-html:has(.Gumshoe:hover) body#glitch-target {
-  --glitch-bg: url(../img/gumshoe.gif);
-}
-
-html:has(.Fumbled-Not-Stirred:hover) body#glitch-target {
-  --glitch-bg: url(../img/fumblednotstirred.gif);
-}
-
+/* AUTO-GENERATED:START - Do not edit manually. Run update-gif-hovers action. */
 html:has(.Accessory-to-Murder:hover) body#glitch-target {
   --glitch-bg: url(../img/accessory.gif);
-}
-
-html:has(.The-Converger:hover) body#glitch-target {
-  --glitch-bg: url(../img/converger.gif);
-}
-
-html:has(.The-Dust-Wave-Show:hover) body#glitch-target {
-  --glitch-bg: url(../img/thedustwaveshow.gif);
-}
-
-html:has(.The-Haunters:hover) body#glitch-target {
-  --glitch-bg: url(../img/haunters.gif);
-}
-
-html:has(.Earworm:hover) body#glitch-target {
-  --glitch-bg: url(../img/earworm.gif);
-}
-
-html:has(.Dive-In-Movies:hover) body#glitch-target {
-  --glitch-bg: url(../img/divein.gif);
-}
-
-html:has(.Movie-Monsters:hover) body#glitch-target {
-  --glitch-bg: url(../img/moviemonsters.gif);
-}
-
-html:has(.Softening:hover) body#glitch-target {
-  --glitch-bg: url(../img/softening.gif);
-}
-
-html:has(.Shellfish-Knish:hover) body#glitch-target {
-  --glitch-bg: url(../img/shellfishknish.gif);
 }
 
 html:has(.An-Evening-of-Frights-and-Delights:hover) body#glitch-target {
   --glitch-bg: url(../img/evening.gif);
 }
 
-html:has(.Frograiser:hover) body#glitch-target {
-  --glitch-bg: url(../img/frograiser.gif);
+html:has(.Attack-of-the-50-Ft-Dust-Wave:hover) body#glitch-target {
+  --glitch-bg: url(../img/attack.gif);
+}
+
+html:has(.Bag-Check:hover) body#glitch-target {
+  --glitch-bg: url(../img/bagcheck.gif);
+}
+
+html:has(.Dive-In-Movies:hover) body#glitch-target {
+  --glitch-bg: url(../img/divein.gif);
 }
 
 html:has(.Dust-Dont-Settle:hover) body#glitch-target {
   --glitch-bg: url(../img/dustdontsettle.gif);
 }
 
-html:has(.Horseheads:hover) body#glitch-target {
-  --glitch-bg: url(../img/horseheads.gif);
+html:has(.Earworm:hover) body#glitch-target {
+  --glitch-bg: url(../img/earworm.gif);
+}
+
+html:has(.Frograiser:hover) body#glitch-target {
+  --glitch-bg: url(../img/frograiser.gif);
+}
+
+html:has(.Fronteras-Micro-film-Festival:hover) body#glitch-target {
+  --glitch-bg: url(../img/fronteras.gif);
+}
+
+html:has(.Fumbled-Not-Stirred:hover) body#glitch-target {
+  --glitch-bg: url(../img/fumblednotstirred.gif);
+}
+
+html:has(.Gumshoe:hover) body#glitch-target {
+  --glitch-bg: url(../img/gumshoe.gif);
+}
+
+html:has(.High-Times-at-the-Ranger-Bowl-a-Rama:hover) body#glitch-target {
+  --glitch-bg: url(../img/hightimes.gif);
 }
 
 html:has(.Horse-vs-Vamp:hover) body#glitch-target {
   --glitch-bg: url(../img/horsevsvamp.gif);
 }
 
+html:has(.Horseheads:hover) body#glitch-target {
+  --glitch-bg: url(../img/horseheads.gif);
+}
+
+html:has(.La-Grima:hover) body#glitch-target {
+  --glitch-bg: url(../img/lagrima.gif);
+}
+
 html:has(.Long-Night:hover) body#glitch-target {
   --glitch-bg: url(../img/longnight.gif);
+}
+
+html:has(.Mike-Mysteries:hover) body#glitch-target {
+  --glitch-bg: url(../img/mikemysteries.gif);
+}
+
+html:has(.Movie-Monsters:hover) body#glitch-target {
+  --glitch-bg: url(../img/moviemonsters.gif);
 }
 
 html:has(.Pandoras-Greenhouse:hover) body#glitch-target {
   --glitch-bg: url(../img/pandora.gif);
 }
 
+html:has(.Red-Pillow:hover) body#glitch-target {
+  --glitch-bg: url(../img/redpillow.gif);
+}
+
+html:has(.Shellfish-Knish:hover) body#glitch-target {
+  --glitch-bg: url(../img/shellfishknish.gif);
+}
+
+html:has(.Softening:hover) body#glitch-target {
+  --glitch-bg: url(../img/softening.gif);
+}
+
 html:has(.Stalld:hover) body#glitch-target {
   --glitch-bg: url(../img/stalld.gif);
 }
 
-html:has(.Attack-of-the-50-Ft-Dust-Wave:hover) body#glitch-target {
-  --glitch-bg: url(../img/attack.gif);
+html:has(.The-Converger:hover) body#glitch-target {
+  --glitch-bg: url(../img/converger.gif);
 }
 
+html:has(.The-Darkest-Place:hover) body#glitch-target {
+  --glitch-bg: url(../img/darkestplace.gif);
+}
+
+html:has(.The-Dust-Wave-Show:hover) body#glitch-target {
+  --glitch-bg: url(../img/thedustwaveshow.gif);
+}
+
+html:has(.The-Green-Chile-Bagel:hover) body#glitch-target {
+  --glitch-bg: url(../img/greenchilebagel.gif);
+}
+
+html:has(.The-Haunters:hover) body#glitch-target {
+  --glitch-bg: url(../img/haunters.gif);
+}
+
+html:has(.They-Came-From-Planet-X:hover) body#glitch-target {
+  --glitch-bg: url(../img/planetx.gif);
+}
+
+html:has(.VitaLife©-Chips:hover) body#glitch-target {
+  --glitch-bg: url(../img/vitalife.gif);
+}
+
+/* AUTO-GENERATED:END */
 /* =========================================================
    Sitewide transitions / micro-interactions
    ========================================================= */
