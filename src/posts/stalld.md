@@ -1,7 +1,7 @@
 ---
 title: Stall'd
 date: 2025-09-02
-img: stalldstill
+img: /img/stalldstill.jpg
 summary: Romance drama short
 gif: /img/stalld.gif
 tags:

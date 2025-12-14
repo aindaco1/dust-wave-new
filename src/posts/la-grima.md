@@ -1,7 +1,7 @@
 ---
 title: La Grima
 date: 2022-07-31
-img: lagrimastill
+img: /img/lagrimastill.jpg
 summary: Climate short film
 gif: /img/lagrima.gif
 tags:

@@ -1,7 +1,7 @@
 ---
 title: Fronteras Micro-film Festival
 date: 2023-02-18
-img: fronterasstill
+img: /img/fronterasstill.jpg
 summary: Border-themed film festival and immersive exhibition
 gif: /img/fronteras.gif
 tags:

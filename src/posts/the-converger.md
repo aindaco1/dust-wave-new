@@ -1,7 +1,7 @@
 ---
 title: The Converger
 date: 2023-10-28
-img: theconvergerstill
+img: /img/theconvergerstill.jpg
 summary: Parallel universe sci-fi short
 gif: /img/converger.gif
 tags:

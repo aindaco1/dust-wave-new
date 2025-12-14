@@ -2,7 +2,7 @@
 title: DIY Filmmaker Digest 1 – Week of September 11, 2025
 date: 2025-09-11
 summary: A roundup of articles, insights, and to-dos for DIY filmmakers.
-img: digest-header
+img: /img/digest-header.jpg
 ---
 </br>
 <div class="date-written">    

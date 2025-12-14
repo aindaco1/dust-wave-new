@@ -1,7 +1,7 @@
 ---
 title: High Times at the Ranger Bowl-a-Rama
 date: 2023-03-02
-img: hightimesstill
+img: /img/webp/hightimesstill.webp
 summary: Stop-motion short
 gif: /img/hightimes.gif
 tags:

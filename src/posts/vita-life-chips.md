@@ -1,7 +1,7 @@
 ---
 title: VitaLife© Chips
 date: 2023-04-17
-img: vitalifestill
+img: /img/vitalifestill.jpg
 summary: Satirical spec ad
 gif: /img/vitalife.gif
 tags:

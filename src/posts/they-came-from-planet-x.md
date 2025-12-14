@@ -1,7 +1,7 @@
 ---
 title: They Came From Planet X
 date: 2023-08-01
-img: planetxstill
+img: /img/planetxstill.jpg
 summary: Silent sci-fi short
 gif: /img/planetx.gif
 tags:

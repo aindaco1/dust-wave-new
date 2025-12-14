@@ -1,7 +1,7 @@
 ---
 title: Horseheads
 date: 2025-05-03
-img: horseheadsstill
+img: /img/horseheadsstill.jpg
 summary: Crime comedy short
 gif: /img/horseheads.gif
 tags:

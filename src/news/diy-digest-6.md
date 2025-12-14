@@ -2,7 +2,7 @@
 title: DIY Filmmaker Digest 6 -- Week of November 7, 2025
 date: 2025-11-07
 summary: A fresh roundup of links, interviews, and news for DIY filmmakers.
-img: digest-header-6
+img: /img/digest-header-6.jpg
 ---
 </br>
 <div class="date-written">    

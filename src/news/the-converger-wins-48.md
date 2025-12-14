@@ -2,7 +2,7 @@
 title: The Converger wins Best Film at the 2023 Albuquerque Sci-fi Horror 48 Hour Film Project!
 date: 2023-10-29
 summary: The Converger wins a whole bunch of awards and Best Film!
-img: theconvergerstill
+img: /img/theconvergerstill.jpg
 ---
 </br>
 

@@ -2,7 +2,7 @@
 title: Fronteras Micro-film Festival gets support from the PASEO Project
 date: 2025-06-25
 summary: The 2025 Fronteras Micro-film Festival will be hosted at the PASEO 2025 in Taos!
-img: fronterasstill
+img: /img/fronterasstill.jpg
 ---
 </br>
 

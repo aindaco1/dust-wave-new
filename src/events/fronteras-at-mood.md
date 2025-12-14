@@ -4,7 +4,7 @@ date: 2024-03-01
 layout: layouts/event.njk
 permalink: fronteras-at-mood.html
 summary: For the last time ever, a special, one-night-only presentation of the 2023 Fronteras Micro-film Festival will be held at MOOD in Albuquerque!
-img: fronterasmoodstill
+img: /img/fronterasmoodstill.jpg
 ---
 </br>
 

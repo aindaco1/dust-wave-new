@@ -1,7 +1,7 @@
 ---
 title: Bag Check
 date: 2023-08-12
-img: bagcheckstill
+img: /img/bagcheckstill.jpg
 summary: Immigrant family comedy short
 gif: /img/bagcheck.gif
 tags:

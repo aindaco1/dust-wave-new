@@ -1,7 +1,7 @@
 ---
 title: Horse vs. Vamp
 date: 2025-05-04
-img: horsevsvampstill
+img: /img/horsevsvampstill.png
 summary: Challenge competition between filmmakers
 gif: /img/horsevsvamp.gif
 tags:

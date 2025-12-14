@@ -2,7 +2,7 @@
 title: Why do we crowdfund? Why do we do events?
 date: 2025-06-27
 summary: A rundown on why we fundraise.
-img: pandora-bts
+img: /img/news/pandora-bts.jpg
 ---
 </br>
 <div class="date-written">    

@@ -24,9 +24,9 @@
   <meta name="HandheldFriendly" content="true"/>
 
   {% if img %}
-    <meta itemprop="image" content="/img/webp/{{ img }}.webp">
-    <meta property="og:image" content="/img/webp/{{ img }}.webp" />
-    <meta name="twitter:image" content="/img/webp/{{ img }}.webp">
+    <meta itemprop="image" content="{{ img | toWebp }}">
+    <meta property="og:image" content="{{ img | toWebp }}" />
+    <meta name="twitter:image" content="{{ img | toWebp }}">
   {% else %}
     <meta itemprop="image" content="/img/dust-wave-square-padding.png">
     <meta property="og:image" content="/img/dust-wave-square-padding.png" />

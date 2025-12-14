@@ -1,7 +1,7 @@
 ---
 title: Accessory to Murder
 date: 2023-10-31
-img: accessorystill
+img: /img/accessorystill.jpg
 summary: Dark horror comedy
 gif: /img/accessory.gif
 tags:

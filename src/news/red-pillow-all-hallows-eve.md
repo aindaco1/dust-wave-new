@@ -2,7 +2,7 @@
 title: Red Pillow wins 1st Place at the 2022 All Hallows' Eve Halloween Short Film Festival!
 date: 2022-10-29
 summary: We won Best Kill, Best Directing, and 1st Place at the 2022 All Hallows' Eve Halloween Short Film Festival.
-img: redpillowwonstill
+img: /img/redpillowwonstill.jpg
 ---
 </br>
 

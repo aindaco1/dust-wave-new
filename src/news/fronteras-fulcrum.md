@@ -2,7 +2,7 @@
 title: Fronteras Micro-film Festival gets support from the Fulcrum Fund
 date: 2023-03-15
 summary: The 2023 Fronteras Micro-film Festival gets financial support from 516 ARTS Fulcrum Fund!
-img: fronterasstill
+img: /img/fronterasstill.jpg
 ---
 </br>
 

@@ -2,7 +2,7 @@
 title: Long Night selected at the 2025 Way Out West Festival!
 date: 2025-09-30
 summary: As part of the 'Queers For Fears' block
-img: long-night-west
+img: /img/long-night-west.jpg
 ---
 </br>
 

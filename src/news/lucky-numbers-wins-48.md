@@ -2,7 +2,7 @@
 title: Lucky Numbers wins Best Film at the 2023 Albuquerque 48 Hour Film Project!
 date: 2023-07-07
 summary: Space Age Daydream wins Audience Award C, Best Special Effects, Best Use of Character, Best Trailer, and Best Film!
-img: luckynumbersstill
+img: /img/luckynumbersstill.jpg
 ---
 </br>
 

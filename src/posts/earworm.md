@@ -1,7 +1,7 @@
 ---
 title: Earworm
 date: 2024-06-21
-img: earwormstill
+img: /img/earwormstill.jpg
 summary: Dogme 95-style horror short
 gif: /img/earworm.gif
 tags:

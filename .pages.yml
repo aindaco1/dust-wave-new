@@ -1,17 +1,15 @@
 media:
   input: src/img
-  output: img
-  path: src/img
+  output: /img
 
 content:
   # ═══════════════════════════════════════════════════════════
   # 🎬 POSTS — Film projects and productions
   # ═══════════════════════════════════════════════════════════
   - name: posts
-    label: 🎬 Posts (Film Projects)
+    label: 🎬 Film Projects
     type: collection
     path: src/posts
-    filename: "{fields.title}.md"
     view:
       fields: [title, date, tags]
       primary: title
@@ -26,25 +24,21 @@ content:
         description: "The project title (e.g., 'Stall'd', 'The Haunters')."
 
       - name: date
-        label: Date
+        label: Release Date
         type: date
-        options:
-          format: yyyy-mm-dd
-        description: "Release or premiere date. Format: YYYY-MM-DD."
+        description: "Release or premiere date."
 
       - name: img
         label: Featured Image
         type: image
         description: |
-          Main image shown in listings. Best size: 1200x675px (16:9).
-          Use a still from the film or promo image. PNG or JPG.
+          Main image shown on the project page.
+          Best size: 1200x675px (16:9). JPG or PNG.
 
       - name: summary
         label: Short Description
         type: string
-        options:
-          maxlength: 160
-        description: "One-line description shown in listings (max 160 chars). E.g., 'Romance drama short'."
+        description: "One-line tagline (e.g., 'Romance drama short', 'Dark horror comedy')."
 
       - name: gif
         label: Hover GIF
@@ -52,36 +46,96 @@ content:
         options:
           extensions: [gif]
         description: |
-          Animated GIF shown on homepage hover effect.
-          Path should start with /img/ (e.g., /img/stalld.gif).
+          Animated GIF for homepage hover effect.
           Optimal size: 480x270px, under 2MB.
 
       - name: tags
         label: Tags
-        type: string
+        type: select
         list: true
-        description: |
-          Categories for this project. Common tags:
-          • Genre: drama, comedy, horror, documentary
-          • Status: released, in-production, coming-soon
-          Add one tag per line.
+        options:
+          values:
+            - value: released
+              label: "✅ Released"
+            - value: in-production
+              label: "🎬 In Production"
+            - value: coming-soon
+              label: "🔜 Coming Soon"
+            - value: comedy
+              label: "Comedy"
+            - value: drama
+              label: "Drama"
+            - value: horror
+              label: "Horror"
+            - value: sci-fi
+              label: "Sci-Fi"
+            - value: documentary
+              label: "Documentary"
+            - value: satire
+              label: "Satire"
+            - value: mockumentary
+              label: "Mockumentary"
+            - value: stop-motion
+              label: "Stop-Motion"
+            - value: silent
+              label: "Silent"
+            - value: musical
+              label: "Musical"
+            - value: noir
+              label: "Noir"
+            - value: romance
+              label: "Romance"
+            - value: festival
+              label: "Festival/Event"
+            - value: event
+              label: "Event"
+        description: "Select all that apply. Include status + genre(s)."
 
       - name: body
         label: Content
         type: rich-text
+        default: |
+          _TITLE_ is a SHORT DESCRIPTION created for OCCASION. Shot at LOCATION in Albuquerque, New Mexico.
+          <br><br>
+
+          ### Crew
+
+          Directed by NAME<br>
+          Written by NAME<br>
+          Produced by NAME<br>
+          <br>
+          Director of Photography -- NAME<br>
+          Editor -- NAME<br>
+          Sound -- NAME<br>
+          <br><br>
+
+          ### Cast
+
+          CHARACTER -- ACTOR<br>
+          CHARACTER -- ACTOR<br>
+          <br><br>
+
+          ### Awards
+
+          [FESTIVAL NAME](https://example.com)
+          * Award Name -- Recipient
+          * **Best Film**
+          <br><br>
+
+          ## Movie
+
+          **Coming Soon ...**
         description: |
-          Full project description with crew, cast, awards, etc.
-          Use headings (### Crew, ### Cast) to organize sections.
-          Images can be added using the image button.
+          Full project page with crew, cast, awards, etc.
+          Replace the CAPS placeholders with your info.
 
   # ═══════════════════════════════════════════════════════════
-  # 📰 NEWS — Blog posts and digests
+  # 📰 NEWS — Blog posts and announcements
   # ═══════════════════════════════════════════════════════════
   - name: news
-    label: 📰 News & Digests
+    label: 📰 News & Announcements
     type: collection
     path: src/news
-    filename: "{fields.title}.md"
     view:
       fields: [title, date]
       primary: title
@@ -93,47 +147,59 @@ content:
       - name: title
         label: Title
         type: string
-        description: "Article headline (e.g., 'DIY Filmmaker Digest -- Week of December 8, 2025')."
+        description: "Article headline (e.g., 'Bag Check selected at SISFA!')."
 
       - name: date
         label: Date
         type: date
-        options:
-          format: yyyy-mm-dd
-        description: "Publication date. Format: YYYY-MM-DD."
+        description: "Publication date."
 
       - name: summary
         label: Short Description
         type: string
-        options:
-          maxlength: 160
-        description: "Preview text shown in listings and social shares (max 160 chars)."
+        description: "One-sentence preview for listings (max 160 chars)."
 
       - name: img
         label: Header Image
         type: image
         description: |
           Image shown at the top of the article.
-          Best size: 1200x630px. PNG or JPG.
+          Best size: 1200x630px. JPG or PNG.
 
       - name: body
         label: Article Content
         type: rich-text
+        default: |
+          <br>
+
+          Congratulations to everyone involved in PROJECT NAME!
+
+          <br>
+
+          WRITE YOUR ANNOUNCEMENT HERE. Include links to relevant projects like [Project Name](/project/project-slug.html).
+
+          <br><br>
+
+          <div class="row g-2">
+            <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
+              <img src="/img/news/IMAGE.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
+            </div>
+            <div class="col-lg-6 mb-6 mb-lg-0">
+              <img src="/img/news/IMAGE2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
+            </div>
+          </div>
         description: |
-          The main article content. For Digest posts, this contains the
-          curated links, podcasts, and videos in a specific HTML format.
+          The article body. Replace CAPS placeholders.
           
-          ⚠️ DIGEST POSTS: These are generated by a Python script.
-          Manual edits are okay, but the structure should be preserved.
+          ⚠️ DIY DIGEST posts are auto-generated — edit with care!
 
   # ═══════════════════════════════════════════════════════════
   # 📅 EVENTS — Screenings and festivals
   # ═══════════════════════════════════════════════════════════
   - name: events
-    label: 📅 Events (Screenings)
+    label: 📅 Events & Screenings
     type: collection
     path: src/events
-    filename: "{fields.title}.md"
     view:
       fields: [title, date, summary]
       primary: title
@@ -150,9 +216,7 @@ content:
       - name: date
         label: Event Date
         type: date
-        options:
-          format: yyyy-mm-dd
-        description: "When the event takes place. Format: YYYY-MM-DD."
+        description: "The date of the event."
 
       - name: layout
         label: Layout Template
@@ -165,26 +229,48 @@ content:
         type: string
         description: |
           The page URL (e.g., 'fronteras-at-mood.html').
-          Use lowercase with dashes, end with .html.
+          Lowercase with dashes, must end with .html
 
       - name: summary
         label: Short Description
         type: string
-        description: "One-paragraph event description for listings and social shares."
+        description: "One-paragraph event description for listings."
 
       - name: img
         label: Event Image
         type: image
         description: |
           Promotional image for the event.
-          Best size: 1200x675px (16:9). PNG or JPG.
+          Best size: 1200x675px (16:9). JPG or PNG.
 
       - name: body
         label: Event Details
         type: rich-text
+        default: |
+          <br>
+
+          <h4>DATE (e.g., March 1, 2024)</h4>
+          <h4>VENUE, Albuquerque, New Mexico</h4>
+          <h4>TIME (e.g., 7:00 PM - 10:00 PM)</h4>
+
+          <br>
+
+          EVENT DESCRIPTION GOES HERE. Include ticket links, program details, etc.
+
+          <br>
+
+          <div class="row g-2">
+            <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
+              <img src="/img/events/HANDBILL.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="event flyer">
+            </div>
+            <div class="col-lg-6 mb-6 mb-lg-0">
+              <img src="/img/events/PHOTO.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="event photo">
+            </div>
+          </div>
+
+          <br>
+
+          More info at [EXTERNAL LINK](https://example.com)
         description: |
-          Full event description including:
-          • Date, time, and venue
-          • Ticket links
-          • Program details
-          • Images and flyers
+          Event details including date, time, venue, and images.
+          Replace the CAPS placeholders with your info.

@@ -38,6 +38,22 @@ module.exports = function(eleventyConfig) {
   };
 
   eleventyConfig.addFilter("filterTagList", filterTagList);
+
+  // Convert image path to webp: /img/stalldstill.jpg -> /img/webp/stalldstill.webp
+  eleventyConfig.addFilter("toWebp", (imgPath) => {
+    if (!imgPath) return imgPath;
+    // Already a webp path
+    if (imgPath.includes('/webp/') || imgPath.endsWith('.webp')) {
+      return imgPath;
+    }
+    // Extract filename without extension and build webp path
+    const match = imgPath.match(/^\/img\/(.+)\.(jpg|jpeg|png)$/i);
+    if (match) {
+      return `/img/webp/${match[1]}.webp`;
+    }
+    // Fallback: return original if pattern doesn't match
+    return imgPath;
+  });
   eleventyConfig.addPassthroughCopy("src/fonts");
   eleventyConfig.addCollection("tagList", collectionAPI => {
     const tagsObject = {}

@@ -1,7 +1,7 @@
 ---
 title: The Dust Wave Show
 date: 2023-11-10
-img: showstill
+img: /img/showstill.jpg
 summary: Anthology series produced for public access television
 gif: /img/thedustwaveshow.gif
 tags:

@@ -1,7 +1,7 @@
 ---
 title: Dust Don't Settle
 date: 2025-04-15
-img: dustdontsettlestill
+img: /img/dustdontsettlestill.jpg
 summary: New Mexico DIY film documentary short
 gif: /img/dustdontsettle.gif
 tags:

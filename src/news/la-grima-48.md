@@ -2,7 +2,7 @@
 title: La Grima wins multiple awards at 2022 Albuquerque 48 Hour Film Project
 date: 2022-08-24
 summary: We won Best Performer, Best Cinematography & Sound, Audience Award Group C, and 2nd Best Film at 2022 Albuquerque 48 Hour Film Project.
-img: lagrimastill
+img: /img/lagrimastill.jpg
 ---
 </br>
 

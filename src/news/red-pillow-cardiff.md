@@ -2,7 +2,7 @@
 title: Red Pillow selected for screening at the 2023 Cardiff Mini Film Festival!
 date: 2024-01-21
 summary: Our weird mock infomercial is screening on January 21st in Cardiff.
-img: redpillowcardiffstill
+img: /img/redpillowcardiffstill.jpg
 ---
 </br>
 
