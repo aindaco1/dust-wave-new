@@ -26,6 +26,7 @@ permalink: "subdir/{{ title | slugify }}/index.html"
         <div class="row d-flex justify-content-center text-start">
           <div class="col-12 col-lg-10 col-xl-10 py-vh-2">
             {{ content | safe }}
+            {% include "snippets/simple-gallery.njk" %}
           </div>
         </div>
       </div>

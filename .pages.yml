@@ -91,6 +91,41 @@ content:
               label: "Event"
         description: "Select all that apply. Include status + genre(s)."
 
+      - name: videoId
+        label: Video ID
+        type: string
+        description: |
+          YouTube or Vimeo video ID for the movie embed.
+          YouTube: the part after "v=" (e.g., 5JyyQVF0cAI)
+          Vimeo: the number at the end of the URL
+
+      - name: videoType
+        label: Video Platform
+        type: select
+        options:
+          values:
+            - value: youtube
+              label: YouTube
+            - value: vimeo
+              label: Vimeo
+        description: "Select the video platform."
+
+      - name: galleryImages
+        label: 📸 Behind the Scenes Gallery
+        type: image
+        list: true
+        description: |
+          Upload images for the gallery section.
+          These will automatically display in a 2-column grid.
+          Best size: 800x600px or similar. JPG or PNG.
+
+      - name: poster
+        label: 🎨 Poster Image
+        type: image
+        description: |
+          Optional poster image displayed after the gallery.
+          Best size: 600x900px (2:3 ratio).
+
       - name: body
         label: Content
         type: rich-text
@@ -120,14 +155,13 @@ content:
           [FESTIVAL NAME](https://example.com)
           * Award Name -- Recipient
           * **Best Film**
-          <br><br>
-
-          ## Movie
-
-          **Coming Soon ...**
         description: |
-          Full project page with crew, cast, awards, etc.
+          Project description, crew, cast, and awards.
           Replace the CAPS placeholders with your info.
+          
+          📸 **Gallery & video are added via the fields above** — no HTML needed!
+          
+          For inline images, use: `{% img "/img/photo.jpg", "description" %}`
 
   # ═══════════════════════════════════════════════════════════
   # 📰 NEWS — Blog posts and announcements
@@ -166,6 +200,14 @@ content:
           Image shown at the top of the article.
           Best size: 1200x630px. JPG or PNG.
 
+      - name: galleryImages
+        label: 📸 Article Gallery
+        type: image
+        list: true
+        description: |
+          Upload images for an auto-generated gallery.
+          These display in a 2-column grid at the end of the article.
+
       - name: body
         label: Article Content
         type: rich-text
@@ -176,22 +218,16 @@ content:
 
           <br>
 
-          WRITE YOUR ANNOUNCEMENT HERE. Include links to relevant projects like [Project Name](/project/project-slug.html).
-
-          <br><br>
-
-          <div class="row g-2">
-            <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-              <img src="/img/news/IMAGE.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
-            </div>
-            <div class="col-lg-6 mb-6 mb-lg-0">
-              <img src="/img/news/IMAGE2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
-            </div>
-          </div>
+          WRITE YOUR ANNOUNCEMENT HERE. Include links to relevant projects like [Project Name](/subdir/project-name/).
         description: |
           The article body. Replace CAPS placeholders.
           
+          📸 **Gallery images are added via the field above** — no HTML needed!
+          
           ⚠️ DIY DIGEST posts are auto-generated — edit with care!
+          
+          For inline images, use: `{% img "/img/news/photo.jpg", "description" %}`
+          For videos, use: `{% youtube "VIDEO_ID" %}`
 
   # ═══════════════════════════════════════════════════════════
   # 📅 EVENTS — Screenings and festivals
@@ -243,6 +279,14 @@ content:
           Promotional image for the event.
           Best size: 1200x675px (16:9). JPG or PNG.
 
+      - name: galleryImages
+        label: 📸 Event Gallery
+        type: image
+        list: true
+        description: |
+          Upload flyers, photos, etc. for an auto-generated gallery.
+          These display in a 2-column grid.
+
       - name: body
         label: Event Details
         type: rich-text
@@ -259,18 +303,11 @@ content:
 
           <br>
 
-          <div class="row g-2">
-            <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-              <img src="/img/events/HANDBILL.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="event flyer">
-            </div>
-            <div class="col-lg-6 mb-6 mb-lg-0">
-              <img src="/img/events/PHOTO.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="event photo">
-            </div>
-          </div>
-
-          <br>
-
           More info at [EXTERNAL LINK](https://example.com)
         description: |
           Event details including date, time, venue, and images.
           Replace the CAPS placeholders with your info.
+          
+          📸 **Gallery images are added via the field above** — no HTML needed!
+          
+          For inline images, use: `{% img "/img/events/photo.jpg", "description" %}`

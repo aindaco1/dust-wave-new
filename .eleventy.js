@@ -13,6 +13,42 @@ module.exports = function(eleventyConfig) {
     return `  style="background-image: url('./img/webp/${imgName}.webp');"`;
   });
 
+  // YouTube embed shortcode - responsive video player
+  // Usage: {% youtube "VIDEO_ID" %}
+  // Example: {% youtube "5JyyQVF0cAI" %}
+  eleventyConfig.addShortcode("youtube", function(videoId) {
+    return `<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class="embed-container"><iframe src="https://www.youtube-nocookie.com/embed/${videoId}?rel=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
+  });
+
+  // Vimeo embed shortcode - responsive video player
+  // Usage: {% vimeo "VIDEO_ID" %}
+  eleventyConfig.addShortcode("vimeo", function(videoId) {
+    return `<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class="embed-container"><iframe src="https://player.vimeo.com/video/${videoId}" title="Vimeo video player" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
+  });
+
+  // Styled image shortcode - single image with standard classes
+  // Usage: {% img "/img/photo.jpg", "description" %}
+  // Optional width: {% img "/img/photo.jpg", "description", "w-75" %}
+  eleventyConfig.addShortcode("img", function(src, alt, width = "w-100") {
+    return `<img src="${src}" class="${width} shadow-1-strong rounded mb-2" alt="${alt || ''}" loading="lazy">`;
+  });
+
+  // Two-column gallery shortcode (paired)
+  // Usage: {% gallery %}...images...{% endgallery %}
+  eleventyConfig.addPairedShortcode("gallery", function(content) {
+    return `<div class="row g-2">
+${content}
+</div>`;
+  });
+
+  // Gallery column shortcode - use inside gallery
+  // Usage: {% col %}{% img "..." %}{% img "..." %}{% endcol %}
+  eleventyConfig.addPairedShortcode("col", function(content) {
+    return `  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
+${content}
+  </div>`;
+  });
+
   //Base Plugin
   eleventyConfig.addPlugin(EleventyHtmlBasePlugin);
 
