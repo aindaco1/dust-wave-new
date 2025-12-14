@@ -8,7 +8,7 @@ const sass = require('gulp-dart-sass');
 const clean = require('gulp-clean');
 const browserSync = require('browser-sync').create();
 const rename = require('gulp-rename');
-const imgopt = require('gulp-smushit');
+
 const purgecss = require('gulp-purgecss');
 const htmlmin = require('gulp-htmlmin');
 const htmlreplace = require('gulp-html-replace');
@@ -53,9 +53,16 @@ function copyPdf() {
 gulp.task('dist-assets', parallel(copyPeaks, copyJs, copyImg, copyPdf)); // keep task name for scripts
 
 // Sass → CSS
+// NOTE: Deprecation warnings are silenced because they come from Bootstrap 5's SCSS,
+// which still uses legacy @import syntax and old color functions. These will be
+// resolved when Bootstrap 6 is released (migrates to @use/@forward). Our custom
+// theme files (src/scss/themes/) don't use any deprecated syntax.
+// See: https://sass-lang.com/documentation/breaking-changes/import/
 gulp.task('sass', function sassTask() {
   return src(`${DIR.src}/scss/theme.scss`)
-    .pipe(sass().on('error', sass.logError))
+    .pipe(sass({
+      silenceDeprecations: ['legacy-js-api', 'import', 'global-builtin', 'color-functions', 'abs-percent']
+    }).on('error', sass.logError))
     .pipe(dest(`${DIR.dev}/css`));
 });
 
@@ -110,10 +117,8 @@ gulp.task('purgecss', function purgeCssTask() {
     .pipe(dest(`${DIR.dist}/css`));
 });
 
-// Optional image optimization into docs
-gulp.task('imgopt', function imgOptTask() {
-  return src(`${DIR.src}/img/*.{jpg,png}`).pipe(imgopt()).pipe(dest(`${DIR.dist}/img`));
-});
+// NOTE: Image optimization is handled by webp.mjs (imagemin + imagemin-webp)
+// The old gulp-smushit task was removed as it used a deprecated Yahoo API
 
 // ============ Vendor assets (Bootstrap/AOS) ============
 gulp.task('copy-assets', function vendorAssets(done) {
