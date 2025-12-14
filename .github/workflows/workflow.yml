@@ -35,6 +35,7 @@ jobs:
         id: changes
         run: |
           git add -A
+          git add -f docs/  # Force-add docs/ even though it's in .gitignore
           if git diff --cached --quiet; then
             echo "changed=false" >> $GITHUB_OUTPUT
           else

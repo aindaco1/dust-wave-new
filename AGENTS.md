@@ -6,6 +6,12 @@
 - **Eleventy only**: `npm run serve` or `npx eleventy`
 - **Clean**: `npm run clean` (dev) | `npm run clean-prod` (docs)
 
+## Git Workflow
+- **`docs/` is gitignored locally** — GitHub Actions is the only source that commits build output
+- **Local development**: Use `npm run watch` → previews in `dev/` folder
+- **To deploy**: Push source changes to `main` → GitHub Actions builds and commits `docs/`
+- **Pages CMS edits**: Trigger the same workflow, no conflicts with local builds
+
 ## Architecture
 - **Static site generator**: Eleventy (11ty) v2 with Nunjucks templates
 - **Styling**: Bootstrap 5 + custom SCSS in `src/scss/`, compiled via Gulp
