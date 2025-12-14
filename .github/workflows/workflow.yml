@@ -31,26 +31,15 @@ jobs:
       - name: Build site
         run: npm run build
 
-      - name: Check for changes
-        id: changes
-        run: |
-          git add -A
-          git add -f docs/  # Force-add docs/ even though it's in .gitignore
-          if git diff --cached --quiet; then
-            echo "changed=false" >> $GITHUB_OUTPUT
-          else
-            echo "changed=true" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Commit and push
-        if: steps.changes.outputs.changed == 'true'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git commit -m "Build site [automated]"
-          git push
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          cname: dustwave.xyz
 
       - name: Purge Cloudflare cache
+        if: ${{ vars.CLOUDFLARE_ENABLED == 'true' }}
         uses: jakejarvis/cloudflare-purge-action@master
         env:
           CLOUDFLARE_ZONE: ${{ secrets.CLOUDFLARE_ZONE }}

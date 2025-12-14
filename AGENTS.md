@@ -7,10 +7,12 @@
 - **Clean**: `npm run clean` (dev) | `npm run clean-prod` (docs)
 
 ## Git Workflow
-- **`docs/` is gitignored locally** — GitHub Actions is the only source that commits build output
+- **`main` branch**: Source code only — no build output committed
+- **`gh-pages` branch**: Build output — managed entirely by GitHub Actions
 - **Local development**: Use `npm run watch` → previews in `dev/` folder
-- **To deploy**: Push source changes to `main` → GitHub Actions builds and commits `docs/`
-- **Pages CMS edits**: Trigger the same workflow, no conflicts with local builds
+- **To deploy**: Push source changes to `main` → GitHub Actions builds and deploys to `gh-pages`
+- **Pages CMS edits**: Trigger the same workflow, no conflicts
+- **No pull conflicts**: CI never commits to `main`, so you can push freely
 
 ## Architecture
 - **Static site generator**: Eleventy (11ty) v2 with Nunjucks templates
