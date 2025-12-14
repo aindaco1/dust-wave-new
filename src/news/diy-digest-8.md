@@ -1,5 +1,5 @@
 ---
-title: DIY Filmmaker Digest -- Week of December 8, 2025
+title: DIY Filmmaker Digest 8 -- Week of December 8, 2025
 date: 2025-12-08
 summary: A fresh roundup of links, interviews, and news for DIY filmmakers.
 img: /img/digest-header-8.jpg
