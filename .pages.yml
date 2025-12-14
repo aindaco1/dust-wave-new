@@ -167,7 +167,7 @@ content:
   # 📜 DIY DIGESTS — Auto-generated weekly digests (code editing)
   # ═══════════════════════════════════════════════════════════
   - name: digests
-    label: 📜 DIY Digests
+    label: 📜 DIY Digests (⚠️ Edit Only - Do Not Create)
     type: collection
     path: src/news/digests
     view:
