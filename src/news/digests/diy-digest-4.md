@@ -2,7 +2,7 @@
 title: DIY Filmmaker Digest 4 — Week of October 6, 2025
 date: 2025-10-06
 summary: A fresh roundup of links, interviews, and news for DIY filmmakers.
-img: /img/digest-header-4.jpg
+img: /img/digest/header/digest-header-4.jpg
 ---
 </br>
 <div class="date-written">

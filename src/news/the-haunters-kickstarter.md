@@ -2,7 +2,7 @@
 title: The Haunters raises over $3,000 on Kickstarter!
 date: 2023-09-30
 summary: In order to pay cast and crew during the strikes, we raised over $3K to make The Haunters!
-img: /img/haunters-kickstarter.jpg
+img: /img/the_haunters/haunters-kickstarter.jpg
 ---
 </br>
 
@@ -14,7 +14,7 @@ So we reached out to our community ... and in one day, we made our goal! Then, o
 
 </br>
 
-<center><img src="/img/celebration.gif" class="w-80 shadow-1-strong rounded mb-2" alt="behind the scenes"></center>
+<center><img src="/img/news/celebration.gif" class="w-80 shadow-1-strong rounded mb-2" alt="behind the scenes"></center>
 
 </br>
 </br>

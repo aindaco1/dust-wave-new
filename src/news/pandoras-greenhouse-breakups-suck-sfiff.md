@@ -2,7 +2,7 @@
 title: Pandora's Greenhouse and Breakups Suck selected to the 2025 Santa Fe International Film Festival!
 date: 2025-10-01
 summary: As part of the New Mexico Shorts block
-img: /img/sfiff-2025.png
+img: /img/pandoras_greenhouse/sfiff-2025.png
 ---
 </br>
 

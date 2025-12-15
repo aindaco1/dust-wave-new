@@ -10,7 +10,7 @@ html {
 body {
   background: transparent;
   color: $white;
-  cursor: url("/img/dust-wave-square-cursor.svg"), auto !important;
+  cursor: url("/img/favicon/dust-wave-square-cursor.svg"), auto !important;
 }
 
 body.fixednav { margin-top: 108px; }
@@ -47,7 +47,7 @@ body#glitch-target::before {
   pointer-events: none;
   background-image:
     linear-gradient(0deg, rgba(255,255,255,.015), rgba(0,0,0,.015)), /* faint grain */
-    var(--glitch-bg, url("../img/intro.gif"));                        /* default */
+    var(--glitch-bg, url("../img/home/intro.gif"));                        /* default */
   background-repeat: no-repeat, no-repeat;
   background-size: 100% 100%, cover;
   background-position: 0 0, center;
@@ -327,7 +327,7 @@ li p { margin-bottom: 0; }
 }
 
 .news-background {
-  background-image: url("../img/news.gif");
+  background-image: url("../img/news/news.gif");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;

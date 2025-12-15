@@ -2,7 +2,7 @@
 title: The Indie 50
 date: 2025-10-02
 summary: 1% for the rest of us
-img: /img/indie-fifty.png
+img: /img/news/indie-fifty.png
 ---
 </br>
 <div class="date-written">    

@@ -2,7 +2,7 @@
 title: Long Night raises $2,500 -- and counting -- on Kickstarter!
 date: 2024-08-30
 summary: In order to rent equipment and get people fed, we raised over $2.5K to make Long Night!
-img: /img/long-night-kickstarter.jpg
+img: /img/long_night/long-night-kickstarter.jpg
 ---
 </br>
 
@@ -14,7 +14,7 @@ So we reached out to our community, and [achieved our goal one week early!](http
 
 </br>
 
-<center><img src="/img/celebration.gif" class="w-80 shadow-1-strong rounded mb-2" alt="behind the scenes"></center>
+<center><img src="/img/news/celebration.gif" class="w-80 shadow-1-strong rounded mb-2" alt="behind the scenes"></center>
 
 </br>
 </br>

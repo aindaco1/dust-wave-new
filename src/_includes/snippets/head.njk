@@ -5,10 +5,10 @@
   {% else %}
     <meta name="description" content="{{ metadata.description }}">
   {% endif %}
-  <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
-  <link rel="icon" type="image/png" sizes="96x96" href="/img/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/img/favicon/favicon.png">
   <link rel="preconnect" href="https://www.youtube-nocookie.com" crossorigin>
   <link rel="preconnect" href="https://www.youtube.com" crossorigin>
   <link rel="preconnect" href="https://i.ytimg.com" crossorigin>
@@ -28,9 +28,9 @@
     <meta property="og:image" content="{{ img | toWebp }}" />
     <meta name="twitter:image" content="{{ img | toWebp }}">
   {% else %}
-    <meta itemprop="image" content="/img/dust-wave-square-padding.png">
-    <meta property="og:image" content="/img/dust-wave-square-padding.png" />
-    <meta name="twitter:image" content="/img/dust-wave-square-padding.png">
+    <meta itemprop="image" content="/img/favicon/dust-wave-square-padding.png">
+    <meta property="og:image" content="/img/favicon/dust-wave-square-padding.png" />
+    <meta name="twitter:image" content="/img/favicon/dust-wave-square-padding.png">
   {% endif %}
 
   <title>{{ title or metadata.title }}</title>

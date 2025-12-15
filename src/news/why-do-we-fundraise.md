@@ -136,7 +136,7 @@ As I mentioned before, **Dust Wave does not charge dues to our members.** I ha
 
 For many folks in Dust Wave, **crowdfunding and other kinds of grassroots fundraising** are some of the few clear paths to **seeing their ambitious filmmaking visions come to life.** I root like hell for filmmakers that **don’t have famous film industry family**, or **the right connections,** or **fashionable but disposable, shallow ideas,** but *do* have **creativity, vision, humility, and grit** in spades. And it seems imperative that they get the support they need from the artists and communities that share their values. When they win, well, **score one for the rest of us.**
 </br></br>
-<center><img src="/img/celebration.gif" class="w-75 shadow-1-strong rounded mb-2" alt="behind the scenes"></center>
+<center><img src="/img/news/celebration.gif" class="w-75 shadow-1-strong rounded mb-2" alt="behind the scenes"></center>
 </br>
 </br>
 

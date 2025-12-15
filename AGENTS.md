@@ -28,6 +28,11 @@
 - `src/news/` - News articles; `src/news/digests/` for DIY Digests
 - `src/img/gifs/` - Project hover GIFs
 - `src/img/stills/` - Project featured images
+- `src/img/favicon/` - Favicons, logos, and branding
+- `src/img/home/` - Homepage background GIFs
+- `src/img/digest/header/` - DIY Digest header images
+- `src/img/news/` - News article images and GIFs
+- `src/img/webp/` - WebP versions (mirrors img/ structure)
 - `src/scss/theme.scss` - Main stylesheet entry point
 
 ## Code Style

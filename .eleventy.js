@@ -70,8 +70,9 @@ ${content}
 
   eleventyConfig.addFilter("filterTagList", filterTagList);
 
-  // Convert image path to webp: 
+  // Convert image path to webp, preserving subdirectory structure:
   // /img/stills/stalldstill.jpg -> /img/webp/stills/stalldstill.webp
+  // /img/digest/header/file.jpg -> /img/webp/digest/header/file.webp
   // /img/somefile.jpg -> /img/webp/somefile.webp
   eleventyConfig.addFilter("toWebp", (imgPath) => {
     if (!imgPath) return imgPath;
@@ -79,12 +80,7 @@ ${content}
     if (imgPath.includes('/webp/') || imgPath.endsWith('.webp')) {
       return imgPath;
     }
-    // Handle /img/stills/filename.ext -> /img/webp/stills/filename.webp
-    const stillsMatch = imgPath.match(/^\/img\/stills\/(.+)\.(jpg|jpeg|png)$/i);
-    if (stillsMatch) {
-      return `/img/webp/stills/${stillsMatch[1]}.webp`;
-    }
-    // Handle /img/filename.ext -> /img/webp/filename.webp (legacy paths)
+    // Handle /img/subdir/filename.ext -> /img/webp/subdir/filename.webp
     const match = imgPath.match(/^\/img\/(.+)\.(jpg|jpeg|png)$/i);
     if (match) {
       return `/img/webp/${match[1]}.webp`;

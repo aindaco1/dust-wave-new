@@ -38,10 +38,11 @@ src/
 ├── img/
 │   ├── gifs/        # Project hover GIFs (800×450px, <10MB)
 │   ├── stills/      # Project featured images (1800×1012px, <400KB)
-│   ├── webp/        # WebP versions (auto-generated)
-│   │   └── stills/  # WebP stills
-│   ├── news/        # News article images
-│   ├── digest/      # DIY Digest header images
+│   ├── favicon/     # Favicons, logos, and branding assets
+│   ├── home/        # Homepage background GIFs
+│   ├── digest/header/ # DIY Digest header images
+│   ├── news/        # News article images and GIFs
+│   ├── webp/        # WebP versions (mirrors structure above)
 │   └── [project]/   # Per-project galleries (behind-the-scenes, posters)
 ├── posts/           # Film project pages (Markdown)
 ├── news/

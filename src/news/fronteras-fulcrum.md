@@ -10,7 +10,7 @@ The [2023 Fronteras Micro-film Festival](https://fronterasmicrofilm.com) has jus
 </br>
 </br>
 
-<center><img src="/img/celebration.gif" class="w-75 shadow-1-strong rounded mb-2" alt="behind the scenes"></center>
+<center><img src="/img/news/celebration.gif" class="w-75 shadow-1-strong rounded mb-2" alt="behind the scenes"></center>
 </br>
 </br>
 
