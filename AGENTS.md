@@ -37,6 +37,11 @@
 
 ## Code Style
 - Templates use Nunjucks (`.njk`) with frontmatter for metadata
-- Content uses Markdown with YAML frontmatter (date, title, tags)
+- Content uses raw HTML/Markdown with YAML frontmatter (date, title, tags)
 - SCSS follows Bootstrap variable conventions; custom styles in `theme.scss`
-- Use `{% bgImg "name" %}` shortcode for WebP background images
+
+## Pages CMS Image Uploads
+- Featured images → `src/img/stills/`
+- Hover GIFs → `src/img/gifs/`
+- News images → `src/img/news/`
+- Digest headers → `src/img/digest/header/`

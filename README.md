@@ -60,18 +60,17 @@ docs/                # Production build output (gitignored, deployed via CI)
 Content is managed via [Pages CMS](https://pagescms.org/) configured in `.pages.yml`.
 
 ### Collections
-- **🎬 Film Projects** (`src/posts/`) — Project pages with video embeds and galleries — [How-To Guide](https://www.notion.so/dustwave/2ca86545942d806c8077ef5b7ee5fa60#2ca86545942d80f7b446c2f1edc4afc2)
-- **📢 News** (`src/news/`) — Announcements with rich-text editing — [How-To Guide](https://www.notion.so/dustwave/2ca86545942d806c8077ef5b7ee5fa60#2ca86545942d80a8b1bfe2c2225602f9)
+- **🎬 Film Projects** (`src/posts/`) — Project pages with raw HTML/Markdown content — [How-To Guide](https://www.notion.so/dustwave/2ca86545942d806c8077ef5b7ee5fa60#2ca86545942d80f7b446c2f1edc4afc2)
+- **📢 News** (`src/news/`) — Announcements with raw HTML/Markdown content — [How-To Guide](https://www.notion.so/dustwave/2ca86545942d806c8077ef5b7ee5fa60#2ca86545942d80a8b1bfe2c2225602f9)
 - **📜 DIY Digests** (`src/news/digests/`) — Weekly digests (HTML editing only)
 
 ### Image Guidelines
 | Type | Size | Max File Size |
 |------|------|---------------|
-| Featured Image | 1800×1012px (16:9) | 400KB |
-| Hover GIF | 800×450px (16:9) | 10MB |
-| Gallery Images | 1400px wide | 300KB |
-| Poster | 1000×1500px (2:3) | 350KB |
-| News Header | 1600×900px (16:9) | 350KB |
+| Featured Image (stills/) | 1800×1012px (16:9) | 400KB |
+| Hover GIF (gifs/) | 800×450px (16:9) | 10MB |
+| News Header (news/) | 1600×900px (16:9) | 350KB |
+| Digest Header (digest/header/) | 1600×900px (16:9) | 350KB |
 
 ## Key Files
 
