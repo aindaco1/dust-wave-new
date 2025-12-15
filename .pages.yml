@@ -7,7 +7,7 @@ content:
   # 🎬 POSTS — Film projects and productions
   # ═══════════════════════════════════════════════════════════
   - name: posts
-    label: 🎬 Film Projects
+    label: "🎬 Film Projects — [How-To Guide](https://www.notion.so/dustwave/2ca86545942d806c8077ef5b7ee5fa60#2ca86545942d80f7b446c2f1edc4afc2)"
     type: collection
     path: src/posts
     view:
@@ -31,9 +31,7 @@ content:
       - name: img
         label: Featured Image
         type: image
-        description: |
-          Main image shown on the project page.
-          Best size: 1200x675px (16:9). JPG or PNG.
+        description: "Main image for project page. Size: 1800×1012px (16:9), under 400KB."
 
       - name: summary
         label: Short Description
@@ -45,9 +43,7 @@ content:
         type: image
         options:
           extensions: [gif]
-        description: |
-          Animated GIF for homepage hover effect.
-          Optimal size: 480x270px, under 2MB.
+        description: "Animated preview for homepage hover. Size: 800×450px (16:9), under 10MB, 3-4 second loop."
 
       - name: tags
         label: Tags
@@ -114,17 +110,12 @@ content:
         label: 📸 Behind the Scenes Gallery
         type: image
         list: true
-        description: |
-          Upload images for the gallery section.
-          These will automatically display in a 2-column grid.
-          Best size: 800x600px or similar. JPG or PNG.
+        description: "Behind-the-scenes photos. Auto-displays in 2-column grid. Size: 1400px wide, under 300KB."
 
       - name: poster
         label: 🎨 Poster Image
         type: image
-        description: |
-          Optional poster image displayed after the gallery.
-          Best size: 600x900px (2:3 ratio).
+        description: "Optional film poster. Size: 1000×1500px (2:3 portrait), under 350KB."
 
       - name: body
         label: Content
@@ -155,7 +146,7 @@ content:
           [FESTIVAL NAME](https://example.com)
           * Award Name -- Recipient
           * **Best Film**
-        description: "Project description, crew, cast, and awards. Replace the CAPS placeholders.\n\n📸 Gallery & video are added via the fields above — no HTML needed!\n\nFor inline images: {% img \"/img/photo.jpg\", \"description\" %}"
+        description: "Replace CAPS placeholders. Gallery/video fields above handle media automatically."
 
   # ═══════════════════════════════════════════════════════════
   # 📜 DIY DIGESTS — Auto-generated weekly digests (code editing)
@@ -207,7 +198,7 @@ content:
   # 📢 REGULAR NEWS — Standard announcements (rich-text editing)
   # ═══════════════════════════════════════════════════════════
   - name: news-regular
-    label: 📢 News (Regular)
+    label: "📢 News (Regular) — [How-To Guide](https://www.notion.so/dustwave/2ca86545942d806c8077ef5b7ee5fa60#2ca86545942d80a8b1bfe2c2225602f9)"
     type: collection
     path: src/news
     subfolders: false
@@ -237,17 +228,13 @@ content:
       - name: img
         label: Header Image
         type: image
-        description: |
-          Image shown at the top of the article.
-          Best size: 1200x630px. JPG or PNG.
+        description: "Article header image. Size: 1600×900px (16:9), under 350KB."
 
       - name: galleryImages
         label: 📸 Article Gallery
         type: image
         list: true
-        description: |
-          Upload images for an auto-generated gallery.
-          These display in a 2-column grid at the end of the article.
+        description: "Auto-displays in 2-column grid at end of article. Size: 1400px wide, under 300KB."
 
       - name: body
         label: Article Content
@@ -260,7 +247,7 @@ content:
           <br>
 
           WRITE YOUR ANNOUNCEMENT HERE. Include links to relevant projects like [Project Name](/subdir/project-name/).
-        description: "The article body. Replace CAPS placeholders.\n\n📸 Gallery images are added via the field above — no HTML needed!\n\n⚠️ DIY DIGEST posts are auto-generated — edit with care!\n\nShortcodes:\n• Image: {% img \"/img/news/photo.jpg\", \"description\" %}\n• Video: {% youtube \"VIDEO_ID\" %}"
+        description: "Replace CAPS placeholders. Gallery field above handles images automatically."
 
   # ═══════════════════════════════════════════════════════════
   # 📅 EVENTS — Screenings and festivals
@@ -308,17 +295,13 @@ content:
       - name: img
         label: Event Image
         type: image
-        description: |
-          Promotional image for the event.
-          Best size: 1200x675px (16:9). JPG or PNG.
+        description: "Event header image. Size: 1600×900px (16:9), under 350KB."
 
       - name: galleryImages
         label: 📸 Event Gallery
         type: image
         list: true
-        description: |
-          Upload flyers, photos, etc. for an auto-generated gallery.
-          These display in a 2-column grid.
+        description: "Flyers, photos, etc. Auto-displays in 2-column grid. Size: 1400px wide, under 300KB."
 
       - name: body
         label: Event Details
@@ -337,4 +320,4 @@ content:
           <br>
 
           More info at [EXTERNAL LINK](https://example.com)
-        description: "Event details including date, time, venue, and images. Replace the CAPS placeholders.\n\n📸 Gallery images are added via the field above — no HTML needed!\n\nFor inline images: {% img \"/img/events/photo.jpg\", \"description\" %}"
+        description: "Replace CAPS placeholders. Gallery field above handles images automatically."
