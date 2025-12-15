@@ -10,6 +10,7 @@ content:
     label: 🎬 Film Projects
     type: collection
     path: src/posts
+    filename: "{fields.title|slug}"
     view:
       fields: [title, date, tags]
       primary: title
@@ -171,6 +172,7 @@ content:
     label: 📢 News
     type: collection
     path: src/news
+    filename: "{fields.title|slug}"
     subfolders: false
     view:
       fields: [title, date]
