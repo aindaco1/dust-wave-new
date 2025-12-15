@@ -1,9 +1,9 @@
 ---
 title: Earworm
 date: 2024-06-21
-img: /img/earwormstill.jpg
+img: /img/stills/earwormstill.jpg
 summary: Dogme 95-style horror short
-gif: /img/earworm.gif
+gif: /img/gifs/earworm.gif
 tags:
   - horror
   - released

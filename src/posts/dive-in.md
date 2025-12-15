@@ -1,9 +1,9 @@
 ---
 title: Dive-In Movies
 date: 2024-08-29
-img: /img/diveinstill.jpg
+img: /img/stills/diveinstill.jpg
 summary: Film screenings at the Hotel Zazz pool
-gif: /img/divein.gif
+gif: /img/gifs/divein.gif
 tags:
   - festival
   - event

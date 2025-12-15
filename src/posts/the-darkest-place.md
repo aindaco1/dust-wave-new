@@ -1,9 +1,9 @@
 ---
 title: The Darkest Place
 date: 2023-06-23
-img: /img/darkestplacestill.jpg
+img: /img/stills/darkestplacestill.jpg
 summary: Dark skies documentary short
-gif: /img/darkestplace.gif
+gif: /img/gifs/darkestplace.gif
 tags:
   - documentary
   - released

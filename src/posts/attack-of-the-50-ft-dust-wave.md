@@ -1,9 +1,9 @@
 ---
 title: Attack of the 50 Ft. Dust Wave!
 date: 2025-11-21
-img: /img/attackstill.png
+img: /img/stills/attackstill.png
 summary: A private screening of 13 of our newest short films at the Guild Cinema
-gif: /img/attack.gif
+gif: /img/gifs/attack.gif
 tags:
   - festival
   - event

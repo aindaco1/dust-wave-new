@@ -1,9 +1,9 @@
 ---
 title: Pandora's Greenhouse
 date: 2025-04-07
-img: /img/pandorastill.jpg
+img: /img/stills/pandorastill.jpg
 summary: Cosmic horror short film
-gif: /img/pandora.gif
+gif: /img/gifs/pandora.gif
 tags:
   - horror
   - cosmic

@@ -1,9 +1,9 @@
 ---
 title: Softening
 date: 2024-11-06
-img: /img/softeningstill.jpg
+img: /img/stills/softeningstill.jpg
 summary: Heartfelt musical drama
-gif: /img/softening.gif
+gif: /img/gifs/softening.gif
 tags:
   - drama
   - musical

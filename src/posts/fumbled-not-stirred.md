@@ -1,9 +1,9 @@
 ---
 title: Fumbled Not Stirred
 date: 2021-07-30
-img: /img/fumbledstill.jpg
+img: /img/stills/fumbledstill.jpg
 summary: YouTube mixology series
-gif: /img/fumblednotstirred.gif
+gif: /img/gifs/fumblednotstirred.gif
 tags:
   - released
   - comedy

@@ -1,34 +1,93 @@
+# Dust Wave Website
+
+Static website for [dustwave.xyz](https://dustwave.xyz), built with Eleventy and Bootstrap 5.
+
 ## Requirements
-You need Node (at least v14+) on your computer. To check if you have node and what version run this command in your terminal:
-```
+
+Node.js v14+ required. Check your version:
+```bash
 node --version
 ```
 
 ## Installation
-Check out the main branch of this repo.
-Fire up your terminal, go to the new folder and run:
-```
+
+```bash
 npm install
 ```
-Now you are good to go.
 
-## Build it for dev
-To build your static website for local development run:
-```
-npm run build-dev
-```
-This will build the static website into the `/dev` folder without all the minifying and purging stuff (<- much faster and a more human-friendly code output, but a much bigger package)
+## Development
 
-## Run in dev mode
-To run the build-dev task automatically on file changes run:
-```
+Run local dev server with hot reload:
+```bash
 npm run watch
 ```
-That will run a local server from `/dev` folder and connects browser sync to it. On changes within the `/src` folder it will run the `npm run build-dev` command automatically and will refresh your browser.
+Builds to `/dev` and starts BrowserSync with auto-refresh on changes.
 
-## Build it for prod
-If you are done with your dev work and happy with it it's time to deploy your static website. To build your static website for a prod deployment run:
+## Deployment
+
+Push to `main` branch → GitHub Actions builds and deploys to `gh-pages` automatically. No manual build needed.
+
+## Project Structure
+
 ```
-npm run build
+src/
+├── _data/           # Global data files (JSON)
+├── _includes/
+│   ├── layouts/     # Nunjucks page templates
+│   └── snippets/    # Reusable components
+├── img/
+│   ├── gifs/        # Project hover GIFs (800×450px, <10MB)
+│   ├── stills/      # Project featured images (1800×1012px, <400KB)
+│   ├── webp/        # WebP versions (auto-generated)
+│   │   └── stills/  # WebP stills
+│   ├── news/        # News article images
+│   ├── digest/      # DIY Digest header images
+│   └── [project]/   # Per-project galleries (behind-the-scenes, posters)
+├── posts/           # Film project pages (Markdown)
+├── news/
+│   ├── digests/     # Auto-generated DIY Digests
+│   └── *.md         # Regular news articles
+└── scss/
+    └── themes/      # Custom Bootstrap theme
+
+dev/                 # Local dev build output (gitignored)
+docs/                # Production build output (gitignored, deployed via CI)
 ```
-That will output the full site, with purged and minified CSS and minified html. The output will be stored in the `/docs` folder. That folder is what will be deployed via Github Pages.
+
+## Content Management
+
+Content is managed via [Pages CMS](https://pagescms.org/) configured in `.pages.yml`.
+
+### Collections
+- **🎬 Film Projects** (`src/posts/`) — Project pages with video embeds and galleries — [How-To Guide](https://www.notion.so/dustwave/2ca86545942d806c8077ef5b7ee5fa60#2ca86545942d80f7b446c2f1edc4afc2)
+- **📢 News** (`src/news/`) — Announcements with rich-text editing — [How-To Guide](https://www.notion.so/dustwave/2ca86545942d806c8077ef5b7ee5fa60#2ca86545942d80a8b1bfe2c2225602f9)
+- **📜 DIY Digests** (`src/news/digests/`) — Weekly digests (HTML editing only)
+
+### Image Guidelines
+| Type | Size | Max File Size |
+|------|------|---------------|
+| Featured Image | 1800×1012px (16:9) | 400KB |
+| Hover GIF | 800×450px (16:9) | 10MB |
+| Gallery Images | 1400px wide | 300KB |
+| Poster | 1000×1500px (2:3) | 350KB |
+| News Header | 1600×900px (16:9) | 350KB |
+
+## Key Files
+
+- `.eleventy.js` — Eleventy config, shortcodes, and `toWebp` filter
+- `.pages.yml` — Pages CMS collection definitions
+- `gulpfile.js` — Sass compilation, CSS purge, asset pipeline
+- `webp.mjs` — WebP image conversion script
+
+## Shortcodes
+
+```njk
+{% youtube "VIDEO_ID" %}        {# Responsive YouTube embed #}
+{% vimeo "VIDEO_ID" %}          {# Responsive Vimeo embed #}
+{% img "/img/photo.jpg", "alt" %} {# Styled image #}
+{% bgImg "name" %}              {# Background image (webp) #}
+```
+
+## License
+
+See [LICENSE](LICENSE) file.

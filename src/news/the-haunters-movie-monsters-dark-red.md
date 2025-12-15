@@ -2,7 +2,7 @@
 title: The Haunters and Movie Monsters selected to the 2024 Dark Red Film Festival!
 date: 2024-09-20
 summary: Nominated for several of awards, you can catch two projects by Dust Wave members in the upcoming Albuquerque horror festival.
-img: /img/darkred2still.png
+img: /img/stills/darkred2still.png
 ---
 </br>
 

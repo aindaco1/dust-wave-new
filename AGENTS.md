@@ -24,7 +24,10 @@
 - `src/_includes/layouts/` - Base templates (Nunjucks)
 - `src/_includes/snippets/` - Reusable components
 - `src/_data/` - Global data files (JSON)
-- `src/posts/`, `src/news/`, `src/events/` - Content collections (Markdown)
+- `src/posts/` - Film project pages (Markdown)
+- `src/news/` - News articles; `src/news/digests/` for DIY Digests
+- `src/img/gifs/` - Project hover GIFs
+- `src/img/stills/` - Project featured images
 - `src/scss/theme.scss` - Main stylesheet entry point
 
 ## Code Style

@@ -2,7 +2,7 @@
 title: Shellfish Knish wins Best New Mexico Short at Mindfield!
 date: 2025-08-30
 summary: We won an award!
-img: /img/shellfishstill.jpg
+img: /img/stills/shellfishstill.jpg
 ---
 </br>
 

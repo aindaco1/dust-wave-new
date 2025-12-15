@@ -1,9 +1,9 @@
 ---
 title: Horse vs. Vamp
 date: 2025-05-04
-img: /img/horsevsvampstill.png
+img: /img/stills/horsevsvampstill.png
 summary: Challenge competition between filmmakers
-gif: /img/horsevsvamp.gif
+gif: /img/gifs/horsevsvamp.gif
 tags:
   - challenge
   - comedy

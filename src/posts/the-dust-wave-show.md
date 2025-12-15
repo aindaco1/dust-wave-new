@@ -1,9 +1,9 @@
 ---
 title: The Dust Wave Show
 date: 2023-11-10
-img: /img/showstill.jpg
+img: /img/stills/showstill.jpg
 summary: Anthology series produced for public access television
-gif: /img/thedustwaveshow.gif
+gif: /img/gifs/thedustwaveshow.gif
 tags:
   - released
   - anthology

@@ -2,7 +2,7 @@
 title: Accessory to Murder and It's Going To Be Alright selected to the 2023 Dark Red Film Festival!
 date: 2023-08-31
 summary: Nominated for a variety of awards, you can catch two projects by Dust Wave members in the upcoming Albuquerque horror festival.
-img: /img/darkredstill.jpg
+img: /img/stills/darkredstill.jpg
 ---
 </br>
 

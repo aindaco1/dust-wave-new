@@ -1,9 +1,9 @@
 ---
 title: Shellfish Knish
 date: 2024-11-06
-img: /img/shellfishstill.jpg
+img: /img/stills/shellfishstill.jpg
 summary: Food comedy short
-gif: /img/shellfishknish.gif
+gif: /img/gifs/shellfishknish.gif
 tags:
   - food
   - comedy

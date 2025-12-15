@@ -2,7 +2,7 @@
 title: Mike Mysteries wins Best Film at 2021 Albuquerque 48 Hour Film Project
 date: 2021-10-09
 summary: We won best editing, best direction, best supporting actor in a comedic role, the audience award, and best film at the 2021 Albuquerque 48 Hour Film Project!
-img: /img/mikemysteriesstill.jpg
+img: /img/stills/mikemysteriesstill.jpg
 ---
 </br>
 

@@ -62,11 +62,6 @@ ${content}
     },
   });
 
-  // events collection
-  eleventyConfig.addCollection("events", function (collectionAPI) {
-    return collectionAPI.getFilteredByGlob("./src/events/*.md").reverse();
-  });
-
   eleventyConfig.setDataDeepMerge(true);
 
   function filterTagList(tags) {
@@ -75,14 +70,21 @@ ${content}
 
   eleventyConfig.addFilter("filterTagList", filterTagList);
 
-  // Convert image path to webp: /img/stalldstill.jpg -> /img/webp/stalldstill.webp
+  // Convert image path to webp: 
+  // /img/stills/stalldstill.jpg -> /img/webp/stills/stalldstill.webp
+  // /img/somefile.jpg -> /img/webp/somefile.webp
   eleventyConfig.addFilter("toWebp", (imgPath) => {
     if (!imgPath) return imgPath;
     // Already a webp path
     if (imgPath.includes('/webp/') || imgPath.endsWith('.webp')) {
       return imgPath;
     }
-    // Extract filename without extension and build webp path
+    // Handle /img/stills/filename.ext -> /img/webp/stills/filename.webp
+    const stillsMatch = imgPath.match(/^\/img\/stills\/(.+)\.(jpg|jpeg|png)$/i);
+    if (stillsMatch) {
+      return `/img/webp/stills/${stillsMatch[1]}.webp`;
+    }
+    // Handle /img/filename.ext -> /img/webp/filename.webp (legacy paths)
     const match = imgPath.match(/^\/img\/(.+)\.(jpg|jpeg|png)$/i);
     if (match) {
       return `/img/webp/${match[1]}.webp`;

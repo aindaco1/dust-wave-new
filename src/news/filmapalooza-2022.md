@@ -2,7 +2,7 @@
 title: Filmapalooza 2022
 date: 2022-03-20
 summary: Five of us went to Filmapalooza 2022 in Washington D.C. to see our 48 Hour Film, Mike Mysteries, screened in competition.
-img: /img/filmapaloozastill.png
+img: /img/stills/filmapaloozastill.png
 ---
 
 In August of 2021, a 15 person crew made a very silly mockumentary for the 2021 Albuquerque 48 Hour Film Project. What we could not have possibly imagined is that our film would [win five awards, including Best Film!](/mike-mysteries-wins-best-film-at-2021-albuquerque-48-hour-film-project.html) So as a result, our team was invited to [Filmapalooza 2022](https://48hourfilmproj.zohobackstage.com/Filmapalooza2022-WashingtonDC#), so our film, [Mike Mysteries](/project/mike-mysteries.html), could screen in competition. Five brave souls made the trip, and this is our story.

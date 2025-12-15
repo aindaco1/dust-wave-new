@@ -1,9 +1,9 @@
 ---
 title: Movie Monsters
 date: 2024-08-30
-img: /img/moviemonstersstill.jpg
+img: /img/stills/moviemonstersstill.jpg
 summary: Kaiju comedy short
-gif: /img/moviemonsters.gif
+gif: /img/gifs/moviemonsters.gif
 tags:
   - kaiju
   - comedy

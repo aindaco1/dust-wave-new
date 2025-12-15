@@ -1,9 +1,9 @@
 ---
 title: Frograiser
 date: 2024-11-08
-img: /img/frograiserstill.png
+img: /img/stills/frograiserstill.png
 summary: Benefit concert for the upcoming Dust Wave production, No Good Reason
-gif: /img/frograiser.gif
+gif: /img/gifs/frograiser.gif
 tags:
   - concert
   - event

@@ -1,9 +1,9 @@
 ---
 title: An Evening of Frights and Delights
 date: 2024-11-07
-img: /img/eveningstill.jpg
+img: /img/stills/eveningstill.jpg
 summary: A sold-out night of film premieres at the Guild Cinema
-gif: /img/evening.gif
+gif: /img/gifs/evening.gif
 tags:
   - festival
   - event

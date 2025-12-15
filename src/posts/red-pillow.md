@@ -1,9 +1,9 @@
 ---
 title: Red Pillow
 date: 2022-10-29
-img: /img/redpillowstill.png
+img: /img/stills/redpillowstill.png
 summary: Horror commercial parody
-gif: /img/redpillow.gif
+gif: /img/gifs/redpillow.gif
 tags:
   - horror
   - satire

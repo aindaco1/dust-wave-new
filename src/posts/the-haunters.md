@@ -1,9 +1,9 @@
 ---
 title: The Haunters
 date: 2024-04-26
-img: /img/thehauntersstill.jpg
+img: /img/stills/thehauntersstill.jpg
 summary: Ghost sci-fi comedy short
-gif: /img/haunters.gif
+gif: /img/gifs/haunters.gif
 tags:
   - sci-fi
   - comedy

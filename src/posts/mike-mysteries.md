@@ -1,9 +1,9 @@
 ---
 title: Mike Mysteries
 date: 2021-09-13
-img: /img/mikemysteriesstill.jpg
+img: /img/stills/mikemysteriesstill.jpg
 summary: Mockumentary comedy short
-gif: /img/mikemysteries.gif
+gif: /img/gifs/mikemysteries.gif
 tags:
   - mockumentary
   - comedy

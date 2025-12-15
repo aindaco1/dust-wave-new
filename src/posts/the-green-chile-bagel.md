@@ -1,9 +1,9 @@
 ---
 title: The Green Chile Bagel
 date: 2022-05-10
-img: /img/greenchilestill.png
+img: /img/stills/greenchilestill.png
 summary: Bagel comedy short
-gif: /img/greenchilebagel.gif
+gif: /img/gifs/greenchilebagel.gif
 tags:
   - comedy
   - bagel

@@ -1,9 +1,9 @@
 ---
 title: Long Night
 date: 2025-07-16
-img: /img/longnightstill.jpg
+img: /img/stills/longnightstill.jpg
 summary: Horror romance short film
-gif: /img/longnight.gif
+gif: /img/gifs/longnight.gif
 tags:
   - horror
   - romance

@@ -2,7 +2,7 @@
 title: High Times at the Ranger Bowl-a-Rama nominated for Best Animated Short at  A Night of Misfit Films 2023!
 date: 2023-10-17
 summary: Our stop-motion short, High Times at the Ranger Bowl-a-Rama, was nominated for Best Animated Short at A Night of Misfit Films 2023.
-img: /img/misfitstill.jpg
+img: /img/stills/misfitstill.jpg
 ---
 </br>
 

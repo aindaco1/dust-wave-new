@@ -2,7 +2,7 @@
 title: Bag Check selected at SISFA and the Peoria Film Fest!
 date: 2023-10-01
 summary: Our customs comedy short, Bag Check, was selected for the 2023 SISFA Film Festival and the 2023 Peoria Film Fest.
-img: /img/bagcheckposterstill.jpg
+img: /img/stills/bagcheckposterstill.jpg
 ---
 </br>
 

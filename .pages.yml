@@ -7,7 +7,7 @@ content:
   # 🎬 POSTS — Film projects and productions
   # ═══════════════════════════════════════════════════════════
   - name: posts
-    label: "🎬 Film Projects — [How-To Guide](https://www.notion.so/dustwave/2ca86545942d806c8077ef5b7ee5fa60#2ca86545942d80f7b446c2f1edc4afc2)"
+    label: 🎬 Film Projects
     type: collection
     path: src/posts
     view:
@@ -119,10 +119,19 @@ content:
 
       - name: body
         label: Content
-        type: rich-text
+        type: code
+        options:
+          lang: markdown
         default: |
+          <!-- ═══════════════════════════════════════════════════════════
+               FILM PROJECT TEMPLATE
+               Replace ALL CAPS placeholders with your content.
+               Delete sections you don't need.
+               ═══════════════════════════════════════════════════════════ -->
+
           _TITLE_ is a SHORT DESCRIPTION created for OCCASION. Shot at LOCATION in Albuquerque, New Mexico.
-          <br><br>
+
+          <br>
 
           ### Crew
 
@@ -132,21 +141,52 @@ content:
           <br>
           Director of Photography -- NAME<br>
           Editor -- NAME<br>
-          Sound -- NAME<br>
-          <br><br>
+          Sound -- NAME
+
+          <br>
 
           ### Cast
 
           CHARACTER -- ACTOR<br>
-          CHARACTER -- ACTOR<br>
-          <br><br>
+          CHARACTER -- ACTOR
+
+          <br>
 
           ### Awards
 
           [FESTIVAL NAME](https://example.com)
           * Award Name -- Recipient
           * **Best Film**
-        description: "Replace CAPS placeholders. Gallery/video fields above handle media automatically."
+
+          <!-- ═══════════════════════════════════════════════════════════
+               OPTIONAL EXTRAS (delete if not needed)
+               ═══════════════════════════════════════════════════════════ -->
+
+          <!-- INLINE IMAGE (use for special placement, otherwise use Gallery field above)
+          <img src="/img/PROJECT/photo.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
+          -->
+
+          <!-- CENTERED IMAGE
+          <center><img src="/img/PROJECT/photo.jpg" class="w-75 shadow-1-strong rounded mb-2" alt="description"></center>
+          -->
+
+          <!-- TWO-COLUMN GALLERY (use Gallery field above for auto-layout, or manual below)
+          <div class="row g-2">
+            <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
+              <img src="/img/PROJECT/photo1.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
+              <img src="/img/PROJECT/photo2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
+            </div>
+            <div class="col-lg-6 mb-6 mb-lg-0">
+              <img src="/img/PROJECT/photo3.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
+              <img src="/img/PROJECT/photo4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
+            </div>
+          </div>
+          -->
+
+          <!-- EXTERNAL LINK
+          More info at [LINK TEXT](https://example.com)
+          -->
+        description: "Raw HTML/Markdown. Video and gallery auto-render from fields above."
 
   # ═══════════════════════════════════════════════════════════
   # 📜 DIY DIGESTS — Auto-generated weekly digests (code editing)
@@ -198,7 +238,7 @@ content:
   # 📢 REGULAR NEWS — Standard announcements (rich-text editing)
   # ═══════════════════════════════════════════════════════════
   - name: news-regular
-    label: "📢 News (Regular) — [How-To Guide](https://www.notion.so/dustwave/2ca86545942d806c8077ef5b7ee5fa60#2ca86545942d80a8b1bfe2c2225602f9)"
+    label: 📢 News
     type: collection
     path: src/news
     subfolders: false
@@ -238,86 +278,65 @@ content:
 
       - name: body
         label: Article Content
-        type: rich-text
+        type: code
+        options:
+          lang: markdown
         default: |
-          <br>
+          <!-- ═══════════════════════════════════════════════════════════
+               NEWS ARTICLE TEMPLATE
+               Replace ALL CAPS placeholders with your content.
+               Delete sections you don't need.
+               ═══════════════════════════════════════════════════════════ -->
 
           Congratulations to everyone involved in PROJECT NAME!
 
           <br>
 
-          WRITE YOUR ANNOUNCEMENT HERE. Include links to relevant projects like [Project Name](/subdir/project-name/).
-        description: "Replace CAPS placeholders. Gallery field above handles images automatically."
-
-  # ═══════════════════════════════════════════════════════════
-  # 📅 EVENTS — Screenings and festivals
-  # ═══════════════════════════════════════════════════════════
-  - name: events
-    label: 📅 Events & Screenings
-    type: collection
-    path: src/events
-    view:
-      fields: [title, date, summary]
-      primary: title
-      sort: [date, title]
-      default:
-        sort: date
-        order: desc
-    fields:
-      - name: title
-        label: Event Title
-        type: string
-        description: "Full event name (e.g., 'Fronteras Micro-film Festival at MOOD')."
-
-      - name: date
-        label: Event Date
-        type: date
-        description: "The date of the event."
-
-      - name: layout
-        label: Layout Template
-        type: string
-        default: layouts/event.njk
-        hidden: true
-
-      - name: permalink
-        label: URL Slug
-        type: string
-        description: |
-          The page URL (e.g., 'fronteras-at-mood.html').
-          Lowercase with dashes, must end with .html
-
-      - name: summary
-        label: Short Description
-        type: string
-        description: "One-paragraph event description for listings."
-
-      - name: img
-        label: Event Image
-        type: image
-        description: "Event header image. Size: 1600×900px (16:9), under 350KB."
-
-      - name: galleryImages
-        label: 📸 Event Gallery
-        type: image
-        list: true
-        description: "Flyers, photos, etc. Auto-displays in 2-column grid. Size: 1400px wide, under 300KB."
-
-      - name: body
-        label: Event Details
-        type: rich-text
-        default: |
-          <br>
-
-          <h4>DATE (e.g., March 1, 2024)</h4>
-          <h4>VENUE, Albuquerque, New Mexico</h4>
-          <h4>TIME (e.g., 7:00 PM - 10:00 PM)</h4>
+          WRITE YOUR ANNOUNCEMENT HERE.
 
           <br>
 
-          EVENT DESCRIPTION GOES HERE. Include ticket links, program details, etc.
+          ### Links
 
-          <br>
+          - [Project Page](/subdir/project-name/)
+          - [External Site](https://example.com)
 
-          More info at [EXTERNAL LINK](https://example.com)
-        description: "Replace CAPS placeholders. Gallery field above handles images automatically."
+          <!-- ═══════════════════════════════════════════════════════════
+               OPTIONAL EXTRAS (delete if not needed)
+               ═══════════════════════════════════════════════════════════ -->
+
+          <!-- CELEBRATION GIF
+          <center><img src="/img/celebration.gif" class="w-75 shadow-1-strong rounded mb-2" alt="celebration"></center>
+          -->
+
+          <!-- INLINE IMAGE
+          <img src="/img/news/photo.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
+          -->
+
+          <!-- CENTERED IMAGE
+          <center><img src="/img/news/photo.jpg" class="w-75 shadow-1-strong rounded mb-2" alt="description"></center>
+          -->
+
+          <!-- TWO-COLUMN GALLERY (use Gallery field above for auto-layout, or manual below)
+          <div class="row g-2">
+            <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
+              <img src="/img/news/photo1.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
+            </div>
+            <div class="col-lg-6 mb-6 mb-lg-0">
+              <img src="/img/news/photo2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
+            </div>
+          </div>
+          -->
+
+          <!-- BOLD/ITALIC TEXT
+          **Bold text** and _italic text_
+          -->
+
+          <!-- BULLET LIST
+          * Item one
+          * Item two
+          * Item three
+          -->
+        description: "Raw HTML/Markdown. Gallery auto-renders from field above."
+
+
