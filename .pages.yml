@@ -49,13 +49,14 @@ content:
           output: /img/gifs
         options:
           extensions: [gif]
-        description: "Animated preview for homepage hover. Size: 800×450px (16:9), under 10MB, 3-4 second loop."
+        description: "Animated preview for homepage hover. Size: 800×450px (16:9), MAX 8MB (larger files fail silently), 3-4 second loop."
 
       - name: tags
         label: Tags
         type: select
         list: true
         options:
+          creatable: true
           values:
             - value: released
               label: "✅ Released"
@@ -91,7 +92,7 @@ content:
               label: "Festival/Event"
             - value: event
               label: "Event"
-        description: "Select all that apply. Include status + genre(s)."
+        description: "Select from existing tags or type to create new ones."
 
       - name: body
         label: Content
