@@ -74,12 +74,12 @@ Walt McComb -- John Dewar
 <div class="row g-2">
   <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
     <img src="/img/red_razor_on_soft_skin/behind-the-scenes-1.png" class="w-100 shadow-1-strong rounded mb-2" alt="description">
-    <img src="/img/red_razor_on_soft_skin/behind-the-scenes-2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
+    <img src="/img/red_razor_on_soft_skin/behind-the-scenes-5.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
     <img src="/img/red_razor_on_soft_skin/behind-the-scenes-3.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
   </div>
   <div class="col-lg-6 mb-6 mb-lg-0">
     <img src="/img/red_razor_on_soft_skin/behind-the-scenes-4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
-    <img src="/img/red_razor_on_soft_skin/behind-the-scenes-5.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
+    <img src="/img/red_razor_on_soft_skin/behind-the-scenes-2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
     <img src="/img/red_razor_on_soft_skin/behind-the-scenes-6.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
   </div>
 </div>
