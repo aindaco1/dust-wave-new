@@ -3,15 +3,12 @@ title: Red Razor on Soft Skin
 date: 2026-01-30
 img: /img/digest/header/digest-header-2.jpg
 summary: Giallo short shot on 16mm
+gif: /img/gifs/redrazor.gif
 tags:
   - horror
+  - giallo
   - coming-soon
 ---
-<!-- ═══════════════════════════════════════════════════════════
-     FILM PROJECT TEMPLATE
-     Replace ALL CAPS placeholders with your content.
-     Delete sections you don't need.
-     ═══════════════════════════════════════════════════════════ -->
 
 _Red Razor on Soft Skin_ is a giallo short film shot on 16mm at McCall's Barbershop in Albuquerque, New Mexico.
 
@@ -83,4 +80,11 @@ Walt McComb -- John Dewar
     <img src="/img/red_razor_on_soft_skin/behind-the-scenes-6.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
   </div>
 </div>
+
+<br>
+
+## Movie
+
+**Coming Soon ...**
+
 <br><br>
