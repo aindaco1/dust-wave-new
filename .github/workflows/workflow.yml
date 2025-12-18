@@ -3,8 +3,9 @@ name: Build and Deploy
 on:
   push:
     branches: [main]
+  workflow_dispatch:  # Allow manual triggers
 
-# Allow only one concurrent deployment
+# Allow only one concurrent deployment, cancel in-progress runs
 concurrency:
   group: "pages"
   cancel-in-progress: true
@@ -12,6 +13,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,13 +25,19 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
       - name: Install dependencies
-        run: npm install --force
+        run: |
+          npm install --force
+          pip install -r requirements.txt
 
       - name: Update GIF hover styles
-        run: |
-          pip install pyyaml
-          python scripts/update-gif-hovers.py
+        run: python scripts/update-gif-hovers.py
 
       - name: Build site
         run: npm run build
