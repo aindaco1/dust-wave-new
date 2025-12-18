@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for accurate builds
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -60,6 +62,10 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          timeout: 600000  # 10 minutes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Purge Cloudflare cache
         if: ${{ vars.CLOUDFLARE_ENABLED == 'true' }}

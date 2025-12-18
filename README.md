@@ -25,7 +25,9 @@ Builds to `/dev` and starts BrowserSync with auto-refresh on changes.
 
 ## Deployment
 
-Push to `main` branch → GitHub Actions builds and deploys to `gh-pages` automatically. No manual build needed.
+Push to `main` branch → GitHub Actions builds and deploys via GitHub Pages artifacts automatically. No manual build needed.
+
+You can also trigger a manual deploy from the Actions tab → "Build and Deploy" → "Run workflow".
 
 ## Project Structure
 
@@ -68,7 +70,7 @@ Content is managed via [Pages CMS](https://pagescms.org/) configured in `.pages.
 | Type | Size | Max File Size |
 |------|------|---------------|
 | Featured Image (stills/) | 1800×1012px (16:9) | 400KB |
-| Hover GIF (gifs/) | 800×450px (16:9) | 10MB |
+| Hover GIF (gifs/) | 800×450px (16:9) | 8MB |
 | News Header (news/) | 1600×900px (16:9) | 350KB |
 | Digest Header (digest/header/) | 1600×900px (16:9) | 350KB |
 

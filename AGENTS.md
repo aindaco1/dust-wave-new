@@ -8,9 +8,10 @@
 
 ## Git Workflow
 - **`main` branch**: Source code only — no build output committed
-- **`gh-pages` branch**: Build output — managed entirely by GitHub Actions
+- **Deployment**: Via GitHub Pages artifacts (no gh-pages branch)
 - **Local development**: Use `npm run watch` → previews in `dev/` folder
-- **To deploy**: Push source changes to `main` → GitHub Actions builds and deploys to `gh-pages`
+- **To deploy**: Push source changes to `main` → GitHub Actions builds and deploys automatically
+- **Manual deploy**: Actions tab → "Build and Deploy" → "Run workflow"
 - **Pages CMS edits**: Trigger the same workflow, no conflicts
 - **No pull conflicts**: CI never commits to `main`, so you can push freely
 
