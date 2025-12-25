@@ -1,4 +1,5 @@
 ---
+slug: jacklyn-le
 name: Jacklyn Le
 img: /img/about/jacklyn.jpg
 instagram: le_snacky

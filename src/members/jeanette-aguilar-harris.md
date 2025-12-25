@@ -1,4 +1,5 @@
 ---
+slug: jeanette-aguilar-harris
 name: Jeanette Aguilar-Harris
 img: /img/about/jeanette.jpg
 instagram: jeanetteaguilarharris

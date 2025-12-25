@@ -1,4 +1,5 @@
 ---
+slug: kaidin-jarjusey
 name: Kaidin Jarjusey
 img: /img/about/kaidin.png
 instagram: qwaeofficial

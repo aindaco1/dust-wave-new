@@ -1,4 +1,5 @@
 ---
+slug: paul-thompson
 name: Paul Thompson
 img: /img/about/paul.jpg
 instagram: virtuallightmedia

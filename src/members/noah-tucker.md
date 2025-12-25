@@ -1,4 +1,5 @@
 ---
+slug: noah-tucker
 name: Noah Tucker
 img: /img/about/noah.png
 instagram: noahboatproductions

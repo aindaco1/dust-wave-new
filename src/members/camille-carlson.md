@@ -1,4 +1,5 @@
 ---
+slug: camille-carlson
 name: Camille Carlson
 img: /img/about/camille.jpg
 instagram: meale_marle

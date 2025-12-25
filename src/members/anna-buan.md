@@ -1,4 +1,5 @@
 ---
+slug: anna-buan
 name: Anna Buan
 img: /img/about/anna.jpg
 instagram: a.m.buan

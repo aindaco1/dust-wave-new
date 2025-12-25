@@ -1,4 +1,5 @@
 ---
+slug: thomas-ropp
 name: Thomas Ropp
 img: /img/about/thomas.jpg
 instagram: thomas_ropp_music

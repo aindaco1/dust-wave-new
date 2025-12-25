@@ -1,4 +1,5 @@
 ---
+slug: alonso-indacochea
 name: Alonso Indacochea
 img: /img/about/alonso.jpg
 instagram: alonso_inda

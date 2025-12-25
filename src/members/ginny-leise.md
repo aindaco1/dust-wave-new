@@ -1,4 +1,5 @@
 ---
+slug: ginny-leise
 name: Ginny Leise
 img: /img/about/ginny.jpg
 instagram: ginnnnnnnneeeee

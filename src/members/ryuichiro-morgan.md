@@ -1,4 +1,5 @@
 ---
+slug: ryuichiro-morgan
 name: Ryuichiro Morgan
 img: /img/about/ryu.jpg
 instagram: yokai.ryu

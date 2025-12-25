@@ -1,4 +1,5 @@
 ---
+slug: john-dewar
 name: John Dewar
 img: /img/about/john.jpg
 instagram: 

@@ -1,4 +1,5 @@
 ---
+slug: cherrita-thao
 name: Cherrita Thao
 img: /img/about/cherrita.jpg
 instagram: cherrita.thao

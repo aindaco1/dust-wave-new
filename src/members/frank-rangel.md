@@ -1,4 +1,5 @@
 ---
+slug: frank-rangel
 name: Frank Rangel
 img: /img/about/frank.jpg
 instagram: beef.supreme.7

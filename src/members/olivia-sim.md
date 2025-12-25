@@ -1,4 +1,5 @@
 ---
+slug: olivia-sim
 name: Olivia Sim
 img: /img/about/liv.jpg
 instagram: oesimster

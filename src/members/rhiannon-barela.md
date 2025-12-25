@@ -1,4 +1,5 @@
 ---
+slug: rhiannon-barela
 name: Rhiannon Barela
 img: /img/about/rhiannon.jpg
 instagram: rbarelafilm

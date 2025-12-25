@@ -1,4 +1,5 @@
 ---
+slug: harrison-sim
 name: Harrison Sim
 img: /img/about/harrison.jpg
 instagram: harrisonsim

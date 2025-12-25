@@ -1,4 +1,5 @@
 ---
+slug: jazzy-zama
 name: Jazzy Zama
 img: /img/about/jazz.jpg
 instagram: itsjazzyz_

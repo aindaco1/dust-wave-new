@@ -1,4 +1,5 @@
 ---
+slug: colby-petropoulos
 name: Colby Petropoulos
 img: /img/about/colby.jpg
 instagram: cspetropoulos

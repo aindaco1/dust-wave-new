@@ -1,4 +1,5 @@
 ---
+slug: sabrina-falkowsky
 name: Sabrina Falkowsky
 img: /img/about/sabrina.jpg
 instagram: sdfalkowsky

@@ -1,4 +1,5 @@
 ---
+slug: tina-timelord
 name: Tina Timelord
 img: /img/about/tina.jpg
 instagram: tinatimelord

@@ -1,4 +1,5 @@
 ---
+slug: adrian-lopez
 name: Adrian Lopez
 img: /img/about/adrian.jpg
 instagram: adrianflopez

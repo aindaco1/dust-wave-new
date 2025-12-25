@@ -1,4 +1,5 @@
 ---
+slug: phillip-torres
 name: Phillip Torres
 img: /img/about/phil.jpg
 instagram: feeltorres

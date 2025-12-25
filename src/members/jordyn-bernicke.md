@@ -1,4 +1,5 @@
 ---
+slug: jordyn-bernicke
 name: Jordyn Bernicke
 img: /img/about/jordyn.jpg
 instagram: jordynb_art

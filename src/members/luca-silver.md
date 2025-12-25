@@ -1,4 +1,5 @@
 ---
+slug: luca-silver
 name: Luca Silver
 img: /img/about/luca.jpg
 instagram: lucasilver01

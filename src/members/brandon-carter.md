@@ -1,4 +1,5 @@
 ---
+slug: brandon-carter
 name: Brandon Carter
 img: /img/about/brandon.jpg
 instagram: cartercinema

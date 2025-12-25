@@ -1,4 +1,5 @@
 ---
+slug: jp
 name: JP
 img: /img/about/jp.png
 instagram: jeffreymark312
