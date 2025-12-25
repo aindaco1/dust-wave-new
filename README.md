@@ -38,7 +38,8 @@ src/
 │   ├── layouts/     # Nunjucks page templates
 │   └── snippets/    # Reusable components
 ├── img/
-│   ├── gifs/        # Project hover GIFs (800×450px, <10MB)
+│   ├── about/       # Member photos (800×800px, <200KB)
+│   ├── gifs/        # Project hover GIFs (800×450px, <8MB)
 │   ├── stills/      # Project featured images (1800×1012px, <400KB)
 │   ├── favicon/     # Favicons, logos, and branding assets
 │   ├── home/        # Homepage background GIFs
@@ -46,6 +47,7 @@ src/
 │   ├── news/        # News article images and GIFs
 │   ├── webp/        # WebP versions (mirrors structure above)
 │   └── [project]/   # Per-project galleries (behind-the-scenes, posters)
+├── members/         # Team member profiles (Markdown)
 ├── posts/           # Film project pages (Markdown)
 ├── news/
 │   ├── digests/     # Auto-generated DIY Digests
@@ -62,13 +64,27 @@ docs/                # Production build output (gitignored, deployed via CI)
 Content is managed via [Pages CMS](https://pagescms.org/) configured in `.pages.yml`.
 
 ### Collections
+- **👥 Members** (`src/members/`) — Team member profiles for the About page
 - **🎬 Film Projects** (`src/posts/`) — Project pages with raw HTML/Markdown content — [How-To Guide](https://www.notion.so/dustwave/2ca86545942d806c8077ef5b7ee5fa60#2ca86545942d80f7b446c2f1edc4afc2)
 - **📢 News** (`src/news/`) — Announcements with raw HTML/Markdown content — [How-To Guide](https://www.notion.so/dustwave/2ca86545942d806c8077ef5b7ee5fa60#2ca86545942d80a8b1bfe2c2225602f9)
 - **📜 DIY Digests** (`src/news/digests/`) — Weekly digests (HTML editing only)
 
+### Adding a New Member
+1. Go to **👥 Members** in Pages CMS
+2. Click "New"
+3. Fill in:
+   - **Filename (slug)**: Lowercase with hyphens (e.g., `jane-doe`)
+   - **Display Name**: Full name as shown on site (e.g., `Jane Doe`)
+   - **Photo**: Upload to `img/about/` (800×800px, <200KB)
+   - **Instagram Handle**: Username without @ (optional)
+   - **Column**: Left or Right
+   - **Order**: Position within column (1 = top)
+4. Save
+
 ### Image Guidelines
 | Type | Size | Max File Size |
 |------|------|---------------|
+| Member Photo (about/) | 800×800px (1:1) | 200KB |
 | Featured Image (stills/) | 1800×1012px (16:9) | 400KB |
 | Hover GIF (gifs/) | 800×450px (16:9) | 8MB |
 | News Header (news/) | 1600×900px (16:9) | 350KB |

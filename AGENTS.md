@@ -25,8 +25,10 @@
 - `src/_includes/layouts/` - Base templates (Nunjucks)
 - `src/_includes/snippets/` - Reusable components
 - `src/_data/` - Global data files (JSON)
+- `src/members/` - Team member profiles (Markdown with frontmatter)
 - `src/posts/` - Film project pages (Markdown)
 - `src/news/` - News articles; `src/news/digests/` for DIY Digests
+- `src/img/about/` - Member photos (800×800px, <200KB)
 - `src/img/gifs/` - Project hover GIFs
 - `src/img/stills/` - Project featured images
 - `src/img/favicon/` - Favicons, logos, and branding
@@ -42,6 +44,7 @@
 - SCSS follows Bootstrap variable conventions; custom styles in `theme.scss`
 
 ## Pages CMS Image Uploads
+- Member photos → `src/img/about/`
 - Featured images → `src/img/stills/`
 - Hover GIFs → `src/img/gifs/`
 - News images → `src/img/news/`
