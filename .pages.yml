@@ -21,10 +21,10 @@ content:
         order: asc
     fields:
       - name: slug
-        label: Slug
+        label: Filename Slug
         type: string
-        hidden: true
-        description: "URL-friendly identifier (auto-generated from name)."
+        required: true
+        description: "Lowercase name with hyphens (e.g., 'ben-arndt'). This becomes the filename."
 
       - name: name
         label: Name
