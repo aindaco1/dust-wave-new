@@ -24,7 +24,7 @@ content:
         label: Filename Slug
         type: string
         required: true
-        description: "Lowercase name with hyphens (e.g., 'ben-arndt'). This becomes the filename."
+        description: "⚠️ MUST match filename! Use lowercase-hyphenated (e.g., 'ben-arndt' for ben-arndt.json)."
 
       - name: name
         label: Name
