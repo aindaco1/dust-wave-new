@@ -37,6 +37,7 @@ content:
         media:
           input: src/img/about
           output: /img/about
+          path: /
         description: "Member photo. Size: 800×800px (1:1 square), under 200KB."
 
       - name: instagram
