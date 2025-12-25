@@ -3,5 +3,6 @@
   "img": "/img/about/harrison.jpg",
   "instagram": "harrisonsim",
   "column": "right",
-  "order": 11
+  "order": 11,
+  "slug": "harrison-sim"
 }
