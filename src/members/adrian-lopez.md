@@ -1,0 +1,7 @@
+---
+name: Adrian Lopez
+img: /img/about/adrian.jpg
+instagram: adrianflopez
+column: right
+order: 4
+---

@@ -1,0 +1,7 @@
+---
+name: Gary Shaw
+img: /img/about/gary.jpg
+instagram: gary.shaw.foto
+column: right
+order: 9
+---

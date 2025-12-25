@@ -1,0 +1,7 @@
+---
+name: Olivia Sim
+img: /img/about/liv.jpg
+instagram: oesimster
+column: left
+order: 8
+---

@@ -9,9 +9,8 @@ content:
   - name: members
     label: 👥 Members
     type: collection
-    path: src/_data/members
-    format: json
-    filename: "{slug}.json"
+    path: src/members
+    filename: "{primary}.md"
     view:
       fields: [name, column, order]
       primary: name
@@ -20,15 +19,10 @@ content:
         sort: order
         order: asc
     fields:
-      - name: slug
-        label: Filename Slug
-        type: string
-        required: true
-        description: "⚠️ MUST match filename! Use lowercase-hyphenated (e.g., 'ben-arndt' for ben-arndt.json)."
-
       - name: name
         label: Name
         type: string
+        required: true
         description: "Full name of the member."
 
       - name: img

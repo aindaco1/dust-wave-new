@@ -1,0 +1,7 @@
+---
+name: JP
+img: /img/about/jp.png
+instagram: jeffreymark312
+column: right
+order: 16
+---

@@ -1,0 +1,7 @@
+---
+name: Brandon Carter
+img: /img/about/brandon.jpg
+instagram: cartercinema
+column: right
+order: 7
+---

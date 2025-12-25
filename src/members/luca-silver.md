@@ -1,0 +1,7 @@
+---
+name: Luca Silver
+img: /img/about/luca.jpg
+instagram: lucasilver01
+column: left
+order: 22
+---

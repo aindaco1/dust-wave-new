@@ -89,6 +89,17 @@ ${content}
     return imgPath;
   });
   eleventyConfig.addPassthroughCopy("src/fonts");
+  // Members collection for about page
+  eleventyConfig.addCollection("members", collectionAPI => {
+    return collectionAPI.getFilteredByGlob("src/members/*.md").sort((a, b) => {
+      // Sort by column first (left before right), then by order
+      if (a.data.column !== b.data.column) {
+        return a.data.column === "left" ? -1 : 1;
+      }
+      return (a.data.order || 0) - (b.data.order || 0);
+    });
+  });
+
   eleventyConfig.addCollection("tagList", collectionAPI => {
     const tagsObject = {}
     collectionAPI.getAll().forEach(item => {

@@ -1,0 +1,7 @@
+---
+name: Jazzy Zama
+img: /img/about/jazz.jpg
+instagram: itsjazzyz_
+column: right
+order: 3
+---

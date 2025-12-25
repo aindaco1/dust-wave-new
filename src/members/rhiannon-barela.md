@@ -1,0 +1,7 @@
+---
+name: Rhiannon Barela
+img: /img/about/rhiannon.jpg
+instagram: rbarelafilm
+column: right
+order: 15
+---

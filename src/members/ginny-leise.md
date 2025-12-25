@@ -1,0 +1,7 @@
+---
+name: Ginny Leise
+img: /img/about/ginny.jpg
+instagram: ginnnnnnnneeeee
+column: right
+order: 12
+---
