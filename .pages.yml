@@ -11,7 +11,6 @@ content:
     type: collection
     path: src/_data/members
     format: json
-    filename: "{primary}.json"
     view:
       fields: [name, column, order]
       primary: name
