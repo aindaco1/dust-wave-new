@@ -1,0 +1,310 @@
+[
+  {
+    "name": "Taryn Bernicke",
+    "img": "/img/about/taryn.jpg",
+    "instagram": "taryn_bernicke",
+    "column": "left",
+    "order": 1
+  },
+  {
+    "name": "Cherrita Thao",
+    "img": "/img/about/cherrita.jpg",
+    "instagram": "cherrita.thao",
+    "column": "left",
+    "order": 2
+  },
+  {
+    "name": "Jay Renteria",
+    "img": "/img/about/jay.jpg",
+    "instagram": "jayrenteriuh",
+    "column": "left",
+    "order": 3
+  },
+  {
+    "name": "Jordyn Bernicke",
+    "img": "/img/about/jordyn.jpg",
+    "instagram": "jordynb_art",
+    "column": "left",
+    "order": 4
+  },
+  {
+    "name": "Kaidin Jarjusey",
+    "img": "/img/about/kaidin.png",
+    "instagram": "qwaeofficial",
+    "column": "left",
+    "order": 5
+  },
+  {
+    "name": "Camille Carlson",
+    "img": "/img/about/camille.jpg",
+    "instagram": "meale_marle",
+    "column": "left",
+    "order": 6
+  },
+  {
+    "name": "Matthew Atkins",
+    "img": "/img/about/mattkins.jpg",
+    "instagram": "matkinz",
+    "column": "left",
+    "order": 7
+  },
+  {
+    "name": "Olivia Sim",
+    "img": "/img/about/liv.jpg",
+    "instagram": "oesimster",
+    "column": "left",
+    "order": 8
+  },
+  {
+    "name": "Frank Rangel",
+    "img": "/img/about/frank.jpg",
+    "instagram": "",
+    "column": "left",
+    "order": 9
+  },
+  {
+    "name": "Devin Holloway",
+    "img": "/img/about/devin.jpg",
+    "instagram": "devintyler331",
+    "column": "left",
+    "order": 10
+  },
+  {
+    "name": "Laura Morris",
+    "img": "/img/about/laura.jpg",
+    "instagram": "kissmeimwelsh",
+    "column": "left",
+    "order": 11
+  },
+  {
+    "name": "Colby Petropoulos",
+    "img": "/img/about/colby.jpg",
+    "instagram": "cspetropoulos",
+    "column": "left",
+    "order": 12
+  },
+  {
+    "name": "James Rodriguez",
+    "img": "/img/about/james.jpg",
+    "instagram": "jittlelames",
+    "column": "left",
+    "order": 13
+  },
+  {
+    "name": "Tina Timelord",
+    "img": "/img/about/tina.jpg",
+    "instagram": "tinatimelord",
+    "column": "left",
+    "order": 14
+  },
+  {
+    "name": "Alonso Indacochea",
+    "img": "/img/about/alonso.jpg",
+    "instagram": "alonso_inda",
+    "column": "left",
+    "order": 15
+  },
+  {
+    "name": "Chelsea Ambrose",
+    "img": "/img/about/chelsea.jpg",
+    "instagram": "chelseaambrosemua",
+    "column": "left",
+    "order": 16
+  },
+  {
+    "name": "Bailey Grady",
+    "img": "/img/about/bailey.jpg",
+    "instagram": "londone_fog",
+    "column": "left",
+    "order": 17
+  },
+  {
+    "name": "Paul Thompson",
+    "img": "/img/about/paul.jpg",
+    "instagram": "virtuallightmedia",
+    "column": "left",
+    "order": 18
+  },
+  {
+    "name": "Adrian Pijoan",
+    "img": "/img/about/adrianp.jpg",
+    "instagram": "adrian_pijoan",
+    "column": "left",
+    "order": 19
+  },
+  {
+    "name": "Jeanette Aguilar-Harris",
+    "img": "/img/about/jeanette.jpg",
+    "instagram": "jeanetteaguilarharris",
+    "column": "left",
+    "order": 20
+  },
+  {
+    "name": "Thomas Ropp",
+    "img": "/img/about/thomas.jpg",
+    "instagram": "thomas_ropp_music",
+    "column": "left",
+    "order": 21
+  },
+  {
+    "name": "Luca Silver",
+    "img": "/img/about/luca.jpg",
+    "instagram": "lucasilver01",
+    "column": "left",
+    "order": 22
+  },
+  {
+    "name": "Jade Stokes",
+    "img": "/img/about/jade.jpg",
+    "instagram": "jadestoked",
+    "column": "right",
+    "order": 1
+  },
+  {
+    "name": "Austin Madrid",
+    "img": "/img/about/austin.jpg",
+    "instagram": "aust.n.space",
+    "column": "right",
+    "order": 2
+  },
+  {
+    "name": "Jazzy Zama",
+    "img": "/img/about/jazz.jpg",
+    "instagram": "itsjazzyz_",
+    "column": "right",
+    "order": 3
+  },
+  {
+    "name": "Adrian Lopez",
+    "img": "/img/about/adrian.jpg",
+    "instagram": "adrianflopez",
+    "column": "right",
+    "order": 4
+  },
+  {
+    "name": "John Dewar",
+    "img": "/img/about/john.jpg",
+    "instagram": "",
+    "column": "right",
+    "order": 5
+  },
+  {
+    "name": "Kathleen Holscher",
+    "img": "/img/about/katie.jpg",
+    "instagram": "k_holscher",
+    "column": "right",
+    "order": 6
+  },
+  {
+    "name": "Brandon Carter",
+    "img": "/img/about/brandon.jpg",
+    "instagram": "cartercinema",
+    "column": "right",
+    "order": 7
+  },
+  {
+    "name": "Ryuichiro Morgan",
+    "img": "/img/about/ryu.jpg",
+    "instagram": "yokai.ryu",
+    "column": "right",
+    "order": 8
+  },
+  {
+    "name": "Gary Shaw",
+    "img": "/img/about/gary.jpg",
+    "instagram": "gary.shaw.foto",
+    "column": "right",
+    "order": 9
+  },
+  {
+    "name": "Jacklyn Le",
+    "img": "/img/about/jacklyn.jpg",
+    "instagram": "le_snacky",
+    "column": "right",
+    "order": 10
+  },
+  {
+    "name": "Harrison Sim",
+    "img": "/img/about/harrison.jpg",
+    "instagram": "harrisonsim",
+    "column": "right",
+    "order": 11
+  },
+  {
+    "name": "Ginny Leise",
+    "img": "/img/about/ginny.jpg",
+    "instagram": "ginnnnnnnneeeee",
+    "column": "right",
+    "order": 12
+  },
+  {
+    "name": "Phillip Torres",
+    "img": "/img/about/phil.jpg",
+    "instagram": "feeltorres",
+    "column": "right",
+    "order": 13
+  },
+  {
+    "name": "Ryan Lewis",
+    "img": "/img/about/ryan.jpg",
+    "instagram": "notthatryanlewis",
+    "column": "right",
+    "order": 14
+  },
+  {
+    "name": "Rhiannon Barela",
+    "img": "/img/about/rhiannon.jpg",
+    "instagram": "rbarelafilm",
+    "column": "right",
+    "order": 15
+  },
+  {
+    "name": "JP",
+    "img": "/img/about/jp.png",
+    "instagram": "jeffreymark312",
+    "column": "right",
+    "order": 16
+  },
+  {
+    "name": "Sabrina Falkowsky",
+    "img": "/img/about/sabrina.jpg",
+    "instagram": "sdfalkowsky",
+    "column": "right",
+    "order": 17
+  },
+  {
+    "name": "Shea Jarjusey",
+    "img": "/img/about/shea.jpg",
+    "instagram": "shea_butter888",
+    "column": "right",
+    "order": 18
+  },
+  {
+    "name": "Michael Madrigal",
+    "img": "/img/about/michael.jpg",
+    "instagram": "michaelmadrigal2k",
+    "column": "right",
+    "order": 19
+  },
+  {
+    "name": "Noah Tucker",
+    "img": "/img/about/noah.png",
+    "instagram": "noahboatproductions",
+    "column": "right",
+    "order": 20
+  },
+  {
+    "name": "Anna Buan",
+    "img": "/img/about/anna.jpg",
+    "instagram": "a.m.buan",
+    "column": "right",
+    "order": 21
+  },
+  {
+    "name": "David Jennings",
+    "img": "/img/about/david.jpg",
+    "instagram": "javid_dennings",
+    "column": "right",
+    "order": 22
+  }
+]
