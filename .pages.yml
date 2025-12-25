@@ -8,46 +8,50 @@ content:
   # ═══════════════════════════════════════════════════════════
   - name: members
     label: 👥 Members
-    type: file
-    path: src/_data/members.json
+    type: collection
+    path: src/_data/members
+    format: json
+    view:
+      fields: [name, column, order]
+      primary: name
+      sort: [column, order]
+      default:
+        sort: order
+        order: asc
     fields:
-      - name: members
-        label: Members
-        type: list
-        fields:
-          - name: name
-            label: Name
-            type: string
-            description: "Full name of the member."
+      - name: name
+        label: Name
+        type: string
+        description: "Full name of the member."
 
-          - name: img
-            label: Photo
-            type: image
-            media:
-              input: src/img/about
-              output: /img/about
-            description: "Member photo. Size: 800×800px (1:1 square), under 200KB."
+      - name: img
+        label: Photo
+        type: image
+        media:
+          input: src/img/about
+          output: /img/about
+        description: "Member photo. Size: 800×800px (1:1 square), under 200KB."
 
-          - name: instagram
-            label: Instagram Handle
-            type: string
-            description: "Instagram username (without @). Leave blank if none."
+      - name: instagram
+        label: Instagram Handle
+        type: string
+        description: "Instagram username (without @). Leave blank if none."
 
-          - name: column
-            label: Column
-            type: select
-            options:
-              values:
-                - value: left
-                  label: "Left Column"
-                - value: right
-                  label: "Right Column"
-            description: "Which column to display this member in."
+      - name: column
+        label: Column
+        type: select
+        options:
+          values:
+            - value: left
+              label: "Left Column"
+            - value: right
+              label: "Right Column"
+        description: "Which column to display this member in."
 
-          - name: order
-            label: Display Order
-            type: number
-            description: "Order within the column (1 = top)."
+      - name: order
+        label: Display Order
+        type: number
+        description: "Order within the column (1 = top)."
 
   # ═══════════════════════════════════════════════════════════
   # 🎬 POSTS — Film projects and productions
