@@ -892,9 +892,11 @@ article h2 { width: 60%; }
   margin: 0px auto !important;
 }
 
-.gfm-embed-iframe {
-  width: auto;
-  margin-left: auto;
-  margin-right: auto;
-  display: block;
+.gfm-embed {
+  display: flex;
+  justify-content: center;
+  
+  iframe {
+    width: auto !important;
+  }
 }
