@@ -111,12 +111,19 @@ function getChangedFiles() {
   }
 }
 
-// Get all markdown files from a directory
+// Get all markdown files from a directory (recursive)
 function getMarkdownFiles(dir) {
   if (!fs.existsSync(dir)) return [];
-  return fs.readdirSync(dir)
-    .filter(f => f.endsWith('.md'))
-    .map(f => path.join(dir, f));
+  const files = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...getMarkdownFiles(fullPath));
+    } else if (entry.name.endsWith('.md')) {
+      files.push(fullPath);
+    }
+  }
+  return files;
 }
 
 // Send webmention to Bridgy Fed
