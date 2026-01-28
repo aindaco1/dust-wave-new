@@ -1,8 +1,11 @@
 ---
 title: Why do we crowdfund? Why do we do events?
-date: 2025-06-27
+date: 2025-07-04
 summary: A rundown on why we fundraise.
 img: /img/news/pandora-bts.jpg
+syndicate:
+  - substack
+  - fediverse
 ---
 </br>
 <div class="date-written">    
@@ -18,6 +21,7 @@ If you've been following Dust Wave's exploits since August 2024, you may have no
 
 
 - We have **expanded the number of [events, fundraisers, and screenings](https://shop.dustwave.xyz)** we host manyfold.
+<!-- more:substack -->
 
 </br>
 

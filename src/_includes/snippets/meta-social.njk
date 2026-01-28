@@ -1,0 +1,46 @@
+{# Social meta tags for Open Graph + Twitter Cards #}
+{# Requires metadata.url to be set in _data/metadata.json #}
+
+{% set pageTitle = title or metadata.title %}
+{% set pageDescription = description or summary or metadata.description %}
+{% set pageUrl = metadata.url + page.url %}
+
+{# Determine OG image with fallback chain: og_image → img → default #}
+{% if og_image %}
+  {% set ogImage = metadata.url + og_image %}
+{% elif img %}
+  {% set ogImage = metadata.url + (img | toWebp) %}
+{% else %}
+  {% set ogImage = metadata.url + "/img/og/default.png" %}
+{% endif %}
+
+{% set ogAlt = og_alt or imgAlt or pageTitle %}
+
+{# Open Graph tags #}
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="{{ metadata.brandName or metadata.title }}">
+<meta property="og:title" content="{{ pageTitle }}">
+<meta property="og:description" content="{{ pageDescription }}">
+<meta property="og:url" content="{{ pageUrl }}">
+<meta property="og:image" content="{{ ogImage }}">
+<meta property="og:image:alt" content="{{ ogAlt }}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+
+{# Optional OG video (MP4 loop) #}
+{% if og_video %}
+<meta property="og:video" content="{{ metadata.url + og_video }}">
+<meta property="og:video:type" content="video/mp4">
+<meta property="og:video:width" content="1200">
+<meta property="og:video:height" content="630">
+{% endif %}
+
+{# Twitter Card tags #}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ pageTitle }}">
+<meta name="twitter:description" content="{{ pageDescription }}">
+<meta name="twitter:image" content="{{ ogImage }}">
+<meta name="twitter:image:alt" content="{{ ogAlt }}">
+
+{# Canonical URL #}
+<link rel="canonical" href="{{ pageUrl }}">

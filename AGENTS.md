@@ -49,3 +49,83 @@
 - Hover GIFs → `src/img/gifs/`
 - News images → `src/img/news/`
 - Digest headers → `src/img/digest/header/`
+
+## Syndication & Social Sharing
+
+### Commands
+- `npm run build:og` - Generate Open Graph images (requires Puppeteer)
+- `npm run ping:bridgy` - Send webmentions for changed fediverse posts
+- `npm run ping:bridgy:all` - Send webmentions for all fediverse posts
+
+### Frontmatter Fields for Syndication
+Posts and news (including `src/news/digests/`) can include these optional fields:
+
+```yaml
+syndicate:
+  - substack    # Include in Substack feed (excerpt only)
+  - fediverse   # Federate via Bridgy Fed
+og_image: /img/og/custom-image.png   # Custom OG image (1200×630)
+og_video: /img/og/custom-video.mp4   # Optional OG video
+og_alt: "Description of the image"   # Alt text for OG image
+share_text: "Custom share text"      # Override default share text
+```
+
+### Substack Excerpt Marker
+Add `<!-- more:substack -->` in your markdown to control where the excerpt ends:
+
+```markdown
+This content appears in both Substack and the website.
+
+<!-- more:substack -->
+
+This content only appears on the website.
+{% youtube "VIDEO_ID" %}
+```
+
+- Content **before** the marker goes to Substack with a "Continue reading" link
+- Content **after** the marker stays only on dustwave.xyz
+- The marker is invisible on the website
+- If no marker: falls back to first paragraph
+- Images use absolute URLs automatically (`https://dustwave.xyz/img/...`)
+- YouTube/Vimeo embeds won't work in Substack (use marker to exclude them)
+
+### Feed Outputs
+| Feed | URL | Content |
+|------|-----|---------|
+| Substack | `/substack.xml` | Excerpt only + "Continue reading" link |
+| Syndicate | `/syndicate.xml` | Full HTML content |
+| JSON Feed | `/syndicate.json` | Full HTML content (JSON format) |
+
+All feeds use Mountain Time for dates and absolute URLs for images/links.
+
+### Share Panel
+Every news/project page includes a share panel with: Share button (Web Share API), Mastodon (with instance selector), Bluesky, X, Threads, LinkedIn, Facebook, Reddit, Email, Copy Link.
+
+### Open Graph & Twitter Cards
+Every page automatically generates OG and Twitter Card meta tags using:
+- `og_image` frontmatter (if provided)
+- `img` frontmatter converted to WebP (fallback)
+- `/img/og/default.png` (last resort fallback)
+
+### Fediverse via Bridgy Fed
+Posts with `syndicate: ["fediverse"]` include:
+- Microformats2 markup (`h-entry`, `p-name`, `e-content`, etc.)
+- Bridgy Fed opt-in link for federation
+- CI job sends webmentions after deploy (requires `BRIDGY_FED_ENABLED=true` repo variable)
+
+### Files
+- `src/_includes/snippets/meta-social.njk` - OG/Twitter meta tags
+- `src/_includes/snippets/share-panel.njk` - Share UI
+- `src/_includes/snippets/bridgy-opt-in.njk` - Bridgy Fed opt-in link
+- `src/feeds/substack.njk` → `/substack.xml`
+- `src/feeds/syndicate.njk` → `/syndicate.xml`
+- `src/feeds/syndicate-json.njk` → `/syndicate.json`
+- `scripts/render-og-cards.mjs` - OG image generator (Puppeteer)
+- `scripts/ping-bridgy.mjs` - Bridgy Fed webmention sender
+
+### Setup Checklist
+1. Install Puppeteer for OG cards: `npm install puppeteer`
+2. Create default OG image: `src/img/og/default.png` (1200×630)
+3. Register at webmention.io and update endpoint in `src/_includes/snippets/head.njk`
+4. Set up Bridgy Fed at https://fed.brid.gy/
+5. Add `BRIDGY_FED_ENABLED=true` as GitHub repo variable to enable CI federation

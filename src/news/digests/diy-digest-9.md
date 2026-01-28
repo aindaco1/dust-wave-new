@@ -3,6 +3,9 @@ title: DIY Filmmaker Digest 9 -- Week of January 5, 2026
 date: 2026-01-05
 summary: A fresh roundup of links, interviews, and news for DIY filmmakers.
 img: /img/digest/header/digest-header-9.jpg
+syndicate:
+  - substack
+  - fediverse
 ---
 </br>
 <div class="date-written">    
@@ -19,6 +22,7 @@ But first, a little congratulations: our friend [Melissa Flores](https://www.ins
 </br>
 
 Also, we have other friends making films that need your support, including:
+<!-- more:substack -->
 
 </br>
 

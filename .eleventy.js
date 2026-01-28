@@ -136,6 +136,111 @@ ${content}
       zone: 'utc'
     }).toFormat('yyyy-LL-dd');
   });
+
+  // RFC 822 date format in Mountain Time for RSS feeds
+  eleventyConfig.addFilter('dateToRfc822MT', (dateObj) => {
+    return DateTime.fromJSDate(dateObj, {
+      zone: 'America/Denver'
+    }).toFormat('ccc, dd LLL yyyy HH:mm:ss ZZZ');
+  });
+
+  // RFC 3339 / ISO 8601 date format in Mountain Time for JSON feeds
+  eleventyConfig.addFilter('dateToRfc3339MT', (dateObj) => {
+    return DateTime.fromJSDate(dateObj, {
+      zone: 'America/Denver'
+    }).toISO();
+  });
+
+  // Absolute URL filter for canonical links
+  const siteUrl = "https://dustwave.xyz";
+  eleventyConfig.addFilter("absoluteUrl", (url) => {
+    if (!url) return siteUrl;
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    return siteUrl + (url.startsWith('/') ? url : '/' + url);
+  });
+
+  // URL encode filter for share links
+  eleventyConfig.addFilter("urlencode", (str) => {
+    return encodeURIComponent(str || '');
+  });
+
+  // Head filter - returns first n items from array
+  eleventyConfig.addFilter("head", (array, n) => {
+    if (!Array.isArray(array) || !n) return array;
+    return n < 0 ? array.slice(n) : array.slice(0, n);
+  });
+
+  // Substack excerpt filter - splits content at <!-- more:substack --> marker
+  // Returns only the content before the marker for the Substack feed
+  eleventyConfig.addFilter("substackExcerpt", (html) => {
+    if (!html) return '';
+    const marker = '<!-- more:substack -->';
+    const markerIndex = html.indexOf(marker);
+    if (markerIndex === -1) {
+      // No marker found - return first paragraph as fallback
+      // Look for first </p> tag
+      const firstParaEnd = html.indexOf('</p>');
+      if (firstParaEnd !== -1) {
+        return html.substring(0, firstParaEnd + 4).trim();
+      }
+      // If no <p> tags, try to find content up to first double line break
+      const firstBreak = html.indexOf('<br><br>');
+      if (firstBreak !== -1) {
+        return html.substring(0, firstBreak).trim();
+      }
+      // Last resort: return first 500 chars
+      const stripped = html.replace(/<[^>]+>/g, '');
+      return stripped.substring(0, 500) + (stripped.length > 500 ? '...' : '');
+    }
+    return html.substring(0, markerIndex).trim();
+  });
+
+  // Remove the substack marker from content for website display
+  eleventyConfig.addFilter("removeSubstackMarker", (html) => {
+    if (!html) return '';
+    return html.replace(/<!-- more:substack -->/g, '');
+  });
+
+  // Convert relative URLs to absolute for feeds (images, links)
+  // Only converts paths starting with / that aren't already absolute (http/https)
+  eleventyConfig.addFilter("absoluteUrls", (html) => {
+    if (!html) return '';
+    return html
+      // src="/path" but not src="//domain" or src="http"
+      .replace(/src="\/(?!\/)/g, `src="${siteUrl}/`)
+      .replace(/src='\/(?!\/)/g, `src='${siteUrl}/`)
+      // href="/path" but not href="//domain" or href="http"  
+      .replace(/href="\/(?!\/)/g, `href="${siteUrl}/`)
+      .replace(/href='\/(?!\/)/g, `href='${siteUrl}/`);
+  });
+
+  // Syndicatable collection - combines news + posts that have syndicate field
+  eleventyConfig.addCollection("syndicatable", (collectionAPI) => {
+    const news = collectionAPI.getFilteredByGlob("src/news/**/*.md");
+    const posts = collectionAPI.getFilteredByGlob("src/posts/**/*.md");
+    return [...news, ...posts]
+      .filter(item => item.data.syndicate && item.data.syndicate.length > 0)
+      .sort((a, b) => b.date - a.date);
+  });
+
+  // Collection for Substack feed - items with syndicate containing "substack"
+  eleventyConfig.addCollection("syndicatableForSubstack", (collectionAPI) => {
+    const news = collectionAPI.getFilteredByGlob("src/news/**/*.md");
+    const posts = collectionAPI.getFilteredByGlob("src/posts/**/*.md");
+    return [...news, ...posts]
+      .filter(item => item.data.syndicate && item.data.syndicate.includes("substack"))
+      .sort((a, b) => b.date - a.date);
+  });
+
+  // Collection for Fediverse - items with syndicate containing "fediverse"
+  eleventyConfig.addCollection("syndicatableForFediverse", (collectionAPI) => {
+    const news = collectionAPI.getFilteredByGlob("src/news/**/*.md");
+    const posts = collectionAPI.getFilteredByGlob("src/posts/**/*.md");
+    return [...news, ...posts]
+      .filter(item => item.data.syndicate && item.data.syndicate.includes("fediverse"))
+      .sort((a, b) => b.date - a.date);
+  });
+
   return {
     dir: {
       input: "src",

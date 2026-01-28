@@ -1,0 +1,33 @@
+---
+permalink: /syndicate.json
+eleventyExcludeFromCollections: true
+---
+{
+  "version": "https://jsonfeed.org/version/1.1",
+  "title": "{{ metadata.title }}",
+  "home_page_url": "{{ metadata.url }}",
+  "feed_url": "{{ metadata.url }}/syndicate.json",
+  "description": "{{ metadata.description }}",
+  "language": "{{ metadata.language }}",
+  "items": [
+    {%- for post in collections.syndicatable | head(20) %}
+    {%- set postUrl = metadata.url + post.url %}
+    {
+      "id": "{{ postUrl }}",
+      "url": "{{ postUrl }}",
+      "title": "{{ post.data.title | replace('"', '\\"') }}",
+      "date_published": "{{ post.date | dateToRfc3339MT }}",
+      {%- if post.data.description or post.data.summary %}
+      "summary": "{{ (post.data.description or post.data.summary) | replace('"', '\\"') | replace('\n', ' ') }}",
+      {%- endif %}
+      {%- if post.data.img %}
+      "image": "{{ metadata.url }}{{ post.data.img | toWebp }}",
+      {%- endif %}
+      {%- if post.data.tags %}
+      "tags": {{ post.data.tags | filterTagList | dump | safe }},
+      {%- endif %}
+      "content_html": {{ post.templateContent | removeSubstackMarker | absoluteUrls | dump | safe }}
+    }{% if not loop.last %},{% endif %}
+    {%- endfor %}
+  ]
+}

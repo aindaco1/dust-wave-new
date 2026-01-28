@@ -1,0 +1,179 @@
+{# Share panel for news and project pages #}
+{% set shareUrl = metadata.url + page.url %}
+{% set shareTitle = share_text or (title + " — Dust Wave") %}
+{% set shareText = shareTitle + " " + shareUrl %}
+
+<div class="share-panel my-4 py-3 border-top border-bottom">
+  <div class="d-flex flex-wrap align-items-center justify-content-center gap-1">
+    
+    {# Primary share button - uses Web Share API if available #}
+    {# Share links - all evenly spaced #}
+    <div class="share-links d-flex flex-wrap align-items-center justify-content-center gap-2">
+
+      {# Primary share button - uses Web Share API if available #}
+      <button type="button" class="share-primary" 
+              data-share-url="{{ shareUrl }}" 
+              data-share-title="{{ shareTitle }}"
+              data-share-text="{{ shareTitle }}">
+        <i class="fas fa-share-alt me-1"></i> Share
+      </button>
+      
+      {# Mastodon - requires instance selection #}
+      <button type="button" class="share-mastodon" 
+              data-share-text="{{ shareText }}" title="Share on Mastodon">
+        <i class="fab fa-mastodon"></i>
+      </button>
+
+      {# Bluesky #}
+      <a href="https://bsky.app/intent/compose?text={{ shareText | urlencode }}" 
+         target="_blank" rel="noopener" class="share-link" title="Share on Bluesky">
+        <i class="fab fa-bluesky"></i>
+      </a>
+
+      {# X (Twitter) #}
+      <a href="https://twitter.com/intent/tweet?text={{ shareTitle | urlencode }}&url={{ shareUrl | urlencode }}" 
+         target="_blank" rel="noopener" class="share-link" title="Share on X">
+        <i class="fab fa-x-twitter"></i>
+      </a>
+
+      {# Threads #}
+      <a href="https://www.threads.net/intent/post?text={{ shareText | urlencode }}" 
+         target="_blank" rel="noopener" class="share-link" title="Share on Threads">
+        <i class="fab fa-threads"></i>
+      </a>
+
+      {# LinkedIn #}
+      <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ shareUrl | urlencode }}" 
+         target="_blank" rel="noopener" class="share-link" title="Share on LinkedIn">
+        <i class="fab fa-linkedin-in"></i>
+      </a>
+
+      {# Facebook #}
+      <a href="https://www.facebook.com/sharer/sharer.php?u={{ shareUrl | urlencode }}" 
+         target="_blank" rel="noopener" class="share-link" title="Share on Facebook">
+        <i class="fab fa-facebook-f"></i>
+      </a>
+
+      {# Reddit #}
+      <a href="https://www.reddit.com/submit?url={{ shareUrl | urlencode }}&title={{ shareTitle | urlencode }}" 
+         target="_blank" rel="noopener" class="share-link" title="Share on Reddit">
+        <i class="fab fa-reddit-alien"></i>
+      </a>
+
+      {# Email #}
+      <a href="mailto:?subject={{ shareTitle | urlencode }}&body={{ shareText | urlencode }}" 
+         class="share-link" title="Share via Email">
+        <i class="fas fa-envelope"></i>
+      </a>
+
+      {# Copy link #}
+      <button type="button" class="copy-link" 
+              data-copy-url="{{ shareUrl }}" title="Copy link">
+        <i class="fas fa-link"></i>
+      </button>
+
+    </div>
+  </div>
+</div>
+
+{# Mastodon instance modal #}
+<div class="modal fade" id="mastodonModal" tabindex="-1" aria-labelledby="mastodonModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title" id="mastodonModalLabel">
+          <i class="fab fa-mastodon me-2"></i>Share on Mastodon
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <label for="mastodonInstance" class="form-label">Enter your Mastodon instance:</label>
+        <div class="input-group">
+          <span class="input-group-text bg-secondary border-secondary text-white">https://</span>
+          <input type="text" class="form-control bg-dark text-white border-secondary" 
+                 id="mastodonInstance" placeholder="mastodon.social" 
+                 value="">
+        </div>
+        <small class="text-muted">e.g., mastodon.social, fosstodon.org, hachyderm.io</small>
+      </div>
+      <div class="modal-footer border-secondary">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="mastodonShareConfirm">Share</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  // Web Share API for primary share button
+  const primaryBtn = document.querySelector('.share-primary');
+  if (primaryBtn) {
+    primaryBtn.addEventListener('click', async function() {
+      const shareData = {
+        title: this.dataset.shareTitle,
+        text: this.dataset.shareText,
+        url: this.dataset.shareUrl
+      };
+      
+      if (navigator.share) {
+        try {
+          await navigator.share(shareData);
+        } catch (err) {
+          if (err.name !== 'AbortError') {
+            console.log('Share failed:', err);
+          }
+        }
+      } else {
+        // Fallback: scroll to share links if not visible
+        document.querySelector('.share-links')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    });
+  }
+
+  // Copy link functionality
+  document.querySelectorAll('.copy-link').forEach(btn => {
+    btn.addEventListener('click', async function() {
+      const url = this.dataset.copyUrl;
+      try {
+        await navigator.clipboard.writeText(url);
+        const icon = this.querySelector('i');
+        icon.className = 'fas fa-check';
+        setTimeout(() => { icon.className = 'fas fa-link'; }, 2000);
+      } catch (err) {
+        console.log('Copy failed:', err);
+      }
+    });
+  });
+
+  // Mastodon share with instance selection
+  const MASTODON_INSTANCE_KEY = 'dustwave_mastodon_instance';
+  let pendingMastodonText = '';
+
+  document.querySelectorAll('.share-mastodon').forEach(btn => {
+    btn.addEventListener('click', function() {
+      pendingMastodonText = this.dataset.shareText;
+      const savedInstance = localStorage.getItem(MASTODON_INSTANCE_KEY) || '';
+      document.getElementById('mastodonInstance').value = savedInstance;
+      new bootstrap.Modal(document.getElementById('mastodonModal')).show();
+    });
+  });
+
+  document.getElementById('mastodonShareConfirm')?.addEventListener('click', function() {
+    const instance = document.getElementById('mastodonInstance').value.trim();
+    if (instance) {
+      localStorage.setItem(MASTODON_INSTANCE_KEY, instance);
+      const shareUrl = `https://${instance}/share?text=${encodeURIComponent(pendingMastodonText)}`;
+      window.open(shareUrl, '_blank', 'noopener');
+      bootstrap.Modal.getInstance(document.getElementById('mastodonModal')).hide();
+    }
+  });
+
+  // Allow Enter key to submit in modal
+  document.getElementById('mastodonInstance')?.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      document.getElementById('mastodonShareConfirm').click();
+    }
+  });
+})();
+</script>

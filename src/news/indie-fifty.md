@@ -1,12 +1,15 @@
 ---
 title: The Indie 50
-date: 2025-10-02
+date: 2026-01-14
 summary: 1% for the rest of us
 img: /img/news/indie-fifty.png
+syndicate:
+  - substack
+  - fediverse
 ---
 </br>
 <div class="date-written">    
-    Published on October 2, 2025
+    Published on January 14, 2026
 </div>
 
 </br></br>
@@ -20,6 +23,7 @@ Here's a modest proposal: **The Indie 50 Fund**. A carve-out of just **1% of the
 _This would not simply be an arts grant._ It would be a **small, targeted economic development program** with cultural side effects that happen to be _beautiful_.
 
 Here's how it works:
+<!-- more:substack -->
 
 - **50 short films funded each year** at **$20,000 each**
 - **1 per filmmaker max**

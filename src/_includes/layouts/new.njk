@@ -9,27 +9,41 @@ permalink: "subdir/{{ title | slugify }}/index.html"
   <body {% if (bodyModifier) %} class="{{ bodyModifier }}" {% endif %} data-bs-spy="scroll" data-bs-target="#navScroll">
     {% include "snippets/navbar1.njk" %}
     <main class="container py-vh-3">
-      <div class="row d-flex justify-content-center text-center">
-        <div class="col-12 col-lg-10 col-xl-8">
-          {% if author %}<small class="text-muted">By
-            {{ author }}</small>{% endif %}
-          <h1 class="display-huge">{{ title }}</h1>
-          <p class="lead pt-2 py-vh-2 {% if img %}{% else %}border-bottom{% endif %}">{{summary}}</p>
-        </div>
-        {% if img %}
-          <div class="row">
-            <div class="col-12">
-              <img src="{{img | toWebp}}" class="img-fluid dropshadow" alt="{{imgAlt}}">
+      {# h-entry microformats wrapper for Fediverse/IndieWeb compatibility #}
+      <article class="h-entry">
+        <div class="row d-flex justify-content-center text-center">
+          <div class="col-12 col-lg-10 col-xl-8">
+            {% if author %}<small class="text-muted p-author">By {{ author }}</small>{% endif %}
+            <h1 class="display-huge p-name">{{ title }}</h1>
+            <time class="dt-published visually-hidden" datetime="{{ date | htmlDateString }}">{{ date | readableDate }}</time>
+            <a class="u-url visually-hidden" href="{{ metadata.url }}{{ page.url }}">Permalink</a>
+            <p class="lead pt-2 py-vh-2 p-summary {% if img %}{% else %}border-bottom{% endif %}">{{summary}}</p>
+          </div>
+          {% if img %}
+            <div class="row">
+              <div class="col-12">
+                <img src="{{img | toWebp}}" class="img-fluid dropshadow u-photo" alt="{{imgAlt}}">
+              </div>
+            </div>
+          {% endif %}
+          <div class="row d-flex justify-content-center text-start">
+            <div class="col-12 col-lg-10 col-xl-10 py-vh-2 e-content">
+              {{ content | safe }}
+              {% include "snippets/simple-gallery.njk" %}
             </div>
           </div>
-        {% endif %}
-        <div class="row d-flex justify-content-center text-start">
-          <div class="col-12 col-lg-10 col-xl-10 py-vh-2">
-            {{ content | safe }}
-            {% include "snippets/simple-gallery.njk" %}
+        </div>
+        
+        {# Share panel #}
+        <div class="row d-flex justify-content-center">
+          <div class="col-12 col-lg-10 col-xl-10">
+            {% include "snippets/share-panel.njk" %}
           </div>
         </div>
-      </div>
+
+        {# Bridgy Fed opt-in (only for posts with syndicate containing "fediverse") #}
+        {% include "snippets/bridgy-opt-in.njk" %}
+      </article>
     </main>
     <div class="container-100 d-flex justify-content-between">
       {% include 'snippets/newprevnext.njk' %}

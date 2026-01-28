@@ -1,0 +1,4 @@
+{# Bridgy Fed opt-in link - only included for posts with syndicate containing "fediverse" #}
+{% if syndicate and "fediverse" in syndicate %}
+<a class="u-bridgy-fed visually-hidden" href="https://fed.brid.gy/"></a>
+{% endif %}

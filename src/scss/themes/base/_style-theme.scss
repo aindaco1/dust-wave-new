@@ -900,3 +900,110 @@ article h2 { width: 60%; }
     width: auto !important;
   }
 }
+
+/* =========================================================
+   Share Panel - styled to match site typography
+   ========================================================= */
+
+.share-panel {
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+
+
+.share-panel .share-link {
+  color: $white !important;
+  text-decoration: none;
+  font-size: 1.1rem;
+  padding: 0.25rem 0.5rem;
+  transition: color 0.3s ease, transform 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.share-panel .share-link:hover {
+  color: $gray-600 !important;
+  transform: translateY(-1px);
+}
+
+.share-panel .share-link:active {
+  transform: translateY(0);
+}
+
+.share-panel .share-links {
+  flex-wrap: wrap;
+}
+
+.share-panel .share-primary {
+  background: transparent;
+  border: none;
+  color: $white !important;
+  font-family: 'Gambado-Sans', sans-serif;
+  font-size: 1rem;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.share-panel .share-primary:hover {
+  color: $gray-600 !important;
+}
+
+.share-panel .copy-link,
+.share-panel .share-mastodon {
+  background: transparent;
+  border: none;
+  color: $white !important;
+  font-size: 1.1rem;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.share-panel .copy-link:hover,
+.share-panel .share-mastodon:hover {
+  color: $gray-600 !important;
+  transform: translateY(-1px);
+}
+
+/* Mastodon modal styling */
+#mastodonModal .modal-content {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#mastodonModal .form-control:focus {
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.1);
+}
+
+/* Mobile adjustments - keep everything on one line, full width */
+@media (max-width: 575.98px) {
+  .share-panel {
+    margin-left: -12px !important;
+    margin-right: -12px !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  
+  .share-panel .share-links {
+    flex-wrap: nowrap !important;
+    justify-content: space-between !important;
+    width: 100%;
+    gap: 0 !important;
+  }
+  
+  .share-panel .share-primary {
+    font-size: 0.85rem;
+    padding: 0.15rem 0.2rem;
+    white-space: nowrap;
+  }
+  
+
+  
+  .share-panel .share-link,
+  .share-panel .copy-link,
+  .share-panel .share-mastodon {
+    font-size: 0.95rem;
+    padding: 0.15rem 0.25rem;
+  }
+}

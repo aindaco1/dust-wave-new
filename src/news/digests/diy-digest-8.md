@@ -3,6 +3,9 @@ title: DIY Filmmaker Digest 8 -- Week of December 8, 2025
 date: 2025-12-08
 summary: A fresh roundup of links, interviews, and news for DIY filmmakers.
 img: /img/digest/header/digest-header-8.jpg
+syndicate:
+  - substack
+  - fediverse
 ---
 </br>
 <div class="date-written">    
@@ -11,6 +14,7 @@ img: /img/digest/header/digest-header-8.jpg
 </br></br>
 
 Welcome to this week's *DIY Filmmaker Digest* — part syllabus, part mixtape, part fever dream of cinema's shifting ground. Below you will find: essays and interviews that ask what artists are tinkering with, what systems are breaking, and how you might improvise your own way forward. There's a mild New Mexico bias, plus podcasts, videos, and trailers to keep your queue weird and your outlook restless.  
+<!-- more:substack -->
 
 <br>
 

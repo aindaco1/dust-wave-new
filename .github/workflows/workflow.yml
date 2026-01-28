@@ -74,3 +74,22 @@ jobs:
           CLOUDFLARE_ZONE: ${{ secrets.CLOUDFLARE_ZONE }}
           CLOUDFLARE_EMAIL: ${{ secrets.CLOUDFLARE_EMAIL }}
           CLOUDFLARE_KEY: ${{ secrets.CLOUDFLARE_KEY }}
+
+  # Federate posts to the Fediverse via Bridgy Fed
+  federate:
+    needs: deploy
+    runs-on: ubuntu-latest
+    if: ${{ vars.BRIDGY_FED_ENABLED == 'true' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # Need previous commit to detect changes
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Send Bridgy Fed webmentions
+        run: node scripts/ping-bridgy.mjs
