@@ -126,34 +126,47 @@ function getMarkdownFiles(dir) {
   return files;
 }
 
-// Send webmention to Bridgy Fed
-async function sendWebmention(sourceUrl) {
+// Delay helper
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Send webmention to Bridgy Fed with retry logic
+async function sendWebmention(sourceUrl, retries = 2) {
   console.log(`📤 Sending webmention for: ${sourceUrl}`);
   
-  try {
-    const response = await fetch(BRIDGY_FED_URL + 'webmention', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        source: sourceUrl,
-        target: BRIDGY_FED_URL
-      })
-    });
-    
-    if (response.ok) {
-      console.log(`   ✅ Success: ${response.status}`);
-      return true;
-    } else {
-      const text = await response.text();
-      console.log(`   ⚠️  Response: ${response.status} - ${text.substring(0, 100)}`);
-      return false;
+  for (let attempt = 1; attempt <= retries + 1; attempt++) {
+    try {
+      const response = await fetch(BRIDGY_FED_URL + 'webmention', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          source: sourceUrl,
+          target: BRIDGY_FED_URL
+        })
+      });
+      
+      if (response.ok) {
+        const text = await response.text();
+        console.log(`   ✅ Success: ${response.status} - ${text.substring(0, 60)}`);
+        return true;
+      } else {
+        const text = await response.text();
+        console.log(`   ⚠️  Response: ${response.status} - ${text.substring(0, 100)}`);
+        if (attempt <= retries) {
+          console.log(`   🔄 Retrying in 3s (attempt ${attempt + 1}/${retries + 1})...`);
+          await delay(3000);
+        }
+      }
+    } catch (err) {
+      console.log(`   ❌ Error: ${err.message}`);
+      if (attempt <= retries) {
+        console.log(`   🔄 Retrying in 3s (attempt ${attempt + 1}/${retries + 1})...`);
+        await delay(3000);
+      }
     }
-  } catch (err) {
-    console.log(`   ❌ Error: ${err.message}`);
-    return false;
   }
+  return false;
 }
 
 async function main() {
@@ -221,15 +234,23 @@ async function main() {
     return;
   }
   
-  // Send webmentions
+  // Send webmentions with delay between each to avoid rate limiting
   let success = 0;
   let failed = 0;
+  const DELAY_BETWEEN_POSTS_MS = 5000; // 5 seconds between posts
   
-  for (const post of postsToSend) {
-    console.log(`\n📝 ${post.title}`);
+  for (let i = 0; i < postsToSend.length; i++) {
+    const post = postsToSend[i];
+    console.log(`\n📝 [${i + 1}/${postsToSend.length}] ${post.title}`);
     const result = await sendWebmention(post.url);
     if (result) success++;
     else failed++;
+    
+    // Wait between posts (but not after the last one)
+    if (i < postsToSend.length - 1) {
+      console.log(`   ⏳ Waiting ${DELAY_BETWEEN_POSTS_MS / 1000}s before next post...`);
+      await delay(DELAY_BETWEEN_POSTS_MS);
+    }
   }
   
   console.log(`\n📊 Summary: ${success} sent, ${failed} failed\n`);

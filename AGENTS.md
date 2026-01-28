@@ -113,6 +113,12 @@ Posts with `syndicate: ["fediverse"]` include:
 - Bridgy Fed opt-in link for federation
 - CI job sends webmentions after deploy (requires `BRIDGY_FED_ENABLED=true` repo variable)
 
+**Limitations:**
+- Bridgy Fed has anti-backfill protection — posts older than ~2-4 weeks may be silently dropped
+- Only new posts published after connecting to Bridgy Fed will reliably federate
+- The ping script adds 5-second delays between posts to avoid rate limiting
+- Bluesky federation is slower than Fediverse; posts may take several minutes to appear
+
 ### Files
 - `src/_includes/snippets/meta-social.njk` - OG/Twitter meta tags
 - `src/_includes/snippets/share-panel.njk` - Share UI
