@@ -1,5 +1,5 @@
 ---
-permalink: /feed.xml
+permalink: /feed
 eleventyExcludeFromCollections: true
 ---
 <?xml version="1.0" encoding="utf-8"?>
@@ -9,7 +9,7 @@ eleventyExcludeFromCollections: true
 <link>{{ metadata.url }}</link>
 <description>{{ metadata.description }}</description>
 <language>{{ metadata.language }}</language>
-<atom:link href="{{ metadata.url }}/feed.xml" rel="self" type="application/rss+xml"/>
+<atom:link href="{{ metadata.url }}/feed" rel="self" type="application/rss+xml"/>
 <lastBuildDate>{{ collections.syndicatableForSubstack | getNewestCollectionItemDate | dateToRfc822 }}</lastBuildDate>
 {%- for post in collections.syndicatableForSubstack | head(20) %}
 {%- set postUrl = metadata.url + post.url %}
