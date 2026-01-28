@@ -1,6 +1,7 @@
 ---
 title: DIY Filmmaker Digest 9 -- Week of January 5, 2026
 date: 2026-01-05
+author: Alonso Indacochea
 summary: A fresh roundup of links, interviews, and news for DIY filmmakers.
 img: /img/digest/header/digest-header-9.jpg
 syndicate:

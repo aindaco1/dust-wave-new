@@ -1,6 +1,7 @@
 ---
 title: DIY Filmmaker Digest 5 -- Week of October 13, 2025
 date: 2025-10-13
+author: Alonso Indacochea
 summary: A fresh roundup of links, interviews, and news for DIY filmmakers.
 img: /img/digest/header/digest-header-5.jpg
 ---

@@ -1,6 +1,7 @@
 ---
 title: DIY Filmmaker Digest 2 — Week of September 18, 2025
 date: 2025-09-18
+author: Alonso Indacochea
 summary: A roundup of articles, insights, and to-dos for DIY filmmakers.
 img: /img/digest/header/digest-header-2.jpg
 ---

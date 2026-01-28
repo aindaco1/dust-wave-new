@@ -1,6 +1,7 @@
 ---
 title: DIY Filmmaker Digest 6 -- Week of November 7, 2025
 date: 2025-11-07
+author: Alonso Indacochea
 summary: A fresh roundup of links, interviews, and news for DIY filmmakers.
 img: /img/digest/header/digest-header-6.jpg
 ---

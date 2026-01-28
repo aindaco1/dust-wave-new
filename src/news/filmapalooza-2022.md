@@ -1,6 +1,7 @@
 ---
 title: Filmapalooza 2022
 date: 2022-03-20
+author: Alonso Indacochea
 summary: Five of us went to Filmapalooza 2022 in Washington D.C. to see our 48 Hour Film, Mike Mysteries, screened in competition.
 img: /img/stills/filmapaloozastill.png
 ---

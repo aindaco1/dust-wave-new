@@ -1,6 +1,7 @@
 ---
 title: Why do we crowdfund? Why do we do events?
 date: 2025-07-04
+author: Alonso Indacochea
 summary: A rundown on why we fundraise.
 img: /img/news/pandora-bts.jpg
 syndicate:

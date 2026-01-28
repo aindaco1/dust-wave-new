@@ -4,5 +4,10 @@
   "description": "Dust Wave film collective website",
   "language": "en",
   "brandName": "DUST WAVE",
-  "url": "https://dustwave.xyz"
+  "url": "https://dustwave.xyz",
+  "themeColor": "#1a1a2e",
+  "social": {
+    "instagram": "dustwavexyz",
+    "youtube": "@dustwavexyz"
   }
+}

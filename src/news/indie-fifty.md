@@ -1,6 +1,7 @@
 ---
 title: The Indie 50
 date: 2026-01-14
+author: Alonso Indacochea
 summary: 1% for the rest of us
 img: /img/news/indie-fifty.png
 syndicate:
