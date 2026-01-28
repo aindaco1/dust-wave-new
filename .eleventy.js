@@ -214,6 +214,26 @@ ${content}
       .replace(/href='\/(?!\/)/g, `href='${siteUrl}/`);
   });
 
+  // Clean HTML for RSS feeds - fix common issues that break feed parsers
+  eleventyConfig.addFilter("cleanHtmlForFeed", (html) => {
+    if (!html) return '';
+    return html
+      // Fix invalid </br> tags (should be <br> or <br/>)
+      .replace(/<\/br>/gi, '')
+      // Remove standalone <br> tags at start of content or after other br tags
+      .replace(/^(\s*<br\s*\/?>\s*)+/gi, '')
+      .replace(/(<br\s*\/?>\s*)+$/gi, '')
+      // Remove empty paragraphs
+      .replace(/<p>\s*<br\s*\/?>\s*<br\s*\/?>\s*<\/p>/gi, '')
+      .replace(/<p>\s*<\/p>/gi, '')
+      // Remove custom div classes that might confuse parsers
+      .replace(/<div class="date-written">[\s\S]*?<\/div>/gi, '')
+      // Clean up multiple line breaks
+      .replace(/(<br\s*\/?>\s*){2,}/gi, '<br/>')
+      // Trim whitespace
+      .trim();
+  });
+
   // Syndicatable collection - combines news + posts that have syndicate field
   eleventyConfig.addCollection("syndicatable", (collectionAPI) => {
     const news = collectionAPI.getFilteredByGlob("src/news/**/*.md");

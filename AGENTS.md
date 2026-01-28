@@ -92,7 +92,7 @@ This content only appears on the website.
 ### Feed Outputs
 | Feed | URL | Content |
 |------|-----|---------|
-| Substack | `/substack.xml` | Excerpt only + "Continue reading" link |
+| Main/Substack | `/feed.xml` | Excerpt only + "Continue reading" link |
 | Syndicate | `/syndicate.xml` | Full HTML content |
 | JSON Feed | `/syndicate.json` | Full HTML content (JSON format) |
 
@@ -117,7 +117,7 @@ Posts with `syndicate: ["fediverse"]` include:
 - `src/_includes/snippets/meta-social.njk` - OG/Twitter meta tags
 - `src/_includes/snippets/share-panel.njk` - Share UI
 - `src/_includes/snippets/bridgy-opt-in.njk` - Bridgy Fed opt-in link
-- `src/feeds/substack.njk` → `/substack.xml`
+- `src/feeds/feed.njk` → `/feed.xml` (main RSS feed for Substack import)
 - `src/feeds/syndicate.njk` → `/syndicate.xml`
 - `src/feeds/syndicate-json.njk` → `/syndicate.json`
 - `scripts/render-og-cards.mjs` - OG image generator (Puppeteer)
