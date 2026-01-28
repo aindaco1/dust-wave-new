@@ -17,7 +17,7 @@ permalink: "subdir/{{ title | slugify }}/index.html"
             <h1 class="display-huge p-name">{{ title }}</h1>
             <time class="dt-published visually-hidden" datetime="{{ date | htmlDateString }}">{{ date | readableDate }}</time>
             <a class="u-url visually-hidden" href="{{ metadata.url }}{{ page.url }}">Permalink</a>
-            <p class="lead pt-2 py-vh-2 p-summary {% if img %}{% else %}border-bottom{% endif %}">{{summary}}</p>
+            <p class="lead pt-2 py-vh-2 p-summary {% if img %}{% else %}border-bottom{% endif %}">{{summary}}{% if syndicate and "fediverse" in syndicate %} <a href="https://fed.brid.gy/r/{{ metadata.url }}{{ page.url }}" title="Federated to the Fediverse" class="text-decoration-none" target="_blank">📡</a>{% endif %}</p>
           </div>
           {% if img %}
             <div class="row">
