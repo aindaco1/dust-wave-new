@@ -9,6 +9,13 @@ pagination:
     reverse: true
     alias: posts
 ---
+{# Representative h-card for Bridgy Fed / IndieWeb discovery #}
+<div class="h-card visually-hidden">
+  <a class="p-name u-url" href="https://dustwave.xyz/">Dust Wave</a>
+  <p class="p-note">{{ metadata.description }}</p>
+  <img class="u-photo" src="https://dustwave.xyz/img/favicon/favicon.png" alt="Dust Wave logo">
+</div>
+
 <div class="w-100 overflow-hidden position-relative" id="top">
   {% include "snippets/hero2.njk" %}
 </div>
