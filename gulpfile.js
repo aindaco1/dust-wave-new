@@ -81,8 +81,8 @@ gulp.task('copy-CNAME', function copyCNAME() {
 });
 
 gulp.task('prod-copy', function prodCopy(done) {
-  // Copy everything from dev → docs
-  src(`${DIR.dev}/**/**.*`).pipe(dest(`${DIR.dist}/`));
+  // Copy everything from dev → docs, excluding substack-export (dev-only)
+  src([`${DIR.dev}/**/**.*`, `!${DIR.dev}/substack-export/**`]).pipe(dest(`${DIR.dist}/`));
   done();
 });
 

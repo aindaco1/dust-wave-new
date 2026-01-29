@@ -201,6 +201,67 @@ ${content}
     return html.replace(/<!-- more:substack -->/g, '');
   });
 
+  // Clean HTML for Substack copy/paste - removes unsupported elements
+  eleventyConfig.addFilter("substackClean", (html) => {
+    if (!html) return '';
+    return html
+      // Convert relative URLs to absolute
+      .replace(/src="\/(?!\/)/g, `src="${siteUrl}/`)
+      .replace(/src='\/(?!\/)/g, `src='${siteUrl}/`)
+      .replace(/href="\/(?!\/)/g, `href="${siteUrl}/`)
+      .replace(/href='\/(?!\/)/g, `href='${siteUrl}/`)
+      // Remove substack marker
+      .replace(/<!-- more:substack -->/g, '')
+      // Remove HTML comments
+      .replace(/<!--[\s\S]*?-->/g, '')
+      // Remove nav elements entirely (TOC won't work in Substack)
+      .replace(/<nav[^>]*>[\s\S]*?<\/nav>/gi, '')
+      // Remove script tags
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+      // Remove audio players and buttons (podcasts)
+      .replace(/<audio[^>]*>[\s\S]*?<\/audio>/gi, '')
+      .replace(/<audio[^>]*\/>/gi, '')
+      .replace(/<audio[^>]*>[^<]*<\/audio>/gi, '')
+      .replace(/<button[^>]*>[\s\S]*?<\/button>/gi, '')
+      // Convert podcast download links to plain URLs (Substack embeds MP3s)
+      .replace(/<a[^>]*href="([^"]*\.mp3[^"]*)"[^>]*download[^>]*>[\s\S]*?<\/a>/gi, '\n\n$1\n\n')
+      // Remove SVGs
+      .replace(/<svg[^>]*>[\s\S]*?<\/svg>/gi, '')
+      // Remove custom divs (keep content)
+      .replace(/<div[^>]*class="[^"]*date-written[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
+      .replace(/<div[^>]*class="[^"]*embed-container[^"]*"[^>]*>/gi, '')
+      .replace(/<\/div>/gi, '')
+      // Remove style tags
+      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+      // Remove inline styles
+      .replace(/\s*style="[^"]*"/gi, '')
+      // Remove class/id/data attributes
+      .replace(/\s*class="[^"]*"/gi, '')
+      .replace(/\s*id="[^"]*"/gi, '')
+      .replace(/\s*data-[a-z-]+="[^"]*"/gi, '')
+      .replace(/\s*loading="[^"]*"/gi, '')
+      .replace(/\s*decoding="[^"]*"/gi, '')
+      .replace(/\s*target="[^"]*"/gi, '')
+      // Convert iframes to plain YouTube/Vimeo URLs (Substack auto-embeds these)
+      .replace(/<iframe[^>]*src="[^"]*youtube[^"]*embed\/([^"?]+)[^"]*"[^>]*>[\s\S]*?<\/iframe>/gi, '\n\nhttps://www.youtube.com/watch?v=$1\n\n')
+      .replace(/<iframe[^>]*src="[^"]*vimeo[^"]*\/(\d+)[^"]*"[^>]*>[\s\S]*?<\/iframe>/gi, '\n\nhttps://vimeo.com/$1\n\n')
+      // Remove remaining iframes
+      .replace(/<iframe[^>]*>[\s\S]*?<\/iframe>/gi, '')
+      // Fix invalid </br> tags
+      .replace(/<\/br>/gi, '')
+      // Convert <br> to newlines for cleaner output
+      .replace(/<br\s*\/?>/gi, '\n')
+      // Clean up row/col divs (Bootstrap grid)
+      .replace(/<div[^>]*>/gi, '')
+      // Remove empty paragraphs
+      .replace(/<p>\s*<\/p>/gi, '')
+      .replace(/<p>\s*\n\s*<\/p>/gi, '')
+      // Clean up excessive newlines
+      .replace(/\n{4,}/g, '\n\n\n')
+      // Trim
+      .trim();
+  });
+
   // Convert relative URLs to absolute for feeds (images, links)
   // Only converts paths starting with / that aren't already absolute (http/https)
   eleventyConfig.addFilter("absoluteUrls", (html) => {
