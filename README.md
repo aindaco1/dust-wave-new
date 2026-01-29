@@ -90,12 +90,42 @@ Content is managed via [Pages CMS](https://pagescms.org/) configured in `.pages.
 | News Header (news/) | 1600×900px (16:9) | 350KB |
 | Digest Header (digest/header/) | 1600×900px (16:9) | 350KB |
 
+## Syndication & Social Sharing
+
+Posts and news can include optional frontmatter for cross-platform syndication:
+
+```yaml
+syndicate:
+  - substack    # Include in Substack feed (excerpt only)
+  - fediverse   # Federate via Bridgy Fed
+og_image: /img/og/custom-image.png   # Custom OG image (1200×630)
+og_alt: "Description of the image"   # Alt text for OG image
+```
+
+Every page automatically generates Open Graph and Twitter Card meta tags, plus JSON-LD structured data for SEO.
+
+### Substack Export
+
+Posts with `syndicate: ["substack"]` get a clean HTML export for manual copy/paste into Substack:
+
+1. Run `npm run watch`
+2. Open `dev/substack-export/{slug}.html` in browser
+3. Copy and paste into Substack editor
+
+The export automatically converts relative URLs to absolute, transforms YouTube/Vimeo iframes to plain URLs (Substack auto-embeds), and strips unnecessary markup.
+
+Use `<!-- more:substack -->` in your markdown to control where the RSS excerpt ends — content after the marker stays only on dustwave.xyz.
+
+See [AGENTS.md](AGENTS.md) for full syndication documentation including RSS feeds and Bridgy Fed setup.
+
 ## Key Files
 
 - `.eleventy.js` — Eleventy config, shortcodes, and `toWebp` filter
 - `.pages.yml` — Pages CMS collection definitions
 - `gulpfile.js` — Sass compilation, CSS purge, asset pipeline
 - `webp.mjs` — WebP image conversion script
+- `src/_includes/snippets/meta-social.njk` — OG/Twitter/JSON-LD meta tags
+- `src/_includes/snippets/share-panel.njk` — Share UI component
 
 ## Shortcodes
 
