@@ -13,7 +13,8 @@ permalink: "subdir/{{ title | slugify }}/index.html"
       <article class="h-entry">
         <div class="row d-flex justify-content-center text-center">
           <div class="col-12 col-lg-10 col-xl-8">
-            {% if author %}<small class="text-muted p-author">By {{ author }}</small>{% endif %}
+            {# Author preserved for microformats but hidden from display #}
+            {% if author %}<span class="p-author visually-hidden">{{ author }}</span>{% endif %}
             <h1 class="display-huge p-name">{{ title }}</h1>
             <time class="dt-published visually-hidden" datetime="{{ date | htmlDateString }}">{{ date | readableDate }}</time>
             <a class="u-url visually-hidden" href="{{ metadata.url }}{{ page.url }}">Permalink</a>

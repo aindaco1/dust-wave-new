@@ -70,11 +70,37 @@ og_alt: "Description of the image"   # Alt text for OG image
 share_text: "Custom share text"      # Override default share text
 ```
 
-### Substack Excerpt Marker
-Add `<!-- more:substack -->` in your markdown to control where the excerpt ends:
+### Substack Export (Copy/Paste)
+Posts with `syndicate: ["substack"]` get a clean HTML export at `dev/substack-export/{slug}.html` for manual copy/paste into Substack's editor.
+
+**To use:**
+1. Run `npm run watch` (or `npx eleventy`)
+2. Open `dev/substack-export/{slug}.html` in browser or editor
+3. Copy content and paste into Substack editor (Cmd+V)
+
+**What gets cleaned:**
+- Relative URLs → absolute (`https://dustwave.xyz/...`)
+- YouTube/Vimeo iframes → plain URLs (Substack auto-embeds)
+- `<h3>` → `<h2>` with `<hr>` divider before each
+- Audio players → plain MP3 URLs (Substack auto-embeds)
+- Image captions → `<figure>/<figcaption>` (Substack supports these)
+- Video captions → removed (Substack doesn't support)
+- Author signature block → removed
+- Classes, styles, scripts, navs, SVGs → stripped
+- `<!-- more:substack -->` marker → removed
+
+**Header format:**
+```
+Originally published on July 4, 2025 at dustwave.xyz
+```
+
+**Note:** These files are dev-only — excluded from production build (`docs/`).
+
+### Substack Excerpt Marker (for RSS feed)
+Add `<!-- more:substack -->` in your markdown to control where the RSS feed excerpt ends:
 
 ```markdown
-This content appears in both Substack and the website.
+This content appears in both Substack feed and the website.
 
 <!-- more:substack -->
 
@@ -82,12 +108,11 @@ This content only appears on the website.
 {% youtube "VIDEO_ID" %}
 ```
 
-- Content **before** the marker goes to Substack with a "Continue reading" link
+- Content **before** the marker goes to Substack RSS feed with a "Continue reading" link
 - Content **after** the marker stays only on dustwave.xyz
 - The marker is invisible on the website
 - If no marker: falls back to first paragraph
 - Images use absolute URLs automatically (`https://dustwave.xyz/img/...`)
-- YouTube/Vimeo embeds won't work in Substack (use marker to exclude them)
 
 ### Feed Outputs
 | Feed | URL | Content |
@@ -107,9 +132,11 @@ Every page automatically generates OG and Twitter Card meta tags using:
 - `img` frontmatter converted to WebP (fallback)
 - `/img/og/default.png` (last resort fallback)
 
+Also includes JSON-LD structured data (Organization, Article/Movie, BreadcrumbList), theme colors, and PWA meta tags.
+
 ### Fediverse via Bridgy Fed
 Posts with `syndicate: ["fediverse"]` include:
-- Microformats2 markup (`h-entry`, `p-name`, `e-content`, etc.)
+- Microformats2 markup (`h-entry`, `p-name`, `e-content`, etc.) — author is hidden visually but preserved for microformats
 - Bridgy Fed opt-in link for federation
 - CI job sends webmentions after deploy (requires `BRIDGY_FED_ENABLED=true` repo variable)
 

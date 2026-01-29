@@ -6,12 +6,10 @@ pagination:
 permalink: "substack-export/{{ post.data.title | slugify }}.html"
 eleventyExcludeFromCollections: true
 ---
-<h1>{{ post.data.title }}</h1>
+<p><em>Originally published on {{ post.date | longDate }} at <a href="{{ metadata.url }}/{{ post.data.title | slugify }}.html">dustwave.xyz</a></em></p>
 
 {% if post.data.img %}
 <img src="{{ metadata.url }}{{ post.data.img }}" alt="{{ post.data.imgAlt or post.data.title }}">
 {% endif %}
 
 {{ post.templateContent | substackClean | safe }}
-
-<p><em>Originally published at <a href="{{ metadata.url }}/{{ post.data.title | slugify }}.html">dustwave.xyz</a></em></p>

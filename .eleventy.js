@@ -130,6 +130,13 @@ ${content}
     }).toFormat("dd LLL yyyy");
   });
 
+  // Long date format: "July 4, 2025"
+  eleventyConfig.addFilter("longDate", dateObj => {
+    return DateTime.fromJSDate(dateObj, {
+      zone: 'utc'
+    }).toFormat("LLLL d, yyyy");
+  });
+
   // https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-date-string
   eleventyConfig.addFilter('htmlDateString', (dateObj) => {
     return DateTime.fromJSDate(dateObj, {
@@ -205,11 +212,13 @@ ${content}
   eleventyConfig.addFilter("substackClean", (html) => {
     if (!html) return '';
     return html
-      // Convert relative URLs to absolute
+      // Convert relative URLs to absolute (both /path and path formats)
       .replace(/src="\/(?!\/)/g, `src="${siteUrl}/`)
       .replace(/src='\/(?!\/)/g, `src='${siteUrl}/`)
       .replace(/href="\/(?!\/)/g, `href="${siteUrl}/`)
       .replace(/href='\/(?!\/)/g, `href='${siteUrl}/`)
+      // Also catch relative URLs without leading slash (e.g., "project/...")
+      .replace(/href="(project|news|about|members)\//g, `href="${siteUrl}/$1/`)
       // Remove substack marker
       .replace(/<!-- more:substack -->/g, '')
       // Remove HTML comments
@@ -227,6 +236,8 @@ ${content}
       .replace(/<a[^>]*href="([^"]*\.mp3[^"]*)"[^>]*download[^>]*>[\s\S]*?<\/a>/gi, '\n\n$1\n\n')
       // Remove SVGs
       .replace(/<svg[^>]*>[\s\S]*?<\/svg>/gi, '')
+      // Convert caption divs to figcaption BEFORE removing other divs (Substack supports this)
+      .replace(/<div[^>]*class=["'][^"']*caption[^"']*["'][^>]*>([\s\S]*?)<\/div>/gi, '<figcaption><em>$1</em></figcaption>')
       // Remove custom divs (keep content)
       .replace(/<div[^>]*class="[^"]*date-written[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
       .replace(/<div[^>]*class="[^"]*embed-container[^"]*"[^>]*>/gi, '')
@@ -242,9 +253,23 @@ ${content}
       .replace(/\s*loading="[^"]*"/gi, '')
       .replace(/\s*decoding="[^"]*"/gi, '')
       .replace(/\s*target="[^"]*"/gi, '')
+      // Remove captions that follow video embeds (Substack doesn't support video captions)
+      // Match embed-container (with any additional classes) followed by caption div
+      .replace(/<div[^>]*class=['"][^'"]*embed-container[^'"]*['"][^>]*><iframe[^>]*src=['"]([^'"]+)['"][^>]*><\/iframe><\/div>[\s\S]*?<div[^>]*class=["']caption["'][^>]*>[\s\S]*?<\/div>/gi, (match, src) => {
+        if (src.includes('youtube')) {
+          const videoId = src.match(/embed\/([^"'?]+)/)?.[1];
+          return videoId ? `<p>https://www.youtube.com/watch?v=${videoId}</p>\n` : '';
+        }
+        if (src.includes('vimeo')) {
+          const videoId = src.match(/\/(\d+)/)?.[1];
+          return videoId ? `<p>https://vimeo.com/${videoId}</p>\n` : '';
+        }
+        return '';
+      })
       // Convert iframes to plain YouTube/Vimeo URLs (Substack auto-embeds these)
-      .replace(/<iframe[^>]*src="[^"]*youtube[^"]*embed\/([^"?]+)[^"]*"[^>]*>[\s\S]*?<\/iframe>/gi, '\n\nhttps://www.youtube.com/watch?v=$1\n\n')
-      .replace(/<iframe[^>]*src="[^"]*vimeo[^"]*\/(\d+)[^"]*"[^>]*>[\s\S]*?<\/iframe>/gi, '\n\nhttps://vimeo.com/$1\n\n')
+      // Handle both single and double quotes, add line break after
+      .replace(/<iframe[^>]*src=["'][^"']*youtube[^"']*embed\/([^"'?]+)[^"']*["'][^>]*>[\s\S]*?<\/iframe>/gi, '<p>https://www.youtube.com/watch?v=$1</p>\n')
+      .replace(/<iframe[^>]*src=["'][^"']*vimeo[^"']*\/(\d+)[^"']*["'][^>]*>[\s\S]*?<\/iframe>/gi, '<p>https://vimeo.com/$1</p>\n')
       // Remove remaining iframes
       .replace(/<iframe[^>]*>[\s\S]*?<\/iframe>/gi, '')
       // Fix invalid </br> tags
@@ -256,6 +281,18 @@ ${content}
       // Remove empty paragraphs
       .replace(/<p>\s*<\/p>/gi, '')
       .replace(/<p>\s*\n\s*<\/p>/gi, '')
+      // Remove author signature block at end
+      .replace(/<h3>\s*<strong>Alonso Indacochea<\/strong>\s*<\/h3>\s*<h4>\s*<strong>Dust Wave co-founder<\/strong>\s*<\/h4>/gi, '')
+      .replace(/<h3><strong>Alonso Indacochea<\/strong><\/h3>\s*<h4><strong>Dust Wave co-founder<\/strong><\/h4>/gi, '')
+      // Wrap image + figcaption in figure element
+      .replace(/<center>\s*<img([^>]*)>\s*<\/center>\s*<figcaption>/gi, '<figure><img$1><figcaption>')
+      .replace(/<\/figcaption>(\s*)(?!<\/figure>)/gi, '</figcaption></figure>$1')
+      // Remove figcaptions that follow video URLs (Substack doesn't support video captions)
+      .replace(/(<p>https:\/\/www\.youtube\.com\/watch\?v=[^<]+<\/p>)\s*<figcaption>[\s\S]*?<\/figcaption>/gi, '$1')
+      .replace(/(<p>https:\/\/vimeo\.com\/\d+<\/p>)\s*<figcaption>[\s\S]*?<\/figcaption>/gi, '$1')
+      // Convert h3 to h2 with divider before
+      .replace(/<h3>/gi, '<hr>\n<h2>')
+      .replace(/<\/h3>/gi, '</h2>')
       // Clean up excessive newlines
       .replace(/\n{4,}/g, '\n\n\n')
       // Trim
