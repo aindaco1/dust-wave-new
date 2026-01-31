@@ -488,7 +488,7 @@ And without further ado:
     
       </div>
       <div class="p-3">
-        <h4 class="mb-2"><a href="https://overcast.fm/+AApWqjIZivo" target="_blank">Eye of the Duck - _The Lord of the Rings: the Fellowship of the Ring_</a></h4>
+        <h4 class="mb-2"><a href="https://overcast.fm/+AApWqjIZivo" target="_blank">Eye of the Duck - _The Lord of the Rings: The Fellowship of the Ring_</a></h4>
         <blockquote class="mb-2">“It's an era of Hollywood that I think is about to vanish before our eyes.”</blockquote>
         
         <ul>
