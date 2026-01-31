@@ -284,7 +284,7 @@ And without further ado:
     <div class="card digest-card pending shadow-1-strong rounded mb-2">
       <img class="w-100 shadow-1-strong rounded mb-2"      src="/img/digest/2026-01-31/2026-01-28-years-bone-temple-review.jpg" alt="Illustration for 28 Years Later: The Bone Temple Is Weird, Wild, and Fun"      loading="lazy" decoding="async" />
       <div class="p-3">
-        <h4 class="mb-2"><a href="https://jacobin.com/2026/01/28-years-bone-temple-review/" target="_blank">_28 Years Later: the Bone Temple_ Is Weird, Wild, and Fun</a></h4>
+        <h4 class="mb-2"><a href="https://jacobin.com/2026/01/28-years-bone-temple-review/" target="_blank">_28 Years Later: The Bone Temple_ Is Weird, Wild, and Fun</a></h4>
         
         <blockquote class="mb-2">“There had been sporadic investigations and loud rumors and even a few outright accusations that indicate the strong possibility that highly placed people and major institutions must’ve been covering for Sir Jimmy.”</blockquote>
         
