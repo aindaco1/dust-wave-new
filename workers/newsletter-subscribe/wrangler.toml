@@ -1,0 +1,10 @@
+name = "dustwave-newsletter"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+
+[vars]
+RESEND_AUDIENCE_ID = "mailchimp"
+ALLOWED_ORIGIN = "https://dustwave.xyz"
+
+# Set RESEND_API_KEY as a secret:
+# wrangler secret put RESEND_API_KEY
