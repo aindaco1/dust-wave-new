@@ -55,6 +55,9 @@ src/
 └── scss/
     └── themes/      # Custom Bootstrap theme
 
+workers/
+└── newsletter-subscribe/  # Cloudflare Worker for Resend integration
+
 dev/                 # Local dev build output (gitignored)
 docs/                # Production build output (gitignored, deployed via CI)
 ```
@@ -99,10 +102,22 @@ syndicate:
   - substack    # Include in Substack feed (excerpt only)
   - fediverse   # Federate via Bridgy Fed
 og_image: /img/og/custom-image.png   # Custom OG image (1200×630)
+og_video: /img/og/custom-video.mp4   # Optional OG video
 og_alt: "Description of the image"   # Alt text for OG image
+share_text: "Custom share text"      # Override default share text
 ```
 
 Every page automatically generates Open Graph and Twitter Card meta tags, plus JSON-LD structured data for SEO.
+
+### RSS Feeds
+
+| Feed | URL | Content |
+|------|-----|---------|
+| Main/Substack | `/feed` | Excerpt only + "Continue reading" link |
+| Syndicate | `/syndicate.xml` | Full HTML content |
+| JSON Feed | `/syndicate.json` | Full HTML content (JSON format) |
+
+All feeds use Mountain Time for dates and absolute URLs for images/links.
 
 ### Substack Export
 
@@ -116,7 +131,61 @@ The export automatically converts relative URLs to absolute, transforms YouTube/
 
 Use `<!-- more:substack -->` in your markdown to control where the RSS excerpt ends — content after the marker stays only on dustwave.xyz.
 
-See [AGENTS.md](AGENTS.md) for full syndication documentation including RSS feeds and Bridgy Fed setup.
+### Fediverse via Bridgy Fed
+
+Posts with `syndicate: ["fediverse"]` are federated via [Bridgy Fed](https://fed.brid.gy/):
+
+- Microformats2 markup (`h-entry`, `p-name`, `e-content`, etc.) is automatically added
+- `p-bridgy-bluesky-content` provides plain text summary for Bluesky
+- CI job sends webmentions after deploy (requires `BRIDGY_FED_ENABLED=true` repo variable)
+
+**Setup:**
+1. Register at [webmention.io](https://webmention.io)
+2. Set up Bridgy Fed at https://fed.brid.gy/
+3. Add `BRIDGY_FED_ENABLED=true` as GitHub repo variable
+
+**Commands:**
+```bash
+npm run ping:bridgy      # Send webmentions for changed posts
+npm run ping:bridgy:all  # Send webmentions for all fediverse posts
+```
+
+**Limitations:**
+- Bridgy Fed has anti-backfill protection — posts older than ~2-4 weeks may be silently dropped
+- Bluesky federation is slower; posts may take several minutes to appear
+
+### Open Graph Images
+
+Generate OG images (requires Puppeteer):
+```bash
+npm install puppeteer
+npm run build:og
+```
+
+Create a default fallback image at `src/img/og/default.png` (1200×630).
+
+## Newsletter
+
+Newsletter signups are handled via a Cloudflare Worker that adds contacts to [Resend](https://resend.com).
+
+### Architecture
+- **Frontend**: Forms in `src/_includes/snippets/footer1.njk` (popup) and `src/newsletter.njk` (full page)
+- **Backend**: Cloudflare Worker at `workers/newsletter-subscribe/`
+- **Email service**: Resend (contacts added to 'mailchimp' audience)
+
+### Worker Deployment
+
+```bash
+cd workers/newsletter-subscribe
+npm install
+wrangler secret put RESEND_API_KEY  # Full Access key required
+wrangler deploy
+```
+
+### Configuration
+- `wrangler.toml` — Worker config with `RESEND_AUDIENCE_ID` and `ALLOWED_ORIGIN`
+- Worker URL: `https://dustwave-newsletter.jogo.workers.dev`
+- CORS allows `https://dustwave.xyz` and localhost for dev
 
 ## Key Files
 
@@ -126,6 +195,13 @@ See [AGENTS.md](AGENTS.md) for full syndication documentation including RSS feed
 - `webp.mjs` — WebP image conversion script
 - `src/_includes/snippets/meta-social.njk` — OG/Twitter/JSON-LD meta tags
 - `src/_includes/snippets/share-panel.njk` — Share UI component
+- `src/_includes/snippets/footer1.njk` — Footer with newsletter popup
+- `src/_includes/snippets/bridgy-opt-in.njk` — Bridgy Fed opt-in link
+- `src/feeds/feed.njk` — Main RSS feed (for Substack import)
+- `src/feeds/syndicate.njk` — Full-content RSS feed
+- `scripts/render-og-cards.mjs` — OG image generator
+- `scripts/ping-bridgy.mjs` — Bridgy Fed webmention sender
+- `workers/newsletter-subscribe/src/index.js` — Newsletter signup Worker
 
 ## Shortcodes
 

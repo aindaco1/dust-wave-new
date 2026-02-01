@@ -37,6 +37,7 @@
 - `src/img/news/` - News article images and GIFs
 - `src/img/webp/` - WebP versions (mirrors img/ structure)
 - `src/scss/theme.scss` - Main stylesheet entry point
+- `workers/newsletter-subscribe/` - Cloudflare Worker for newsletter signups
 
 ## Code Style
 - Templates use Nunjucks (`.njk`) with frontmatter for metadata
@@ -163,3 +164,31 @@ Posts with `syndicate: ["fediverse"]` include:
 3. Register at webmention.io and update endpoint in `src/_includes/snippets/head.njk`
 4. Set up Bridgy Fed at https://fed.brid.gy/
 5. Add `BRIDGY_FED_ENABLED=true` as GitHub repo variable to enable CI federation
+
+## Newsletter Signups
+
+Newsletter subscriptions are handled via a Cloudflare Worker that adds contacts to Resend.
+
+### Architecture
+- **Frontend**: Forms in `footer1.njk` (popup) and `newsletter.njk` (full page)
+- **Backend**: Cloudflare Worker at `workers/newsletter-subscribe/`
+- **Email service**: Resend (contacts added to 'mailchimp' audience)
+
+### Worker Deployment
+```bash
+cd workers/newsletter-subscribe
+npm install
+wrangler secret put RESEND_API_KEY  # paste your Resend API key (Full Access)
+wrangler deploy
+```
+
+### Configuration
+- `wrangler.toml` — Worker config with `RESEND_AUDIENCE_ID` and `ALLOWED_ORIGIN`
+- Worker URL: `https://dustwave-newsletter.jogo.workers.dev`
+- CORS allows `https://dustwave.xyz` and localhost for dev
+
+### Files
+- `workers/newsletter-subscribe/src/index.js` — Worker code
+- `src/_includes/snippets/footer1.njk` — Popup form + JS handler
+- `src/newsletter.njk` — Full newsletter signup page
+- `src/scss/themes/base/_style-theme.scss` — Form styles (bottom of file)
