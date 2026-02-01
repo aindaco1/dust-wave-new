@@ -6,6 +6,18 @@ const EleventyFetch = require("@11ty/eleventy-fetch");
 const { EleventyHtmlBasePlugin } = require("@11ty/eleventy");
 const pluginRss = require("@11ty/eleventy-plugin-rss");
 const sitemap = require("@quasibit/eleventy-plugin-sitemap");
+const crypto = require("crypto");
+
+// Helper: Generate play-cache filename from artwork URL (matches make_newsletter_email.py)
+// Format: play-{md5(url|dim=True)[:12]}.jpg
+// Returns absolute URL for Substack export
+const siteUrl = "https://dustwave.xyz";
+function getPlayCacheUrl(artworkUrl) {
+  const cacheKey = `${artworkUrl}|dim=True`;
+  const urlHash = crypto.createHash('md5').update(cacheKey).digest('hex').slice(0, 12);
+  const ext = artworkUrl.toLowerCase().includes('.png') ? '.png' : '.jpg';
+  return `${siteUrl}/img/news/play-cache/play-${urlHash}${ext}`;
+}
 
 module.exports = function(eleventyConfig) {
   // Universal Shortcodes (Adds to Liquid, Nunjucks, Handlebars)
@@ -159,7 +171,6 @@ ${content}
   });
 
   // Absolute URL filter for canonical links
-  const siteUrl = "https://dustwave.xyz";
   eleventyConfig.addFilter("absoluteUrl", (url) => {
     if (!url) return siteUrl;
     if (url.startsWith('http://') || url.startsWith('https://')) return url;
@@ -293,6 +304,21 @@ ${content}
       // Convert h3 to h2 with divider before
       .replace(/<h3>/gi, '<hr>\n<h2>')
       .replace(/<\/h3>/gi, '</h2>')
+      // Link digest article images to their article URLs (after stripping divs/classes)
+      // Pattern: <img src="...img/digest/..."> followed by <h4><a href="URL">
+      // Output clean HTML: linked image in its own paragraph, then h4 title
+      .replace(/<p>\s*<img(\s+src="[^"]*\/img\/digest\/[^"]*"[^>]*)\/>\s*\n*\s*<h4[^>]*><a\s+href="([^"]+)"/gi, 
+        '<p><a href="$2"><img$1 /></a></p>\n<h4><a href="$2"')
+      // Link podcast images to their podcast URLs AND swap to play-cache images
+      // Pattern: <img src="...img/podcasts/..."> followed by MP3 URL then <h4><a href="URL">
+      .replace(/<img(\s+src="([^"]*\/img\/podcasts\/[^"]*)"[^>]*)>\s*<\/p>\s*<p>\s*(https?:\/\/[^\s<]+\.mp3[^\s<]*)\s*<\/p>\s*<p>\s*<h4[^>]*><a\s+href="([^"]+)"/gi, 
+        (match, imgAttrs, artworkUrl, mp3Url, podcastUrl) => {
+          // Convert artwork URL to play-cache URL
+          const playCacheUrl = getPlayCacheUrl(artworkUrl);
+          // Replace the src in imgAttrs with play-cache URL
+          const newImgAttrs = imgAttrs.replace(artworkUrl, playCacheUrl);
+          return `<a href="${podcastUrl}"><img${newImgAttrs}></a>\n</p>\n<p>\n${mp3Url}\n</p>\n<p>\n<h4><a href="${podcastUrl}"`;
+        })
       // Clean up excessive newlines
       .replace(/\n{4,}/g, '\n\n\n')
       // Trim
