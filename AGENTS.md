@@ -137,6 +137,7 @@ Also includes JSON-LD structured data (Organization, Article/Movie, BreadcrumbLi
 ### Fediverse via Bridgy Fed
 Posts with `syndicate: ["fediverse"]` include:
 - Microformats2 markup (`h-entry`, `p-name`, `e-content`, etc.) — author is hidden visually but preserved for microformats
+- `p-bridgy-bluesky-content` provides plain text summary for Bluesky (avoids HTML rendering issues)
 - Bridgy Fed opt-in link for federation
 - CI job sends webmentions after deploy (requires `BRIDGY_FED_ENABLED=true` repo variable)
 
