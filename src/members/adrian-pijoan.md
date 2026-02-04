@@ -3,6 +3,6 @@ slug: adrian-pijoan
 name: Adrian Pijoan
 img: /img/about/adrianp.jpg
 instagram: adrian_pijoan
-column: left
-order: 19
+column: right
+order: 6
 ---
