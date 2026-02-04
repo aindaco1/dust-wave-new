@@ -3,6 +3,6 @@ slug: james-rodriguez
 name: James Rodriguez
 img: /img/about/james.jpg
 instagram: jittlelames
-column: left
-order: 13
+column: right
+order: 2
 ---
