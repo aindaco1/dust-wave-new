@@ -4,5 +4,5 @@ name: Elizabeth Jennings
 img: /img/about/elizabeth.jpg
 instagram: lelizabethmj
 column: left
-order: 23
+order: 11
 ---
