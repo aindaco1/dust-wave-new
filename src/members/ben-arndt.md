@@ -4,5 +4,5 @@ name: Ben Arndt
 img: /img/about/ben.jpg
 instagram: ben_carndt_
 column: right
-order: 24
+order: 20
 ---
