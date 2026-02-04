@@ -4,5 +4,5 @@ name: Thomas Ropp
 img: /img/about/thomas.jpg
 instagram: thomas_ropp_music
 column: left
-order: 21
+order: 12
 ---
