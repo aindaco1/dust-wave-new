@@ -1,8 +1,0 @@
----
-slug: austin-madrid
-name: Austin Madrid
-img: /img/about/austin.jpg
-instagram: aust.n.space
-column: right
-order: 2
----
