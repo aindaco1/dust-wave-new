@@ -1,8 +1,0 @@
----
-slug: devin-holloway
-name: Devin Holloway
-img: /img/about/devin.jpg
-instagram: devintyler331
-column: left
-order: 10
----
