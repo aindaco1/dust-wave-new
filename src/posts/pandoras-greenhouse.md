@@ -78,6 +78,25 @@ John Dewar as The Narrator
 </div>
 <br><br>
 
+### Stills
+
+<div class="row g-2">
+  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
+    <img src="/img/pandoras_greenhouse/still_3.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Stills">
+    <img src="/img/pandoras_greenhouse/still_1.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Stills">
+    <img src="/img/pandoras_greenhouse/still_5.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Stills">
+    <img src="/img/pandoras_greenhouse/still_7.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Stills">
+    <img src="/img/pandoras_greenhouse/still_9.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Stills">
+  </div>
+  <div class="col-lg-6 mb-6 mb-lg-0">
+    <img src="/img/pandoras_greenhouse/still_2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Stills">
+    <img src="/img/pandoras_greenhouse/still_4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Stills">
+    <img src="/img/pandoras_greenhouse/still_6.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Stills">
+    <img src="/img/pandoras_greenhouse/still_8.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Stills">
+  </div>
+</div>
+<br><br>
+
 ### Poster
 <br>
 <img src="/img/pandoras_greenhouse/poster.jpg" class="w-75 shadow-1-strong rounded mb-2" alt="poster">
