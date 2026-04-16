@@ -33,7 +33,7 @@
 <meta property="og:image:alt" content="{{ ogAlt }}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:type" content="image/{% if ogImage.endsWith('.png') %}png{% elif ogImage.endsWith('.webp') %}webp{% else %}jpeg{% endif %}">
+<meta property="og:image:type" content="image/{% if ogImage.endsWith('.png') %}png{% elif ogImage.endsWith('.webp') %}webp{% elif ogImage.endsWith('.gif') %}gif{% else %}jpeg{% endif %}">
 
 {# Optional OG video (MP4 loop) #}
 {% if og_video %}
