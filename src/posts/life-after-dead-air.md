@@ -47,7 +47,7 @@ Hosted with the support of the [PASEO Project](https://paseoproject.org), and in
 
 ### deep inside
 
-**Artist:** [R. Barela](https://www.instagram.com/bareladrinksfree)
+**Artist:** [R. Barela](https://www.instagram.com/r._barela)
 
 **Medium, materials, and final measurements:** Pine wood, LCD display, polymer clay, acrylic paint, digital media player, latex
 
