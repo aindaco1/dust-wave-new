@@ -12,7 +12,7 @@ tags:
 
 _Life After Dead Air_ brings together artists working with moving images to explore corporeal reality in a digital age. Though their practices differ, each artist centers the tensions of living in an age of uncertainty. With common themes of nostalgia and novelty, the works in the show approach these tensions with curiosity and joy. Together, they show how culture continues in the ruins of media infrastructure.
 
-Hosted with the support of the [PASEO Project](https://paseoproject.org), in partnership with the [Taos Film Festival](https://taosff.org), the exhibition runs at the [Taos Center for the Arts](https://tcataos.org) in Taos, New Mexico from **April 23-26, 2026**. The opening reception is **April 23 at 2:30 PM**.
+Hosted with the support of the [PASEO Project](https://paseoproject.org), and in partnership with the [Taos Film Festival](https://taosff.org), the exhibition runs at the [Taos Center for the Arts](https://tcataos.org) in Taos, New Mexico from **April 23-26, 2026**. The opening reception is **April 23 at 2:30 PM**.
 <br><br>
 
 ## Installations
