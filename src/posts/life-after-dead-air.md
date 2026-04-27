@@ -12,13 +12,18 @@ tags:
 
 _Life After Dead Air_ brings together artists working with moving images to explore corporeal reality in a digital age. Though their practices differ, each artist centers the tensions of living in an age of uncertainty. With common themes of nostalgia and novelty, the works in the show approach these tensions with curiosity and joy. Together, they show how culture continues in the ruins of media infrastructure.
 
-Hosted with the support of the [PASEO Project](https://paseoproject.org), and in partnership with the [Taos Film Festival](https://taosff.org), the exhibition runs at the [Taos Center for the Arts](https://tcataos.org) in Taos, New Mexico from **April 23-26, 2026**. The opening reception is **April 23 at 2:30 PM**.
+Hosted with the support of the [PASEO Project](https://paseoproject.org), and in partnership with the [Taos Film Festival](https://taosff.org), the exhibition runs at the [Taos Center for the Arts](https://tcataos.org) in Taos, New Mexico from **April 23-26, 2026**. The opening reception is **April 23 at 4:00 PM**.
 <br><br>
 
 ## Installations
 <br>
 
 ### God and the Others
+
+<br>
+<img src="/img/life_after_dead_air/god-and-the-others.jpg" class="w-75 shadow-1-strong rounded mb-2" alt="god and the others">
+
+<br><br>
 
 **Artist:** [Dusty Deen](https://www.dustydeen.com)
 
@@ -29,6 +34,11 @@ Hosted with the support of the [PASEO Project](https://paseoproject.org), and in
 
 ### What I Keep to Myself
 
+<br>
+<img src="/img/life_after_dead_air/tiny-tv.jpg" class="w-75 shadow-1-strong rounded mb-2" alt="what I keep to myself">
+
+<br><br>
+
 **Artist:** [Jacklyn Le](https://www.instagram.com/le_snacky)
 
 **Medium, materials, and final measurements:** 1.5 in x 2 in; Materials: TinyTV, hair
@@ -37,6 +47,11 @@ Hosted with the support of the [PASEO Project](https://paseoproject.org), and in
 <br><br>
 
 ### Operate: Play Now
+
+<br>
+<img src="/img/life_after_dead_air/operation.jpg" class="w-75 shadow-1-strong rounded mb-2" alt="operate - play now">
+
+<br><br>
 
 **Artist:** [Jacklyn Le](https://www.instagram.com/le_snacky)
 
@@ -47,6 +62,11 @@ Hosted with the support of the [PASEO Project](https://paseoproject.org), and in
 
 ### deep inside
 
+<br>
+<img src="/img/life_after_dead_air/deep-inside.jpg" class="w-75 shadow-1-strong rounded mb-2" alt="deep inside">
+
+<br><br>
+
 **Artist:** [R. Barela](https://www.instagram.com/r._barela)
 
 **Medium, materials, and final measurements:** Pine wood, LCD display, polymer clay, acrylic paint, digital media player, latex
@@ -55,6 +75,17 @@ Hosted with the support of the [PASEO Project](https://paseoproject.org), and in
 <br><br>
 
 ### Tower of Cower III
+
+<br>
+<div class="row g-2">
+  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
+    <img src="/img/life_after_dead_air/tower-2.jpg" class="w-75 shadow-1-strong rounded mb-2" alt="tower of cower III">
+  </div>
+  <div class="col-lg-6 mb-6 mb-lg-0">
+    <img src="/img/life_after_dead_air/tower.jpg" class="w-75 shadow-1-strong rounded mb-2" alt="tower of cower III">
+  </div>
+</div>
+<br><br>
 
 **Artists:** [Alonso Indacochea](https://www.instagram.com/alonso_inda) and [Becca Elbrecht](https://www.instagram.com/becomingfilms_/)
 
@@ -65,6 +96,11 @@ Hosted with the support of the [PASEO Project](https://paseoproject.org), and in
 
 ### cut girl
 
+<br>
+<img src="/img/life_after_dead_air/fragility.jpg" class="w-75 shadow-1-strong rounded mb-2" alt="cut girl">
+
+<br><br>
+
 **Artist:** [Julianne Aguilar](https://www.juliannes.website)
 
 **Medium, materials, and final measurements:** Wall-mounted monitors hooked up to computers, connected to Wi-Fi, and displaying the live websites
@@ -73,6 +109,11 @@ Hosted with the support of the [PASEO Project](https://paseoproject.org), and in
 <br><br>
 
 ### blood smoke wind rain
+
+<br>
+<img src="/img/life_after_dead_air/bswr.jpg" class="w-75 shadow-1-strong rounded mb-2" alt="blood smoke wind rain">
+
+<br><br>
 
 **Artist:** [Adrian Pijoan](https://www.adrianpijoan.net/index.html)
 
@@ -83,8 +124,30 @@ Hosted with the support of the [PASEO Project](https://paseoproject.org), and in
 
 ### Hum Devotional
 
+<br>
+<img src="/img/life_after_dead_air/hum-devotional.jpg" class="w-75 shadow-1-strong rounded mb-2" alt="hum devotional">
+
+<br><br>
+
 **Artists:** [Helen Atkins](https://www.helenatkins.com) and [Will Geusz](https://www.instagram.com/willinandchillinarts)
 
 **Medium, materials, and final measurements:** Handmade ceramic mosaic, digital illustration printed on KODAK Photo Tex Repositionable Fabric, disassembled computer speakers and fairy lights, audio artwork; 31 in x 18 in each
 
 **Description:** _Hum Devotional_ is a multidisciplinary installation that draws connections between the divine and the mundane. The digital illustrations and mosaics reference the aesthetics of awe in Christendom, but center domestic and secular ritual. Embedded in the triptych is an audio and lightscape artwork that samples sound from the artists' respective social media algorithms. The sound is transformed and distorted to evoke meditative and sacred spaces. The ambient light is a direct translation of the sound waves. The installation both questions and exalts ceremonial and everyday ritual.
+
+### Behind the scenes
+
+<div class="row g-2">
+  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
+    <img src="/img/life_after_dead_air/bts-3.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
+    <img src="/img/life_after_dead_air/bts-1.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
+    <img src="/img/life_after_dead_air/bts-2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
+    <img src="/img/life_after_dead_air/bts-6.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
+  </div>
+  <div class="col-lg-6 mb-6 mb-lg-0">
+    <img src="/img/life_after_dead_air/bts-5.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
+    <img src="/img/life_after_dead_air/bts-4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
+    <img src="/img/life_after_dead_air/bts-7.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
+  </div>
+</div>
+<br><br>
