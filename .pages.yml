@@ -152,6 +152,15 @@ content:
               label: "Event"
         description: "Select from existing tags or type to create new ones."
 
+      - name: galleryImages
+        label: Gallery Images
+        type: image
+        list: true
+        media:
+          input: src/img
+          output: /img
+        description: "Optional masonry gallery rendered below the page body. Upload/select project images from the relevant folder under src/img."
+
       - name: body
         label: Content
         type: code
@@ -197,25 +206,17 @@ content:
                OPTIONAL EXTRAS (delete if not needed)
                ═══════════════════════════════════════════════════════════ -->
 
-          <!-- INLINE IMAGE (use for special placement, otherwise use Gallery field above)
-          <img src="/img/PROJECT/photo.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
+          <!-- INLINE IMAGE (use for special placement, otherwise use Gallery Images field above)
+          <img src="/img/PROJECT/photo.jpg" alt="description">
           -->
 
           <!-- CENTERED IMAGE
-          <center><img src="/img/PROJECT/photo.jpg" class="w-75 shadow-1-strong rounded mb-2" alt="description"></center>
+          <center><img src="/img/PROJECT/photo.jpg" alt="description"></center>
           -->
 
-          <!-- TWO-COLUMN GALLERY (use Gallery field above for auto-layout, or manual below)
-          <div class="row g-2">
-            <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-              <img src="/img/PROJECT/photo1.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
-              <img src="/img/PROJECT/photo2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
-            </div>
-            <div class="col-lg-6 mb-6 mb-lg-0">
-              <img src="/img/PROJECT/photo3.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
-              <img src="/img/PROJECT/photo4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
-            </div>
-          </div>
+          <!-- GALLERY
+          Add images to the Gallery Images field instead of pasting layout HTML.
+          Galleries render as a responsive masonry grid automatically.
           -->
 
           <!-- EXTERNAL LINK
@@ -262,6 +263,15 @@ content:
           output: /img/news
         description: "Article header image. Size: 1600×900px (16:9), under 350KB."
 
+      - name: galleryImages
+        label: Gallery Images
+        type: image
+        list: true
+        media:
+          input: src/img
+          output: /img
+        description: "Optional masonry gallery rendered below the article body. Upload/select news images from the relevant folder under src/img."
+
       - name: body
         label: Article Content
         type: code
@@ -292,26 +302,20 @@ content:
                ═══════════════════════════════════════════════════════════ -->
 
           <!-- CELEBRATION GIF
-          <center><img src="/img/news/celebration.gif" class="w-75 shadow-1-strong rounded mb-2" alt="celebration"></center>
+          <center><img src="/img/news/celebration.gif" alt="celebration"></center>
           -->
 
           <!-- INLINE IMAGE
-          <img src="/img/news/photo.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
+          <img src="/img/news/photo.jpg" alt="description">
           -->
 
           <!-- CENTERED IMAGE
-          <center><img src="/img/news/photo.jpg" class="w-75 shadow-1-strong rounded mb-2" alt="description"></center>
+          <center><img src="/img/news/photo.jpg" alt="description"></center>
           -->
 
-          <!-- TWO-COLUMN GALLERY
-          <div class="row g-2">
-            <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-              <img src="/img/news/photo1.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
-            </div>
-            <div class="col-lg-6 mb-6 mb-lg-0">
-              <img src="/img/news/photo2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
-            </div>
-          </div>
+          <!-- GALLERY
+          Add images to the Gallery Images field instead of pasting layout HTML.
+          Galleries render as a responsive masonry grid automatically.
           -->
 
           <!-- BOLD/ITALIC TEXT

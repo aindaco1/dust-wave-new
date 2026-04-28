@@ -42,13 +42,13 @@ module.exports = function(eleventyConfig) {
   // Usage: {% img "/img/photo.jpg", "description" %}
   // Optional width: {% img "/img/photo.jpg", "description", "w-75" %}
   eleventyConfig.addShortcode("img", function(src, alt, width = "w-100") {
-    return `<img src="${src}" class="${width} shadow-1-strong rounded mb-2" alt="${alt || ''}" loading="lazy">`;
+    return `<img src="${src}" class="${width}" alt="${alt || ''}" loading="lazy" decoding="async">`;
   });
 
-  // Two-column gallery shortcode (paired)
+  // Masonry gallery shortcode (paired)
   // Usage: {% gallery %}...images...{% endgallery %}
   eleventyConfig.addPairedShortcode("gallery", function(content) {
-    return `<div class="row g-2">
+    return `<div class="masonry-gallery">
 ${content}
 </div>`;
   });
@@ -56,7 +56,7 @@ ${content}
   // Gallery column shortcode - use inside gallery
   // Usage: {% col %}{% img "..." %}{% img "..." %}{% endcol %}
   eleventyConfig.addPairedShortcode("col", function(content) {
-    return `  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
+    return `  <div class="masonry-gallery__column">
 ${content}
   </div>`;
   });

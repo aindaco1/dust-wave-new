@@ -406,13 +406,302 @@
 	(document.readyState === 'loading')
 		? document.addEventListener('DOMContentLoaded', onReady, { once:true })
 		: onReady();
-	})();
+		})();
 
-	/* =========================================================================
-	8) Equalize grid row heights (desktop only)
-	- Keeps row pairs the same height after content settles
-	========================================================================= */
-	(() => {
+		/* =========================================================================
+		8) Story galleries: lightweight masonry balancer
+		========================================================================= */
+		(() => {
+		const gallerySelector = '.masonry-gallery, .story-content > .row.g-2:not([id])';
+		const itemSelector = [
+			':scope > .masonry-gallery__item',
+			':scope > img',
+			':scope > a',
+			':scope > p',
+			':scope > .masonry-gallery__column > img',
+			':scope > .masonry-gallery__column > a',
+			':scope > .masonry-gallery__column > p',
+			':scope > [class*="col-"] > img',
+			':scope > [class*="col-"] > a',
+			':scope > [class*="col-"] > p'
+		].join(',');
+
+		const getColumnCount = () => {
+			if (window.matchMedia('(max-width: 767.98px)').matches) return 1;
+			if (window.matchMedia('(min-width: 1200px)').matches) return 3;
+			return 2;
+		};
+
+		const getItems = (gallery) => {
+			if (gallery.__masonryItems) return gallery.__masonryItems;
+			gallery.__masonryItems = Array.from(gallery.querySelectorAll(itemSelector))
+			.filter((item) => item.querySelector('img') || item.tagName === 'IMG');
+			return gallery.__masonryItems;
+		};
+
+		const waitForImages = (gallery) => Promise.all(
+			Array.from(gallery.querySelectorAll('img')).map((img) => {
+			if (img.complete && img.naturalWidth) return Promise.resolve();
+			if (img.decode) return img.decode().catch(() => {});
+			return new Promise((resolve) => {
+				img.addEventListener('load', resolve, { once: true });
+				img.addEventListener('error', resolve, { once: true });
+			});
+			})
+		);
+
+		function layoutGallery(gallery) {
+			const items = getItems(gallery);
+			if (items.length < 2) return;
+
+			const count = Math.min(getColumnCount(), items.length);
+			const columns = Array.from({ length: count }, () => {
+			const column = document.createElement('div');
+			column.className = 'masonry-gallery__col';
+			column.__height = 0;
+			return column;
+			});
+
+			gallery.textContent = '';
+			gallery.style.setProperty('--masonry-columns', count);
+			gallery.classList.add('is-balanced');
+			columns.forEach((column) => gallery.appendChild(column));
+
+			items.forEach((item) => {
+			const column = columns.reduce((shortest, candidate) =>
+				candidate.__height < shortest.__height ? candidate : shortest
+			);
+			column.appendChild(item);
+			column.__height += item.getBoundingClientRect().height + 12;
+			});
+
+			columns
+			.slice()
+			.sort((a, b) => b.__height - a.__height)
+			.forEach((column) => gallery.appendChild(column));
+		}
+
+		const layoutAll = () => {
+			document.querySelectorAll(gallerySelector).forEach((gallery) => {
+			if (!gallery.querySelector('img')) return;
+			waitForImages(gallery).then(() => layoutGallery(gallery));
+			});
+		};
+
+		let resizeTO = null;
+		window.addEventListener('resize', () => {
+			clearTimeout(resizeTO);
+			resizeTO = setTimeout(layoutAll, 150);
+		});
+
+		(document.readyState === 'loading')
+			? document.addEventListener('DOMContentLoaded', layoutAll, { once:true })
+			: layoutAll();
+		window.addEventListener('load', layoutAll, { once:true });
+		})();
+
+		/* =========================================================================
+		9) Image lightbox with scroll-snap carousel
+		========================================================================= */
+		(() => {
+		const triggerSelector = '.story-content img, .microcinema-image';
+		const gallerySelector = '.masonry-gallery, .story-content > .row.g-2:not([id])';
+		let lightbox = null;
+		let track = null;
+		let status = null;
+		let prevButton = null;
+		let nextButton = null;
+		let slides = [];
+		let activeIndex = 0;
+		let lastTrigger = null;
+		let scrollTO = null;
+
+		const cleanText = (value) => (value || '').replace(/\s+/g, ' ').trim();
+
+		function ensureLightbox() {
+			if (lightbox) return lightbox;
+
+			lightbox = document.createElement('div');
+			lightbox.className = 'image-lightbox';
+			lightbox.hidden = true;
+			lightbox.setAttribute('role', 'dialog');
+			lightbox.setAttribute('aria-modal', 'true');
+			lightbox.setAttribute('aria-label', 'Image viewer');
+
+			track = document.createElement('div');
+			track.className = 'image-lightbox__track';
+			track.tabIndex = 0;
+
+			const closeButton = document.createElement('button');
+			closeButton.className = 'image-lightbox__button image-lightbox__close';
+			closeButton.type = 'button';
+			closeButton.textContent = 'x';
+			closeButton.setAttribute('aria-label', 'Close image viewer');
+			closeButton.dataset.lightboxClose = 'true';
+
+			prevButton = document.createElement('button');
+			prevButton.className = 'image-lightbox__button image-lightbox__prev';
+			prevButton.type = 'button';
+			prevButton.textContent = '<';
+			prevButton.setAttribute('aria-label', 'Previous image');
+			prevButton.dataset.lightboxPrev = 'true';
+
+			nextButton = document.createElement('button');
+			nextButton.className = 'image-lightbox__button image-lightbox__next';
+			nextButton.type = 'button';
+			nextButton.textContent = '>';
+			nextButton.setAttribute('aria-label', 'Next image');
+			nextButton.dataset.lightboxNext = 'true';
+
+			status = document.createElement('div');
+			status.className = 'image-lightbox__status';
+			status.setAttribute('aria-live', 'polite');
+
+			lightbox.append(track, closeButton, prevButton, nextButton, status);
+			document.body.appendChild(lightbox);
+
+			lightbox.addEventListener('click', (event) => {
+			if (event.target.dataset.lightboxClose || event.target.classList.contains('image-lightbox__slide')) {
+				closeLightbox();
+			}
+			if (event.target.dataset.lightboxPrev) {
+				showSlide(activeIndex - 1);
+			}
+			if (event.target.dataset.lightboxNext) {
+				showSlide(activeIndex + 1);
+			}
+			});
+
+			track.addEventListener('scroll', () => {
+			clearTimeout(scrollTO);
+			scrollTO = setTimeout(() => {
+				if (!track.clientWidth) return;
+				activeIndex = Math.round(track.scrollLeft / track.clientWidth);
+				updateStatus();
+			}, 80);
+			});
+
+			document.addEventListener('keydown', (event) => {
+			if (!lightbox || lightbox.hidden) return;
+			if (event.key === 'Escape') closeLightbox();
+			if (event.key === 'ArrowLeft') showSlide(activeIndex - 1);
+			if (event.key === 'ArrowRight') showSlide(activeIndex + 1);
+			});
+
+			return lightbox;
+		}
+
+		function getCaption(img) {
+			const figureCaption = img.closest('figure')?.querySelector('figcaption');
+			const nextCaption = img.nextElementSibling?.matches('.caption, figcaption')
+			? img.nextElementSibling
+			: null;
+			const parentNextCaption = img.parentElement?.nextElementSibling?.matches('.caption, figcaption')
+			? img.parentElement.nextElementSibling
+			: null;
+			const wrapperNextCaption = img.closest('p, center, a')?.nextElementSibling?.matches('.caption, figcaption')
+			? img.closest('p, center, a').nextElementSibling
+			: null;
+			const caption = cleanText(
+			figureCaption?.textContent ||
+			nextCaption?.textContent ||
+			parentNextCaption?.textContent ||
+			wrapperNextCaption?.textContent
+			);
+			if (caption) return caption;
+
+			return cleanText(img.dataset.caption || img.getAttribute('title'));
+		}
+
+		function getGalleryImages(img) {
+			const gallery = img.closest(gallerySelector);
+			if (!gallery) return [img];
+
+			return Array.from(gallery.querySelectorAll('img'));
+		}
+
+		function buildSlide(img) {
+			const figure = document.createElement('figure');
+			figure.className = 'image-lightbox__slide';
+
+			const image = document.createElement('img');
+			image.src = img.currentSrc || img.src;
+			image.alt = img.getAttribute('alt') || '';
+			image.loading = 'eager';
+
+			const caption = getCaption(img);
+			figure.appendChild(image);
+			if (caption) {
+			const figcaption = document.createElement('figcaption');
+			figcaption.className = 'image-lightbox__caption';
+			figcaption.textContent = caption;
+			figure.appendChild(figcaption);
+			}
+
+			return figure;
+		}
+
+		function updateStatus() {
+			if (!status) return;
+			const total = slides.length;
+			status.textContent = total > 1 ? `${activeIndex + 1} / ${total}` : '';
+			prevButton.hidden = total < 2;
+			nextButton.hidden = total < 2;
+		}
+
+		function showSlide(index) {
+			if (!slides.length) return;
+			activeIndex = (index + slides.length) % slides.length;
+			slides[activeIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+			updateStatus();
+		}
+
+		function closeLightbox() {
+			if (!lightbox) return;
+			lightbox.hidden = true;
+			document.body.classList.remove('image-lightbox-open');
+			track.replaceChildren();
+			slides = [];
+			if (lastTrigger) lastTrigger.focus?.({ preventScroll: true });
+		}
+
+		function openLightbox(img) {
+			ensureLightbox();
+			const images = getGalleryImages(img);
+			activeIndex = Math.max(0, images.indexOf(img));
+			lastTrigger = img;
+
+			track.replaceChildren(...images.map(buildSlide));
+			slides = Array.from(track.children);
+			lightbox.hidden = false;
+			document.body.classList.add('image-lightbox-open');
+			updateStatus();
+
+			requestAnimationFrame(() => {
+			track.focus({ preventScroll: true });
+			slides[activeIndex]?.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'start' });
+			});
+		}
+
+		document.addEventListener('click', (event) => {
+			const img = event.target.closest(triggerSelector);
+			if (!img || img.closest('.image-lightbox')) return;
+
+			const link = img.closest('a[href]');
+			if (link && !img.closest(gallerySelector) && !/\.(avif|gif|jpe?g|png|webp)([#?].*)?$/i.test(link.href)) {
+			return;
+			}
+
+			event.preventDefault();
+			openLightbox(img);
+		});
+		})();
+
+		/* =========================================================================
+		10) Equalize grid row heights (desktop only)
+		- Keeps row pairs the same height after content settles
+		========================================================================= */
+		(() => {
 	const DESKTOP_BP = 992;
 	const qsa = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
@@ -474,7 +763,7 @@
 	})();
 
 	/* =========================================================================
-	9) AUDIO: unlock & safe play helpers (global hooks preserved)
+		11) AUDIO: unlock & safe play helpers (global hooks preserved)
 	========================================================================= */
 	(() => {
 	let unlocked = false;
@@ -516,7 +805,7 @@
 	})();
 
 	/* =========================================================================
-	10) AUDIO player — WaveSurfer wiring (unchanged behavior, tidied)
+		12) AUDIO player — WaveSurfer wiring (unchanged behavior, tidied)
 	========================================================================= */
 	(() => {
 	const WAVESURFER_CDN = "https://unpkg.com/wavesurfer.js@7/dist/wavesurfer.min.js";
