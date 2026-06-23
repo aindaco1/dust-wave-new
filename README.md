@@ -29,6 +29,10 @@ Push to `main` branch → GitHub Actions builds and deploys via GitHub Pages art
 
 You can also trigger a manual deploy from the Actions tab → "Build and Deploy" → "Run workflow".
 
+## Roadmap
+
+See [ROADMAP.md](ROADMAP.md) for planned product and infrastructure work, including the paid embedded video player plan.
+
 ## Project Structure
 
 ```
@@ -202,6 +206,7 @@ wrangler deploy
 - `scripts/render-og-cards.mjs` — OG image generator
 - `scripts/ping-bridgy.mjs` — Bridgy Fed webmention sender
 - `workers/newsletter-subscribe/src/index.js` — Newsletter signup Worker
+- `ROADMAP.md` — Planned product and infrastructure work
 
 ## Shortcodes
 
