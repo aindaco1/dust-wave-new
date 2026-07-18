@@ -20,6 +20,11 @@ function getPlayCacheUrl(artworkUrl) {
 }
 
 module.exports = function(eleventyConfig) {
+  eleventyConfig.addGlobalData(
+    "environment",
+    process.env.ELEVENTY_ENV || "development"
+  );
+
   // Universal Shortcodes (Adds to Liquid, Nunjucks, Handlebars)
   eleventyConfig.addShortcode("bgImg", function(imgName, test) {
     return `  style="background-image: url('./img/webp/${imgName}.webp');"`;

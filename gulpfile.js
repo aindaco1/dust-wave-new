@@ -140,7 +140,8 @@ gulp.task('browser-sync', function browserSyncTask(done) {
   browserSync.init({
     server: { baseDir: `./${DIR.dev}` },
     notify: false,
-    files: [], // we control reloads manually to avoid storms
+    files: [`${DIR.dev}/**/*.html`],
+    reloadDebounce: 300,
     // Debounce FS write storms (Eleventy, WSL, network drives)
     watchOptions: {
       ignoreInitial: true,
@@ -154,8 +155,8 @@ gulp.task('browser-sync', function browserSyncTask(done) {
   watch(`${DIR.src}/img/**/*.*`, series(copyImg, browserSync.reload)); // one reload
   watch(`${DIR.src}/peaks/**/*.*`, series(copyPeaks, browserSync.reload));
 
-  // If Eleventy writes HTML into dev/, BrowserSync will pick up changes
-  // via reloads triggered by your Eleventy watch/serve (recommended).
+  // Eleventy watches templates/content and writes HTML into dev/.
+  // BrowserSync observes that generated HTML and reloads the browser.
   // If you want to copy raw HTML from src → dev, uncomment below:
   // function copyHtml() { return src(`${DIR.src}/**/*.html`).pipe(dest(`${DIR.dev}`)); }
   // watch(`${DIR.src}/**/*.html`, series(copyHtml, browserSync.reload));

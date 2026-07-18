@@ -14,6 +14,7 @@
 			<a class="link-fancy" href="/newsletter.html"><span>NEWSLETTER</span></a>
 		</div>
 	</div>
+	{% if environment == "production" %}
 	<!-- Newsletter Signup Popup -->
 	<div class="wrap">
 		<div id="popup" class="lazyload">
@@ -42,6 +43,7 @@
 			</div>
 		</div>
 	</div>
+	{% endif %}
 
 	<!-- External deps (unchanged) -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.3.0/quicklink.umd.js"></script>
@@ -52,6 +54,7 @@
 	/* =========================================================================
 	1) Mailchimp popup (delayed show + close)
 	========================================================================= */
+	{% if environment == "production" %}
 	(() => {
 	const popup   = document.getElementById('popup');
 	const closeBtn = document.getElementById('close-btn');
@@ -105,6 +108,7 @@
 		});
 	}
 	})();
+	{% endif %}
 
 	/* =========================================================================
 	2) Home-page glitch loop

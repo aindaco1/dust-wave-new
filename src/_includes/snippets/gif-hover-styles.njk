@@ -1,0 +1,13 @@
+{# Generate project hover backgrounds directly from each project's gif frontmatter. #}
+{% if isHomepage or title == "Projects" %}
+<style id="project-hover-gif-styles">
+  {% for project in collections.posts %}
+    {% if project.data.gif %}
+  html:has(.project-{{ project.data.title | slugify }}:hover) body#glitch-target,
+  html:has(.project-{{ project.data.title | slugify }}:focus-within) body#glitch-target {
+    --glitch-bg: url("{{ project.data.gif }}");
+  }
+    {% endif %}
+  {% endfor %}
+</style>
+{% endif %}
