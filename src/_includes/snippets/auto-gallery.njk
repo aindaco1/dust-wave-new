@@ -10,7 +10,7 @@
 {# Auto-render poster if present #}
 {% if poster %}
 <h3>Poster</h3>
-<img src="{{ poster }}" class="w-75 shadow-1-strong rounded mb-2" alt="Poster" loading="lazy">
+<img src="{{ poster | toWebp }}" class="w-75 shadow-1-strong rounded mb-2" alt="Poster" loading="lazy">
 <br><br>
 {% endif %}
 

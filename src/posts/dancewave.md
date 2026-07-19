@@ -28,7 +28,7 @@ Guests came dressed for the prom they remembered—or the one they wished they h
 ### Poster
 
 <div class="text-center">
-  <img src="/img/webp/dancewave/poster.webp" class="w-75 shadow-1-strong rounded mb-2" alt="Dancewave: Blast From the Past event poster for an adult prom at Juno Brewery on September 6, 2025" loading="lazy" decoding="async">
+  <img src="{{ '/img/dancewave/poster.png' | toWebp }}" class="w-75 shadow-1-strong rounded mb-2" alt="Dancewave: Blast From the Past event poster for an adult prom at Juno Brewery on September 6, 2025" loading="lazy" decoding="async">
 </div>
 
 <br>
@@ -37,16 +37,16 @@ Guests came dressed for the prom they remembered—or the one they wished they h
 
 <div class="row g-2">
   <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-    <img src="/img/webp/dancewave/bts1.webp" class="w-100 shadow-1-strong rounded mb-2" alt="Guests dance beneath purple lights at Juno Brewery" loading="lazy" decoding="async">
-    <img src="/img/webp/dancewave/bts3.webp" class="w-100 shadow-1-strong rounded mb-2" alt="Two Dancewave guests pose back-to-back in formalwear" loading="lazy" decoding="async">
-    <img src="/img/webp/dancewave/bts5.webp" class="w-100 shadow-1-strong rounded mb-2" alt="Two Dancewave guests pose together beneath a balloon arch" loading="lazy" decoding="async">
-    <img src="/img/webp/dancewave/bts7.webp" class="w-100 shadow-1-strong rounded mb-2" alt="Two Dancewave guests strike matching poses at the photo booth" loading="lazy" decoding="async">
+    <img src="{{ '/img/dancewave/bts1.jpg' | toWebp }}" class="w-100 shadow-1-strong rounded mb-2" alt="Guests dance beneath purple lights at Juno Brewery" loading="lazy" decoding="async">
+    <img src="{{ '/img/dancewave/bts3.jpg' | toWebp }}" class="w-100 shadow-1-strong rounded mb-2" alt="Two Dancewave guests pose back-to-back in formalwear" loading="lazy" decoding="async">
+    <img src="{{ '/img/dancewave/bts5.jpg' | toWebp }}" class="w-100 shadow-1-strong rounded mb-2" alt="Two Dancewave guests pose together beneath a balloon arch" loading="lazy" decoding="async">
+    <img src="{{ '/img/dancewave/bts7.jpg' | toWebp }}" class="w-100 shadow-1-strong rounded mb-2" alt="Two Dancewave guests strike matching poses at the photo booth" loading="lazy" decoding="async">
   </div>
   <div class="col-lg-6 mb-6 mb-lg-0">
-    <img src="/img/webp/dancewave/bts2.webp" class="w-100 shadow-1-strong rounded mb-2" alt="Dancewave guests gather for a playful prom crowning" loading="lazy" decoding="async">
-    <img src="/img/webp/dancewave/bts4.webp" class="w-100 shadow-1-strong rounded mb-2" alt="Six guests pose together holding framed film awards" loading="lazy" decoding="async">
-    <img src="/img/webp/dancewave/bts6.webp" class="w-100 shadow-1-strong rounded mb-2" alt="Two Dancewave guests pose together in colorful party attire" loading="lazy" decoding="async">
-    <img src="/img/webp/dancewave/bts8.webp" class="w-100 shadow-1-strong rounded mb-2" alt="Two guests take a close-up selfie at Dancewave" loading="lazy" decoding="async">
+    <img src="{{ '/img/dancewave/bts2.jpg' | toWebp }}" class="w-100 shadow-1-strong rounded mb-2" alt="Dancewave guests gather for a playful prom crowning" loading="lazy" decoding="async">
+    <img src="{{ '/img/dancewave/bts4.jpg' | toWebp }}" class="w-100 shadow-1-strong rounded mb-2" alt="Six guests pose together holding framed film awards" loading="lazy" decoding="async">
+    <img src="{{ '/img/dancewave/bts6.jpg' | toWebp }}" class="w-100 shadow-1-strong rounded mb-2" alt="Two Dancewave guests pose together in colorful party attire" loading="lazy" decoding="async">
+    <img src="{{ '/img/dancewave/bts8.jpg' | toWebp }}" class="w-100 shadow-1-strong rounded mb-2" alt="Two guests take a close-up selfie at Dancewave" loading="lazy" decoding="async">
   </div>
 </div>
 

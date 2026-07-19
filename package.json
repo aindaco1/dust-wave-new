@@ -9,7 +9,9 @@
   },
   "main": "index.html",
   "scripts": {
-    "build": "npm run clean && npm run clean-prod && ELEVENTY_ENV=production npx eleventy && gulp sass && gulp minify-css && gulp dist-assets && gulp prod-copy && gulp inject-min-css && gulp purgecss && gulp minify-html && gulp copy-CNAME && node webp.mjs && npm run build:og",
+    "build": "npm run clean && npm run clean-prod && ELEVENTY_ENV=production npx eleventy && gulp sass && gulp minify-css && gulp dist-assets && gulp prod-copy && gulp inject-min-css && gulp purgecss && gulp minify-html && gulp copy-CNAME && npm run build:og",
+    "build:ci": "USE_WEBP=true npm run build && npm run build:webp",
+    "build:webp": "node webp.mjs",
     "build-dev": "ELEVENTY_ENV=development eleventy && gulp dist-assets && gulp sass",
     "build-assets": "gulp dist-assets && gulp sass",
     "build:og": "node scripts/render-og-cards.mjs",
@@ -21,7 +23,8 @@
     "postinstall": "gulp copy-assets",
     "watch:all": "ELEVENTY_ENV=development eleventy --watch",
     "serve": "ELEVENTY_ENV=development eleventy --serve",
-    "watch": "npm run clean && npm run build-assets && run-p sync watch:all",
+    "watch": "node scripts/watch-with-cleanup.mjs",
+    "watch:server": "npm run clean && npm run build-assets && run-p sync watch:all",
     "clean": "rm -rf dev/*",
     "clean-prod": "rm -rf docs/*"
   },

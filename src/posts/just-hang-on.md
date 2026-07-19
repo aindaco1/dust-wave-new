@@ -121,7 +121,7 @@ Abby White, Alisha Edington & Jordan Trimarchi, Alonso Indacochea, Amy Maestas, 
 ### Poster
 
 <div class="text-center">
-  <img src="/img/webp/just_hang_on/poster.webp" class="w-75 shadow-1-strong rounded mb-2" alt="Just Hang On poster featuring school notes, photographs, a pregnancy test, and the handwritten film title" loading="lazy" decoding="async">
+  <img src="{{ '/img/just_hang_on/poster.png' | toWebp }}" class="w-75 shadow-1-strong rounded mb-2" alt="Just Hang On poster featuring school notes, photographs, a pregnancy test, and the handwritten film title" loading="lazy" decoding="async">
 </div>
 
 <br>
@@ -130,17 +130,17 @@ Abby White, Alisha Edington & Jordan Trimarchi, Alonso Indacochea, Amy Maestas, 
 
 <div class="row g-2">
   <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-    <img src="/img/webp/just_hang_on/bts1.webp" class="w-100 shadow-1-strong rounded mb-2" alt="Two performers pose playfully between takes" loading="lazy" decoding="async">
-    <img src="/img/webp/just_hang_on/bts3.webp" class="w-100 shadow-1-strong rounded mb-2" alt="Two performers take a selfie with a baby prop while crew work behind them" loading="lazy" decoding="async">
-    <img src="/img/webp/just_hang_on/bts5.webp" class="w-100 shadow-1-strong rounded mb-2" alt="Two cast and crew members take a smiling selfie on set" loading="lazy" decoding="async">
-    <img src="/img/webp/just_hang_on/bts7.webp" class="w-100 shadow-1-strong rounded mb-2" alt="A camera operator poses beside a cinema camera rig" loading="lazy" decoding="async">
-    <img src="/img/webp/just_hang_on/bts9.webp" class="w-100 shadow-1-strong rounded mb-2" alt="Two performers pose together between takes" loading="lazy" decoding="async">
+    <img src="{{ '/img/just_hang_on/bts1.jpg' | toWebp }}" class="w-100 shadow-1-strong rounded mb-2" alt="Two performers pose playfully between takes" loading="lazy" decoding="async">
+    <img src="{{ '/img/just_hang_on/bts3.jpg' | toWebp }}" class="w-100 shadow-1-strong rounded mb-2" alt="Two performers take a selfie with a baby prop while crew work behind them" loading="lazy" decoding="async">
+    <img src="{{ '/img/just_hang_on/bts5.jpg' | toWebp }}" class="w-100 shadow-1-strong rounded mb-2" alt="Two cast and crew members take a smiling selfie on set" loading="lazy" decoding="async">
+    <img src="{{ '/img/just_hang_on/bts7.jpg' | toWebp }}" class="w-100 shadow-1-strong rounded mb-2" alt="A camera operator poses beside a cinema camera rig" loading="lazy" decoding="async">
+    <img src="{{ '/img/just_hang_on/bts9.jpg' | toWebp }}" class="w-100 shadow-1-strong rounded mb-2" alt="Two performers pose together between takes" loading="lazy" decoding="async">
   </div>
   <div class="col-lg-6 mb-6 mb-lg-0">
-    <img src="/img/webp/just_hang_on/bts2.webp" class="w-100 shadow-1-strong rounded mb-2" alt="A performer dressed as a nun holds a baby prop beside a crew member" loading="lazy" decoding="async">
-    <img src="/img/webp/just_hang_on/bts4.webp" class="w-100 shadow-1-strong rounded mb-2" alt="Four cast members pose together outdoors" loading="lazy" decoding="async">
-    <img src="/img/webp/just_hang_on/bts6.webp" class="w-100 shadow-1-strong rounded mb-2" alt="Cast and crew prepare a bedroom scene around lights and camera equipment" loading="lazy" decoding="async">
-    <img src="/img/webp/just_hang_on/bts8.webp" class="w-100 shadow-1-strong rounded mb-2" alt="Cast and crew frame a bedroom scene around a camera rig" loading="lazy" decoding="async">
+    <img src="{{ '/img/just_hang_on/bts2.jpg' | toWebp }}" class="w-100 shadow-1-strong rounded mb-2" alt="A performer dressed as a nun holds a baby prop beside a crew member" loading="lazy" decoding="async">
+    <img src="{{ '/img/just_hang_on/bts4.jpg' | toWebp }}" class="w-100 shadow-1-strong rounded mb-2" alt="Four cast members pose together outdoors" loading="lazy" decoding="async">
+    <img src="{{ '/img/just_hang_on/bts6.jpg' | toWebp }}" class="w-100 shadow-1-strong rounded mb-2" alt="Cast and crew prepare a bedroom scene around lights and camera equipment" loading="lazy" decoding="async">
+    <img src="{{ '/img/just_hang_on/bts8.jpg' | toWebp }}" class="w-100 shadow-1-strong rounded mb-2" alt="Cast and crew frame a bedroom scene around a camera rig" loading="lazy" decoding="async">
   </div>
 </div>
 

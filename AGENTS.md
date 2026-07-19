@@ -3,6 +3,7 @@
 ## Commands
 - **Dev server**: `npm run watch` (Eleventy + BrowserSync with hot reload)
 - **Production build**: `npm run build` (outputs to `docs/` for GitHub Pages)
+- **CI production build**: `npm run build:ci` (GitHub Actions only; generates WebPs)
 - **Eleventy only**: `npm run serve` or `npx eleventy`
 - **Clean**: `npm run clean` (dev) | `npm run clean-prod` (docs)
 
@@ -35,7 +36,7 @@
 - `src/img/home/` - Homepage background GIFs
 - `src/img/digest/header/` - DIY Digest header images
 - `src/img/news/` - News article images and GIFs
-- `src/img/webp/` - WebP versions (mirrors img/ structure)
+- `docs/img/webp/` - CI-generated WebP versions (never stored in `src/`)
 - `src/scss/theme.scss` - Main stylesheet entry point
 - `workers/newsletter-subscribe/` - Cloudflare Worker for newsletter signups
 

@@ -8,6 +8,23 @@ const pluginRss = require("@11ty/eleventy-plugin-rss");
 const sitemap = require("@quasibit/eleventy-plugin-sitemap");
 const crypto = require("crypto");
 
+// WebP URLs are emitted only for the GitHub Pages build. Local builds keep
+// source image URLs so development never depends on generated assets.
+const useWebp = process.env.USE_WEBP === "true";
+
+function resolveImagePath(imgPath) {
+  if (!useWebp || !imgPath) return imgPath;
+
+  // Already a WebP path.
+  if (imgPath.includes('/webp/') || imgPath.endsWith('.webp')) {
+    return imgPath;
+  }
+
+  // /img/subdir/filename.ext -> /img/webp/subdir/filename.webp
+  const match = imgPath.match(/^\/img\/(.+)\.(jpg|jpeg|png)$/i);
+  return match ? `/img/webp/${match[1]}.webp` : imgPath;
+}
+
 // Helper: Generate play-cache filename from artwork URL (matches make_newsletter_email.py)
 // Format: play-{md5(url|dim=True)[:12]}.jpg
 // Returns absolute URL for Substack export
@@ -26,8 +43,9 @@ module.exports = function(eleventyConfig) {
   );
 
   // Universal Shortcodes (Adds to Liquid, Nunjucks, Handlebars)
-  eleventyConfig.addShortcode("bgImg", function(imgName, test) {
-    return `  style="background-image: url('./img/webp/${imgName}.webp');"`;
+  eleventyConfig.addShortcode("bgImg", function(imgName, extension = "jpg") {
+    const imagePath = resolveImagePath(`/img/${imgName}.${extension}`);
+    return `  style="background-image: url('${imagePath}');"`;
   });
 
   // YouTube embed shortcode - responsive video player
@@ -47,7 +65,7 @@ module.exports = function(eleventyConfig) {
   // Usage: {% img "/img/photo.jpg", "description" %}
   // Optional width: {% img "/img/photo.jpg", "description", "w-75" %}
   eleventyConfig.addShortcode("img", function(src, alt, width = "w-100") {
-    return `<img src="${src}" class="${width}" alt="${alt || ''}" loading="lazy" decoding="async">`;
+    return `<img src="${resolveImagePath(src)}" class="${width}" alt="${alt || ''}" loading="lazy" decoding="async">`;
   });
 
   // Masonry gallery shortcode (paired)
@@ -87,24 +105,11 @@ ${content}
 
   eleventyConfig.addFilter("filterTagList", filterTagList);
 
-  // Convert image path to webp, preserving subdirectory structure:
+  // Convert image paths only in the GitHub Pages build, preserving structure:
   // /img/stills/stalldstill.jpg -> /img/webp/stills/stalldstill.webp
   // /img/digest/header/file.jpg -> /img/webp/digest/header/file.webp
   // /img/somefile.jpg -> /img/webp/somefile.webp
-  eleventyConfig.addFilter("toWebp", (imgPath) => {
-    if (!imgPath) return imgPath;
-    // Already a webp path
-    if (imgPath.includes('/webp/') || imgPath.endsWith('.webp')) {
-      return imgPath;
-    }
-    // Handle /img/subdir/filename.ext -> /img/webp/subdir/filename.webp
-    const match = imgPath.match(/^\/img\/(.+)\.(jpg|jpeg|png)$/i);
-    if (match) {
-      return `/img/webp/${match[1]}.webp`;
-    }
-    // Fallback: return original if pattern doesn't match
-    return imgPath;
-  });
+  eleventyConfig.addFilter("toWebp", resolveImagePath);
   eleventyConfig.addPassthroughCopy("src/fonts");
   // Members collection for about page
   eleventyConfig.addCollection("members", collectionAPI => {

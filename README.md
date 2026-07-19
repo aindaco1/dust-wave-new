@@ -22,6 +22,9 @@ Run local dev server with hot reload:
 npm run watch
 ```
 Builds to `/dev` and starts BrowserSync with auto-refresh on changes.
+When the server stops (including with `Ctrl+C`), the generated `dev/` and
+`docs/` contents are removed automatically. Both directories are recreated
+empty and will be populated again by the next local or production build.
 
 ## Deployment
 
@@ -49,7 +52,6 @@ src/
 │   ├── home/        # Homepage background GIFs
 │   ├── digest/header/ # DIY Digest header images
 │   ├── news/        # News article images and GIFs
-│   ├── webp/        # WebP versions (mirrors structure above)
 │   └── [project]/   # Per-project galleries (behind-the-scenes, posters)
 ├── members/         # Team member profiles (Markdown)
 ├── posts/           # Film project pages (Markdown)
@@ -64,6 +66,8 @@ workers/
 
 dev/                 # Local dev build output (gitignored)
 docs/                # Production build output (gitignored, deployed via CI)
+└── img/
+    └── webp/        # WebP derivatives generated only by GitHub Actions
 ```
 
 ## Content Management
@@ -168,6 +172,14 @@ npm run build:og
 
 Create a default fallback image at `src/img/og/default.png` (1200×630).
 
+### WebP Images
+
+Local development and `npm run build` use the original JPG/PNG image paths and
+never generate WebPs. The GitHub Pages workflow runs `npm run build:ci`, which
+generates every WebP referenced by the deployed site directly in
+`docs/img/webp/`. The CI build fails if a referenced WebP lacks a JPG/PNG
+source. Generated WebPs are not stored in `src/` or committed to the repository.
+
 ## Newsletter
 
 Newsletter signups are handled via a Cloudflare Worker that adds contacts to [Resend](https://resend.com).
@@ -211,10 +223,10 @@ wrangler deploy
 ## Shortcodes
 
 ```njk
-{% youtube "VIDEO_ID" %}        {# Responsive YouTube embed #}
-{% vimeo "VIDEO_ID" %}          {# Responsive Vimeo embed #}
-{% img "/img/photo.jpg", "alt" %} {# Styled image #}
-{% bgImg "name" %}              {# Background image (webp) #}
+{% youtube "VIDEO_ID" %}                 {# Responsive YouTube embed #}
+{% vimeo "VIDEO_ID" %}                   {# Responsive Vimeo embed #}
+{% img "/img/photo.jpg", "alt" %}        {# Styled image #}
+{% bgImg "home/name", "jpg" %}           {# Background image #}
 ```
 
 ## License
