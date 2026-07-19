@@ -1,8 +1,7 @@
 import { access, readdir, readFile, rm, mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import imagemin from 'imagemin';
-import imageminWebp from 'imagemin-webp';
+import sharp from 'sharp';
 
 if (process.env.GITHUB_ACTIONS !== 'true') {
   console.error('WebP generation is restricted to GitHub Actions.');
@@ -69,9 +68,7 @@ async function findSourceImage(webpPath) {
 async function convertImage({ sourcePath, webpPath }) {
   const outputPath = path.join(outputDirectory, webpPath);
   const sourceBuffer = await readFile(sourcePath);
-  const webpBuffer = await imagemin.buffer(sourceBuffer, {
-    plugins: [imageminWebp({ quality: 70 })]
-  });
+  const webpBuffer = await sharp(sourceBuffer).webp({ quality: 70 }).toBuffer();
 
   await mkdir(path.dirname(outputPath), { recursive: true });
   await writeFile(outputPath, webpBuffer);

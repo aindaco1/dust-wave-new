@@ -4,12 +4,15 @@
   "description": "A ultra clean Eleventy Blogging template",
   "license": "MIT",
   "private": "true",
+  "engines": {
+    "node": ">=20.9.0"
+  },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
   },
   "main": "index.html",
   "scripts": {
-    "build": "npm run clean && npm run clean-prod && ELEVENTY_ENV=production npx eleventy && gulp sass && gulp minify-css && gulp dist-assets && gulp prod-copy && gulp inject-min-css && gulp purgecss && gulp minify-html && gulp copy-CNAME && npm run build:og",
+    "build": "npm run clean && npm run clean-prod && ELEVENTY_ENV=production eleventy && gulp sass && gulp minify-css && gulp dist-assets && gulp prod-copy && gulp inject-min-css && gulp purgecss && gulp minify-html && gulp copy-CNAME && npm run build:og",
     "build:ci": "USE_WEBP=true npm run build && npm run build:webp",
     "build:webp": "node webp.mjs",
     "build-dev": "ELEVENTY_ENV=development eleventy && gulp dist-assets && gulp sass",
@@ -29,25 +32,25 @@
     "clean-prod": "rm -rf docs/*"
   },
   "dependencies": {
-    "@11ty/eleventy": "^2.0.1",
+    "@11ty/eleventy": "^3.1.6",
     "@11ty/eleventy-fetch": "^4.0.0",
     "@11ty/eleventy-img": "^3.1.0",
-    "@quasibit/eleventy-plugin-sitemap": "^2.2.0",
+    "@sindresorhus/slugify": "1.1.2",
     "aos": "^2.3.4",
     "bootstrap": "^5.3.1",
     "bootstrap-icons": "^1.10.5",
-    "browser-sync": "^2.29.3",
+    "browser-sync": "^3.0.4",
     "clean-css": "^5.3.1",
     "fsevents": "^2.3.3",
-    "gulp": "^4.0.2",
+    "gulp": "^5.0.1",
     "gulp-clean": "^0.4.0",
     "gulp-clean-css": "^4.2.0",
     "gulp-dart-sass": "^1.0.2",
-    "gulp-htmlmin": "^5.0.1",
+    "gulp-html-minifier-terser": "^7.1.0",
     "gulp-plumber": "^1.2.1",
     "gulp-rename": "^2.0.0",
-    "npm-watch": "^0.11.0",
-    "watch": "^1.0.2"
+    "sharp": "^0.35.3",
+    "sitemap": "^8.0.3"
   },
   "author": "Holger Koenemann",
   "devDependencies": {
@@ -55,8 +58,6 @@
     "@11ty/eleventy-plugin-rss": "^1.2.0",
     "gulp-html-replace": "^1.6.2",
     "gulp-purgecss": "^5.0.0",
-    "imagemin": "^8.0.1",
-    "imagemin-webp": "^8.0.0",
     "npm-run-all": "^4.1.5",
     "onchange": "^7.0.2",
     "react-is": "^18.2.0",

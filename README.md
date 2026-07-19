@@ -4,7 +4,7 @@ Static website for [dustwave.xyz](https://dustwave.xyz), built with Eleventy and
 
 ## Requirements
 
-Node.js v14+ required. Check your version:
+Node.js 20.9+ is required for the site build. Check your version:
 ```bash
 node --version
 ```
@@ -190,6 +190,8 @@ Newsletter signups are handled via a Cloudflare Worker that adds contacts to [Re
 - **Email service**: Resend (contacts added to 'mailchimp' audience)
 
 ### Worker Deployment
+
+Worker development and deployment require Node.js 22+ (Wrangler 4).
 
 ```bash
 cd workers/newsletter-subscribe

@@ -5,7 +5,8 @@ const Image = require("@11ty/eleventy-img");
 const EleventyFetch = require("@11ty/eleventy-fetch");
 const { EleventyHtmlBasePlugin } = require("@11ty/eleventy");
 const pluginRss = require("@11ty/eleventy-plugin-rss");
-const sitemap = require("@quasibit/eleventy-plugin-sitemap");
+const { SitemapStream, streamToPromise } = require("sitemap");
+const legacySlugify = require("@sindresorhus/slugify");
 const crypto = require("crypto");
 
 // WebP URLs are emitted only for the GitHub Pages build. Local builds keep
@@ -29,6 +30,37 @@ function resolveImagePath(imgPath) {
 // Format: play-{md5(url|dim=True)[:12]}.jpg
 // Returns absolute URL for Substack export
 const siteUrl = "https://dustwave.xyz";
+
+async function renderSitemap(items) {
+  const stream = new SitemapStream({ hostname: siteUrl });
+  const seenUrls = new Set();
+
+  for (const item of items || []) {
+    const sitemapData = item.data?.sitemap || {};
+    if (sitemapData.ignore) continue;
+
+    const pagination = item.data?.pagination;
+    const urls = pagination?.pages
+      ? pagination.pages.map((page, index) => page?.url || pagination.hrefs?.[index])
+      : [item.url];
+
+    for (const url of urls) {
+      if (!url || seenUrls.has(url)) continue;
+      seenUrls.add(url);
+
+      const { ignore, ...entryData } = sitemapData;
+      stream.write({
+        ...entryData,
+        url,
+        lastmod: entryData.lastmod || item.date?.toISOString()
+      });
+    }
+  }
+
+  stream.end();
+  return (await streamToPromise(stream)).toString();
+}
+
 function getPlayCacheUrl(artworkUrl) {
   const cacheKey = `${artworkUrl}|dim=True`;
   const urlHash = crypto.createHash('md5').update(cacheKey).digest('hex').slice(0, 12);
@@ -41,6 +73,13 @@ module.exports = function(eleventyConfig) {
     "environment",
     process.env.ELEVENTY_ENV || "development"
   );
+
+  // Eleventy 3 removes apostrophes when slugifying. Preserve Eleventy 2's
+  // hyphen replacement so existing public URLs and CSS hooks do not change.
+  eleventyConfig.addFilter("slugify", (value, options = {}) => legacySlugify(
+    String(value),
+    { decamelize: false, ...options }
+  ));
 
   // Universal Shortcodes (Adds to Liquid, Nunjucks, Handlebars)
   eleventyConfig.addShortcode("bgImg", function(imgName, extension = "jpg") {
@@ -90,12 +129,9 @@ ${content}
   // RSS
   eleventyConfig.addPlugin(pluginRss);
 
-  // Sitemap
-  eleventyConfig.addPlugin(sitemap, {
-    sitemap: {
-      hostname: "https://dustwave.xyz",
-    },
-  });
+  // Sitemap. This local shortcode avoids the abandoned Eleventy 2 plugin,
+  // which reads templateContent before Eleventy 3 has rendered it.
+  eleventyConfig.addNunjucksAsyncShortcode("sitemap", renderSitemap);
 
   eleventyConfig.setDataDeepMerge(true);
 

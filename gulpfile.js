@@ -10,7 +10,7 @@ const browserSync = require('browser-sync').create();
 const rename = require('gulp-rename');
 
 const purgecss = require('gulp-purgecss');
-const htmlmin = require('gulp-htmlmin');
+const htmlmin = require('gulp-html-minifier-terser');
 const htmlreplace = require('gulp-html-replace');
 
 // Load (and gently normalize) config
@@ -45,10 +45,10 @@ function copyJs() {
   return src(`${DIR.src}/js/**/*.*`).pipe(dest(`${DIR.dev}/js`));
 }
 function copyImg() {
-  return src(`${DIR.src}/img/**/*.*`).pipe(dest(`${DIR.dev}/img`));
+  return src(`${DIR.src}/img/**/*.*`, { encoding: false }).pipe(dest(`${DIR.dev}/img`));
 }
 function copyPdf() {
-  return src(`${DIR.src}/pdf/**/*.*`, { allowEmpty: true }).pipe(dest(`${DIR.dev}/pdf`));
+  return src(`${DIR.src}/pdf/**/*.*`, { allowEmpty: true, encoding: false }).pipe(dest(`${DIR.dev}/pdf`));
 }
 gulp.task('dist-assets', parallel(copyPeaks, copyJs, copyImg, copyPdf)); // keep task name for scripts
 
@@ -82,7 +82,8 @@ gulp.task('copy-CNAME', function copyCNAME() {
 
 gulp.task('prod-copy', function prodCopy(done) {
   // Copy everything from dev → docs, excluding substack-export (dev-only)
-  src([`${DIR.dev}/**/**.*`, `!${DIR.dev}/substack-export/**`]).pipe(dest(`${DIR.dist}/`));
+  src([`${DIR.dev}/**/**.*`, `!${DIR.dev}/substack-export/**`], { encoding: false })
+    .pipe(dest(`${DIR.dist}/`));
   done();
 });
 
@@ -117,7 +118,7 @@ gulp.task('purgecss', function purgeCssTask() {
     .pipe(dest(`${DIR.dist}/css`));
 });
 
-// NOTE: Image optimization is handled by webp.mjs (imagemin + imagemin-webp)
+// NOTE: Image optimization is handled by webp.mjs (Sharp)
 // The old gulp-smushit task was removed as it used a deprecated Yahoo API
 
 // ============ Vendor assets (Bootstrap/AOS) ============
