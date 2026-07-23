@@ -1,0 +1,195 @@
+---
+layout: layouts/podcast-admin.njk
+title: Podcast Admin — Dust Wave
+description: Private Dust Wave Podcast publishing workbench.
+language: en
+permalink: admin/podcasts/index.html
+---
+
+<div
+  class="podcast-admin__container"
+  data-podcast-admin
+  data-api-origin="{{ podcastAdmin.apiOrigin }}"
+  data-turnstile-site-key="{{ podcastAdmin.turnstileSiteKey }}">
+  <a class="visually-hidden-focusable" href="#podcast-admin-content">Skip to Podcast admin content</a>
+
+  <header class="podcast-admin__header">
+    <div>
+      <p class="podcast-admin__eyebrow">Dust Wave Admin</p>
+      <h1>Podcasts</h1>
+      <p>Multi-show publishing, media, distribution, premium, and launch readiness.</p>
+    </div>
+    <button class="btn btn-outline-light" type="button" data-podcast-logout hidden>Log out</button>
+  </header>
+
+  <p class="podcast-admin__status" data-podcast-global-status role="status" aria-live="polite"></p>
+
+  <section class="podcast-admin__auth" data-podcast-auth aria-labelledby="podcast-login-title">
+    <h2 id="podcast-login-title">Sign in</h2>
+    <p>We’ll email a private, single-use link. / Te enviaremos un enlace privado de un solo uso.</p>
+    <form data-podcast-login-form>
+      <label for="podcast-admin-email">Email</label>
+      <div class="podcast-admin__inline-form">
+        <input id="podcast-admin-email" name="email" type="email" autocomplete="email" required>
+        <button class="btn btn-danger" type="submit">Send link</button>
+      </div>
+      {% if podcastAdmin.turnstileSiteKey %}
+      <div id="podcast-turnstile" class="podcast-admin__turnstile"></div>
+      {% endif %}
+    </form>
+    <p class="podcast-admin__status" data-podcast-auth-status role="status" aria-live="polite"></p>
+  </section>
+
+  <section class="podcast-admin__app" data-podcast-app hidden>
+    <p class="podcast-admin__session" data-podcast-session-summary></p>
+
+    <div class="podcast-admin__tabs" data-podcast-tabs>
+      <div class="podcast-admin__tab-list" role="tablist" aria-label="Podcast administration">
+        <button id="podcast-tab-overview" type="button" role="tab" data-tab="overview" aria-controls="podcast-panel-overview">Overview</button>
+        <button id="podcast-tab-episodes" type="button" role="tab" data-tab="episodes" aria-controls="podcast-panel-episodes">Episodes</button>
+        <button id="podcast-tab-distribution" type="button" role="tab" data-tab="distribution" aria-controls="podcast-panel-distribution">Distribution</button>
+        <button id="podcast-tab-marketing" type="button" role="tab" data-tab="marketing" aria-controls="podcast-panel-marketing">Marketing</button>
+        <button id="podcast-tab-analytics" type="button" role="tab" data-tab="analytics" aria-controls="podcast-panel-analytics">Analytics</button>
+        <button id="podcast-tab-billing" type="button" role="tab" data-tab="billing" aria-controls="podcast-panel-billing">Premium</button>
+      </div>
+
+      <div id="podcast-admin-content">
+        <section id="podcast-panel-overview" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-overview">
+          <div class="podcast-admin__panel-heading">
+            <div>
+              <h2>Shows</h2>
+              <p>Single-show launch interface; the API and data model support more shows.</p>
+            </div>
+            <button class="btn btn-outline-light" type="button" data-podcast-refresh>Refresh</button>
+          </div>
+          <div class="podcast-admin__cards" data-podcast-show-cards></div>
+
+          <form class="podcast-admin__form podcast-admin__form--settings" data-podcast-show-form hidden>
+            <h3>Show settings</h3>
+            <label for="podcast-show-title">Title</label>
+            <input id="podcast-show-title" name="title" required>
+            <label for="podcast-show-description">Descripción (ES)</label>
+            <textarea id="podcast-show-description" name="description" rows="4"></textarea>
+            <label for="podcast-show-description-en">Description (EN)</label>
+            <textarea id="podcast-show-description-en" name="descriptionEn" rows="4"></textarea>
+            <div class="podcast-admin__field-grid">
+              <label>Early access days
+                <input name="earlyAccessDays" type="number" min="0" max="365">
+              </label>
+              <label>YouTube channel
+                <input name="youtubeChannelUrl" type="url">
+              </label>
+            </div>
+            <label class="podcast-admin__checkbox">
+              <input name="premiumEnabled" type="checkbox"> Premium enabled
+            </label>
+            <label class="podcast-admin__checkbox">
+              <input name="freeMiniEpisodeEnabled" type="checkbox"> One free mini-episode enabled
+            </label>
+            <button class="btn btn-danger" type="submit">Save show settings</button>
+            <p class="podcast-admin__status" data-podcast-show-status role="status" aria-live="polite"></p>
+          </form>
+        </section>
+
+        <section id="podcast-panel-episodes" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-episodes" hidden>
+          <div class="podcast-admin__panel-heading">
+            <div>
+              <h2>Episodes</h2>
+              <p>Create the canonical episode record, attach delivery media, then publish one reviewed revision.</p>
+            </div>
+            <select data-podcast-show-select aria-label="Show"></select>
+          </div>
+
+          <form class="podcast-admin__form" data-podcast-episode-form>
+            <h3>New episode</h3>
+            <div class="podcast-admin__field-grid">
+              <label>Title
+                <input name="title" required>
+              </label>
+              <label>URL slug
+                <input name="slug" pattern="[a-z0-9]+(?:-[a-z0-9]+)*" required>
+              </label>
+            </div>
+            <label>Summary
+              <textarea name="summary" rows="3" required></textarea>
+            </label>
+            <label>Episode notes</label>
+            <div class="podcast-admin__editor" data-podcast-notes-editor></div>
+            <div class="podcast-admin__field-grid podcast-admin__field-grid--three">
+              <label>Access
+                <select name="access">
+                  <option value="public">Public</option>
+                  <option value="early_access">Early access</option>
+                  <option value="premium_bonus">Premium bonus</option>
+                  <option value="free_mini">Free mini-episode</option>
+                </select>
+              </label>
+              <label>Premium release
+                <input name="premiumAt" type="datetime-local">
+              </label>
+              <label>Public release
+                <input name="publicAt" type="datetime-local">
+              </label>
+            </div>
+            <button class="btn btn-danger" type="submit">Create draft</button>
+            <p class="podcast-admin__status" data-podcast-episode-status role="status" aria-live="polite"></p>
+          </form>
+
+          <form class="podcast-admin__form" data-podcast-upload-form>
+            <h3>Attach media</h3>
+            <div class="podcast-admin__field-grid">
+              <label>Episode
+                <select name="episodeId" required></select>
+              </label>
+              <label>Media role
+                <select name="kind">
+                  <option value="delivery_audio">Delivery audio</option>
+                  <option value="source_audio">Source audio</option>
+                  <option value="video_source">Video source</option>
+                </select>
+              </label>
+            </div>
+            <label>File
+              <input name="media" type="file" accept="audio/*,video/mp4,video/quicktime,video/webm" required>
+            </label>
+            <progress data-podcast-upload-progress max="100" value="0" hidden></progress>
+            <button class="btn btn-outline-light" type="submit">Upload media</button>
+            <p class="podcast-admin__status" data-podcast-upload-status role="status" aria-live="polite"></p>
+          </form>
+
+          <div class="podcast-admin__episode-list" data-podcast-episode-list></div>
+        </section>
+
+        <section id="podcast-panel-distribution" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-distribution" hidden>
+          <h2>Streamlined publishing</h2>
+          <p>One reviewed revision fans out to the feed, canonical News page, YouTube, and monitored directory ingestion.</p>
+          <div data-podcast-distribution></div>
+        </section>
+
+        <section id="podcast-panel-marketing" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-marketing" hidden>
+          <h2>Marketing</h2>
+          <div class="podcast-admin__callout">
+            <p>Pool-style tagged links, QR codes, embeds, share previews, and Resend announcements are the next adapter-backed slice.</p>
+            <p>No announcement can send until its dry-run audience and revision are reviewed.</p>
+          </div>
+        </section>
+
+        <section id="podcast-panel-analytics" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-analytics" hidden>
+          <h2>Analytics</h2>
+          <div class="podcast-admin__metric-grid">
+            <article><strong>—</strong><span>Qualified downloads</span></article>
+            <article><strong>—</strong><span>Engaged plays</span></article>
+            <article><strong>—</strong><span>Premium listeners</span></article>
+            <article><strong>—</strong><span>Sponsor impressions</span></article>
+          </div>
+          <p>Metrics remain blank—not zero—until first-party observation and methodology-versioned aggregation ship.</p>
+        </section>
+
+        <section id="podcast-panel-billing" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-billing" hidden>
+          <h2>Premium readiness</h2>
+          <div data-podcast-billing></div>
+        </section>
+      </div>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,17 @@
+<!doctype html>
+<html class="h-100" lang="{{ language or metadata.language }}">
+  <head>
+    {% include "snippets/head.njk" %}
+    <meta name="robots" content="noindex,nofollow,noarchive">
+  </head>
+  <body class="podcast-admin-page">
+    {% include "snippets/navbar1.njk" %}
+    <main id="main-content" class="podcast-admin" tabindex="-1">
+      {{ content | safe }}
+    </main>
+    {% if podcastAdmin.turnstileSiteKey %}
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
+    {% endif %}
+    <script type="module" src="/js/podcast-admin.js"></script>
+  </body>
+</html>

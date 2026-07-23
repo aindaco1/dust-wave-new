@@ -44,13 +44,19 @@ function copyPeaks() {
 function copyJs() {
   return src(`${DIR.src}/js/**/*.*`).pipe(dest(`${DIR.dev}/js`));
 }
+function copySharedAdminShell() {
+  return src(
+    'shared/dust-wave-platform/packages/admin-shell/src/**/*.js',
+    { base: 'shared/dust-wave-platform/packages/admin-shell/src' }
+  ).pipe(dest(`${DIR.dev}/js/dust-wave-admin-shell`));
+}
 function copyImg() {
   return src(`${DIR.src}/img/**/*.*`, { encoding: false }).pipe(dest(`${DIR.dev}/img`));
 }
 function copyPdf() {
   return src(`${DIR.src}/pdf/**/*.*`, { allowEmpty: true, encoding: false }).pipe(dest(`${DIR.dev}/pdf`));
 }
-gulp.task('dist-assets', parallel(copyPeaks, copyJs, copyImg, copyPdf)); // keep task name for scripts
+gulp.task('dist-assets', parallel(copyPeaks, copyJs, copySharedAdminShell, copyImg, copyPdf)); // keep task name for scripts
 
 // Sass → CSS
 // NOTE: Deprecation warnings are silenced because they come from Bootstrap 5's SCSS,
@@ -153,6 +159,10 @@ gulp.task('browser-sync', function browserSyncTask(done) {
   // Watch SOURCES → build → inject/reload
   watch(`${DIR.src}/scss/**/*.scss`, series('sass', 'minify-css')); // CSS inject only
   watch(`${DIR.src}/js/**/*.*`, series(copyJs, browserSync.reload)); // one reload
+  watch(
+    'shared/dust-wave-platform/packages/admin-shell/src/**/*.js',
+    series(copySharedAdminShell, browserSync.reload)
+  );
   watch(`${DIR.src}/img/**/*.*`, series(copyImg, browserSync.reload)); // one reload
   watch(`${DIR.src}/peaks/**/*.*`, series(copyPeaks, browserSync.reload));
 
