@@ -600,6 +600,142 @@ li p { margin-bottom: 0; }
 }
 
 /* =========================================================
+   Podcast show pages
+   ========================================================= */
+
+.podcast-show-page {
+  background: #0b0b0c;
+  color: #f7f4ee;
+}
+
+.podcast-show__hero {
+  padding: clamp(7rem, 12vw, 10rem) 0 clamp(3rem, 7vw, 6rem);
+  background:
+    radial-gradient(circle at 85% 10%, rgba(225, 35, 19, .32), transparent 38rem),
+    linear-gradient(145deg, #171719 0%, #09090a 72%);
+}
+
+.podcast-show__wordmark-wrap {
+  margin-bottom: clamp(2rem, 5vw, 4rem);
+}
+
+.podcast-show__wordmark {
+  display: block;
+  width: min(100%, 68rem);
+  height: auto;
+}
+
+.podcast-show__artwork {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 1.25rem;
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, .4);
+}
+
+.podcast-show__eyebrow,
+.podcast-tier-card__label,
+.podcast-show__empty-kicker {
+  margin-bottom: .75rem;
+  color: #f34a36;
+  font-size: .8rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.podcast-show__hero h1 {
+  max-width: 14ch;
+  margin-bottom: 1rem;
+  font-size: clamp(2.6rem, 8vw, 6rem);
+  line-height: .92;
+}
+
+.podcast-show__description {
+  max-width: 36rem;
+  color: rgba(255, 255, 255, .76);
+  font-size: clamp(1.1rem, 2vw, 1.45rem);
+}
+
+.podcast-show__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+  margin-top: 2rem;
+}
+
+.podcast-show__membership,
+.podcast-show__episodes {
+  padding: clamp(3rem, 7vw, 6rem) 0;
+}
+
+.podcast-show__membership {
+  background: #f1ede3;
+  color: #181719;
+}
+
+.podcast-tier-card {
+  height: 100%;
+  padding: clamp(1.5rem, 4vw, 2.75rem);
+  border: 1px solid rgba(24, 23, 25, .16);
+  border-radius: 1.25rem;
+  background: #fffdf7;
+}
+
+.podcast-tier-card--premium {
+  border-color: rgba(205, 31, 17, .5);
+  box-shadow: 0 1rem 3rem rgba(107, 20, 11, .12);
+}
+
+.podcast-tier-card h2 span {
+  display: block;
+  margin-top: .35rem;
+  color: #6c6662;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.podcast-tier-card ul {
+  margin: 1.5rem 0;
+}
+
+.podcast-show__episodes {
+  min-height: 28rem;
+}
+
+.podcast-show__empty {
+  max-width: 48rem;
+  margin-top: 2rem;
+  padding: clamp(2rem, 5vw, 4rem);
+  border: 1px dashed rgba(255, 255, 255, .28);
+  border-radius: 1.25rem;
+  background: rgba(255, 255, 255, .04);
+}
+
+.podcast-show__empty h3 {
+  font-size: clamp(1.8rem, 4vw, 3.25rem);
+}
+
+.podcast-show__episode {
+  margin-top: 2rem;
+  padding: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 1rem;
+  background: rgba(0, 0, 0, .22);
+}
+
+.podcast-show__episode > h3:first-child {
+  margin-top: 0;
+}
+
+.podcast-show__episode .audio-card {
+  margin: 1rem 0;
+}
+
+/* =========================================================
    Popup / newsletter (Mailchimp)
    ========================================================= */
 

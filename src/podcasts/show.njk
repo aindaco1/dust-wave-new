@@ -1,0 +1,136 @@
+---
+layout: layouts/default.njk
+footer: footer1
+bodyModifier: podcast-show-page
+pagination:
+  data: podcastShows
+  size: 1
+  alias: show
+permalink: "podcasts/{{ show.slug }}/index.html"
+eleventyComputed:
+  title: "{{ show.title }} — Dust Wave Podcasts"
+  description: "{{ show.description }}"
+  language: "{{ show.language }}"
+  og_image: "{{ show.socialImage }}"
+  og_alt: "{{ show.title }}"
+  og_image_width: "{{ show.socialImageWidth }}"
+  og_image_height: "{{ show.socialImageHeight }}"
+---
+
+<article class="podcast-show">
+  <header class="podcast-show__hero">
+    <div class="container">
+      <div class="podcast-show__wordmark-wrap">
+        <img
+          class="podcast-show__wordmark"
+          src="{{ show.wordmark }}"
+          alt="{{ show.title }}"
+          width="2708"
+          height="532"
+          decoding="async">
+      </div>
+
+      <div class="row align-items-center gy-4">
+        <div class="col-12 col-md-5 col-lg-4">
+          <img
+            class="podcast-show__artwork"
+            src="{{ show.artwork }}"
+            alt="Portada de {{ show.title }}"
+            width="505"
+            height="505"
+            decoding="async">
+        </div>
+        <div class="col-12 col-md-7 col-lg-8">
+          <p class="podcast-show__eyebrow">Un podcast de Dust Wave</p>
+          <h1>{{ show.title }}</h1>
+          <p class="podcast-show__description">{{ show.description }}</p>
+          <div class="podcast-show__actions">
+            <a class="btn btn-light" href="#episodios">Episodios</a>
+            <a class="btn btn-outline-light" href="{{ show.sourceUrl }}" rel="noopener noreferrer">Visita el Substack</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="podcast-show__membership" aria-labelledby="podcast-membership-title">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-12 col-lg-6">
+          <div class="podcast-tier-card">
+            <p class="podcast-tier-card__label">Podcast público</p>
+            <h2 id="podcast-membership-title">{{ show.publicAccess.label }}</h2>
+            <p>Los episodios públicos estarán disponibles aquí y en el feed del podcast.</p>
+          </div>
+        </div>
+        {% if show.premium.enabled %}
+        <div class="col-12 col-lg-6">
+          <div class="podcast-tier-card podcast-tier-card--premium">
+            <p class="podcast-tier-card__label">Premium</p>
+            <h2>
+              ${{ show.premium.monthlyCents / 100 | round }}/mes
+              <span>o ${{ show.premium.annualCents / 100 | round }}/año</span>
+            </h2>
+            <ul>
+              {% for benefit in show.premium.benefits %}
+              <li>{{ benefit }}</li>
+              {% endfor %}
+            </ul>
+            {% if show.premium.checkoutStatus == "coming_soon" %}
+            <span class="btn btn-danger disabled" role="status" aria-disabled="true">Premium próximamente</span>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <section class="podcast-show__episodes" id="episodios" aria-labelledby="podcast-episodes-title">
+    <div class="container">
+      <h2 id="podcast-episodes-title">Episodios</h2>
+      {% if show.episodes.length %}
+        <div class="podcast-show__episode-list">
+          {% for episode in show.episodes %}
+            <article class="podcast-show__episode">
+              <h3><a href="{{ episode.url }}">{{ episode.title }}</a></h3>
+              {% if episode.summary %}<p>{{ episode.summary }}</p>{% endif %}
+              {% set playerId = show.slug + "_" + episode.slug %}
+              {% set title = episode.title %}
+              {% set audioUrl = episode.audioUrl %}
+              {% set downloadUrl = episode.downloadUrl or episode.audioUrl %}
+              {% set artworkUrl = episode.artwork or show.artwork %}
+              {% set artworkAlt = "Portada de " + episode.title %}
+              {% set peaksUrl = episode.peaksUrl %}
+              {% include "snippets/audio-player.njk" %}
+              <p><a href="{{ episode.url }}">Notas, transcripción y capítulos del episodio</a></p>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="podcast-show__empty">
+          <p class="podcast-show__empty-kicker">Muy pronto</p>
+          <h3>Los episodios están en camino.</h3>
+          <p>Esta página ya es el hogar permanente del podcast. Vuelve pronto para escuchar el primer episodio.</p>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+</article>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "PodcastSeries",
+  "name": "{{ show.title }}",
+  "description": "{{ show.description }}",
+  "url": "{{ metadata.url }}/podcasts/{{ show.slug }}/",
+  "image": "{{ metadata.url }}{{ show.artwork }}",
+  "inLanguage": "{{ show.language }}",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Dust Wave",
+    "url": "{{ metadata.url }}"
+  }
+}
+</script>

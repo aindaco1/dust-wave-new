@@ -12,8 +12,11 @@ node --version
 ## Installation
 
 ```bash
+git submodule update --init --recursive
 npm install
 ```
+
+Clone with `--recurse-submodules` when possible. Existing checkouts must initialize the recorded `shared/dust-wave-platform` commit before installing or testing; CI pins that gitlink and does not follow the shared repository's moving branch.
 
 ## Development
 

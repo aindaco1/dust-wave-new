@@ -19,6 +19,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
         with:
+          submodules: recursive
           fetch-depth: 0  # Full history for accurate builds
 
       - name: Setup Node.js
@@ -73,6 +74,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
         with:
+          submodules: recursive
           fetch-depth: 2  # Need previous commit to detect changes
 
       - name: Setup Node.js
