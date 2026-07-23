@@ -96,9 +96,11 @@ eleventyComputed:
   <section class="podcast-show__episodes" id="episodios" aria-labelledby="podcast-episodes-title">
     <div class="container">
       <h2 id="podcast-episodes-title">Episodios</h2>
-      {% if show.episodes.length %}
+      {% set publishedEpisodes = podcastEpisodePublications | podcastEpisodesForShow(show.slug) %}
+      {% set displayEpisodes = publishedEpisodes if publishedEpisodes.length else show.episodes %}
+      {% if displayEpisodes.length %}
         <div class="podcast-show__episode-list">
-          {% for episode in show.episodes %}
+          {% for episode in displayEpisodes %}
             <article class="podcast-show__episode">
               <h3><a href="{{ episode.url }}">{{ episode.title }}</a></h3>
               {% if episode.summary %}<p>{{ episode.summary }}</p>{% endif %}
@@ -129,15 +131,15 @@ eleventyComputed:
 {
   "@context": "https://schema.org",
   "@type": "PodcastSeries",
-  "name": "{{ show.title }}",
-  "description": "{{ show.description }} {{ show.descriptionEn }}",
-  "url": "{{ metadata.url }}/podcasts/{{ show.slug }}/",
-  "image": "{{ metadata.url }}{{ show.artwork }}",
-  "inLanguage": "{{ show.language }}",
+  "name": {{ show.title | dump | safe }},
+  "description": {{ (show.description + " " + show.descriptionEn) | dump | safe }},
+  "url": {{ (metadata.url + "/podcasts/" + show.slug + "/") | dump | safe }},
+  "image": {{ (metadata.url + show.artwork) | dump | safe }},
+  "inLanguage": {{ show.language | dump | safe }},
   "publisher": {
     "@type": "Organization",
     "name": "Dust Wave",
-    "url": "{{ metadata.url }}"
+    "url": {{ metadata.url | dump | safe }}
   }
 }
 </script>

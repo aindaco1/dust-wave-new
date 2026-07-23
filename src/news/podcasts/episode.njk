@@ -1,0 +1,65 @@
+---
+layout: layouts/new.njk
+tags:
+  - news
+  - podcast
+pagination:
+  data: podcastEpisodePublications
+  size: 1
+  alias: episode
+permalink: "news/podcasts/{{ episode.showSlug }}/{{ episode.slug }}/index.html"
+eleventyComputed:
+  title: "{{ episode.title }}"
+  summary: "{{ episode.summary }}"
+  date: "{{ episode.publicAt }}"
+  description: "{{ episode.summary }}"
+---
+
+{% set show = podcastShows | podcastShowBySlug(episode.showSlug) %}
+<article class="podcast-episode h-entry">
+  <div class="container py-vh-3">
+    <p class="podcast-show__eyebrow">Un episodio de Dust Wave Podcasts</p>
+    <h1 class="p-name">{{ episode.title }}</h1>
+    {% if show %}
+    <p><a href="/podcasts/{{ show.slug }}/">{{ show.title }}</a></p>
+    {% endif %}
+    <p class="p-summary">{{ episode.summary }}</p>
+    <time class="dt-published" datetime="{{ episode.publicAt }}">{{ episode.publicAt | readablePodcastDate }}</time>
+
+    {% set playerId = episode.showSlug + "_" + episode.slug %}
+    {% set title = episode.title %}
+    {% set audioUrl = episode.audioUrl %}
+    {% set downloadUrl = episode.downloadUrl or episode.audioUrl %}
+    {% set artworkUrl = show.artwork if show else null %}
+    {% set artworkAlt = "Portada de " + (show.title if show else episode.title) %}
+    {% set peaksUrl = episode.peaksUrl %}
+    {% include "snippets/audio-player.njk" %}
+
+    <div class="e-content">
+      <h2>Notas del episodio</h2>
+      <p>{{ episode.summary }}</p>
+      <p>La transcripción y los capítulos aparecerán aquí cuando estén revisados.</p>
+    </div>
+  </div>
+</article>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "PodcastEpisode",
+  "name": {{ episode.title | dump | safe }},
+  "description": {{ episode.summary | dump | safe }},
+  "datePublished": {{ episode.publicAt | dump | safe }},
+  "url": {{ (metadata.url + "/news/podcasts/" + episode.showSlug + "/" + episode.slug + "/") | dump | safe }},
+  "associatedMedia": {
+    "@type": "MediaObject",
+    "contentUrl": {{ episode.audioUrl | dump | safe }},
+    "encodingFormat": {{ episode.audioMimeType | dump | safe }}
+  }{% if show %},
+  "partOfSeries": {
+    "@type": "PodcastSeries",
+    "name": {{ show.title | dump | safe }},
+    "url": {{ (metadata.url + "/podcasts/" + show.slug + "/") | dump | safe }}
+  }{% endif %}
+}
+</script>

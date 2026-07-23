@@ -234,6 +234,21 @@ ${content}
     return n < 0 ? array.slice(n) : array.slice(0, n);
   });
 
+  eleventyConfig.addFilter("podcastEpisodesForShow", (episodes, showSlug) => {
+    return (Array.isArray(episodes) ? episodes : [])
+      .filter((episode) => episode?.showSlug === showSlug)
+      .sort((left, right) => String(right.publicAt || '').localeCompare(String(left.publicAt || '')));
+  });
+
+  eleventyConfig.addFilter("podcastShowBySlug", (shows, showSlug) => {
+    return (Array.isArray(shows) ? shows : []).find((show) => show?.slug === showSlug) || null;
+  });
+
+  eleventyConfig.addFilter("readablePodcastDate", (value) => {
+    const parsed = DateTime.fromISO(String(value || ''), { setZone: true });
+    return parsed.isValid ? parsed.setZone('America/Denver').toFormat('LLLL d, yyyy') : '';
+  });
+
   // Substack excerpt filter - splits content at <!-- more:substack --> marker
   // Returns only the content before the marker for the Substack feed
   eleventyConfig.addFilter("substackExcerpt", (html) => {

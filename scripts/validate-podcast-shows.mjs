@@ -4,9 +4,12 @@ import path from 'node:path';
 
 const repositoryRoot = path.resolve(import.meta.dirname, '..');
 const showsPath = path.join(repositoryRoot, 'src/_data/podcastShows.json');
+const publicationsPath = path.join(repositoryRoot, 'src/_data/podcastEpisodePublications.json');
 const shows = JSON.parse(await readFile(showsPath, 'utf8'));
+const publications = JSON.parse(await readFile(publicationsPath, 'utf8'));
 
 assert(Array.isArray(shows) && shows.length > 0, 'podcastShows.json must contain at least one show');
+assert(Array.isArray(publications), 'podcastEpisodePublications.json must be an array');
 
 const ids = new Set();
 const slugs = new Set();
@@ -107,6 +110,22 @@ for (const show of shows) {
     assert(asset.startsWith('/img/'), `${show.slug} asset must be site-local: ${asset}`);
     await access(path.join(repositoryRoot, 'src', asset.replace(/^\//, '')));
   }
+}
+
+for (const episode of publications) {
+  assert(
+    shows.some((show) => show.slug === episode.showSlug),
+    `${episode.id}: showSlug must reference a configured show`
+  );
+  assert.match(episode.slug, /^[a-z0-9]+(?:-[a-z0-9]+)*$/, `${episode.id}: slug is invalid`);
+  assert(
+    typeof episode.url === 'string'
+      && episode.url === `/news/podcasts/${episode.showSlug}/${episode.slug}/`,
+    `${episode.id}: canonical News URL is invalid`
+  );
+  assert.match(episode.audioUrl, /^https:\/\/media\.dustwave\.xyz\/episodes\/[A-Za-z0-9_-]+\/audio$/);
+  assert.match(episode.downloadUrl, /^https:\/\/media\.dustwave\.xyz\/episodes\/[A-Za-z0-9_-]+\/audio\?download=1$/);
+  assert(Number.isSafeInteger(episode.publicationRevision) && episode.publicationRevision > 0);
 }
 
 const launchShow = shows.find((show) => show.slug === 'opera-en-la-selva');
