@@ -20,9 +20,50 @@ for (const show of shows) {
 
   assert.equal(typeof show.title, 'string');
   assert(show.title.trim().length > 0, `${show.slug} needs a title`);
+  assert.equal(typeof show.description, 'string');
+  assert(show.description.trim().length > 0, `${show.slug} needs a primary description`);
+  assert.equal(typeof show.descriptionEn, 'string');
+  assert(show.descriptionEn.trim().length > 0, `${show.slug} needs an English description`);
   assert(['en', 'es'].includes(show.language), `${show.slug} must use a launch language`);
   assert(Array.isArray(show.episodes), `${show.slug} episodes must be an array`);
   assert.equal(show.publicAccess.priceCents, 0, `${show.slug} public access must remain free`);
+  assert.equal(
+    show.feedUrl,
+    `https://feeds.dustwave.xyz/${show.slug}/rss.xml`,
+    `${show.slug} must use the reserved permanent feed hostname`
+  );
+  assert.equal(show.feedStatus, 'reserved', `${show.slug} feed must remain reserved until launch`);
+  assert.equal(
+    show.mediaOrigin,
+    'https://media.dustwave.xyz',
+    `${show.slug} must use the reserved permanent media hostname`
+  );
+  assert(
+    ['days_before_public', 'date_driven'].includes(show.earlyAccess.mode),
+    `${show.slug} early access mode is invalid`
+  );
+  if (show.earlyAccess.mode === 'days_before_public') {
+    assert(
+      Number.isInteger(show.earlyAccess.days) && show.earlyAccess.days >= 0,
+      `${show.slug} early access days must be a non-negative integer`
+    );
+  }
+  assert.equal(
+    typeof show.earlyAccess.allowEpisodeOverride,
+    'boolean',
+    `${show.slug} must declare whether episodes may override early access`
+  );
+  assert.equal(
+    typeof show.freeMiniEpisode.enabled,
+    'boolean',
+    `${show.slug} must declare whether a free mini episode is enabled`
+  );
+  assert(
+    Number.isInteger(show.freeMiniEpisode.maximumPerShow)
+      && show.freeMiniEpisode.maximumPerShow >= 0
+      && show.freeMiniEpisode.maximumPerShow <= 1,
+    `${show.slug} may allow at most one free mini episode`
+  );
 
   for (const episode of show.episodes) {
     assert.match(
@@ -67,5 +108,28 @@ for (const show of shows) {
     await access(path.join(repositoryRoot, 'src', asset.replace(/^\//, '')));
   }
 }
+
+const launchShow = shows.find((show) => show.slug === 'opera-en-la-selva');
+assert(launchShow, 'Ópera en la Selva must remain configured for launch');
+assert.equal(
+  launchShow.description,
+  'Belleza y alegría. Y un poco de tecnología de vez en cuando.',
+  'Ópera en la Selva Spanish description changed without an editorial decision'
+);
+assert.equal(
+  launchShow.descriptionEn,
+  'Beauty and joy. And a bit of tech from time to time.',
+  'Ópera en la Selva English description changed without an editorial decision'
+);
+assert.deepEqual(
+  launchShow.earlyAccess,
+  { mode: 'days_before_public', days: 7, allowEpisodeOverride: true },
+  'Ópera en la Selva must default to seven-day early access with episode overrides'
+);
+assert.deepEqual(
+  launchShow.freeMiniEpisode,
+  { enabled: true, maximumPerShow: 1 },
+  'Ópera en la Selva must allow exactly one free mini episode'
+);
 
 console.log(`Validated ${shows.length} podcast show configuration(s).`);

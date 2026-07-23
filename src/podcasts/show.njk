@@ -9,7 +9,7 @@ pagination:
 permalink: "podcasts/{{ show.slug }}/index.html"
 eleventyComputed:
   title: "{{ show.title }} — Dust Wave Podcasts"
-  description: "{{ show.description }}"
+  description: "{{ show.description }} {{ show.descriptionEn }}"
   language: "{{ show.language }}"
   og_image: "{{ show.socialImage }}"
   og_alt: "{{ show.title }}"
@@ -43,7 +43,10 @@ eleventyComputed:
         <div class="col-12 col-md-7 col-lg-8">
           <p class="podcast-show__eyebrow">Un podcast de Dust Wave</p>
           <h1>{{ show.title }}</h1>
-          <p class="podcast-show__description">{{ show.description }}</p>
+          <div class="podcast-show__description">
+            <p lang="es">{{ show.description }}</p>
+            <p lang="en">{{ show.descriptionEn }}</p>
+          </div>
           <div class="podcast-show__actions">
             <a class="btn btn-light" href="#episodios">Episodios</a>
             <a class="btn btn-outline-light" href="{{ show.sourceUrl }}" rel="noopener noreferrer">Visita el Substack</a>
@@ -61,6 +64,9 @@ eleventyComputed:
             <p class="podcast-tier-card__label">Podcast público</p>
             <h2 id="podcast-membership-title">{{ show.publicAccess.label }}</h2>
             <p>Los episodios públicos estarán disponibles aquí y en el feed del podcast.</p>
+            {% if show.freeMiniEpisode.enabled %}
+            <p>Incluye un mini episodio gratuito para conocer el programa.</p>
+            {% endif %}
           </div>
         </div>
         {% if show.premium.enabled %}
@@ -76,6 +82,7 @@ eleventyComputed:
               <li>{{ benefit }}</li>
               {% endfor %}
             </ul>
+            <p>{{ show.earlyAccess.days }} días de acceso anticipado, con ajustes por episodio.</p>
             {% if show.premium.checkoutStatus == "coming_soon" %}
             <span class="btn btn-danger disabled" role="status" aria-disabled="true">Premium próximamente</span>
             {% endif %}
@@ -123,7 +130,7 @@ eleventyComputed:
   "@context": "https://schema.org",
   "@type": "PodcastSeries",
   "name": "{{ show.title }}",
-  "description": "{{ show.description }}",
+  "description": "{{ show.description }} {{ show.descriptionEn }}",
   "url": "{{ metadata.url }}/podcasts/{{ show.slug }}/",
   "image": "{{ metadata.url }}{{ show.artwork }}",
   "inLanguage": "{{ show.language }}",
