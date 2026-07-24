@@ -36,10 +36,15 @@ function startPodcastAdmin(root) {
   const campaignForm = root.querySelector("[data-podcast-campaign-form]");
   const campaignStatus = root.querySelector("[data-podcast-campaign-status]");
   const campaignList = root.querySelector("[data-podcast-campaign-list]");
+  const creativeForm = root.querySelector("[data-podcast-creative-form]");
+  const creativeStatus = root.querySelector("[data-podcast-creative-status]");
+  const creativeProgress = root.querySelector("[data-podcast-creative-progress]");
   let shows = [];
   let episodes = [];
+  let campaigns = [];
   let selectedShowId = "";
   let canManageCampaigns = false;
+  let canManageCreatives = false;
   let turnstileToken = "";
   let turnstileWidgetId;
 
@@ -81,6 +86,7 @@ function startPodcastAdmin(root) {
     "change",
     updateDirectSponsorFields
   );
+  creativeForm?.addEventListener("submit", uploadCreative);
   campaignList?.addEventListener("click", handleCampaignAction);
   episodeList?.addEventListener("click", async (event) => {
     const button = event.target.closest("[data-publish-episode]");
@@ -153,7 +159,11 @@ function startPodcastAdmin(root) {
     canManageCampaigns = (identity?.roles || []).some(({ role }) =>
       role === "super_admin" || role === "admin"
     );
+    canManageCreatives = (identity?.roles || []).some(({ role }) =>
+      ["super_admin", "admin", "producer"].includes(role)
+    );
     campaignForm.hidden = !canManageCampaigns;
+    creativeForm.hidden = !canManageCreatives;
     root.querySelector("[data-podcast-session-summary]").textContent =
       `Authenticated Podcast administrator${roles ? ` — ${roles}` : ""}.`;
   }
@@ -164,9 +174,12 @@ function startPodcastAdmin(root) {
     logoutButton.hidden = true;
     shows = [];
     episodes = [];
+    campaigns = [];
     canManageCampaigns = false;
+    canManageCreatives = false;
     sponsorResult?.replaceChildren();
     campaignList?.replaceChildren();
+    creativeForm?.reset();
   }
 
   async function loadShows() {
@@ -482,7 +495,9 @@ function startPodcastAdmin(root) {
 
   async function loadCampaigns() {
     if (!selectedShowId) {
+      campaigns = [];
       campaignList?.replaceChildren();
+      fillCreativeCampaignSelect();
       return;
     }
     campaignList.innerHTML = "<p>Loading sponsor campaigns…</p>";
@@ -490,19 +505,48 @@ function startPodcastAdmin(root) {
       const payload = await client.request(
         `/v1/admin/ads/campaigns?showId=${encodeURIComponent(selectedShowId)}`
       );
-      renderCampaigns(payload.campaigns || []);
+      campaigns = payload.campaigns || [];
+      renderCampaigns(campaigns);
+      fillCreativeCampaignSelect();
     } catch (error) {
+      campaigns = [];
       campaignList.textContent = friendlyError(error);
+      fillCreativeCampaignSelect();
     }
   }
 
-  function renderCampaigns(campaigns) {
-    if (!campaigns.length) {
+  function fillCreativeCampaignSelect() {
+    const select = creativeForm?.elements.campaignId;
+    if (!select) return;
+    const previousValue = select.value;
+    const activeCampaigns = campaigns.filter(({ active }) => active);
+    select.replaceChildren(...activeCampaigns.map((campaign) =>
+      new Option(
+        `${campaign.name} — ${humanizeCode(campaign.approvalStatus)}`,
+        campaign.id,
+        false,
+        campaign.id === previousValue
+      )
+    ));
+    const button = creativeForm.querySelector('button[type="submit"]');
+    button.disabled = activeCampaigns.length === 0;
+    if (activeCampaigns.length === 0) {
+      setStatus(
+        creativeStatus,
+        "Create an active campaign before uploading creative audio."
+      );
+    } else if (creativeProgress.hidden) {
+      setStatus(creativeStatus, "");
+    }
+  }
+
+  function renderCampaigns(campaignRows) {
+    if (!campaignRows.length) {
       campaignList.innerHTML =
         '<p class="podcast-admin__empty">No sponsor or house-promo campaigns yet.</p>';
       return;
     }
-    campaignList.replaceChildren(...campaigns.map((campaign) => {
+    campaignList.replaceChildren(...campaignRows.map((campaign) => {
       const row = document.createElement("article");
       row.className = "podcast-admin__campaign";
       const blockers = campaign.blockers || [];
@@ -582,6 +626,85 @@ function startPodcastAdmin(root) {
       setStatus(campaignStatus, friendlyError(error), true);
     } finally {
       button.disabled = false;
+    }
+  }
+
+  async function uploadCreative(event) {
+    event.preventDefault();
+    const file = creativeForm.elements.audio.files[0];
+    if (!file) return;
+    if (!/\.mp3$/i.test(file.name)) {
+      setStatus(creativeStatus, "Choose an MP3 file.", true);
+      return;
+    }
+    if (file.size < 1 || file.size > 25 * 1024 * 1024) {
+      setStatus(
+        creativeStatus,
+        "Creative audio must be between 1 byte and 25 MiB.",
+        true
+      );
+      return;
+    }
+    const button = creativeForm.querySelector('button[type="submit"]');
+    const campaignId = creativeForm.elements.campaignId.value;
+    button.disabled = true;
+    creativeProgress.hidden = false;
+    creativeProgress.value = 0;
+    setStatus(creativeStatus, "Creating audited creative metadata…");
+    try {
+      const created = await client.request(
+        `/v1/admin/ads/campaigns/${encodeURIComponent(campaignId)}/creatives`,
+        {
+          method: "POST",
+          body: {
+            name: creativeForm.elements.name.value,
+            filename: file.name,
+            durationSeconds: Number(
+              creativeForm.elements.durationSeconds.value
+            ),
+            weight: Number(creativeForm.elements.weight.value),
+            streamProfile: "mp3-44100-stereo-cbr128-frame-v1"
+          }
+        }
+      );
+      creativeProgress.value = 1;
+      if (
+        created.upload?.lengthHeader !== "x-podcast-upload-bytes"
+        || created.upload?.maximumBytes < file.size
+      ) {
+        throw new Error("The creative upload contract was not accepted.");
+      }
+      setStatus(creativeStatus, "Streaming creative audio to private storage…");
+      await client.request(created.upload.path, {
+        method: created.upload.method,
+        body: file,
+        headers: {
+          "content-type": created.upload.contentType,
+          [created.upload.lengthHeader]: String(file.size)
+        }
+      });
+      creativeProgress.value = 2;
+      setStatus(creativeStatus, "Validating MP3 frames, duration, and digest…");
+      const validated = await client.request(
+        `/v1/admin/ads/creatives/${encodeURIComponent(created.creativeId)}/validate`,
+        { method: "POST", body: {} }
+      );
+      if (validated.validationStatus !== "ready") {
+        throw new Error(
+          "The creative did not return a ready validation state."
+        );
+      }
+      creativeProgress.value = 3;
+      creativeForm.reset();
+      setStatus(
+        creativeStatus,
+        `Creative validated: ${Number(validated.report?.durationMs || 0)} ms, ${Number(validated.report?.frameCount || 0)} frames. Review and approve the campaign.`
+      );
+      await loadCampaigns();
+    } catch (error) {
+      setStatus(creativeStatus, friendlyError(error), true);
+    } finally {
+      button.disabled = campaigns.filter(({ active }) => active).length === 0;
     }
   }
 

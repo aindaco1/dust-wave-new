@@ -279,6 +279,31 @@ permalink: admin/podcasts/index.html
           </form>
           <div class="podcast-admin__campaign-list" data-podcast-campaign-list></div>
 
+          <form class="podcast-admin__form" data-podcast-creative-form hidden>
+            <h3>Creative audio</h3>
+            <p>Upload one MP3, verify every frame against the launch stream profile, and return the campaign to draft for review.</p>
+            <div class="podcast-admin__field-grid">
+              <label>Campaign
+                <select name="campaignId" required></select>
+              </label>
+              <label>Creative name
+                <input name="name" required>
+              </label>
+              <label>Declared duration (seconds)
+                <input name="durationSeconds" type="number" min="1" max="600" required>
+              </label>
+              <label>Selection weight
+                <input name="weight" type="number" min="1" max="1000000" value="1" required>
+              </label>
+            </div>
+            <label>MP3 file
+              <input name="audio" type="file" accept=".mp3,audio/mpeg" required>
+            </label>
+            <progress data-podcast-creative-progress max="3" value="0" hidden></progress>
+            <button class="btn btn-outline-light" type="submit">Upload and validate creative</button>
+            <p class="podcast-admin__status" data-podcast-creative-status role="status" aria-live="polite"></p>
+          </form>
+
           <form class="podcast-admin__form" data-podcast-sponsor-preview-form>
             <div class="podcast-admin__field-grid">
               <label>Episode
