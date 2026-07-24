@@ -46,7 +46,8 @@
 .podcast-admin__callout,
 .podcast-admin__metric-grid article,
 .podcast-admin__directory-list article,
-.podcast-admin__episode {
+.podcast-admin__episode,
+.podcast-admin__decision {
   background: #1c1c1c;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 0.75rem;
@@ -137,17 +138,32 @@
 }
 
 .podcast-admin__card,
-.podcast-admin__metric-grid article {
+.podcast-admin__metric-grid article,
+.podcast-admin__decision {
   padding: 1.25rem;
 }
 
-.podcast-admin__card dl > div {
+.podcast-admin__card dl > div,
+.podcast-admin__decision dl > div {
   display: flex;
+  gap: 1rem;
   justify-content: space-between;
 }
 
-.podcast-admin__card dd {
+.podcast-admin__card dd,
+.podcast-admin__decision dd {
   margin: 0;
+}
+
+.podcast-admin__decision {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 1.5rem;
+}
+
+.podcast-admin__decision code {
+  color: #fff;
 }
 
 .podcast-admin__episode-list,
@@ -218,7 +234,8 @@
 
   .podcast-admin__inline-form,
   .podcast-admin__field-grid,
-  .podcast-admin__field-grid--three {
+  .podcast-admin__field-grid--three,
+  .podcast-admin__decision {
     grid-template-columns: 1fr;
   }
 

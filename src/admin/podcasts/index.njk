@@ -49,6 +49,7 @@ permalink: admin/podcasts/index.html
         <button id="podcast-tab-episodes" type="button" role="tab" data-tab="episodes" aria-controls="podcast-panel-episodes">Episodes</button>
         <button id="podcast-tab-distribution" type="button" role="tab" data-tab="distribution" aria-controls="podcast-panel-distribution">Distribution</button>
         <button id="podcast-tab-marketing" type="button" role="tab" data-tab="marketing" aria-controls="podcast-panel-marketing">Marketing</button>
+        <button id="podcast-tab-sponsors" type="button" role="tab" data-tab="sponsors" aria-controls="podcast-panel-sponsors">Sponsors</button>
         <button id="podcast-tab-analytics" type="button" role="tab" data-tab="analytics" aria-controls="podcast-panel-analytics">Analytics</button>
         <button id="podcast-tab-billing" type="button" role="tab" data-tab="billing" aria-controls="podcast-panel-billing">Premium</button>
       </div>
@@ -172,6 +173,62 @@ permalink: admin/podcasts/index.html
             <p>Pool-style tagged links, QR codes, embeds, share previews, and Resend announcements are the next adapter-backed slice.</p>
             <p>No announcement can send until its dry-run audience and revision are reviewed.</p>
           </div>
+        </section>
+
+        <section id="podcast-panel-sponsors" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-sponsors" hidden>
+          <div class="podcast-admin__panel-heading">
+            <div>
+              <h2>Sponsor decision preview</h2>
+              <p>Evaluate Dust Wave promos and directly sold sponsors against a specific listening context.</p>
+            </div>
+            <p class="podcast-admin__pill">Preview only</p>
+          </div>
+          <div class="podcast-admin__callout">
+            <p>This tool reads current targeting and media-readiness state. It cannot insert an ad, create an impression, or change the public episode file.</p>
+          </div>
+          <form class="podcast-admin__form" data-podcast-sponsor-preview-form>
+            <div class="podcast-admin__field-grid">
+              <label>Episode
+                <select name="episodeId" required></select>
+              </label>
+              <label>Position
+                <select name="position">
+                  <option value="pre">Pre-roll</option>
+                  <option value="mid" selected>Mid-roll</option>
+                  <option value="post">Post-roll</option>
+                </select>
+              </label>
+              <label>Podcast app
+                <select name="appName">
+                  <option value="apple_podcasts">Apple Podcasts</option>
+                  <option value="spotify">Spotify</option>
+                  <option value="pocket_casts">Pocket Casts</option>
+                  <option value="overcast">Overcast</option>
+                  <option value="podcast_addict">Podcast Addict</option>
+                  <option value="browser">Dust Wave web player</option>
+                  <option value="unknown">Unknown</option>
+                </select>
+              </label>
+              <label>Device
+                <select name="deviceType">
+                  <option value="mobile">Mobile</option>
+                  <option value="tablet">Tablet</option>
+                  <option value="desktop">Desktop</option>
+                  <option value="smart_speaker">Smart speaker</option>
+                  <option value="unknown">Unknown</option>
+                </select>
+              </label>
+              <label>Stream profile
+                <input name="streamProfile" value="mp3-44100-stereo-cbr128-frame-v1" required>
+              </label>
+              <label>Decision time
+                <input name="at" type="datetime-local">
+              </label>
+            </div>
+            <button class="btn btn-danger" type="submit">Preview decision</button>
+            <p class="podcast-admin__status" data-podcast-sponsor-status role="status" aria-live="polite"></p>
+          </form>
+          <div data-podcast-sponsor-preview-result aria-live="polite"></div>
         </section>
 
         <section id="podcast-panel-analytics" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-analytics" hidden>

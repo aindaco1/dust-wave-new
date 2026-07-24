@@ -30,6 +30,9 @@ function startPodcastAdmin(root) {
   const uploadProgress = root.querySelector("[data-podcast-upload-progress]");
   const distributionRoot = root.querySelector("[data-podcast-distribution]");
   const billingRoot = root.querySelector("[data-podcast-billing]");
+  const sponsorForm = root.querySelector("[data-podcast-sponsor-preview-form]");
+  const sponsorStatus = root.querySelector("[data-podcast-sponsor-status]");
+  const sponsorResult = root.querySelector("[data-podcast-sponsor-preview-result]");
   let shows = [];
   let episodes = [];
   let selectedShowId = "";
@@ -67,6 +70,7 @@ function startPodcastAdmin(root) {
     episodeForm.elements.slug.dataset.edited = "true";
   });
   uploadForm?.addEventListener("submit", uploadMedia);
+  sponsorForm?.addEventListener("submit", previewSponsorDecision);
   episodeList?.addEventListener("click", async (event) => {
     const button = event.target.closest("[data-publish-episode]");
     if (!button) return;
@@ -144,6 +148,7 @@ function startPodcastAdmin(root) {
     logoutButton.hidden = true;
     shows = [];
     episodes = [];
+    sponsorResult?.replaceChildren();
   }
 
   async function loadShows() {
@@ -236,7 +241,7 @@ function startPodcastAdmin(root) {
       );
       episodes = payload.episodes || [];
       renderEpisodes();
-      fillEpisodeUploadSelect();
+      fillEpisodeSelects();
     } catch (error) {
       setStatus(episodeStatus, friendlyError(error), true);
     }
@@ -300,11 +305,29 @@ function startPodcastAdmin(root) {
     }));
   }
 
-  function fillEpisodeUploadSelect() {
-    const select = uploadForm.elements.episodeId;
-    select.replaceChildren(...episodes.map((episode) =>
-      new Option(`${episode.title} — ${episode.mediaStatus}`, episode.id)
-    ));
+  function fillEpisodeSelects() {
+    for (const select of [
+      uploadForm?.elements.episodeId,
+      sponsorForm?.elements.episodeId
+    ].filter(Boolean)) {
+      const previousValue = select.value;
+      select.replaceChildren(...episodes.map((episode) =>
+        new Option(
+          `${episode.title} — ${episode.mediaStatus}`,
+          episode.id,
+          false,
+          episode.id === previousValue
+        )
+      ));
+    }
+    const previewButton = sponsorForm?.querySelector('button[type="submit"]');
+    if (previewButton) previewButton.disabled = episodes.length === 0;
+    if (episodes.length === 0) {
+      sponsorResult?.replaceChildren();
+      setStatus(sponsorStatus, "Create an episode before previewing sponsor decisions.");
+    } else {
+      setStatus(sponsorStatus, "");
+    }
   }
 
   async function uploadMedia(event) {
@@ -403,6 +426,72 @@ function startPodcastAdmin(root) {
     }
   }
 
+  async function previewSponsorDecision(event) {
+    event.preventDefault();
+    const button = sponsorForm.querySelector('button[type="submit"]');
+    button.disabled = true;
+    sponsorResult.replaceChildren();
+    setStatus(sponsorStatus, "Evaluating current sponsor inventory…");
+    try {
+      const payload = await client.request("/v1/admin/ads/preview", {
+        method: "POST",
+        body: {
+          episodeId: sponsorForm.elements.episodeId.value,
+          position: sponsorForm.elements.position.value,
+          appName: sponsorForm.elements.appName.value,
+          deviceType: sponsorForm.elements.deviceType.value,
+          streamProfile: sponsorForm.elements.streamProfile.value,
+          at: isoOrNull(sponsorForm.elements.at.value)
+        }
+      });
+      if (!payload.previewOnly || payload.persisted) {
+        throw new Error("The sponsor preview safety contract was not returned.");
+      }
+      renderSponsorDecision(payload);
+      setStatus(sponsorStatus, "Preview complete. No delivery or counters changed.");
+    } catch (error) {
+      setStatus(sponsorStatus, friendlyError(error), true);
+    } finally {
+      button.disabled = episodes.length === 0;
+    }
+  }
+
+  function renderSponsorDecision(payload) {
+    const blockers = payload.readiness?.blockers || [];
+    const selection = payload.decision?.selection;
+    const decision = selection
+      ? `
+        <p class="podcast-admin__pill">Proposed selection</p>
+        <h3>${escapeHtml(selection.campaignType)} campaign</h3>
+        <dl>
+          <div><dt>Campaign</dt><dd>${escapeHtml(selection.campaignId)}</dd></div>
+          <div><dt>Creative</dt><dd>${escapeHtml(selection.creativeId)}</dd></div>
+          <div><dt>Rule</dt><dd>${escapeHtml(selection.ruleId || "generic")}</dd></div>
+          <div><dt>Priority</dt><dd>${Number(selection.reason?.priority || 0)}</dd></div>
+        </dl>`
+      : `
+        <p class="podcast-admin__pill">Full-file fallback</p>
+        <h3>No eligible inventory</h3>
+        <p>The existing episode file remains the delivery choice.</p>`;
+    const blockerItems = blockers.length
+      ? blockers.map((blocker) => `<li>${escapeHtml(humanizeCode(blocker))}</li>`).join("")
+      : "<li>No readiness blockers reported.</li>";
+    const card = document.createElement("article");
+    card.className = "podcast-admin__decision";
+    card.innerHTML = `
+      <div>
+        ${decision}
+      </div>
+      <div>
+        <h3>Activation blockers</h3>
+        <ul>${blockerItems}</ul>
+        <p><strong>Public delivery:</strong> ${escapeHtml(payload.publicDeliveryMode)}</p>
+        <p><strong>Campaigns evaluated:</strong> ${Number(payload.inventory?.campaignCount || 0)}</p>
+        <p><strong>Inventory revision:</strong> <code>${escapeHtml(String(payload.inventory?.fingerprint || "").slice(0, 12))}</code></p>
+      </div>`;
+    sponsorResult.replaceChildren(card);
+  }
+
   async function loadBilling() {
     billingRoot.innerHTML = "<p>Loading premium readiness…</p>";
     try {
@@ -478,6 +567,10 @@ function slugify(value) {
 
 function formatDate(value) {
   return value ? new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(new Date(value)) : "not set";
+}
+
+function humanizeCode(value) {
+  return String(value || "").replace(/_/g, " ");
 }
 
 function fallbackMime(filename) {
