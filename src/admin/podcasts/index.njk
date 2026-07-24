@@ -158,6 +158,31 @@ permalink: admin/podcasts/index.html
             <p class="podcast-admin__status" data-podcast-upload-status role="status" aria-live="polite"></p>
           </form>
 
+          <form class="podcast-admin__form" data-podcast-ad-plan-form hidden>
+            <h3>Dynamic-ad markers and program segments</h3>
+            <p>Submit producer marker intent, process one normalized MP3 into frame-safe program segments, then review the evidence before approval. Approval does not enable request-time ads.</p>
+            <div class="podcast-admin__field-grid">
+              <label>Episode
+                <select name="episodeId" required></select>
+              </label>
+              <label class="podcast-admin__checkbox">
+                <input name="preRoll" type="checkbox"> Pre-roll
+              </label>
+              <label class="podcast-admin__checkbox">
+                <input name="midRoll" type="checkbox"> Mid-roll
+              </label>
+              <label>Mid-roll time (seconds)
+                <input name="midRollSeconds" type="number" min="1" step="1" disabled>
+              </label>
+              <label class="podcast-admin__checkbox">
+                <input name="postRoll" type="checkbox"> Post-roll
+              </label>
+            </div>
+            <button class="btn btn-outline-light" type="submit">Submit frame-safe plan</button>
+            <p class="podcast-admin__status" data-podcast-ad-plan-status role="status" aria-live="polite"></p>
+          </form>
+          <div data-podcast-ad-plan-result aria-live="polite"></div>
+
           <div class="podcast-admin__episode-list" data-podcast-episode-list></div>
         </section>
 

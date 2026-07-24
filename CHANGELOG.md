@@ -19,6 +19,9 @@
 - Added producer/admin sponsor-creative upload and validation: the browser
   streams a bounded MP3 to private R2, declares its byte size explicitly, and
   requires exact frame/profile/duration/digest evidence before approval.
+- Added producer-reviewed episode ad plans: marker intent, isolated FFmpeg
+  processor manifests, and explicit approval controls for frame-aligned program
+  segments remain separate from the still-disabled request-time delivery gate.
 - Added a data-driven, zero-episode-capable Podcast show route and seeded **Ópera en la Selva** with its authorized Substack artwork, free public access, and launch prices of $5/month or $50/year for early access and bonus episodes.
 - Reserved `feeds.dustwave.xyz` and `media.dustwave.xyz`, added bilingual Spanish/English show copy, and configured seven-day early access plus one free mini episode for **Ópera en la Selva**.
 - Added the generated Podcast publication contract so one canonical Worker publication can create a News episode page, appear in the show aggregate, and reuse the deployed Digest player.

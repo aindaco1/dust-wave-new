@@ -28,6 +28,9 @@ function startPodcastAdmin(root) {
   const uploadForm = root.querySelector("[data-podcast-upload-form]");
   const uploadStatus = root.querySelector("[data-podcast-upload-status]");
   const uploadProgress = root.querySelector("[data-podcast-upload-progress]");
+  const adPlanForm = root.querySelector("[data-podcast-ad-plan-form]");
+  const adPlanStatus = root.querySelector("[data-podcast-ad-plan-status]");
+  const adPlanResult = root.querySelector("[data-podcast-ad-plan-result]");
   const distributionRoot = root.querySelector("[data-podcast-distribution]");
   const billingRoot = root.querySelector("[data-podcast-billing]");
   const sponsorForm = root.querySelector("[data-podcast-sponsor-preview-form]");
@@ -45,6 +48,8 @@ function startPodcastAdmin(root) {
   let selectedShowId = "";
   let canManageCampaigns = false;
   let canManageCreatives = false;
+  let canManageAdPlans = false;
+  let latestProcessorManifest = null;
   let turnstileToken = "";
   let turnstileWidgetId;
 
@@ -80,6 +85,10 @@ function startPodcastAdmin(root) {
     episodeForm.elements.slug.dataset.edited = "true";
   });
   uploadForm?.addEventListener("submit", uploadMedia);
+  adPlanForm?.addEventListener("submit", submitAdPlan);
+  adPlanForm?.elements.episodeId?.addEventListener("change", () => loadAdPlan());
+  adPlanForm?.elements.midRoll?.addEventListener("change", updateAdPlanFields);
+  adPlanResult?.addEventListener("click", handleAdPlanAction);
   sponsorForm?.addEventListener("submit", previewSponsorDecision);
   campaignForm?.addEventListener("submit", createCampaign);
   campaignForm?.elements.campaignType?.addEventListener(
@@ -96,6 +105,7 @@ function startPodcastAdmin(root) {
 
   initializeTurnstile();
   initializeCampaignForm();
+  updateAdPlanFields();
   restoreOrExchange();
 
   async function restoreOrExchange() {
@@ -162,8 +172,10 @@ function startPodcastAdmin(root) {
     canManageCreatives = (identity?.roles || []).some(({ role }) =>
       ["super_admin", "admin", "producer"].includes(role)
     );
+    canManageAdPlans = canManageCreatives;
     campaignForm.hidden = !canManageCampaigns;
     creativeForm.hidden = !canManageCreatives;
+    adPlanForm.hidden = !canManageAdPlans;
     root.querySelector("[data-podcast-session-summary]").textContent =
       `Authenticated Podcast administrator${roles ? ` — ${roles}` : ""}.`;
   }
@@ -177,9 +189,13 @@ function startPodcastAdmin(root) {
     campaigns = [];
     canManageCampaigns = false;
     canManageCreatives = false;
+    canManageAdPlans = false;
+    latestProcessorManifest = null;
     sponsorResult?.replaceChildren();
     campaignList?.replaceChildren();
     creativeForm?.reset();
+    adPlanForm?.reset();
+    adPlanResult?.replaceChildren();
   }
 
   async function loadShows() {
@@ -273,6 +289,7 @@ function startPodcastAdmin(root) {
       episodes = payload.episodes || [];
       renderEpisodes();
       fillEpisodeSelects();
+      await loadAdPlan();
     } catch (error) {
       setStatus(episodeStatus, friendlyError(error), true);
     }
@@ -339,7 +356,8 @@ function startPodcastAdmin(root) {
   function fillEpisodeSelects() {
     for (const select of [
       uploadForm?.elements.episodeId,
-      sponsorForm?.elements.episodeId
+      sponsorForm?.elements.episodeId,
+      adPlanForm?.elements.episodeId
     ].filter(Boolean)) {
       const previousValue = select.value;
       select.replaceChildren(...episodes.map((episode) =>
@@ -368,9 +386,13 @@ function startPodcastAdmin(root) {
     }
     const previewButton = sponsorForm?.querySelector('button[type="submit"]');
     if (previewButton) previewButton.disabled = episodes.length === 0;
+    const adPlanButton = adPlanForm?.querySelector('button[type="submit"]');
+    if (adPlanButton) adPlanButton.disabled = episodes.length === 0;
     if (episodes.length === 0) {
       sponsorResult?.replaceChildren();
+      adPlanResult?.replaceChildren();
       setStatus(sponsorStatus, "Create an episode before previewing sponsor decisions.");
+      setStatus(adPlanStatus, "Create an episode before defining ad markers.");
     } else {
       setStatus(sponsorStatus, "");
     }
@@ -422,6 +444,160 @@ function startPodcastAdmin(root) {
     } catch (error) {
       setStatus(uploadStatus, friendlyError(error), true);
     } finally {
+      button.disabled = false;
+    }
+  }
+
+  function updateAdPlanFields() {
+    if (!adPlanForm) return;
+    const enabled = adPlanForm.elements.midRoll.checked;
+    adPlanForm.elements.midRollSeconds.disabled = !enabled;
+    adPlanForm.elements.midRollSeconds.required = enabled;
+  }
+
+  async function loadAdPlan({ preserveStatus = false } = {}) {
+    const episodeId = adPlanForm?.elements.episodeId.value;
+    latestProcessorManifest = null;
+    if (!episodeId) {
+      adPlanResult?.replaceChildren();
+      return;
+    }
+    adPlanResult.innerHTML = "<p>Loading marker and segment state…</p>";
+    try {
+      const payload = await client.request(
+        `/v1/admin/episodes/${encodeURIComponent(episodeId)}/ad-plan`
+      );
+      latestProcessorManifest = payload.processorManifest || null;
+      renderAdPlan(payload);
+      if (!preserveStatus) setStatus(adPlanStatus, "");
+    } catch (error) {
+      adPlanResult.textContent = friendlyError(error);
+    }
+  }
+
+  function renderAdPlan(payload) {
+    const plan = payload.latestPlan;
+    const source = payload.source || {};
+    const markers = payload.active?.markers || [];
+    const segments = payload.active?.segments || [];
+    const canApprove = canManageAdPlans && plan?.status === "needs_review";
+    const canReject = canManageAdPlans
+      && plan
+      && !["approved", "superseded", "rejected"].includes(plan.status);
+    const card = document.createElement("article");
+    card.className = "podcast-admin__decision";
+    card.innerHTML = `
+      <div>
+        <p class="podcast-admin__pill">${escapeHtml(plan?.status || "no plan")}</p>
+        <h3>${plan ? `Ad plan revision ${Number(plan.revision)}` : "No marker plan yet"}</h3>
+        <p>Delivery source: ${source.ready ? "ready" : "not ready"} · ${Number(source.bytes || 0)} bytes · ${Number(source.durationSeconds || 0)} seconds</p>
+        <p>Processor: ${escapeHtml(plan?.processorVersion || "awaiting evidence")}</p>
+        <p>Proposed segments: ${Number(plan?.segmentCount || 0)} · Active approved markers: ${markers.length} · Active ready segments: ${segments.filter(({ validationStatus }) => validationStatus === "ready").length}</p>
+      </div>
+      <div>
+        <h3>Review controls</h3>
+        <p>Approval replaces active marker/segment rows atomically but leaves request-time ads disabled.</p>
+        <div class="podcast-admin__episode-actions">
+          <button class="btn btn-outline-light" type="button" data-download-ad-plan ${latestProcessorManifest ? "" : "disabled"}>Download processor manifest</button>
+          <button class="btn btn-outline-light" type="button" data-approve-ad-plan="${escapeAttribute(plan?.id || "")}" ${canApprove ? "" : "disabled"}>Approve evidence</button>
+          <button class="btn btn-danger" type="button" data-reject-ad-plan="${escapeAttribute(plan?.id || "")}" ${canReject ? "" : "disabled"}>Reject</button>
+        </div>
+      </div>`;
+    adPlanResult.replaceChildren(card);
+  }
+
+  async function submitAdPlan(event) {
+    event.preventDefault();
+    const markers = [];
+    if (adPlanForm.elements.preRoll.checked) {
+      markers.push({ position: "pre" });
+    }
+    if (adPlanForm.elements.midRoll.checked) {
+      markers.push({
+        position: "mid",
+        startsAtMs: Math.round(
+          Number(adPlanForm.elements.midRollSeconds.value) * 1_000
+        )
+      });
+    }
+    if (adPlanForm.elements.postRoll.checked) {
+      markers.push({ position: "post" });
+    }
+    if (markers.length === 0) {
+      setStatus(adPlanStatus, "Select at least one ad position.", true);
+      return;
+    }
+    const button = adPlanForm.querySelector('button[type="submit"]');
+    button.disabled = true;
+    setStatus(adPlanStatus, "Submitting immutable marker intent…");
+    try {
+      const created = await client.request(
+        `/v1/admin/episodes/${encodeURIComponent(adPlanForm.elements.episodeId.value)}/ad-plan`,
+        {
+          method: "POST",
+          body: {
+            streamProfile: "mp3-44100-stereo-cbr128-frame-v1",
+            markers
+          }
+        }
+      );
+      latestProcessorManifest = created.processorManifest;
+      setStatus(
+        adPlanStatus,
+        "Plan submitted. Download its manifest for the isolated staging processor; review is required after evidence returns."
+      );
+      await loadAdPlan({ preserveStatus: true });
+    } catch (error) {
+      setStatus(adPlanStatus, friendlyError(error), true);
+    } finally {
+      button.disabled = episodes.length === 0;
+    }
+  }
+
+  async function handleAdPlanAction(event) {
+    const downloadButton = event.target.closest("[data-download-ad-plan]");
+    if (downloadButton) {
+      if (!latestProcessorManifest) return;
+      downloadJson(
+        `podcast-ad-plan-${latestProcessorManifest.planId}.json`,
+        latestProcessorManifest
+      );
+      setStatus(adPlanStatus, "Processor manifest downloaded.");
+      return;
+    }
+    const approveButton = event.target.closest("[data-approve-ad-plan]");
+    const rejectButton = event.target.closest("[data-reject-ad-plan]");
+    const button = approveButton || rejectButton;
+    if (!button) return;
+    const planId = approveButton
+      ? approveButton.dataset.approveAdPlan
+      : rejectButton.dataset.rejectAdPlan;
+    const reason = rejectButton
+      ? globalThis.prompt("Why is this marker/segment evidence being rejected?")
+      : null;
+    if (rejectButton && !reason?.trim()) return;
+    button.disabled = true;
+    setStatus(
+      adPlanStatus,
+      approveButton ? "Rechecking R2 evidence…" : "Rejecting plan…"
+    );
+    try {
+      await client.request(
+        `/v1/admin/ads/plans/${encodeURIComponent(planId)}/${approveButton ? "approve" : "reject"}`,
+        {
+          method: "POST",
+          body: approveButton ? {} : { reason: reason.trim() }
+        }
+      );
+      setStatus(
+        adPlanStatus,
+        approveButton
+          ? "Marker and program-segment evidence approved. Runtime ads remain disabled."
+          : "Plan rejected."
+      );
+      await loadAdPlan({ preserveStatus: true });
+    } catch (error) {
+      setStatus(adPlanStatus, friendlyError(error), true);
       button.disabled = false;
     }
   }
@@ -873,6 +1049,21 @@ function friendlyError(error) {
   if (error.code === "campaign_revoked") {
     return "That campaign was killed and cannot be reactivated. Create a new campaign.";
   }
+  if (error.code === "episode_delivery_audio_not_ready") {
+    return "Attach ready delivery audio before defining ad markers.";
+  }
+  if (error.code === "episode_delivery_audio_must_be_mp3") {
+    return "Dynamic-ad segmentation currently requires MP3 delivery audio.";
+  }
+  if (error.code === "episode_duration_required") {
+    return "Set the reviewed episode duration before defining ad markers.";
+  }
+  if (error.code === "ad_plan_not_ready") {
+    return "Processor evidence must be ready before this plan can be approved.";
+  }
+  if (error.code === "ad_plan_source_changed") {
+    return "The delivery audio changed. Submit and process a new ad plan.";
+  }
   return error.message || error.code;
 }
 
@@ -920,6 +1111,18 @@ function fallbackMime(filename) {
   if (value.endsWith(".mov")) return "video/quicktime";
   if (value.endsWith(".webm")) return "video/webm";
   return "video/mp4";
+}
+
+function downloadJson(filename, value) {
+  const url = URL.createObjectURL(new Blob(
+    [`${JSON.stringify(value, null, 2)}\n`],
+    { type: "application/json" }
+  ));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
 function escapeHtml(value) {
