@@ -375,14 +375,27 @@ permalink: admin/podcasts/index.html
         </section>
 
         <section id="podcast-panel-analytics" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-analytics" hidden>
-          <h2>Analytics</h2>
+          <div class="podcast-admin__panel-heading">
+            <div>
+              <h2>Analytics</h2>
+              <p>Methodology-versioned first-party evidence for <strong data-podcast-reconciliation-show>this show</strong>.</p>
+            </div>
+            <button class="btn btn-outline-light" type="button" data-podcast-reconciliation-refresh>Refresh</button>
+          </div>
           <div class="podcast-admin__metric-grid">
             <article><strong>—</strong><span>Qualified downloads</span></article>
             <article><strong>—</strong><span>Engaged plays</span></article>
             <article><strong>—</strong><span>Premium listeners</span></article>
-            <article><strong>—</strong><span>Sponsor impressions</span></article>
+            <article><strong data-podcast-qualified-sponsor-deliveries>—</strong><span>Qualified sponsor deliveries</span></article>
+            <article><strong data-podcast-reconciliation-differences>—</strong><span>Counter discrepancies</span></article>
+            <article><strong data-podcast-campaigns-at-cap>—</strong><span>Campaigns at cap</span></article>
           </div>
-          <p>Metrics remain blank—not zero—until first-party observation and methodology-versioned aggregation ship.</p>
+          <div class="podcast-admin__callout" data-podcast-reconciliation-methodology>
+            <p>Download, engagement, and premium-listener metrics remain blank—not zero—until their first-party observation methods ship.</p>
+            <p>Qualified sponsor delivery counts only a completed decision slot after a trusted observer confirms delivery of the full snapshotted creative byte threshold.</p>
+          </div>
+          <p class="podcast-admin__status" data-podcast-reconciliation-status role="status" aria-live="polite"></p>
+          <div data-podcast-reconciliation></div>
         </section>
 
         <section id="podcast-panel-billing" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-billing" hidden>
