@@ -18,7 +18,7 @@
     "build-dev": "ELEVENTY_ENV=development eleventy && gulp dist-assets && gulp sass",
     "build-assets": "gulp dist-assets && gulp sass",
     "build:og": "node scripts/render-og-cards.mjs",
-    "test:podcasts": "node scripts/validate-podcast-shows.mjs && node scripts/validate-podcast-episode-template.mjs && node scripts/validate-podcast-admin.mjs",
+    "test:podcasts": "node scripts/validate-podcast-shows.mjs && node scripts/validate-podcast-episode-template.mjs && node scripts/validate-podcast-admin.mjs && node scripts/validate-podcast-member.mjs",
     "ping:bridgy": "node scripts/ping-bridgy.mjs",
     "ping:bridgy:all": "node scripts/ping-bridgy.mjs --all",
     "11ty": "ELEVENTY_ENV=development eleventy && gulp inject-css",

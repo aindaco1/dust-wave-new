@@ -1,0 +1,96 @@
+---
+layout: layouts/podcast-member.njk
+title: Tu cuenta de podcasts — Dust Wave
+description: Acceso privado a tus suscripciones de Dust Wave Podcasts.
+language: es
+permalink: podcasts/account/index.html
+---
+
+<div
+  class="container podcast-member__container"
+  data-podcast-member
+  data-api-origin="{{ podcastMember.apiOrigin }}"
+  data-turnstile-site-key="{{ podcastMember.turnstileSiteKey }}">
+  <header class="podcast-member__header">
+    <div>
+      <p class="podcast-member__eyebrow">Dust Wave Podcasts</p>
+      <h1>Tu cuenta <span lang="en">/ Your account</span></h1>
+      <p>
+        Administra tu acceso premium, episodios anticipados y feeds privados.
+        <span lang="en">Manage premium access, early episodes, and private feeds.</span>
+      </p>
+    </div>
+    <button
+      class="btn btn-outline-light"
+      type="button"
+      data-podcast-member-logout
+      hidden>
+      Salir / Sign out
+    </button>
+  </header>
+
+  <p
+    class="podcast-member__status"
+    data-podcast-member-global-status
+    role="status"
+    aria-live="polite"></p>
+
+  <section
+    class="podcast-member__panel"
+    data-podcast-member-auth
+    aria-labelledby="podcast-member-login-title">
+    <p class="podcast-member__eyebrow">Acceso privado / Private access</p>
+    <h2 id="podcast-member-login-title">Recibe un enlace seguro</h2>
+    <p>
+      Escribe el correo de tu suscripción. Si encontramos una cuenta, enviaremos
+      un enlace de un solo uso que vence en 15 minutos.
+    </p>
+    <p lang="en">
+      Enter the email used for your subscription. If an account exists, we’ll
+      send a single-use link that expires in 15 minutes.
+    </p>
+    <form data-podcast-member-login-form>
+      <label for="podcast-member-email">Correo / Email</label>
+      <div class="podcast-member__inline-form">
+        <input
+          id="podcast-member-email"
+          name="email"
+          type="email"
+          autocomplete="email"
+          inputmode="email"
+          maxlength="254"
+          required>
+        <button class="btn btn-danger" type="submit">
+          Enviar enlace / Send link
+        </button>
+      </div>
+      {% if podcastMember.turnstileSiteKey %}
+      <div id="podcast-member-turnstile" class="podcast-member__turnstile"></div>
+      {% endif %}
+    </form>
+    <p
+      class="podcast-member__status"
+      data-podcast-member-auth-status
+      role="status"
+      aria-live="polite"></p>
+  </section>
+
+  <section class="podcast-member__app" data-podcast-member-app hidden>
+    <div class="podcast-member__panel">
+      <p class="podcast-member__eyebrow">Suscripciones / Subscriptions</p>
+      <h2>Tu biblioteca de Dust Wave</h2>
+      <p data-podcast-member-session-summary></p>
+      <div
+        class="podcast-member__subscriptions"
+        data-podcast-member-subscriptions></div>
+    </div>
+  </section>
+
+  <noscript>
+    <p class="podcast-member__panel">
+      Esta cuenta segura necesita JavaScript para intercambiar el enlace sin
+      enviarlo en la URL. / This secure account needs JavaScript to exchange
+      the link without sending it in the URL.
+    </p>
+  </noscript>
+</div>
