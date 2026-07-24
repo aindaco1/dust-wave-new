@@ -156,10 +156,15 @@ function startPodcastMember(rootElement) {
 
     const feed = document.createElement("p");
     feed.textContent = subscription.hasPrivateFeed
-      ? "Tu feed privado está listo. Los controles para copiarlo o rotarlo se habilitarán en el siguiente paso seguro. / Your private feed is ready; secure copy and rotation controls are next."
-      : "El feed privado se creará cuando la suscripción esté activa. / A private feed will be created when the subscription is active.";
+      ? "Ya existe un feed privado. Por seguridad, Dust Wave no puede volver a mostrar su URL; puedes reemplazarla abajo. / A private feed exists. For security, Dust Wave cannot show its URL again; you can replace it below."
+      : subscription.entitled
+        ? "Crea una URL privada para escuchar en tu app de podcasts. Solo se mostrará una vez. / Create a private URL for your podcast app. It will only be shown once."
+        : "Podrás crear un feed privado cuando la suscripción esté activa. / You can create a private feed when the subscription is active.";
 
     card.append(heading, badges, access, feed);
+    if (subscription.entitled) {
+      card.append(privateFeedControls(subscription));
+    }
     if (subscription.currentPeriodEnd) {
       const period = document.createElement("p");
       period.className = "podcast-member__fine-print";
@@ -169,6 +174,109 @@ function startPodcastMember(rootElement) {
       card.append(period);
     }
     return card;
+  }
+
+  function privateFeedControls(subscription) {
+    const controls = document.createElement("div");
+    controls.className = "podcast-member__feed-controls";
+
+    const action = document.createElement("button");
+    action.type = "button";
+    action.className = "btn btn-outline-light";
+    action.textContent = subscription.hasPrivateFeed
+      ? "Reemplazar URL privada / Replace private URL"
+      : "Crear feed privado / Create private feed";
+
+    const status = document.createElement("p");
+    status.className = "podcast-member__status podcast-member__fine-print";
+    status.setAttribute("role", "status");
+    status.setAttribute("aria-live", "polite");
+
+    action.addEventListener("click", async () => {
+      const rotating = Boolean(subscription.hasPrivateFeed);
+      if (
+        rotating
+        && !globalThis.confirm(
+          "La URL privada anterior dejará de funcionar inmediatamente. ¿Continuar?\n\nThe previous private URL will stop working immediately. Continue?"
+        )
+      ) {
+        return;
+      }
+      action.disabled = true;
+      controls.querySelector("[data-private-feed-output]")?.remove();
+      setStatus(
+        status,
+        rotating
+          ? "Reemplazando la URL… / Replacing URL…"
+          : "Creando el feed… / Creating feed…"
+      );
+      try {
+        const slug = encodeURIComponent(subscription.show?.slug || "");
+        const result = await client.request(
+          `/v1/member/shows/${slug}/feed${rotating ? "/rotate" : ""}`,
+          { method: "POST" }
+        );
+        const url = String(result?.feed?.url || "");
+        if (!url) throw new PodcastApiError("private_feed_url_missing");
+        subscription.hasPrivateFeed = true;
+        action.textContent = "Reemplazar URL privada / Replace private URL";
+        controls.insertBefore(
+          privateFeedOutput(url, subscription.show?.slug || ""),
+          status
+        );
+        setStatus(
+          status,
+          "Guarda esta URL ahora: no volveremos a mostrarla. / Save this URL now: we will not show it again."
+        );
+      } catch (error) {
+        setStatus(status, friendlyError(error), true);
+      } finally {
+        action.disabled = false;
+      }
+    });
+    controls.append(action, status);
+    return controls;
+  }
+
+  function privateFeedOutput(url, showSlug) {
+    const output = document.createElement("div");
+    output.className = "podcast-member__feed-output";
+    output.dataset.privateFeedOutput = "";
+
+    const id = `podcast-private-feed-${String(showSlug).replace(
+      /[^a-z0-9_-]/gi,
+      "-"
+    )}`;
+    const label = document.createElement("label");
+    label.htmlFor = id;
+    label.textContent = "URL privada / Private URL";
+
+    const row = document.createElement("div");
+    row.className = "podcast-member__inline-form";
+    const input = document.createElement("input");
+    input.id = id;
+    input.type = "text";
+    input.readOnly = true;
+    input.autocomplete = "off";
+    input.spellcheck = false;
+    input.value = url;
+    const copy = document.createElement("button");
+    copy.type = "button";
+    copy.className = "btn btn-danger";
+    copy.textContent = "Copiar / Copy";
+    copy.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(url);
+        copy.textContent = "Copiado / Copied";
+      } catch {
+        input.focus();
+        input.select();
+        copy.textContent = "Seleccionado / Selected";
+      }
+    });
+    row.append(input, copy);
+    output.append(label, row);
+    return output;
   }
 
   function initializeTurnstile() {
@@ -262,6 +370,18 @@ function friendlyError(error) {
   }
   if (error.code === "rate_limited") {
     return "Demasiados intentos. Espera y vuelve a intentar. / Too many attempts. Wait and retry.";
+  }
+  if (error.code === "premium_entitlement_required") {
+    return "La suscripción premium ya no está activa. / The premium subscription is no longer active.";
+  }
+  if (error.code === "private_feed_not_configured") {
+    return "Los feeds privados todavía no están configurados. / Private feeds are not configured yet.";
+  }
+  if (
+    error.code === "private_feed_conflict"
+    || error.code === "private_feed_already_exists"
+  ) {
+    return "El feed cambió en otra sesión. Recarga la página antes de continuar. / The feed changed in another session. Refresh before continuing.";
   }
   return error.message || error.code;
 }
