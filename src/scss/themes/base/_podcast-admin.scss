@@ -16,7 +16,8 @@
 
 .podcast-admin__header,
 .podcast-admin__panel-heading,
-.podcast-admin__episode {
+.podcast-admin__episode,
+.podcast-admin__campaign {
   align-items: flex-start;
   display: flex;
   gap: 1.5rem;
@@ -47,6 +48,7 @@
 .podcast-admin__metric-grid article,
 .podcast-admin__directory-list article,
 .podcast-admin__episode,
+.podcast-admin__campaign,
 .podcast-admin__decision {
   background: #1c1c1c;
   border: 1px solid rgba(255, 255, 255, 0.16);
@@ -167,6 +169,7 @@
 }
 
 .podcast-admin__episode-list,
+.podcast-admin__campaign-list,
 .podcast-admin__directory-list {
   display: grid;
   gap: 0.75rem;
@@ -174,6 +177,7 @@
 }
 
 .podcast-admin__episode,
+.podcast-admin__campaign,
 .podcast-admin__directory-list article {
   padding: 1rem;
 }
@@ -228,7 +232,8 @@
 @media (max-width: 760px) {
   .podcast-admin__header,
   .podcast-admin__panel-heading,
-  .podcast-admin__episode {
+  .podcast-admin__episode,
+  .podcast-admin__campaign {
     display: grid;
   }
 

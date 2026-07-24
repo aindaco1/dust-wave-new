@@ -186,6 +186,99 @@ permalink: admin/podcasts/index.html
           <div class="podcast-admin__callout">
             <p>This tool reads current targeting and media-readiness state. It cannot insert an ad, create an impression, or change the public episode file.</p>
           </div>
+          <form class="podcast-admin__form" data-podcast-campaign-form>
+            <h3>New campaign draft</h3>
+            <p>Campaigns remain unapproved until compatible creative audio is validated. Creating or editing a campaign cannot enable playback.</p>
+            <div class="podcast-admin__field-grid">
+              <label>Campaign name
+                <input name="name" required>
+              </label>
+              <label>Type
+                <select name="campaignType">
+                  <option value="house">Dust Wave promo</option>
+                  <option value="direct">Direct sponsor</option>
+                </select>
+              </label>
+              <label data-direct-sponsor-field hidden>Sponsor name
+                <input name="sponsorName">
+              </label>
+              <label data-direct-sponsor-field hidden>Sponsor website
+                <input name="sponsorWebsiteUrl" type="url" inputmode="url">
+              </label>
+              <label>Starts
+                <input name="startsAt" type="datetime-local" required>
+              </label>
+              <label>Ends
+                <input name="endsAt" type="datetime-local">
+              </label>
+              <label>Episode target
+                <select name="episodeId">
+                  <option value="">All episodes in this show</option>
+                </select>
+              </label>
+              <label>Position
+                <select name="position">
+                  <option value="">All positions</option>
+                  <option value="pre">Pre-roll</option>
+                  <option value="mid">Mid-roll</option>
+                  <option value="post">Post-roll</option>
+                </select>
+              </label>
+              <label>Podcast app
+                <select name="appName">
+                  <option value="">All apps</option>
+                  <option value="apple_podcasts">Apple Podcasts</option>
+                  <option value="spotify">Spotify</option>
+                  <option value="pocket_casts">Pocket Casts</option>
+                  <option value="overcast">Overcast</option>
+                  <option value="podcast_addict">Podcast Addict</option>
+                  <option value="browser">Dust Wave web player</option>
+                </select>
+              </label>
+              <label>Device
+                <select name="deviceType">
+                  <option value="">All devices</option>
+                  <option value="mobile">Mobile</option>
+                  <option value="tablet">Tablet</option>
+                  <option value="desktop">Desktop</option>
+                  <option value="smart_speaker">Smart speaker</option>
+                  <option value="unknown">Unknown</option>
+                </select>
+              </label>
+              <label>Priority
+                <input name="priority" type="number" min="-1000" max="1000" value="0">
+              </label>
+              <label>Pacing
+                <select name="pacingStrategy">
+                  <option value="even">Even</option>
+                  <option value="asap">As soon as possible</option>
+                  <option value="manual">Manual</option>
+                </select>
+              </label>
+              <label>Hard impression cap
+                <input name="impressionCap" type="number" min="1">
+              </label>
+              <label>Qualified-impression goal
+                <input name="qualifiedImpressionGoal" type="number" min="1">
+              </label>
+              <label data-direct-sponsor-field hidden>Billing model
+                <select name="billingModel">
+                  <option value="flat_fee">Flat fee</option>
+                  <option value="cpm">CPM</option>
+                </select>
+              </label>
+              <label data-direct-sponsor-field hidden>Contract amount (USD)
+                <input name="contractAmount" type="number" min="0" step="0.01">
+              </label>
+              <label data-direct-sponsor-field hidden>CPM (USD)
+                <input name="cpm" type="number" min="0" step="0.01">
+              </label>
+            </div>
+            <button class="btn btn-outline-light" type="submit">Create draft campaign</button>
+            <p class="podcast-admin__status" data-podcast-campaign-status role="status" aria-live="polite"></p>
+          </form>
+          <div class="podcast-admin__campaign-list" data-podcast-campaign-list></div>
+
           <form class="podcast-admin__form" data-podcast-sponsor-preview-form>
             <div class="podcast-admin__field-grid">
               <label>Episode

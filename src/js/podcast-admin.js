@@ -33,9 +33,13 @@ function startPodcastAdmin(root) {
   const sponsorForm = root.querySelector("[data-podcast-sponsor-preview-form]");
   const sponsorStatus = root.querySelector("[data-podcast-sponsor-status]");
   const sponsorResult = root.querySelector("[data-podcast-sponsor-preview-result]");
+  const campaignForm = root.querySelector("[data-podcast-campaign-form]");
+  const campaignStatus = root.querySelector("[data-podcast-campaign-status]");
+  const campaignList = root.querySelector("[data-podcast-campaign-list]");
   let shows = [];
   let episodes = [];
   let selectedShowId = "";
+  let canManageCampaigns = false;
   let turnstileToken = "";
   let turnstileWidgetId;
 
@@ -48,6 +52,7 @@ function startPodcastAdmin(root) {
     onSelect(tab) {
       if (tab === "distribution") loadDistribution();
       if (tab === "billing") loadBilling();
+      if (tab === "sponsors") loadCampaigns();
     }
   });
 
@@ -57,7 +62,7 @@ function startPodcastAdmin(root) {
   showSelect?.addEventListener("change", async () => {
     selectedShowId = showSelect.value;
     fillShowForm();
-    await loadEpisodes();
+    await Promise.all([loadEpisodes(), loadCampaigns()]);
   });
   showForm?.addEventListener("submit", saveShow);
   episodeForm?.addEventListener("submit", createEpisode);
@@ -71,6 +76,12 @@ function startPodcastAdmin(root) {
   });
   uploadForm?.addEventListener("submit", uploadMedia);
   sponsorForm?.addEventListener("submit", previewSponsorDecision);
+  campaignForm?.addEventListener("submit", createCampaign);
+  campaignForm?.elements.campaignType?.addEventListener(
+    "change",
+    updateDirectSponsorFields
+  );
+  campaignList?.addEventListener("click", handleCampaignAction);
   episodeList?.addEventListener("click", async (event) => {
     const button = event.target.closest("[data-publish-episode]");
     if (!button) return;
@@ -78,6 +89,7 @@ function startPodcastAdmin(root) {
   });
 
   initializeTurnstile();
+  initializeCampaignForm();
   restoreOrExchange();
 
   async function restoreOrExchange() {
@@ -138,6 +150,10 @@ function startPodcastAdmin(root) {
     app.hidden = false;
     logoutButton.hidden = false;
     const roles = (identity?.roles || []).map(({ role }) => role.replace("_", " ")).join(", ");
+    canManageCampaigns = (identity?.roles || []).some(({ role }) =>
+      role === "super_admin" || role === "admin"
+    );
+    campaignForm.hidden = !canManageCampaigns;
     root.querySelector("[data-podcast-session-summary]").textContent =
       `Authenticated Podcast administrator${roles ? ` — ${roles}` : ""}.`;
   }
@@ -148,7 +164,9 @@ function startPodcastAdmin(root) {
     logoutButton.hidden = true;
     shows = [];
     episodes = [];
+    canManageCampaigns = false;
     sponsorResult?.replaceChildren();
+    campaignList?.replaceChildren();
   }
 
   async function loadShows() {
@@ -162,7 +180,7 @@ function startPodcastAdmin(root) {
       renderShows();
       fillShowSelect();
       fillShowForm();
-      await loadEpisodes();
+      await Promise.all([loadEpisodes(), loadCampaigns()]);
       setStatus(globalStatus, "");
     } catch (error) {
       setStatus(globalStatus, friendlyError(error), true);
@@ -320,6 +338,21 @@ function startPodcastAdmin(root) {
         )
       ));
     }
+    const campaignEpisodeSelect = campaignForm?.elements.episodeId;
+    if (campaignEpisodeSelect) {
+      const previousValue = campaignEpisodeSelect.value;
+      campaignEpisodeSelect.replaceChildren(
+        new Option("All episodes in this show", ""),
+        ...episodes.map((episode) =>
+          new Option(
+            episode.title,
+            episode.id,
+            false,
+            episode.id === previousValue
+          )
+        )
+      );
+    }
     const previewButton = sponsorForm?.querySelector('button[type="submit"]');
     if (previewButton) previewButton.disabled = episodes.length === 0;
     if (episodes.length === 0) {
@@ -423,6 +456,169 @@ function startPodcastAdmin(root) {
       distributionRoot.replaceChildren(list);
     } catch (error) {
       distributionRoot.textContent = friendlyError(error);
+    }
+  }
+
+  function initializeCampaignForm() {
+    if (!campaignForm) return;
+    const now = new Date();
+    const end = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+    campaignForm.elements.startsAt.value = datetimeLocalValue(now);
+    campaignForm.elements.endsAt.value = datetimeLocalValue(end);
+    updateDirectSponsorFields();
+  }
+
+  function updateDirectSponsorFields() {
+    if (!campaignForm) return;
+    const direct = campaignForm.elements.campaignType.value === "direct";
+    for (const field of campaignForm.querySelectorAll("[data-direct-sponsor-field]")) {
+      field.hidden = !direct;
+      for (const control of field.querySelectorAll("input, select")) {
+        control.disabled = !direct;
+      }
+    }
+    campaignForm.elements.sponsorName.required = direct;
+  }
+
+  async function loadCampaigns() {
+    if (!selectedShowId) {
+      campaignList?.replaceChildren();
+      return;
+    }
+    campaignList.innerHTML = "<p>Loading sponsor campaigns…</p>";
+    try {
+      const payload = await client.request(
+        `/v1/admin/ads/campaigns?showId=${encodeURIComponent(selectedShowId)}`
+      );
+      renderCampaigns(payload.campaigns || []);
+    } catch (error) {
+      campaignList.textContent = friendlyError(error);
+    }
+  }
+
+  function renderCampaigns(campaigns) {
+    if (!campaigns.length) {
+      campaignList.innerHTML =
+        '<p class="podcast-admin__empty">No sponsor or house-promo campaigns yet.</p>';
+      return;
+    }
+    campaignList.replaceChildren(...campaigns.map((campaign) => {
+      const row = document.createElement("article");
+      row.className = "podcast-admin__campaign";
+      const blockers = campaign.blockers || [];
+      const blockerItems = blockers.length
+        ? blockers.map((blocker) =>
+            `<li>${escapeHtml(humanizeCode(blocker))}</li>`
+          ).join("")
+        : "<li>Campaign metadata is ready.</li>";
+      const canApprove = canManageCampaigns
+        && campaign.active
+        && campaign.approvalStatus !== "approved";
+      const canKill = canManageCampaigns && campaign.active;
+      row.innerHTML = `
+        <div>
+          <p class="podcast-admin__pill">${escapeHtml(campaign.approvalStatus)} · ${campaign.active ? "active draft row" : "revoked"}</p>
+          <h3>${escapeHtml(campaign.name)}</h3>
+          <p>${escapeHtml(campaign.campaignType)}${campaign.sponsor?.name ? ` · ${escapeHtml(campaign.sponsor.name)}` : ""}</p>
+          <p>${escapeHtml(formatDate(campaign.startsAt))} → ${escapeHtml(formatDate(campaign.endsAt))}</p>
+          <p>Qualified: ${Number(campaign.qualifiedImpressions || 0)}${campaign.qualifiedImpressionGoal ? ` / ${Number(campaign.qualifiedImpressionGoal)}` : ""} · Ready creatives: ${Number(campaign.readyCreativeCount || 0)}</p>
+          <ul>${blockerItems}</ul>
+        </div>
+        <div class="podcast-admin__episode-actions">
+          <button class="btn btn-outline-light" type="button" data-approve-campaign="${escapeAttribute(campaign.id)}" ${canApprove ? "" : "disabled"}>Approve</button>
+          <button class="btn btn-danger" type="button" data-kill-campaign="${escapeAttribute(campaign.id)}" ${canKill ? "" : "disabled"}>Kill</button>
+        </div>`;
+      return row;
+    }));
+  }
+
+  async function createCampaign(event) {
+    event.preventDefault();
+    const button = campaignForm.querySelector('button[type="submit"]');
+    const direct = campaignForm.elements.campaignType.value === "direct";
+    button.disabled = true;
+    setStatus(campaignStatus, "Creating audited campaign draft…");
+    try {
+      await client.request("/v1/admin/ads/campaigns", {
+        method: "POST",
+        body: {
+          showId: selectedShowId,
+          name: campaignForm.elements.name.value,
+          campaignType: campaignForm.elements.campaignType.value,
+          sponsorName: direct ? campaignForm.elements.sponsorName.value : null,
+          sponsorWebsiteUrl: direct
+            ? campaignForm.elements.sponsorWebsiteUrl.value || null
+            : null,
+          startsAt: isoOrNull(campaignForm.elements.startsAt.value),
+          endsAt: isoOrNull(campaignForm.elements.endsAt.value),
+          episodeId: campaignForm.elements.episodeId.value || null,
+          position: campaignForm.elements.position.value || null,
+          appName: campaignForm.elements.appName.value || null,
+          deviceType: campaignForm.elements.deviceType.value || null,
+          priority: Number(campaignForm.elements.priority.value || 0),
+          pacingStrategy: campaignForm.elements.pacingStrategy.value,
+          impressionCap: integerOrNull(campaignForm.elements.impressionCap.value),
+          qualifiedImpressionGoal: integerOrNull(
+            campaignForm.elements.qualifiedImpressionGoal.value
+          ),
+          billingModel: direct
+            ? campaignForm.elements.billingModel.value
+            : "flat_fee",
+          contractAmountCents: direct
+            ? moneyToCents(campaignForm.elements.contractAmount.value)
+            : null,
+          cpmCents: direct ? moneyToCents(campaignForm.elements.cpm.value) : null
+        }
+      });
+      campaignForm.reset();
+      initializeCampaignForm();
+      fillEpisodeSelects();
+      setStatus(
+        campaignStatus,
+        "Draft created. Validate compatible creative audio before approval."
+      );
+      await loadCampaigns();
+    } catch (error) {
+      setStatus(campaignStatus, friendlyError(error), true);
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  async function handleCampaignAction(event) {
+    const approveButton = event.target.closest("[data-approve-campaign]");
+    const killButton = event.target.closest("[data-kill-campaign]");
+    const button = approveButton || killButton;
+    if (!button) return;
+    const campaignId = approveButton
+      ? approveButton.dataset.approveCampaign
+      : killButton.dataset.killCampaign;
+    if (
+      killButton
+      && !globalThis.confirm(
+        "Kill this campaign immediately? This campaign row cannot be reactivated."
+      )
+    ) {
+      return;
+    }
+    button.disabled = true;
+    setStatus(
+      campaignStatus,
+      approveButton ? "Checking approval gates…" : "Killing campaign…"
+    );
+    try {
+      await client.request(
+        `/v1/admin/ads/campaigns/${encodeURIComponent(campaignId)}/${approveButton ? "approve" : "kill"}`,
+        { method: "POST", body: {} }
+      );
+      setStatus(
+        campaignStatus,
+        approveButton ? "Campaign approved." : "Campaign killed."
+      );
+      await loadCampaigns();
+    } catch (error) {
+      setStatus(campaignStatus, friendlyError(error), true);
+      button.disabled = false;
     }
   }
 
@@ -548,11 +744,30 @@ function friendlyError(error) {
   if (error.code === "admin_auth_not_configured") return "Staging login providers are not configured yet.";
   if (error.code === "invalid_csrf_token") return "Your secure session changed. Refresh and retry.";
   if (error.code === "episode_not_ready") return `Episode is not ready: ${(error.details?.missing || []).join(", ")}.`;
+  if (error.code === "campaign_not_ready") {
+    return `Campaign is not ready: ${(error.details?.blockers || []).map(humanizeCode).join(", ")}.`;
+  }
+  if (error.code === "campaign_revoked") {
+    return "That campaign was killed and cannot be reactivated. Create a new campaign.";
+  }
   return error.message || error.code;
 }
 
 function isoOrNull(value) {
   return value ? new Date(value).toISOString() : null;
+}
+
+function datetimeLocalValue(value) {
+  const local = new Date(value.getTime() - value.getTimezoneOffset() * 60_000);
+  return local.toISOString().slice(0, 16);
+}
+
+function integerOrNull(value) {
+  return value === "" ? null : Number(value);
+}
+
+function moneyToCents(value) {
+  return value === "" ? null : Math.round(Number(value) * 100);
 }
 
 function slugify(value) {
