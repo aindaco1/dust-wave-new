@@ -2778,7 +2778,9 @@ function startPodcastAdmin(root) {
     const summary = payload.summary || {};
     const fragment = document.createDocumentFragment();
     if (payload.release) {
-      fragment.append(renderReleaseChannels(payload.release));
+      fragment.append(
+        renderReleaseChannels(payload.release, payload.episodeId || "")
+      );
     }
     const overview = document.createElement("div");
     overview.className =
@@ -2845,7 +2847,7 @@ function startPodcastAdmin(root) {
     distributionRoot.replaceChildren(fragment);
   }
 
-  function renderReleaseChannels(release) {
+  function renderReleaseChannels(release, episodeId) {
     const section = document.createElement("section");
     section.className = "podcast-admin__release-channels";
     const heading = document.createElement("div");
@@ -2926,6 +2928,36 @@ function startPodcastAdmin(root) {
         error.className = "podcast-admin__status is-error";
         error.textContent = String(channel.error);
         card.append(error);
+      }
+      if (
+        channel.retryable
+        && episodeId
+        && canRetrySelectedShowPublication()
+      ) {
+        const actions = document.createElement("div");
+        actions.className = "podcast-admin__release-channel-actions";
+        const retry = document.createElement("button");
+        retry.className = "btn btn-outline-light";
+        retry.type = "button";
+        retry.dataset.podcastReleaseRetry = "";
+        retry.dataset.episodeId = String(episodeId);
+        retry.dataset.destination = String(channel.id || "");
+        retry.dataset.publicationRevision = String(
+          Number(release.publicationRevision) || 0
+        );
+        retry.dataset.channelName = String(
+          channel.name || channel.id || "channel"
+        );
+        retry.textContent = `Retry ${String(
+          channel.name || channel.id || "channel"
+        )}`;
+        const status = document.createElement("p");
+        status.className = "podcast-admin__status";
+        status.dataset.podcastReleaseRetryStatus = "";
+        status.setAttribute("role", "status");
+        status.setAttribute("aria-live", "polite");
+        actions.append(retry, status);
+        card.append(actions);
       }
       grid.append(card);
     }
@@ -3135,7 +3167,19 @@ function startPodcastAdmin(root) {
     );
   }
 
+  function canRetrySelectedShowPublication() {
+    return (adminIdentity?.roles || []).some(({ role, showId }) =>
+      ["super_admin", "admin", "producer"].includes(role)
+      && (role === "super_admin" || !showId || showId === selectedShowId)
+    );
+  }
+
   async function handleDistributionClick(event) {
+    const retry = event.target.closest("[data-podcast-release-retry]");
+    if (retry) {
+      await retryReleaseChannel(retry);
+      return;
+    }
     const button = event.target.closest(
       "[data-podcast-distribution-copy-feed]"
     );
@@ -3158,6 +3202,57 @@ function startPodcastAdmin(root) {
         "Copy is unavailable. The feed URL is selected for manual copying.",
         true
       );
+    }
+  }
+
+  async function retryReleaseChannel(button) {
+    if (!canRetrySelectedShowPublication()) return;
+    const episodeId = String(button.dataset.episodeId || "");
+    const destination = String(button.dataset.destination || "");
+    const publicationRevision = Number(
+      button.dataset.publicationRevision || 0
+    );
+    const channelName = String(button.dataset.channelName || "channel");
+    if (
+      !episodeId
+      || !/^[A-Za-z0-9_-]+$/.test(destination)
+      || !Number.isSafeInteger(publicationRevision)
+      || publicationRevision <= 0
+    ) return;
+    if (
+      !window.confirm(
+        `Retry ${channelName} for release revision ${publicationRevision}?`
+      )
+    ) return;
+    const status = button.parentElement?.querySelector(
+      "[data-podcast-release-retry-status]"
+    );
+    button.disabled = true;
+    setStatus(status, `Queueing ${channelName} retry…`);
+    try {
+      const result = await client.request(
+        `/v1/admin/episodes/${encodeURIComponent(
+          episodeId
+        )}/distribution/${encodeURIComponent(destination)}/retry`,
+        {
+          method: "POST",
+          body: { publicationRevision }
+        }
+      );
+      setStatus(
+        status,
+        result.idempotent
+          ? `${channelName} is already queued or running.`
+          : `${channelName} retry queued${
+            result.delivery === "scheduled"
+              ? " for the next scheduler pass"
+              : ""
+          }.`
+      );
+      await loadDistribution(episodeId);
+    } catch (error) {
+      setStatus(status, friendlyError(error), true);
+      button.disabled = false;
     }
   }
 

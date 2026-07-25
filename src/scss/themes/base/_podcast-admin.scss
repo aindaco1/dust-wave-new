@@ -402,6 +402,20 @@
   font-size: 0.9rem;
 }
 
+.podcast-admin__release-channel-actions {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.podcast-admin__release-channel-actions .btn {
+  justify-self: start;
+}
+
+.podcast-admin__release-channel-actions .podcast-admin__status {
+  margin: 0;
+}
+
 .podcast-admin__distribution-feed {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -652,6 +666,11 @@
   }
 
   .podcast-admin__distribution-form .btn {
+    width: 100%;
+  }
+
+  .podcast-admin__release-channel-actions .btn {
+    justify-self: stretch;
     width: 100%;
   }
 
