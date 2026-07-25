@@ -257,7 +257,7 @@ permalink: admin/podcasts/index.html
             <p class="podcast-admin__pill">Exact revision · audit safe</p>
           </div>
           <div class="podcast-admin__callout">
-            <p>Open blockers and approval state are visible readiness evidence, but they do not block publishing yet. Stale target revisions remain in history and cannot silently become current.</p>
+            <p>Open blockers and approval state feed the publication gate. Stale target revisions remain in history and cannot silently become current; the readiness panel always shows whether this environment observes or enforces the gate.</p>
           </div>
           <form class="podcast-admin__form" data-podcast-review-form>
             <div class="podcast-admin__field-grid">
@@ -295,12 +295,12 @@ permalink: admin/podcasts/index.html
           <div class="podcast-admin__panel-heading podcast-admin__section-heading">
             <div>
               <h2>Publication readiness</h2>
-              <p>Inspect one immutable, read-only snapshot across the legacy Publish checks and the fuller launch dependency graph.</p>
+              <p>Inspect the immutable snapshot that Publish binds to the legacy checks and the fuller launch dependency graph.</p>
             </div>
             <button class="btn btn-outline-light" type="button" data-podcast-readiness-refresh>Refresh snapshot</button>
           </div>
           <div class="podcast-admin__callout">
-            <p>This candidate gate explains missing, stale, pending, and failed evidence. It is not connected to Publish, has no override, and performs no external write.</p>
+            <p>Publish refreshes this snapshot immediately before acting. Enforcement blocks stale or incomplete evidence; only a recently authenticated Admin or Super-admin can record a private, audited reason and explicitly override unresolved candidate blockers.</p>
           </div>
           <section class="podcast-admin__readiness" data-podcast-publication-readiness aria-label="Publication readiness snapshot">
             <p class="podcast-admin__transcript-meta" data-podcast-readiness-summary aria-live="polite">Choose a production-review episode to inspect readiness.</p>

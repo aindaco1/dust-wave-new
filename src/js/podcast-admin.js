@@ -2324,7 +2324,7 @@ function startPodcastAdmin(root) {
         publicationReadiness.publicationRevision || 0
       )}`,
       digest ? `snapshot ${digest.slice(0, 12)}` : "",
-      candidate.publishingEnforced ? "enforced" : "not enforced"
+      publicationGateLabel(publicationReadiness.publicationGateMode)
     ].filter(Boolean).join(" · ");
 
     const groups = new Map();
@@ -2437,7 +2437,9 @@ function startPodcastAdmin(root) {
             readiness.reviewReady
               ? "review ready"
               : "review evidence incomplete",
-            "publishing gate not yet enforced"
+            publicationGateLabel(
+              publicationReadiness?.publicationGateMode
+            )
           ].join(" · ");
     }
 
@@ -3678,17 +3680,108 @@ function startPodcastAdmin(root) {
 
   async function publishEpisode(episodeId, button) {
     button.disabled = true;
-    setStatus(episodeStatus, "Publishing reviewed revision…");
+    setStatus(episodeStatus, "Refreshing exact publication evidence…");
     try {
+      const readiness = await client.request(
+        `/v1/admin/episodes/${encodeURIComponent(episodeId)}/readiness`
+      );
+      if (episodeId === reviewEpisodeSelect?.value) {
+        publicationReadiness = readiness;
+        renderPublicationReadiness();
+      }
+      const mode = String(readiness.publicationGateMode || "legacy");
+      const candidate = readiness.candidateGate || {};
+      const body = mode === "legacy"
+        ? {}
+        : {
+            snapshotDigest: String(readiness.snapshotDigest || ""),
+            basePublicationRevision: Number(
+              readiness.publicationRevision || 0
+            )
+          };
+      if (mode === "enforce" && !candidate.ready) {
+        if (!candidate.overrideAvailable) {
+          throw new AdminApiError(
+            "Resolve the publication blockers or ask an Admin to review them.",
+            {
+              status: 409,
+              code: "publication_not_ready",
+              details: readiness
+            }
+          );
+        }
+        const blockerLabels = (readiness.nodes || [])
+          .filter((node) =>
+            node.severity === "blocker"
+            && !["ready", "not_applicable"].includes(node.status)
+          )
+          .map((node) => String(node.label || "Unresolved dependency"));
+        const reason = globalThis.prompt(
+          [
+            `${blockerLabels.length} publication blocker${
+              blockerLabels.length === 1 ? "" : "s"
+            } ${blockerLabels.length === 1 ? "remains" : "remain"}:`,
+            blockerLabels.join("; "),
+            "",
+            "Enter the private override reason (500 characters maximum)."
+          ].join("\n")
+        );
+        if (reason === null) {
+          setStatus(episodeStatus, "Publication override canceled.");
+          return;
+        }
+        const normalizedReason = reason
+          .normalize("NFKC")
+          .replace(/\s+/g, " ")
+          .trim();
+        if (!normalizedReason || normalizedReason.length > 500) {
+          throw new AdminApiError(
+            "Enter a private override reason between 1 and 500 characters.",
+            { status: 400, code: "publication_override_reason_invalid" }
+          );
+        }
+        const confirmed = globalThis.confirm(
+          "Publish this exact snapshot with unresolved blockers? "
+          + "Your identity, reason hash, and evidence counts will be audited."
+        );
+        if (!confirmed) {
+          setStatus(episodeStatus, "Publication override canceled.");
+          return;
+        }
+        body.override = {
+          id: operationId("publication_override"),
+          reason: normalizedReason,
+          confirmation: "PUBLISH_WITH_BLOCKERS"
+        };
+      }
+      setStatus(
+        episodeStatus,
+        mode === "enforce"
+          ? "Publishing the exact enforced snapshot…"
+          : mode === "shadow"
+            ? "Publishing while comparing the shadow snapshot…"
+            : "Publishing with legacy checks…"
+      );
       const result = await client.request(
         `/v1/admin/episodes/${encodeURIComponent(episodeId)}/publish`,
-        { method: "POST", body: {} }
+        { method: "POST", body }
       );
+      const gate = result.publicationGate || {};
       setStatus(
         episodeStatus,
         result.idempotent
           ? `Already published as revision ${result.publicationRevision}; no duplicate work was created.`
-          : `Revision ${result.publicationRevision} ${result.status}. ${result.distributionTargets} directory states created.`
+          : [
+              `Revision ${result.publicationRevision} ${result.status}.`,
+              `${result.distributionTargets} directory states created.`,
+              gate.overridden
+                ? "Candidate blockers were explicitly overridden and audited."
+                : gate.mode === "shadow"
+                  ? gate.snapshotMatched
+                    ? "Shadow snapshot matched."
+                    : "Shadow snapshot mismatch recorded without enforcement."
+                  : ""
+            ].filter(Boolean).join(" ")
       );
       await loadEpisodes();
       if (distributionFilter) {
@@ -5169,6 +5262,31 @@ function friendlyError(error) {
   if (error.code === "admin_auth_not_configured") return "Staging login providers are not configured yet.";
   if (error.code === "invalid_csrf_token") return "Your secure session changed. Refresh and retry.";
   if (error.code === "episode_not_ready") return `Episode is not ready: ${(error.details?.missing || []).join(", ")}.`;
+  if (error.code === "publication_snapshot_required") {
+    return "Refresh publication readiness before publishing this episode.";
+  }
+  if (
+    error.code === "publication_snapshot_stale"
+    || error.code === "publication_conflict"
+  ) {
+    return "Publication evidence changed before the release committed. Reload and retry.";
+  }
+  if (error.code === "publication_snapshot_busy") {
+    return "Publication evidence is still changing. Wait for current edits to finish, then retry.";
+  }
+  if (error.code === "publication_not_ready") {
+    return error.message
+      || "Resolve the publication blockers or ask an Admin to review an override.";
+  }
+  if (error.code === "publication_override_forbidden") {
+    return "Only an Admin or Super-admin can override publication blockers.";
+  }
+  if (error.code === "recent_authentication_required") {
+    return "Request a fresh admin magic link before overriding publication blockers.";
+  }
+  if (error.code.startsWith("publication_override_")) {
+    return error.message || "The publication override is invalid.";
+  }
   if (error.code === "campaign_not_ready") {
     return `Campaign is not ready: ${(error.details?.blockers || []).map(humanizeCode).join(", ")}.`;
   }
@@ -5294,6 +5412,12 @@ function slugify(value) {
 
 function formatDate(value) {
   return value ? new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(new Date(value)) : "not set";
+}
+
+function publicationGateLabel(value) {
+  if (value === "enforce") return "exact-snapshot gate enforced";
+  if (value === "shadow") return "exact-snapshot gate in shadow";
+  return "legacy Publish checks";
 }
 
 function formatInteger(value) {

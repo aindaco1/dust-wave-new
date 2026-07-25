@@ -19,6 +19,10 @@ const adminConfig = await readFile(
   path.join(repositoryRoot, 'src/_data/podcastAdmin.js'),
   'utf8'
 );
+const adminStyles = await readFile(
+  path.join(repositoryRoot, 'src/scss/themes/base/_podcast-admin.scss'),
+  'utf8'
+);
 const gulpfile = await readFile(path.join(repositoryRoot, 'gulpfile.js'), 'utf8');
 const sharedRoot = path.join(
   repositoryRoot,
@@ -54,10 +58,11 @@ assert.match(adminTemplate, /data-podcast-chapter-rows/);
 assert.match(adminTemplate, /Podcasting 2\.0 feeds/);
 assert.match(adminTemplate, /data-podcast-review-form/);
 assert.match(adminTemplate, /data-podcast-review-list/);
-assert.match(adminTemplate, /publishing yet/);
+assert.match(adminTemplate, /feed the publication gate/);
 assert.match(adminTemplate, /data-podcast-publication-readiness/);
 assert.match(adminTemplate, /data-podcast-readiness-refresh/);
-assert.match(adminTemplate, /not connected to Publish/);
+assert.match(adminTemplate, /Publish refreshes this snapshot immediately/);
+assert.match(adminTemplate, /recently authenticated Admin or Super-admin/);
 assert.match(adminTemplate, /data-podcast-clip-form/);
 assert.match(adminTemplate, /data-podcast-clip-preview/);
 assert.match(adminTemplate, /data-podcast-clip-list/);
@@ -141,7 +146,7 @@ assert.match(adminScript, /\/chapters\/approve/);
 assert.match(adminScript, /function checkedHttpsUrl/);
 assert.match(adminScript, /function loadProductionReviews/);
 assert.match(adminScript, /\/review-comments\//);
-assert.match(adminScript, /publishing gate not yet enforced/);
+assert.match(adminScript, /function publicationGateLabel/);
 assert.match(adminScript, /body\.textContent = comment\.bodyText/);
 assert.match(adminScript, /function loadPublicationReadiness/);
 assert.match(
@@ -150,7 +155,13 @@ assert.match(
 );
 assert.match(adminScript, /function renderPublicationReadiness/);
 assert.match(adminScript, /summary\.textContent = String\(readinessNode\.summary/);
-assert.match(adminScript, /publishingEnforced/);
+assert.match(adminScript, /publicationGateMode/);
+assert.match(adminScript, /PUBLISH_WITH_BLOCKERS/);
+assert.match(adminScript, /publication_override/);
+assert.match(adminScript, /basePublicationRevision/);
+assert.match(adminScript, /mode === "enforce"/);
+assert.match(adminScript, /mode === "shadow"/);
+assert.match(adminStyles, /\.podcast-admin \.btn[\s\S]*min-height: 2\.75rem/);
 assert.match(
   adminScript,
   /\/v1\/admin\/episodes\/\$\{encodeURIComponent\(episodeId\)\}\/transcripts/
