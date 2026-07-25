@@ -282,9 +282,44 @@ permalink: admin/podcasts/index.html
         </section>
 
         <section id="podcast-panel-marketing" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-marketing" hidden>
-          <h2>Marketing</h2>
+          <div class="podcast-admin__panel-heading">
+            <div>
+              <h2>Clip library</h2>
+              <p>Find completed captioned clips across the selected show, then preview or download the exact private render.</p>
+            </div>
+            <p class="podcast-admin__pill">Private media</p>
+          </div>
+          <form class="podcast-admin__form" data-podcast-clip-library-filters>
+            <div class="podcast-admin__field-grid">
+              <label>Episode
+                <select name="episodeId">
+                  <option value="">All episodes</option>
+                </select>
+              </label>
+              <label>Format
+                <select name="aspectRatio">
+                  <option value="">All formats</option>
+                  <option value="9:16">Vertical · 9:16</option>
+                  <option value="1:1">Square · 1:1</option>
+                  <option value="16:9">Landscape · 16:9</option>
+                </select>
+              </label>
+              <label>Render state
+                <select name="renderStatus">
+                  <option value="ready">Ready</option>
+                  <option value="queued">Queued</option>
+                  <option value="rendering">Rendering</option>
+                  <option value="failed">Failed</option>
+                  <option value="all">All states</option>
+                </select>
+              </label>
+            </div>
+            <button class="btn btn-outline-light" type="submit">Refresh library</button>
+            <p class="podcast-admin__status" data-podcast-clip-library-status role="status" aria-live="polite"></p>
+          </form>
+          <div class="podcast-admin__clip-list" data-podcast-clip-library></div>
           <div class="podcast-admin__callout">
-            <p>Pool-style tagged links, QR codes, embeds, share previews, and Resend announcements are the next adapter-backed slice.</p>
+            <p>Pool-style tagged links, QR codes, embeds, share previews, and Resend announcements remain the next adapter-backed slice.</p>
             <p>No announcement can send until its dry-run audience and revision are reviewed.</p>
           </div>
         </section>

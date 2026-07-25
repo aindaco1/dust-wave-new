@@ -49,6 +49,9 @@ assert.match(adminTemplate, /data-podcast-clip-preview/);
 assert.match(adminTemplate, /data-podcast-clip-list/);
 assert.match(adminTemplate, /Word-accurate cuts stay locked/);
 assert.match(adminTemplate, /authenticated preview and download/);
+assert.match(adminTemplate, /data-podcast-clip-library-filters/);
+assert.match(adminTemplate, /data-podcast-clip-library/);
+assert.match(adminTemplate, /Find completed captioned clips/);
 assert.match(adminTemplate, /Private evidence only/);
 assert.match(adminTemplate, /data-tab="marketing"/);
 assert.match(adminTemplate, /data-tab="sponsors"/);
@@ -103,9 +106,16 @@ assert.match(adminScript, /downloadJson/);
 assert.match(adminScript, /This is not a completed render/);
 assert.match(adminScript, /data-podcast-clip-render-preview/);
 assert.match(adminScript, /crossOrigin = "use-credentials"/);
-assert.match(adminScript, /render\.downloadPath/);
+assert.match(adminScript, /downloadPath/);
 assert.match(adminScript, /releaseClipMediaPlayers/);
 assert.match(adminScript, /clip-renders/);
+assert.match(adminScript, /loadClipLibrary/);
+assert.match(adminScript, /renderClipLibrary/);
+assert.match(adminScript, /data-podcast-clip-library-more/);
+assert.match(
+  adminScript,
+  /\/v1\/admin\/shows\/\$\{encodeURIComponent\(selectedShowId\)\}\/clips/
+);
 assert.doesNotMatch(adminScript, /startsAtMs:\s*clipForm/);
 assert.doesNotMatch(adminScript, /endsAtMs:\s*clipForm/);
 assert.doesNotMatch(adminScript, /(?:localStorage|sessionStorage).*(?:clip|caption)/i);

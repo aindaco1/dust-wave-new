@@ -73,6 +73,13 @@ function startPodcastAdmin(root) {
   const clipList = root.querySelector("[data-podcast-clip-list]");
   const clipNewButton = root.querySelector("[data-podcast-clip-new]");
   const clipRenderButton = root.querySelector("[data-podcast-clip-render]");
+  const clipLibraryFilters = root.querySelector(
+    "[data-podcast-clip-library-filters]"
+  );
+  const clipLibraryStatus = root.querySelector(
+    "[data-podcast-clip-library-status]"
+  );
+  const clipLibrary = root.querySelector("[data-podcast-clip-library]");
   const adPlanForm = root.querySelector("[data-podcast-ad-plan-form]");
   const adPlanStatus = root.querySelector("[data-podcast-ad-plan-status]");
   const adPlanResult = root.querySelector("[data-podcast-ad-plan-result]");
@@ -119,6 +126,10 @@ function startPodcastAdmin(root) {
   let clips = [];
   let selectedClipId = "";
   let clipRequestId = 0;
+  let clipLibraryRows = [];
+  let clipLibraryCursor = null;
+  let clipLibraryLoading = false;
+  let clipLibraryRequestId = 0;
   let latestProcessorManifest = null;
   let turnstileToken = "";
   let turnstileWidgetId;
@@ -130,8 +141,11 @@ function startPodcastAdmin(root) {
   mountAccessibleTabs(root.querySelector("[data-podcast-tabs]"), {
     storageKey: "dustwave-podcast-admin-tab",
     onSelect(tab) {
+      if (tab !== "production") pauseClipMediaPlayers(clipList);
+      if (tab !== "marketing") pauseClipMediaPlayers(clipLibrary);
       if (tab === "production") loadTranscript();
       if (tab === "distribution") loadDistribution();
+      if (tab === "marketing") loadClipLibrary({ reset: true });
       if (tab === "billing") loadBilling();
       if (tab === "sponsors") loadCampaigns();
       if (tab === "analytics") loadAdReconciliation({ reset: true });
@@ -147,8 +161,13 @@ function startPodcastAdmin(root) {
   logoutButton?.addEventListener("click", logout);
   showSelect?.addEventListener("change", async () => {
     selectedShowId = showSelect.value;
+    clearClipLibraryState();
     fillShowForm();
     await Promise.all([loadEpisodes(), loadCampaigns()]);
+    const marketingPanel = root.querySelector("#podcast-panel-marketing");
+    if (marketingPanel && !marketingPanel.hidden) {
+      await loadClipLibrary({ reset: true });
+    }
     const analyticsPanel = root.querySelector("#podcast-panel-analytics");
     if (analyticsPanel && !analyticsPanel.hidden) {
       await loadAdReconciliation({ reset: true });
@@ -201,6 +220,25 @@ function startPodcastAdmin(root) {
     }
     const edit = event.target.closest("[data-podcast-clip-edit]");
     if (edit) selectClipRecipe(edit.dataset.podcastClipEdit);
+  });
+  clipLibraryFilters?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    loadClipLibrary({ reset: true });
+  });
+  clipLibraryFilters?.addEventListener("change", () => {
+    loadClipLibrary({ reset: true });
+  });
+  clipLibrary?.addEventListener("click", (event) => {
+    const preview = event.target.closest(
+      "[data-podcast-clip-render-preview]"
+    );
+    if (preview) {
+      toggleClipRenderPreview(preview);
+      return;
+    }
+    if (event.target.closest("[data-podcast-clip-library-more]")) {
+      loadClipLibrary({ reset: false });
+    }
   });
   transcriptCuesRoot?.addEventListener("click", (event) => {
     const remove = event.target.closest("[data-podcast-transcript-remove]");
@@ -344,6 +382,7 @@ function startPodcastAdmin(root) {
     clipList?.replaceChildren();
     if (clipPreview) clipPreview.textContent = "";
     setStatus(clipStatus, "");
+    clearClipLibraryState();
     latestProcessorManifest = null;
     sponsorResult?.replaceChildren();
     campaignList?.replaceChildren();
@@ -359,13 +398,19 @@ function startPodcastAdmin(root) {
     try {
       const payload = await client.request("/v1/admin/shows");
       shows = payload.shows || [];
+      const previousShowId = selectedShowId;
       selectedShowId = shows.some(({ id }) => id === selectedShowId)
         ? selectedShowId
         : shows[0]?.id || "";
+      if (selectedShowId !== previousShowId) clearClipLibraryState();
       renderShows();
       fillShowSelect();
       fillShowForm();
       await Promise.all([loadEpisodes(), loadCampaigns()]);
+      const marketingPanel = root.querySelector("#podcast-panel-marketing");
+      if (marketingPanel && !marketingPanel.hidden) {
+        await loadClipLibrary({ reset: true });
+      }
       const analyticsPanel = root.querySelector("#podcast-panel-analytics");
       if (analyticsPanel && !analyticsPanel.hidden) {
         await loadAdReconciliation({ reset: true });
@@ -537,6 +582,21 @@ function startPodcastAdmin(root) {
       const previousValue = campaignEpisodeSelect.value;
       campaignEpisodeSelect.replaceChildren(
         new Option("All episodes in this show", ""),
+        ...episodes.map((episode) =>
+          new Option(
+            episode.title,
+            episode.id,
+            false,
+            episode.id === previousValue
+          )
+        )
+      );
+    }
+    const libraryEpisodeSelect = clipLibraryFilters?.elements.episodeId;
+    if (libraryEpisodeSelect) {
+      const previousValue = libraryEpisodeSelect.value;
+      libraryEpisodeSelect.replaceChildren(
+        new Option("All episodes", ""),
         ...episodes.map((episode) =>
           new Option(
             episode.title,
@@ -1078,53 +1138,14 @@ function startPodcastAdmin(root) {
     clipList.replaceChildren(...clips.map((clip) => {
       const row = document.createElement("article");
       row.className = "podcast-admin__card";
-      const render = clip.render;
-      const renderLabel = !render
-        ? "not requested"
-        : render.clipRevision === clip.revision
-          ? humanizeCode(render.status)
-          : `${humanizeCode(render.status)} for older revision ${Number(render.clipRevision)}`;
-      const readyRender = render
-        && render.clipRevision === clip.revision
-        && render.status === "ready"
-        && render.mediaPath
-        && render.downloadPath;
-      const previewId = readyRender
-        ? `clip-render-preview-${render.id}`
-        : "";
-      const readyDetails = readyRender
-        ? `
-          <p>
-            ${Number(render.width)}×${Number(render.height)}
-            · ${formatClipDuration(Number(render.durationMs))}
-            · ${formatInteger(render.outputBytes)} bytes
-          </p>`
-        : "";
-      const readyActions = readyRender
-        ? `
-          <button
-            class="btn btn-outline-light"
-            type="button"
-            aria-controls="${escapeAttribute(previewId)}"
-            aria-expanded="false"
-            data-podcast-clip-render-preview
-            data-media-path="${escapeAttribute(render.mediaPath)}">
-            Preview render
-          </button>
-          <a
-            class="btn btn-outline-light"
-            href="${escapeAttribute(adminApiUrl(render.downloadPath))}"
-            download>
-            Download MP4
-          </a>`
-        : "";
+      const media = clipRenderPresentation(clip, "production");
       row.innerHTML = `
         <div>
           <p class="podcast-admin__pill">${escapeHtml(clip.status)} · revision ${Number(clip.revision)}</p>
           <h3>${escapeHtml(clip.title)}</h3>
           <p>${escapeHtml(clip.aspectRatio)} · ${formatClipDuration(clip.durationMs)} · ${escapeHtml(humanizeCode(clip.boundaryMode))}</p>
-          <p>Private render: ${escapeHtml(renderLabel)}</p>
-          ${readyDetails}
+          <p>Private render: ${escapeHtml(media.renderLabel)}</p>
+          ${media.details}
         </div>
         <div class="podcast-admin__clip-actions">
           <button
@@ -1134,22 +1155,178 @@ function startPodcastAdmin(root) {
             ${canEditTranscripts ? "" : "disabled"}>
             Edit recipe
           </button>
-          ${readyActions}
+          ${media.actions}
         </div>
-        ${readyRender
-          ? `<div
-              id="${escapeAttribute(previewId)}"
-              class="podcast-admin__clip-media"
-              data-podcast-clip-media
-              hidden></div>`
-          : ""}`;
+        ${media.container}`;
       return row;
     }));
+  }
+
+  async function loadClipLibrary({ reset = true } = {}) {
+    if (!clipLibrary || !clipLibraryFilters) return;
+    if (!selectedShowId) {
+      clearClipLibraryState();
+      setStatus(clipLibraryStatus, "Choose a show to view its clip library.");
+      return;
+    }
+    if (!reset && (clipLibraryLoading || !clipLibraryCursor)) return;
+    const requestId = ++clipLibraryRequestId;
+    const cursor = reset ? null : clipLibraryCursor;
+    if (reset) {
+      clipLibraryRows = [];
+      clipLibraryCursor = null;
+      releaseClipMediaPlayers(clipLibrary);
+      clipLibrary.replaceChildren();
+    }
+    clipLibraryLoading = true;
+    setStatus(
+      clipLibraryStatus,
+      reset ? "Loading private clip library…" : "Loading more clips…"
+    );
+    const params = new URLSearchParams({ limit: "24" });
+    for (const field of ["episodeId", "aspectRatio", "renderStatus"]) {
+      const value = clipLibraryFilters.elements[field]?.value;
+      if (value) params.set(field, value);
+    }
+    if (cursor) params.set("cursor", cursor);
+    try {
+      const payload = await client.request(
+        `/v1/admin/shows/${encodeURIComponent(selectedShowId)}/clips?${params}`
+      );
+      if (requestId !== clipLibraryRequestId) return;
+      const page = payload.clips || [];
+      clipLibraryRows = reset
+        ? page
+        : [...clipLibraryRows, ...page];
+      clipLibraryCursor = payload.pagination?.nextCursor || null;
+      renderClipLibrary();
+      setStatus(
+        clipLibraryStatus,
+        `${formatInteger(clipLibraryRows.length)} clip`
+        + `${clipLibraryRows.length === 1 ? "" : "s"} loaded.`
+      );
+    } catch (error) {
+      if (requestId !== clipLibraryRequestId) return;
+      if (reset) {
+        clipLibraryRows = [];
+        clipLibraryCursor = null;
+        clipLibrary.replaceChildren();
+      }
+      setStatus(clipLibraryStatus, friendlyError(error), true);
+    } finally {
+      if (requestId === clipLibraryRequestId) {
+        clipLibraryLoading = false;
+      }
+    }
+  }
+
+  function clearClipLibraryState() {
+    clipLibraryRows = [];
+    clipLibraryCursor = null;
+    clipLibraryLoading = false;
+    clipLibraryRequestId += 1;
+    releaseClipMediaPlayers(clipLibrary);
+    clipLibrary?.replaceChildren();
+    setStatus(clipLibraryStatus, "");
+  }
+
+  function renderClipLibrary() {
+    if (!clipLibrary) return;
+    releaseClipMediaPlayers(clipLibrary);
+    if (!clipLibraryRows.length) {
+      clipLibrary.innerHTML =
+        '<p class="podcast-admin__empty">No clips match these filters.</p>';
+      return;
+    }
+    const cards = clipLibraryRows.map((clip) => {
+      const row = document.createElement("article");
+      row.className = "podcast-admin__card";
+      const media = clipRenderPresentation(clip, "marketing");
+      row.innerHTML = `
+        <div>
+          <p class="podcast-admin__pill">${escapeHtml(clip.episodeTitle || "Episode")} · ${escapeHtml(clip.aspectRatio)}</p>
+          <h3>${escapeHtml(clip.title)}</h3>
+          <p>${formatClipDuration(clip.durationMs)} · ${escapeHtml(humanizeCode(clip.captionLanguage))} · revision ${Number(clip.revision)}</p>
+          <p>Private render: ${escapeHtml(media.renderLabel)}</p>
+          ${media.details}
+        </div>
+        <div class="podcast-admin__clip-actions">${media.actions}</div>
+        ${media.container}`;
+      return row;
+    });
+    clipLibrary.replaceChildren(...cards);
+    if (clipLibraryCursor) {
+      const more = document.createElement("button");
+      more.className = "btn btn-outline-light podcast-admin__more";
+      more.type = "button";
+      more.dataset.podcastClipLibraryMore = "";
+      more.textContent = "Load more clips";
+      clipLibrary.append(more);
+    }
+  }
+
+  function clipRenderPresentation(clip, surface) {
+    const render = clip.render;
+    const renderLabel = !render
+      ? "not requested"
+      : render.clipRevision === clip.revision
+        ? humanizeCode(render.status)
+        : `${humanizeCode(render.status)} for older revision ${Number(render.clipRevision)}`;
+    const mediaUrl = adminApiUrl(render?.mediaPath);
+    const downloadUrl = adminApiUrl(render?.downloadPath);
+    const ready = render
+      && render.clipRevision === clip.revision
+      && render.status === "ready"
+      && mediaUrl
+      && downloadUrl;
+    if (!ready) {
+      return {
+        renderLabel,
+        details: "",
+        actions: "",
+        container: ""
+      };
+    }
+    const previewId =
+      `${surface}-clip-render-preview-${render.id}`;
+    return {
+      renderLabel,
+      details: `
+        <p>
+          ${Number(render.width)}×${Number(render.height)}
+          · ${formatClipDuration(Number(render.durationMs))}
+          · ${formatInteger(render.outputBytes)} bytes
+        </p>`,
+      actions: `
+        <button
+          class="btn btn-outline-light"
+          type="button"
+          aria-controls="${escapeAttribute(previewId)}"
+          aria-expanded="false"
+          data-podcast-clip-render-preview
+          data-media-path="${escapeAttribute(render.mediaPath)}">
+          Preview render
+        </button>
+        <a
+          class="btn btn-outline-light"
+          href="${escapeAttribute(downloadUrl)}"
+          download>
+          Download MP4
+        </a>`,
+      container: `<div
+        id="${escapeAttribute(previewId)}"
+        class="podcast-admin__clip-media"
+        data-podcast-clip-media
+        hidden></div>`
+    };
   }
 
   function toggleClipRenderPreview(button) {
     const row = button.closest(".podcast-admin__card");
     const container = row?.querySelector("[data-podcast-clip-media]");
+    const status = button.closest("#podcast-panel-marketing")
+      ? clipLibraryStatus
+      : clipStatus;
     if (!container) return;
     if (!container.hidden) {
       releaseClipMediaPlayers(container);
@@ -1160,7 +1337,7 @@ function startPodcastAdmin(root) {
     }
     const mediaUrl = adminApiUrl(button.dataset.mediaPath);
     if (!mediaUrl) {
-      setStatus(clipStatus, "The private render URL is invalid.", true);
+      setStatus(status, "The private render URL is invalid.", true);
       return;
     }
     const video = document.createElement("video");
@@ -1173,7 +1350,7 @@ function startPodcastAdmin(root) {
     video.addEventListener("error", () => {
       if (video.dataset.releasing === "1") return;
       setStatus(
-        clipStatus,
+        status,
         "The private render could not be loaded. Refresh your session and verify the render evidence.",
         true
       );
@@ -1191,6 +1368,10 @@ function startPodcastAdmin(root) {
       video.removeAttribute("src");
       video.load();
     });
+  }
+
+  function pauseClipMediaPlayers(container) {
+    container?.querySelectorAll("video").forEach((video) => video.pause());
   }
 
   function adminApiUrl(path) {
