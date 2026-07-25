@@ -636,6 +636,12 @@
   padding: 1rem;
 }
 
+.podcast-admin__alignment {
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+}
+
 .podcast-admin__chapter-rows {
   display: grid;
   gap: 1rem;

@@ -70,6 +70,9 @@ assert.match(adminTemplate, /name="sourceLanguage"/);
 assert.match(adminTemplate, /data-podcast-transcript-cues/);
 assert.match(adminTemplate, /data-podcast-transcript-pages/);
 assert.match(adminTemplate, /Word timing gated/);
+assert.match(adminTemplate, /data-podcast-alignment/);
+assert.match(adminTemplate, /data-podcast-alignment-adapter/);
+assert.match(adminTemplate, /matching bilingual benchmark/);
 assert.match(adminTemplate, /data-podcast-chapter-workbench/);
 assert.match(adminTemplate, /data-podcast-chapter-rows/);
 assert.match(adminTemplate, /Podcasting 2\.0 feeds/);
@@ -235,6 +238,17 @@ assert.match(adminScript, /baseRevision: Number\(transcript\.revision/);
 assert.match(adminScript, /expectedRevision: Number\(transcript\.revision\)/);
 assert.match(adminScript, /speakerConfirmed/);
 assert.match(adminScript, /wordControlsEnabled/);
+assert.match(adminScript, /function loadAlignmentJobs/);
+assert.match(adminScript, /function queueAlignment/);
+assert.match(adminScript, /function approveAlignment/);
+assert.match(adminScript, /process-alignment\.yml/);
+assert.match(
+  adminScript,
+  /\/v1\/admin\/episodes\/\$\{encodeURIComponent\(episodeId\)\}\/alignments/
+);
+assert.match(adminScript, /expectedTranscriptRevision/);
+assert.match(adminScript, /structurallyEligible/);
+assert.match(adminScript, /benchmark\?\.passedRunId/);
 assert.match(adminScript, /TRANSCRIPT_CUES_PER_PAGE = 100/);
 assert.match(adminScript, /syncVisibleTranscriptCues/);
 assert.match(

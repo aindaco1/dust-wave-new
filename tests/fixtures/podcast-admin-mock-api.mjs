@@ -248,6 +248,29 @@ function responseFor(request) {
   }
   if (
     request.method === "GET"
+    && path === `/v1/admin/episodes/${episode.id}/alignments`
+  ) {
+    return json({
+      episodeId: episode.id,
+      candidates: [],
+      jobs: [],
+      processor: {
+        available: true,
+        mode: "staging_manual",
+        workflow: "process-alignment.yml",
+        runnerRepository: "aindaco1/dust-wave-alignment-runner",
+        runnerRevision: "3c5ab054fdad375901eb186f32d7aed6cdb40413"
+      },
+      gate: {
+        bilingualBenchmarkRequired: true,
+        minimumAlignedWordRatio: 0.98,
+        interpolatedTimingPasses: false,
+        wordControlsRemainLockedUntilPassed: true
+      }
+    });
+  }
+  if (
+    request.method === "GET"
     && path === `/v1/admin/episodes/${episode.id}/chapters`
   ) {
     return json({ chapterSet: null });

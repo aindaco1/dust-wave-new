@@ -363,6 +363,30 @@ permalink: admin/podcasts/index.html
               <button class="btn btn-outline-light" type="button" data-podcast-transcript-approve>Approve revision</button>
             </div>
             <p class="podcast-admin__status" data-podcast-transcript-status role="status" aria-live="polite"></p>
+            <section class="podcast-admin__alignment" data-podcast-alignment aria-label="English and Spanish word alignment">
+              <div class="podcast-admin__panel-heading podcast-admin__section-heading">
+                <div>
+                  <h3>English/Spanish word alignment</h3>
+                  <p>Bind the approved transcript and working-master bytes to one pinned, normalized alignment run. Results remain private and require human review plus a matching bilingual benchmark before word controls unlock.</p>
+                </div>
+                <p class="podcast-admin__pill">H1 quality gate</p>
+              </div>
+              <div class="podcast-admin__field-grid">
+                <label>Alignment adapter
+                  <select data-podcast-alignment-adapter>
+                    <option value="whisperx">WhisperX 3.8.6</option>
+                    <option value="stable-ts">stable-ts 2.19.1 fallback</option>
+                  </select>
+                </label>
+              </div>
+              <div class="podcast-admin__transcript-actions">
+                <button class="btn btn-outline-light" type="button" data-podcast-alignment-refresh>Refresh alignments</button>
+                <button class="btn btn-danger" type="button" data-podcast-alignment-queue>Queue exact alignment</button>
+              </div>
+              <p class="podcast-admin__transcript-meta" data-podcast-alignment-summary aria-live="polite">Approve this transcript revision and a working master before alignment.</p>
+              <p class="podcast-admin__status" data-podcast-alignment-status role="status" aria-live="polite"></p>
+              <div class="podcast-admin__audio-enhancement-results" data-podcast-alignment-jobs></div>
+            </section>
           </div>
           <div class="podcast-admin__panel-heading podcast-admin__section-heading">
             <div>

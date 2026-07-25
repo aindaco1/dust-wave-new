@@ -15,6 +15,7 @@ import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js";
 
 const TRANSCRIPT_CUES_PER_PAGE = 100;
 const TRANSCRIPTION_CHUNK_WORKFLOW = "process-transcription-chunks.yml";
+const ALIGNMENT_WORKFLOW = "process-alignment.yml";
 const AUDIO_QC_POLICY_FIELDS = [
   "monoIntegratedLufs",
   "stereoIntegratedLufs",
@@ -104,6 +105,24 @@ function startPodcastAdmin(root) {
   );
   const transcriptNextButton = root.querySelector(
     "[data-podcast-transcript-next]"
+  );
+  const alignmentAdapterSelect = root.querySelector(
+    "[data-podcast-alignment-adapter]"
+  );
+  const alignmentRefreshButton = root.querySelector(
+    "[data-podcast-alignment-refresh]"
+  );
+  const alignmentQueueButton = root.querySelector(
+    "[data-podcast-alignment-queue]"
+  );
+  const alignmentSummary = root.querySelector(
+    "[data-podcast-alignment-summary]"
+  );
+  const alignmentStatus = root.querySelector(
+    "[data-podcast-alignment-status]"
+  );
+  const alignmentJobsRoot = root.querySelector(
+    "[data-podcast-alignment-jobs]"
   );
   const chapterWorkbench = root.querySelector(
     "[data-podcast-chapter-workbench]"
@@ -315,6 +334,8 @@ function startPodcastAdmin(root) {
   let transcript = null;
   let transcriptionState = null;
   let transcriptionRequestId = 0;
+  let alignmentState = null;
+  let alignmentRequestId = 0;
   let transcriptDurationSeconds = null;
   let transcriptRequestId = 0;
   let transcriptDirty = false;
@@ -452,6 +473,10 @@ function startPodcastAdmin(root) {
     "click",
     loadTranscript
   );
+  alignmentRefreshButton?.addEventListener("click", loadAlignmentJobs);
+  alignmentAdapterSelect?.addEventListener("change", renderAlignmentJobs);
+  alignmentQueueButton?.addEventListener("click", queueAlignment);
+  alignmentJobsRoot?.addEventListener("click", approveAlignment);
   transcriptAddButton?.addEventListener("click", addTranscriptCue);
   transcriptSaveButton?.addEventListener("click", saveTranscript);
   transcriptApproveButton?.addEventListener("click", approveTranscript);
@@ -729,6 +754,8 @@ function startPodcastAdmin(root) {
     transcript = null;
     transcriptionState = null;
     transcriptionRequestId += 1;
+    alignmentState = null;
+    alignmentRequestId += 1;
     transcriptDurationSeconds = null;
     transcriptDirty = false;
     transcriptPage = 0;
@@ -738,7 +765,10 @@ function startPodcastAdmin(root) {
     transcriptMeta?.replaceChildren();
     transcriptionSummary?.replaceChildren();
     transcriptionJobsRoot?.replaceChildren();
+    alignmentSummary?.replaceChildren();
+    alignmentJobsRoot?.replaceChildren();
     setStatus(transcriptionStatus, "");
+    setStatus(alignmentStatus, "");
     if (transcriptPages) transcriptPages.hidden = true;
     setStatus(transcriptStatus, "");
     chapterSet = null;
@@ -1327,14 +1357,22 @@ function startPodcastAdmin(root) {
       transcript = null;
       transcriptionState = null;
       transcriptionRequestId += 1;
+      alignmentState = null;
+      alignmentRequestId += 1;
       transcriptEditors.clear();
       transcriptCuesRoot?.replaceChildren();
       transcriptionJobsRoot?.replaceChildren();
+      alignmentJobsRoot?.replaceChildren();
       if (transcriptionSummary) {
         transcriptionSummary.textContent =
           "Create an episode before queueing a transcript.";
       }
       if (transcriptionQueueButton) transcriptionQueueButton.disabled = true;
+      if (alignmentSummary) {
+        alignmentSummary.textContent =
+          "Create an episode before queueing word alignment.";
+      }
+      if (alignmentQueueButton) alignmentQueueButton.disabled = true;
       if (transcriptMeta) {
         transcriptMeta.textContent =
           "Create an episode before reviewing a transcript.";
@@ -1724,10 +1762,14 @@ function startPodcastAdmin(root) {
     transcriptCuesRoot?.replaceChildren();
     if (!episodeId) {
       transcript = null;
+      alignmentState = null;
+      alignmentRequestId += 1;
       clips = [];
       selectedClipId = "";
       if (transcriptWorkbench) transcriptWorkbench.hidden = true;
       if (transcriptPages) transcriptPages.hidden = true;
+      alignmentJobsRoot?.replaceChildren();
+      if (alignmentQueueButton) alignmentQueueButton.disabled = true;
       clipList?.replaceChildren();
       updateClipAvailability();
       if (transcriptMeta) {
@@ -1753,7 +1795,11 @@ function startPodcastAdmin(root) {
       ) || emptyTranscript(language);
       transcriptDirty = false;
       renderTranscript();
-      await Promise.all([loadClips(), loadTranscriptionJobs()]);
+      await Promise.all([
+        loadClips(),
+        loadTranscriptionJobs(),
+        loadAlignmentJobs()
+      ]);
       setStatus(transcriptStatus, "");
     } catch (error) {
       if (requestId !== transcriptRequestId) return;
@@ -1943,6 +1989,248 @@ function startPodcastAdmin(root) {
     } catch (error) {
       setStatus(transcriptionStatus, friendlyError(error), true);
       renderTranscriptionJobs();
+    }
+  }
+
+  async function loadAlignmentJobs() {
+    const episodeId = transcriptEpisodeSelect?.value;
+    alignmentRequestId += 1;
+    const requestId = alignmentRequestId;
+    if (!episodeId) {
+      alignmentState = null;
+      alignmentJobsRoot?.replaceChildren();
+      if (alignmentSummary) {
+        alignmentSummary.textContent =
+          "Create an episode before queueing word alignment.";
+      }
+      if (alignmentQueueButton) alignmentQueueButton.disabled = true;
+      return false;
+    }
+    setStatus(alignmentStatus, "Loading exact alignment evidence…");
+    try {
+      const payload = await client.request(
+        `/v1/admin/episodes/${encodeURIComponent(episodeId)}/alignments`
+      );
+      if (requestId !== alignmentRequestId) return false;
+      alignmentState = payload;
+      renderAlignmentJobs();
+      setStatus(alignmentStatus, "");
+      return true;
+    } catch (error) {
+      if (requestId !== alignmentRequestId) return false;
+      alignmentState = null;
+      alignmentJobsRoot?.replaceChildren();
+      if (alignmentQueueButton) alignmentQueueButton.disabled = true;
+      setStatus(alignmentStatus, friendlyError(error), true);
+      return false;
+    }
+  }
+
+  function renderAlignmentJobs() {
+    if (!alignmentJobsRoot) return;
+    const language = transcriptLanguageSelect?.value || "es";
+    const candidate = (alignmentState?.candidates || []).find(
+      (item) => item.language === language
+    );
+    const jobs = (alignmentState?.jobs || []).filter(
+      (job) => job.language === language
+    );
+    const active = jobs.some(({ status }) =>
+      ["queued", "running"].includes(status)
+    );
+    const processorAvailable = alignmentState?.processor?.available === true;
+    if (alignmentSummary) {
+      alignmentSummary.textContent = candidate
+        ? [
+            `${humanizeCode(language)} revision ${
+              Number(candidate.transcriptRevision || 0)
+            }`,
+            humanizeCode(candidate.transcriptStatus),
+            candidate.currentWorkingMasterId
+              ? `master ${
+                  String(candidate.workingMasterSha256 || "").slice(0, 12)
+                }…`
+              : "working master missing",
+            candidate.eligible
+              ? "exact inputs eligible"
+              : "approve exact transcript and master",
+            processorAvailable
+              ? "staging processor available"
+              : "processor unavailable"
+          ].join(" · ")
+        : `No ${humanizeCode(language)} transcript revision exists yet.`;
+    }
+    if (alignmentQueueButton) {
+      alignmentQueueButton.hidden = !canEditTranscripts;
+      alignmentQueueButton.disabled =
+        !canEditTranscripts
+        || !candidate?.eligible
+        || !processorAvailable
+        || active;
+    }
+    if (alignmentAdapterSelect) {
+      alignmentAdapterSelect.disabled =
+        !canEditTranscripts || !processorAvailable || active;
+    }
+    if (!jobs.length) {
+      const empty = document.createElement("p");
+      empty.className = "podcast-admin__empty";
+      empty.textContent =
+        "No immutable alignment job exists for this language and revision.";
+      alignmentJobsRoot.replaceChildren(empty);
+      return;
+    }
+    alignmentJobsRoot.replaceChildren(...jobs.map((job) => {
+      const card = document.createElement("article");
+      card.className = "podcast-admin__card";
+      const heading = document.createElement("div");
+      heading.className = "podcast-admin__transcript-cue-heading";
+      const title = document.createElement("h4");
+      title.textContent =
+        `${humanizeCode(job.status)} · ${humanizeCode(job.alignmentStatus)}`;
+      const pill = document.createElement("span");
+      pill.className = "podcast-admin__pill";
+      pill.textContent = `${job.adapter?.name || "adapter"} ${
+        job.adapter?.version || ""
+      }`.trim();
+      heading.append(title, pill);
+
+      const identity = document.createElement("p");
+      identity.textContent = [
+        `transcript revision ${Number(job.transcriptRevision || 0)}`,
+        `attempt ${Number(job.attemptCount || 0)}`,
+        `runner ${String(job.runner?.revision || "").slice(0, 12)}…`,
+        formatDate(job.completedAt || job.requestedAt)
+      ].filter(Boolean).join(" · ");
+      card.append(heading, identity);
+
+      if (job.quality) {
+        const quality = document.createElement("p");
+        quality.textContent = [
+          `${Number(job.quality.alignedWordCount || 0)} aligned`,
+          `${Number(job.quality.unalignedWordCount || 0)} unaligned`,
+          `${Number(job.quality.interpolatedWordCount || 0)} interpolated`,
+          job.quality.structurallyEligible
+            ? "structure eligible"
+            : "structure blocked"
+        ].join(" · ");
+        card.append(quality);
+      }
+      if (job.workflow?.filename === ALIGNMENT_WORKFLOW) {
+        const workflow = document.createElement("p");
+        workflow.textContent =
+          `Run ${job.workflow.filename} in staging with job_id ${job.id}.`;
+        card.append(workflow);
+      }
+      if (job.failure?.code) {
+        const failure = document.createElement("p");
+        failure.className = "podcast-admin__status is-error";
+        failure.textContent =
+          `${humanizeCode(job.failure.code)}: ${
+            job.failure.message || "No additional detail."
+          }`;
+        card.append(failure);
+      }
+
+      const benchmarkPassed = Boolean(job.benchmark?.passedRunId);
+      const gate = document.createElement("p");
+      gate.textContent = benchmarkPassed
+        ? `Matching bilingual benchmark: ${job.benchmark.passedRunId}`
+        : "Matching bilingual benchmark has not passed; approval is locked.";
+      card.append(gate);
+
+      if (
+        job.status === "ready"
+        && job.alignmentStatus === "needs_review"
+      ) {
+        const approve = document.createElement("button");
+        approve.className = "btn btn-outline-light";
+        approve.type = "button";
+        approve.dataset.podcastAlignmentApprove = job.id;
+        approve.textContent = "Approve exact alignment";
+        approve.disabled =
+          !canApproveTranscripts
+          || job.quality?.structurallyEligible !== true
+          || !benchmarkPassed;
+        card.append(approve);
+      }
+      return card;
+    }));
+  }
+
+  async function queueAlignment() {
+    const episodeId = transcriptEpisodeSelect?.value;
+    const language = transcriptLanguageSelect?.value || "es";
+    const candidate = (alignmentState?.candidates || []).find(
+      (item) => item.language === language
+    );
+    if (
+      !episodeId
+      || !candidate?.eligible
+      || !canEditTranscripts
+      || alignmentState?.processor?.available !== true
+    ) return;
+    alignmentQueueButton.disabled = true;
+    setStatus(
+      alignmentStatus,
+      "Binding the approved transcript and working-master bytes…"
+    );
+    try {
+      const payload = await client.request(
+        `/v1/admin/episodes/${encodeURIComponent(episodeId)}/alignments`,
+        {
+          method: "POST",
+          body: {
+            requestId: operationId("alignment"),
+            expectedWorkingMasterId: candidate.currentWorkingMasterId,
+            expectedTranscriptRevision: Number(
+              candidate.transcriptRevision
+            ),
+            language,
+            adapter: alignmentAdapterSelect?.value || "whisperx"
+          }
+        }
+      );
+      const message = payload.idempotent
+        ? "The byte-identical alignment job already exists."
+        : "Alignment recorded. Run the displayed staging workflow.";
+      if (await loadAlignmentJobs()) {
+        setStatus(alignmentStatus, message);
+      }
+    } catch (error) {
+      setStatus(alignmentStatus, friendlyError(error), true);
+      renderAlignmentJobs();
+    }
+  }
+
+  async function approveAlignment(event) {
+    const button = event.target.closest("[data-podcast-alignment-approve]");
+    const episodeId = transcriptEpisodeSelect?.value;
+    if (!button || !episodeId || !canApproveTranscripts) return;
+    const jobId = button.dataset.podcastAlignmentApprove;
+    button.disabled = true;
+    setStatus(
+      alignmentStatus,
+      "Approving the exact benchmark-backed alignment revision…"
+    );
+    try {
+      await client.request(
+        `/v1/admin/episodes/${encodeURIComponent(episodeId)}/alignments/${
+          encodeURIComponent(jobId)
+        }/approve`,
+        {
+          method: "POST",
+          body: { approvalId: operationId("alignment_approval") }
+        }
+      );
+      await loadTranscript();
+      setStatus(
+        alignmentStatus,
+        "Alignment approved; exact word controls are unlocked."
+      );
+    } catch (error) {
+      setStatus(alignmentStatus, friendlyError(error), true);
+      renderAlignmentJobs();
     }
   }
 
