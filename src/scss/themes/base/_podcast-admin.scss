@@ -645,6 +645,76 @@
   padding: 1rem;
 }
 
+.podcast-admin__review-list,
+.podcast-admin__review-comments {
+  display: grid;
+  gap: 1rem;
+}
+
+.podcast-admin__review-list {
+  margin-top: 1rem;
+}
+
+.podcast-admin__review-card,
+.podcast-admin__review-comment {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 0.65rem;
+  padding: 1rem;
+}
+
+.podcast-admin__review-card {
+  background: #101010;
+}
+
+.podcast-admin__review-card.is-stale {
+  border-style: dashed;
+  opacity: 0.82;
+}
+
+.podcast-admin__review-comment {
+  background: #191919;
+}
+
+.podcast-admin__review-comment.is-resolved {
+  border-color: rgba(153, 221, 153, 0.45);
+}
+
+.podcast-admin__review-evidence {
+  color: #d6d6d6;
+  font-size: 0.9rem;
+  margin: 0.35rem 0 0;
+}
+
+.podcast-admin__review-body {
+  margin: 0.75rem 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.podcast-admin__review-controls {
+  align-items: end;
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: minmax(10rem, 1fr) auto;
+}
+
+.podcast-admin__review-controls label:not(.podcast-admin__checkbox) {
+  display: grid;
+  gap: 0.35rem;
+}
+
+[data-podcast-review-form] .podcast-admin__checkbox,
+.podcast-admin__review-controls .podcast-admin__checkbox {
+  align-items: center;
+  display: flex;
+  min-height: 2.75rem;
+}
+
+[data-podcast-review-form] .btn,
+.podcast-admin__review-comment .btn {
+  min-height: 2.75rem;
+}
+
 .podcast-admin__transcript-cue .dw-editor__surface {
   min-height: 6rem;
 }
@@ -688,6 +758,20 @@
   .podcast-admin__transcript-actions .btn,
   .podcast-admin__transcript-pages .btn,
   .podcast-admin__chapter-row .btn {
+    width: 100%;
+  }
+
+  .podcast-admin__review-controls {
+    align-items: stretch;
+    grid-template-columns: 1fr;
+  }
+
+  .podcast-admin__review-card > .podcast-admin__transcript-cue-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  [data-podcast-review-form] > .btn {
     width: 100%;
   }
 

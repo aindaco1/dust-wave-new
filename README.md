@@ -67,6 +67,12 @@ artwork; related links open with no referrer and opener isolation. Missing or
 ineligible chapters preserve a bilingual empty state without affecting audio,
 notes, or transcripts.
 
+The private Production tab also layers timestamped plain-text review over the
+Worker's exact current audio, transcript, chapter, clip, and ad-plan revisions.
+It renders review text only through DOM text nodes, distinguishes current from
+historical targets, exposes resolve/reopen and role-gated approval state, and
+labels readiness as non-enforcing until the later publication dependency gate.
+
 ## Roadmap
 
 See [ROADMAP.md](ROADMAP.md) for planned product and infrastructure work, including the paid embedded video player plan.

@@ -52,6 +52,9 @@ assert.match(adminTemplate, /Word timing gated/);
 assert.match(adminTemplate, /data-podcast-chapter-workbench/);
 assert.match(adminTemplate, /data-podcast-chapter-rows/);
 assert.match(adminTemplate, /Podcasting 2\.0 feeds/);
+assert.match(adminTemplate, /data-podcast-review-form/);
+assert.match(adminTemplate, /data-podcast-review-list/);
+assert.match(adminTemplate, /publishing yet/);
 assert.match(adminTemplate, /data-podcast-clip-form/);
 assert.match(adminTemplate, /data-podcast-clip-preview/);
 assert.match(adminTemplate, /data-podcast-clip-list/);
@@ -133,6 +136,10 @@ assert.match(adminScript, /mode: "timed_text"/);
 assert.match(adminScript, /function loadChapters/);
 assert.match(adminScript, /\/chapters\/approve/);
 assert.match(adminScript, /function checkedHttpsUrl/);
+assert.match(adminScript, /function loadProductionReviews/);
+assert.match(adminScript, /\/review-comments\//);
+assert.match(adminScript, /publishing gate not yet enforced/);
+assert.match(adminScript, /body\.textContent = comment\.bodyText/);
 assert.match(
   adminScript,
   /\/v1\/admin\/episodes\/\$\{encodeURIComponent\(episodeId\)\}\/transcripts/

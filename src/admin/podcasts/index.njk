@@ -251,6 +251,49 @@ permalink: admin/podcasts/index.html
           </div>
           <div class="podcast-admin__panel-heading podcast-admin__section-heading">
             <div>
+              <h2>Production review</h2>
+              <p>Attach a plain-text note to an exact audio, transcript, chapter, clip, or ad-plan revision, optionally at a playback instant or range.</p>
+            </div>
+            <p class="podcast-admin__pill">Exact revision · audit safe</p>
+          </div>
+          <div class="podcast-admin__callout">
+            <p>Open blockers and approval state are visible readiness evidence, but they do not block publishing yet. Stale target revisions remain in history and cannot silently become current.</p>
+          </div>
+          <form class="podcast-admin__form" data-podcast-review-form>
+            <div class="podcast-admin__field-grid">
+              <label>Episode
+                <select name="episodeId" data-podcast-review-episode required></select>
+              </label>
+              <label>Exact current target
+                <select name="target" data-podcast-review-target required></select>
+              </label>
+              <label>Start in seconds (optional)
+                <input name="startsAtSeconds" type="number" min="0" step="0.001">
+              </label>
+              <label>End in seconds (optional)
+                <input name="endsAtSeconds" type="number" min="0" step="0.001">
+              </label>
+            </div>
+            <label>Review note · español / English
+              <textarea name="bodyText" rows="4" maxlength="4000" required></textarea>
+            </label>
+            <div class="podcast-admin__field-grid">
+              <label class="podcast-admin__checkbox">
+                <input name="blocker" type="checkbox">
+                Mark as a release blocker
+              </label>
+              <label class="podcast-admin__checkbox">
+                <input name="assignToSelf" type="checkbox">
+                Assign this note to me
+              </label>
+            </div>
+            <button class="btn btn-danger" type="submit">Add review note</button>
+            <p class="podcast-admin__status" data-podcast-review-status role="status" aria-live="polite"></p>
+          </form>
+          <div class="podcast-admin__transcript-meta" data-podcast-review-readiness aria-live="polite"></div>
+          <div class="podcast-admin__review-list" data-podcast-review-list></div>
+          <div class="podcast-admin__panel-heading podcast-admin__section-heading">
+            <div>
               <h2>Clip factory</h2>
               <p>Save a captioned audiogram recipe from an approved transcript range, then preview and download completed private renders.</p>
             </div>

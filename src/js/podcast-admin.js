@@ -91,6 +91,18 @@ function startPodcastAdmin(root) {
   const chapterApproveButton = root.querySelector(
     "[data-podcast-chapter-approve]"
   );
+  const reviewForm = root.querySelector("[data-podcast-review-form]");
+  const reviewEpisodeSelect = root.querySelector(
+    "[data-podcast-review-episode]"
+  );
+  const reviewTargetSelect = root.querySelector(
+    "[data-podcast-review-target]"
+  );
+  const reviewStatus = root.querySelector("[data-podcast-review-status]");
+  const reviewReadiness = root.querySelector(
+    "[data-podcast-review-readiness]"
+  );
+  const reviewList = root.querySelector("[data-podcast-review-list]");
   const clipForm = root.querySelector("[data-podcast-clip-form]");
   const clipPreview = root.querySelector("[data-podcast-clip-preview]");
   const clipStatus = root.querySelector("[data-podcast-clip-status]");
@@ -203,6 +215,8 @@ function startPodcastAdmin(root) {
   let canApproveTranscripts = false;
   let canEditChapters = false;
   let canApproveChapters = false;
+  let canEditReviews = false;
+  let canApproveReviews = false;
   let canApproveClipYouTube = false;
   let transcript = null;
   let transcriptDurationSeconds = null;
@@ -213,6 +227,8 @@ function startPodcastAdmin(root) {
   let chapterSet = null;
   let chapterRequestId = 0;
   let chapterDirty = false;
+  let productionReviews = null;
+  let reviewRequestId = 0;
   let clips = [];
   let selectedClipId = "";
   let clipRequestId = 0;
@@ -250,6 +266,7 @@ function startPodcastAdmin(root) {
       if (tab === "production") {
         loadTranscript();
         loadChapters();
+        loadProductionReviews();
       }
       if (tab === "distribution") loadDistribution();
       if (tab === "marketing") {
@@ -339,6 +356,10 @@ function startPodcastAdmin(root) {
     const button = event.target.closest("[data-podcast-chapter-remove]");
     if (button) removeChapter(button.dataset.podcastChapterRemove);
   });
+  reviewEpisodeSelect?.addEventListener("change", loadProductionReviews);
+  reviewForm?.addEventListener("submit", createProductionReviewComment);
+  reviewList?.addEventListener("change", handleProductionReviewChange);
+  reviewList?.addEventListener("click", handleProductionReviewClick);
   clipForm?.addEventListener("submit", saveClipRecipe);
   clipNewButton?.addEventListener("click", resetClipRecipe);
   clipRenderButton?.addEventListener("click", prepareClipRender);
@@ -522,10 +543,12 @@ function startPodcastAdmin(root) {
     canManageAdPlans = canManageCreatives;
     canEditTranscripts = canManageCreatives;
     canEditChapters = canManageCreatives;
+    canEditReviews = canManageCreatives;
     canApproveTranscripts = (identity?.roles || []).some(({ role }) =>
       role === "super_admin" || role === "admin"
     );
     canApproveChapters = canApproveTranscripts;
+    canApproveReviews = canApproveTranscripts;
     canApproveClipYouTube = (identity?.roles || []).some(({ role }) =>
       role === "super_admin"
     );
@@ -556,6 +579,8 @@ function startPodcastAdmin(root) {
     canApproveTranscripts = false;
     canEditChapters = false;
     canApproveChapters = false;
+    canEditReviews = false;
+    canApproveReviews = false;
     canApproveClipYouTube = false;
     transcript = null;
     transcriptDurationSeconds = null;
@@ -573,6 +598,13 @@ function startPodcastAdmin(root) {
     chapterRowsRoot?.replaceChildren();
     chapterMeta?.replaceChildren();
     setStatus(chapterStatus, "");
+    productionReviews = null;
+    reviewRequestId += 1;
+    reviewTargetSelect?.replaceChildren();
+    reviewList?.replaceChildren();
+    reviewReadiness?.replaceChildren();
+    reviewForm?.reset();
+    setStatus(reviewStatus, "");
     clips = [];
     selectedClipId = "";
     clipRequestId += 1;
@@ -980,7 +1012,11 @@ function startPodcastAdmin(root) {
       await loadAdPlan();
       const productionPanel = root.querySelector("#podcast-panel-production");
       if (productionPanel && !productionPanel.hidden) {
-        await Promise.all([loadTranscript(), loadChapters()]);
+        await Promise.all([
+          loadTranscript(),
+          loadChapters(),
+          loadProductionReviews()
+        ]);
       }
     } catch (error) {
       setStatus(episodeStatus, friendlyError(error), true);
@@ -1051,7 +1087,8 @@ function startPodcastAdmin(root) {
       sponsorForm?.elements.episodeId,
       adPlanForm?.elements.episodeId,
       transcriptEpisodeSelect,
-      chapterEpisodeSelect
+      chapterEpisodeSelect,
+      reviewEpisodeSelect
     ].filter(Boolean)) {
       const previousValue = select.value;
       select.replaceChildren(...episodes.map((episode) =>
@@ -1112,6 +1149,13 @@ function startPodcastAdmin(root) {
       if (chapterMeta) {
         chapterMeta.textContent =
           "Create an episode before reviewing chapters.";
+      }
+      productionReviews = null;
+      reviewTargetSelect?.replaceChildren();
+      reviewList?.replaceChildren();
+      if (reviewReadiness) {
+        reviewReadiness.textContent =
+          "Create an episode before starting production review.";
       }
       setStatus(sponsorStatus, "Create an episode before previewing sponsor decisions.");
       setStatus(adPlanStatus, "Create an episode before defining ad markers.");
@@ -2147,6 +2191,391 @@ function startPodcastAdmin(root) {
       setStatus(chapterStatus, friendlyError(error), true);
     } finally {
       if (chapterSet) renderChapters();
+    }
+  }
+
+  async function loadProductionReviews() {
+    const episodeId = reviewEpisodeSelect?.value;
+    const requestId = ++reviewRequestId;
+    productionReviews = null;
+    reviewTargetSelect?.replaceChildren();
+    reviewList?.replaceChildren();
+    if (!episodeId) {
+      if (reviewReadiness) {
+        reviewReadiness.textContent =
+          "Create an episode before starting production review.";
+      }
+      return;
+    }
+    setStatus(reviewStatus, "Loading exact-revision review state…");
+    try {
+      const payload = await client.request(
+        `/v1/admin/episodes/${encodeURIComponent(episodeId)}/reviews`
+      );
+      if (requestId !== reviewRequestId) return;
+      productionReviews = payload;
+      renderProductionReviews();
+      setStatus(reviewStatus, "");
+    } catch (error) {
+      if (requestId !== reviewRequestId) return;
+      setStatus(reviewStatus, friendlyError(error), true);
+    }
+  }
+
+  function renderProductionReviews() {
+    if (!productionReviews || !reviewTargetSelect || !reviewList) return;
+    const previousTarget = reviewTargetSelect.value;
+    const targets = productionReviews.targetOptions || [];
+    reviewTargetSelect.replaceChildren(...targets.map((target) => {
+      const option = new Option(
+        `${target.label} — revision ${Number(target.revision)}`,
+        `${target.type}:${target.id}`,
+        false,
+        `${target.type}:${target.id}` === previousTarget
+      );
+      option.dataset.targetType = target.type;
+      option.dataset.targetId = target.id;
+      return option;
+    }));
+    reviewTargetSelect.disabled = !canEditReviews || targets.length === 0;
+    const submit = reviewForm?.querySelector('button[type="submit"]');
+    if (submit) submit.disabled = !canEditReviews || targets.length === 0;
+
+    const readiness = productionReviews.readiness || {};
+    if (reviewReadiness) {
+      reviewReadiness.textContent = targets.length === 0
+        ? "No versioned audio, transcript, chapter, clip, or ad-plan target is ready for review."
+        : [
+            `${Number(readiness.currentReviewCount || 0)} current review target${
+              Number(readiness.currentReviewCount || 0) === 1 ? "" : "s"
+            }`,
+            `${Number(readiness.approvedCurrentReviewCount || 0)} approved`,
+            `${Number(readiness.openBlockerCount || 0)} open blocker${
+              Number(readiness.openBlockerCount || 0) === 1 ? "" : "s"
+            }`,
+            readiness.reviewReady
+              ? "review ready"
+              : "review evidence incomplete",
+            "publishing gate not yet enforced"
+          ].join(" · ");
+    }
+
+    const reviews = productionReviews.reviews || [];
+    if (!reviews.length) {
+      const empty = document.createElement("p");
+      empty.className = "podcast-admin__empty";
+      empty.textContent =
+        "No production review notes yet. Add one against an exact current revision.";
+      reviewList.replaceChildren(empty);
+      return;
+    }
+    reviewList.replaceChildren(...reviews.map(renderProductionReview));
+  }
+
+  function renderProductionReview(review) {
+    const card = document.createElement("article");
+    card.className = "podcast-admin__review-card";
+    if (!review.isCurrent) card.classList.add("is-stale");
+
+    const heading = document.createElement("div");
+    heading.className = "podcast-admin__transcript-cue-heading";
+    const titleWrap = document.createElement("div");
+    const title = document.createElement("h3");
+    title.textContent = review.targetLabel || humanizeCode(review.targetType);
+    const evidence = document.createElement("p");
+    evidence.className = "podcast-admin__review-evidence";
+    evidence.textContent = [
+      `revision ${Number(review.targetRevision)}`,
+      review.isCurrent ? "current target" : "historical target",
+      `review state ${humanizeCode(review.status)}`,
+      review.assignedToAdminUserId === adminIdentity?.id
+        ? "assigned to me"
+        : review.assignedToAdminUserId
+          ? "assigned to team member"
+          : "unassigned"
+    ].join(" · ");
+    titleWrap.append(title, evidence);
+
+    const controls = document.createElement("div");
+    controls.className = "podcast-admin__review-controls";
+    const statusLabel = document.createElement("label");
+    statusLabel.textContent = "Review state";
+    const statusSelect = document.createElement("select");
+    statusSelect.dataset.podcastReviewStatus = review.id;
+    const statuses = [
+      "draft",
+      "ready_for_review",
+      "changes_requested",
+      "approved"
+    ];
+    statusSelect.replaceChildren(...statuses.map((status) =>
+      new Option(
+        humanizeCode(status),
+        status,
+        false,
+        status === review.status
+      )
+    ));
+    statusSelect.disabled = !canEditReviews
+      || !review.isCurrent
+      || (review.status === "approved" && !canApproveReviews);
+    if (!canApproveReviews) {
+      const approveOption = statusSelect.querySelector(
+        'option[value="approved"]'
+      );
+      if (approveOption && review.status !== "approved") {
+        approveOption.disabled = true;
+      }
+    }
+    const hasOpenBlocker = (review.comments || []).some(
+      ({ blocker, resolutionStatus }) =>
+        blocker && resolutionStatus === "open"
+    );
+    if (hasOpenBlocker && review.status !== "approved") {
+      const approveOption = statusSelect.querySelector(
+        'option[value="approved"]'
+      );
+      if (approveOption) approveOption.disabled = true;
+    }
+    statusLabel.append(statusSelect);
+    const assignLabel = document.createElement("label");
+    assignLabel.className = "podcast-admin__checkbox";
+    const assignInput = document.createElement("input");
+    assignInput.type = "checkbox";
+    assignInput.checked =
+      review.assignedToAdminUserId === adminIdentity?.id;
+    assignInput.disabled = !canEditReviews
+      || !review.isCurrent
+      || (review.status === "approved" && !canApproveReviews);
+    assignInput.dataset.podcastReviewAssign = review.id;
+    assignLabel.append(assignInput, document.createTextNode(" Assigned to me"));
+    controls.append(statusLabel, assignLabel);
+    heading.append(titleWrap, controls);
+
+    const comments = document.createElement("div");
+    comments.className = "podcast-admin__review-comments";
+    for (const comment of review.comments || []) {
+      comments.append(renderProductionReviewComment(review, comment));
+    }
+    card.append(heading, comments);
+    return card;
+  }
+
+  function renderProductionReviewComment(review, comment) {
+    const item = document.createElement("article");
+    item.className = "podcast-admin__review-comment";
+    if (comment.resolutionStatus === "resolved") {
+      item.classList.add("is-resolved");
+    }
+    const meta = document.createElement("p");
+    meta.className = "podcast-admin__review-evidence";
+    const range = formatReviewRange(comment.startsAtMs, comment.endsAtMs);
+    meta.textContent = [
+      range,
+      comment.blocker ? "release blocker" : "review note",
+      humanizeCode(comment.resolutionStatus),
+      comment.assignedToAdminUserId === adminIdentity?.id
+        ? "assigned to me"
+        : comment.assignedToAdminUserId
+          ? "assigned to team member"
+          : "unassigned"
+    ].filter(Boolean).join(" · ");
+    const body = document.createElement("p");
+    body.className = "podcast-admin__review-body";
+    body.textContent = comment.bodyText;
+    const actions = document.createElement("div");
+    actions.className = "podcast-admin__transcript-actions";
+    if (comment.startsAtMs !== null) {
+      const reuse = document.createElement("button");
+      reuse.className = "btn btn-outline-light";
+      reuse.type = "button";
+      reuse.dataset.podcastReviewReuseRange = comment.id;
+      reuse.dataset.startsAtMs = String(comment.startsAtMs);
+      reuse.dataset.endsAtMs =
+        comment.endsAtMs === null ? "" : String(comment.endsAtMs);
+      reuse.textContent = "Use this range";
+      actions.append(reuse);
+    }
+    if (canEditReviews) {
+      const resolution = document.createElement("button");
+      resolution.className = "btn btn-outline-light";
+      resolution.type = "button";
+      resolution.dataset.podcastReviewCommentState = comment.id;
+      resolution.dataset.reviewId = review.id;
+      resolution.dataset.revision = String(comment.revision);
+      resolution.dataset.nextState =
+        comment.resolutionStatus === "resolved" ? "open" : "resolved";
+      resolution.dataset.assignedTo =
+        comment.assignedToAdminUserId || "";
+      resolution.textContent =
+        comment.resolutionStatus === "resolved" ? "Reopen" : "Resolve";
+      actions.append(resolution);
+    }
+    item.append(meta, body);
+    if (actions.childElementCount) item.append(actions);
+    return item;
+  }
+
+  async function createProductionReviewComment(event) {
+    event.preventDefault();
+    if (!productionReviews || !canEditReviews) return;
+    const option = reviewTargetSelect.selectedOptions[0];
+    if (!option) {
+      setStatus(reviewStatus, "Choose a current review target.", true);
+      return;
+    }
+    const button = reviewForm.querySelector('button[type="submit"]');
+    button.disabled = true;
+    setStatus(reviewStatus, "Adding exact-revision review note…");
+    try {
+      const payload = await client.request(
+        `/v1/admin/episodes/${
+          encodeURIComponent(reviewEpisodeSelect.value)
+        }/reviews`,
+        {
+          method: "POST",
+          body: {
+            commentId: operationId("review_comment"),
+            targetType: option.dataset.targetType,
+            targetId: option.dataset.targetId,
+            startsAtMs: optionalReviewMilliseconds(
+              reviewForm.elements.startsAtSeconds.value,
+              "Review start"
+            ),
+            endsAtMs: optionalReviewMilliseconds(
+              reviewForm.elements.endsAtSeconds.value,
+              "Review end"
+            ),
+            bodyText: reviewForm.elements.bodyText.value,
+            blocker: reviewForm.elements.blocker.checked,
+            assignedToAdminUserId:
+              reviewForm.elements.assignToSelf.checked
+                ? adminIdentity?.id
+                : null
+          }
+        }
+      );
+      productionReviews = payload;
+      reviewForm.elements.bodyText.value = "";
+      reviewForm.elements.startsAtSeconds.value = "";
+      reviewForm.elements.endsAtSeconds.value = "";
+      reviewForm.elements.blocker.checked = false;
+      renderProductionReviews();
+      setStatus(reviewStatus, "Production review note added.");
+    } catch (error) {
+      setStatus(
+        reviewStatus,
+        error instanceof AdminApiError
+          ? friendlyError(error)
+          : reviewInputError(error),
+        true
+      );
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  function handleProductionReviewChange(event) {
+    const status = event.target.closest("[data-podcast-review-status]");
+    if (status) {
+      const review = productionReviews?.reviews?.find(
+        ({ id }) => id === status.dataset.podcastReviewStatus
+      );
+      if (review) {
+        updateProductionReview(review, {
+          status: status.value,
+          assignedToAdminUserId: review.assignedToAdminUserId
+        });
+      }
+      return;
+    }
+    const assignment = event.target.closest("[data-podcast-review-assign]");
+    if (assignment) {
+      const review = productionReviews?.reviews?.find(
+        ({ id }) => id === assignment.dataset.podcastReviewAssign
+      );
+      if (review) {
+        updateProductionReview(review, {
+          status: review.status,
+          assignedToAdminUserId: assignment.checked
+            ? adminIdentity?.id
+            : null
+        });
+      }
+    }
+  }
+
+  function handleProductionReviewClick(event) {
+    const range = event.target.closest("[data-podcast-review-reuse-range]");
+    if (range) {
+      reviewForm.elements.startsAtSeconds.value = millisecondsToSeconds(
+        Number(range.dataset.startsAtMs)
+      );
+      reviewForm.elements.endsAtSeconds.value = range.dataset.endsAtMs
+        ? millisecondsToSeconds(Number(range.dataset.endsAtMs))
+        : "";
+      reviewForm.elements.bodyText.focus();
+      return;
+    }
+    const state = event.target.closest(
+      "[data-podcast-review-comment-state]"
+    );
+    if (state) updateProductionReviewComment(state);
+  }
+
+  async function updateProductionReview(
+    review,
+    { status, assignedToAdminUserId }
+  ) {
+    if (!canEditReviews) return;
+    setStatus(reviewStatus, "Saving production review state…");
+    try {
+      const payload = await client.request(
+        `/v1/admin/reviews/${encodeURIComponent(review.id)}`,
+        {
+          method: "PATCH",
+          body: {
+            mutationId: operationId("review_state"),
+            baseRevision: Number(review.revision),
+            status,
+            assignedToAdminUserId
+          }
+        }
+      );
+      productionReviews = payload;
+      renderProductionReviews();
+      setStatus(reviewStatus, "Production review state saved.");
+    } catch (error) {
+      renderProductionReviews();
+      setStatus(reviewStatus, friendlyError(error), true);
+    }
+  }
+
+  async function updateProductionReviewComment(button) {
+    button.disabled = true;
+    setStatus(reviewStatus, "Updating review-note state…");
+    try {
+      const payload = await client.request(
+        `/v1/admin/review-comments/${
+          encodeURIComponent(button.dataset.podcastReviewCommentState)
+        }`,
+        {
+          method: "PATCH",
+          body: {
+            mutationId: operationId("review_comment_state"),
+            baseRevision: Number(button.dataset.revision),
+            resolutionStatus: button.dataset.nextState,
+            assignedToAdminUserId: button.dataset.assignedTo || null
+          }
+        }
+      );
+      productionReviews = payload;
+      renderProductionReviews();
+      setStatus(reviewStatus, "Review-note state updated.");
+    } catch (error) {
+      setStatus(reviewStatus, friendlyError(error), true);
+    } finally {
+      button.disabled = false;
     }
   }
 
@@ -4505,6 +4934,26 @@ function chapterInputError(error) {
     : "The chapter values are invalid.";
 }
 
+function reviewInputError(error) {
+  return error instanceof Error
+    ? error.message
+    : "The production review values are invalid.";
+}
+
+function optionalReviewMilliseconds(value, label) {
+  const text = String(value || "").trim();
+  if (!text) return null;
+  return secondsToMilliseconds(text, label);
+}
+
+function formatReviewRange(startsAtMs, endsAtMs) {
+  if (startsAtMs === null || startsAtMs === undefined) return "Untimed";
+  const start = millisecondsToTimestamp(Number(startsAtMs));
+  return endsAtMs === null || endsAtMs === undefined
+    ? start
+    : `${start}–${millisecondsToTimestamp(Number(endsAtMs))}`;
+}
+
 function checkedHttpsUrl(value, label) {
   const text = String(value || "").trim();
   if (!text) return "";
@@ -4568,6 +5017,27 @@ function friendlyError(error) {
   }
   if (error.code === "chapter_approval_conflict") {
     return "This chapter approval changed in another session. Reload and review it.";
+  }
+  if (
+    error.code === "review_revision_conflict"
+    || error.code === "review_comment_revision_conflict"
+  ) {
+    return "This production review changed in another session. Reload it before saving.";
+  }
+  if (
+    error.code === "review_mutation_conflict"
+    || error.code === "review_comment_id_conflict"
+  ) {
+    return "That production review operation identifier was already used for different content.";
+  }
+  if (error.code === "review_target_not_current") {
+    return "That target revision is no longer current. Reload production review.";
+  }
+  if (error.code === "review_approval_forbidden") {
+    return "Admin approval is required to approve or reopen an approved review.";
+  }
+  if (error.code === "review_open_blockers") {
+    return "Resolve every open blocker on this target before approving it.";
   }
   if (error.code === "clip_approved_transcript_required") {
     return "Approve this transcript language before creating a clip.";
