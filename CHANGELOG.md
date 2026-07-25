@@ -74,3 +74,7 @@
 - Added evidence-backed per-episode directory reconciliation. Producer+ roles
   can mark the exact current revision observed only with an HTTPS evidence link,
   or record a bounded failure detail; incomplete owner setup stays immutable.
+- Added a credential-free show/directory owner-action checklist for
+  Admin/Super-admin roles: responsible account label, verification state,
+  submission date, safe receipt/dashboard link, public listing, and bounded
+  notes. The UI explicitly prohibits provider passwords and verification codes.

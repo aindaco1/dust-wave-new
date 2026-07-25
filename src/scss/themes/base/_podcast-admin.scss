@@ -475,6 +475,15 @@
   color: #c7c2bb;
 }
 
+.podcast-admin__directory-notes {
+  margin: 0;
+  padding: 0.75rem;
+  border-left: 3px solid rgba(255, 255, 255, 0.28);
+  color: #ded9d1;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
 .podcast-admin__directory-list .podcast-admin__pill.is-ready {
   border-color: rgba(117, 226, 153, 0.62);
   color: #b9f7cd;
@@ -503,13 +512,21 @@
   margin: 0;
 }
 
+.podcast-admin__distribution-form-wide {
+  grid-column: 1 / -1;
+}
+
+.podcast-admin__distribution-form textarea {
+  min-height: 4.5rem;
+  resize: vertical;
+}
+
 .podcast-admin__directory-observation-form {
   background: rgba(255, 255, 255, 0.025);
 }
 
 .podcast-admin__directory-observation-form textarea {
   min-height: 3rem;
-  resize: vertical;
 }
 
 .podcast-admin__episode-actions {

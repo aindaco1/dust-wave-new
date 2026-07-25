@@ -3025,6 +3025,27 @@ function startPodcastAdmin(root) {
       : "Directory setup state applies to this show.";
     card.append(details);
 
+    const checklist = [
+      destination.ownerAccountLabel
+        ? `Owner account: ${String(destination.ownerAccountLabel)}`
+        : "",
+      destination.submissionDate
+        ? `Submitted: ${String(destination.submissionDate)}`
+        : ""
+    ].filter(Boolean);
+    if (checklist.length) {
+      const checklistDetails = document.createElement("p");
+      checklistDetails.className = "podcast-admin__directory-details";
+      checklistDetails.textContent = checklist.join(" · ");
+      card.append(checklistDetails);
+    }
+    if (destination.setupNotes) {
+      const notes = document.createElement("p");
+      notes.className = "podcast-admin__directory-notes";
+      notes.textContent = String(destination.setupNotes);
+      card.append(notes);
+    }
+
     const links = document.createElement("div");
     links.className = "podcast-admin__directory-links";
     const setupLink = safeDistributionLink(
@@ -3039,7 +3060,12 @@ function startPodcastAdmin(root) {
       destination.evidenceUrl,
       "Open episode evidence"
     );
+    const submissionEvidenceLink = safeDistributionLink(
+      destination.submissionEvidenceUrl,
+      "Open submission evidence"
+    );
     if (setupLink) links.append(setupLink);
+    if (submissionEvidenceLink) links.append(submissionEvidenceLink);
     if (listingLink) links.append(listingLink);
     if (evidenceLink) links.append(evidenceLink);
     if (links.childElementCount) card.append(links);
@@ -3082,6 +3108,39 @@ function startPodcastAdmin(root) {
       }
       statusLabel.append(status);
 
+      const accountLabel = document.createElement("label");
+      accountLabel.textContent = "Responsible account label (optional)";
+      const account = document.createElement("input");
+      account.name = "ownerAccountLabel";
+      account.type = "text";
+      account.maxLength = 120;
+      account.autocomplete = "off";
+      account.placeholder = "Dust Wave operations";
+      account.value = String(destination.ownerAccountLabel || "");
+      accountLabel.append(account);
+
+      const submissionDateLabel = document.createElement("label");
+      submissionDateLabel.textContent = "Submission date (optional)";
+      const submissionDate = document.createElement("input");
+      submissionDate.name = "submissionDate";
+      submissionDate.type = "date";
+      submissionDate.value = String(destination.submissionDate || "");
+      submissionDateLabel.append(submissionDate);
+
+      const submissionEvidenceLabel = document.createElement("label");
+      submissionEvidenceLabel.textContent =
+        "Submission receipt or dashboard URL (optional)";
+      const submissionEvidence = document.createElement("input");
+      submissionEvidence.name = "submissionEvidenceUrl";
+      submissionEvidence.type = "url";
+      submissionEvidence.inputMode = "url";
+      submissionEvidence.maxLength = 2048;
+      submissionEvidence.placeholder = "https://";
+      submissionEvidence.value = String(
+        destination.submissionEvidenceUrl || ""
+      );
+      submissionEvidenceLabel.append(submissionEvidence);
+
       const listingLabel = document.createElement("label");
       listingLabel.textContent = "Public listing URL (optional)";
       const listing = document.createElement("input");
@@ -3092,6 +3151,17 @@ function startPodcastAdmin(root) {
       listing.placeholder = "https://";
       listing.value = String(destination.listingUrl || "");
       listingLabel.append(listing);
+
+      const notesLabel = document.createElement("label");
+      notesLabel.className = "podcast-admin__distribution-form-wide";
+      notesLabel.textContent =
+        "Operational notes (never passwords or verification codes)";
+      const notes = document.createElement("textarea");
+      notes.name = "setupNotes";
+      notes.rows = 3;
+      notes.maxLength = 1000;
+      notes.value = String(destination.setupNotes || "");
+      notesLabel.append(notes);
 
       const enabledLabel = document.createElement("label");
       enabledLabel.className = "podcast-admin__checkbox";
@@ -3112,7 +3182,11 @@ function startPodcastAdmin(root) {
       formStatus.setAttribute("aria-live", "polite");
       form.append(
         statusLabel,
+        accountLabel,
+        submissionDateLabel,
+        submissionEvidenceLabel,
         listingLabel,
+        notesLabel,
         enabledLabel,
         save,
         formStatus
@@ -3381,7 +3455,12 @@ function startPodcastAdmin(root) {
           body: {
             enabled: form.elements.enabled.checked,
             ownerSetupStatus: form.elements.ownerSetupStatus.value,
-            listingUrl: form.elements.listingUrl.value
+            listingUrl: form.elements.listingUrl.value,
+            ownerAccountLabel: form.elements.ownerAccountLabel.value,
+            submissionDate: form.elements.submissionDate.value,
+            submissionEvidenceUrl:
+              form.elements.submissionEvidenceUrl.value,
+            setupNotes: form.elements.setupNotes.value
           }
         }
       );
