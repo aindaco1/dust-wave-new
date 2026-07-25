@@ -64,3 +64,7 @@
   links to provider setup/public listings, and lets only show-scoped
   Admin/Super-admin roles update enabled/setup/listing state through the
   CSRF/audit-protected Podcast runtime.
+- Added an episode release selector and bounded root-channel cards for the
+  immutable publication revision. RSS, canonical News, and YouTube now expose
+  queued/running/succeeded/failed truth, attempts, timing, safe provider/site
+  evidence, and bounded errors separately from downstream directory ingestion.

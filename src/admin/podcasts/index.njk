@@ -287,6 +287,14 @@ permalink: admin/podcasts/index.html
             <p>One reviewed revision updates the canonical feed, News page, and YouTube job, then creates monitored ingestion states for every enabled directory. Each platform still requires one-time owner setup and controls its own RSS refresh timing.</p>
             <p lang="es">Una revisión aprobada actualiza el feed canónico, la página de Noticias y el trabajo de YouTube, y después crea estados de seguimiento para cada directorio habilitado. Cada plataforma todavía requiere una configuración inicial del propietario y controla cuándo actualiza el RSS.</p>
           </div>
+          <form class="podcast-admin__distribution-filter" data-podcast-distribution-filter>
+            <label>Release view
+              <select name="episodeId">
+                <option value="">Show setup and directory readiness</option>
+              </select>
+            </label>
+            <p>Choose a published or scheduled episode to inspect its exact RSS, News, YouTube, and per-directory states.</p>
+          </form>
           <div data-podcast-distribution aria-live="polite"></div>
         </section>
 

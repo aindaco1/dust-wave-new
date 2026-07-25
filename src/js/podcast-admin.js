@@ -149,6 +149,9 @@ function startPodcastAdmin(root) {
   const adPlanStatus = root.querySelector("[data-podcast-ad-plan-status]");
   const adPlanResult = root.querySelector("[data-podcast-ad-plan-result]");
   const distributionRoot = root.querySelector("[data-podcast-distribution]");
+  const distributionFilter = root.querySelector(
+    "[data-podcast-distribution-filter]"
+  );
   const billingRoot = root.querySelector("[data-podcast-billing]");
   const sponsorForm = root.querySelector("[data-podcast-sponsor-preview-form]");
   const sponsorStatus = root.querySelector("[data-podcast-sponsor-status]");
@@ -247,10 +250,17 @@ function startPodcastAdmin(root) {
     "submit",
     updateDistributionDestination
   );
+  distributionFilter?.elements.episodeId?.addEventListener(
+    "change",
+    () => loadDistribution()
+  );
   root.querySelector("[data-podcast-login-form]")?.addEventListener("submit", startLogin);
   logoutButton?.addEventListener("click", logout);
   showSelect?.addEventListener("change", async () => {
     selectedShowId = showSelect.value;
+    if (distributionFilter) {
+      distributionFilter.elements.episodeId.value = "";
+    }
     closeClipYouTubeForm();
     clearClipLibraryState();
     fillShowForm();
@@ -1054,6 +1064,27 @@ function startPodcastAdmin(root) {
       setStatus(sponsorStatus, "");
     }
     fillPodcastEmbedEpisodes();
+    fillDistributionEpisodes();
+  }
+
+  function fillDistributionEpisodes() {
+    if (!distributionFilter) return;
+    const select = distributionFilter.elements.episodeId;
+    const previousValue = select.value;
+    select.replaceChildren(
+      new Option("Show setup and directory readiness", ""),
+      ...episodes.map((episode) =>
+        new Option(
+          `${episode.title} — ${episode.status}`,
+          episode.id,
+          false,
+          episode.id === previousValue
+        )
+      )
+    );
+    if (!episodes.some(({ id }) => id === previousValue)) {
+      select.value = "";
+    }
   }
 
   function publicMarketingEpisodes() {
@@ -2695,6 +2726,9 @@ function startPodcastAdmin(root) {
           : `Revision ${result.publicationRevision} ${result.status}. ${result.distributionTargets} directory states created.`
       );
       await loadEpisodes();
+      if (distributionFilter) {
+        distributionFilter.elements.episodeId.value = episodeId;
+      }
       await loadDistribution(episodeId);
     } catch (error) {
       setStatus(episodeStatus, friendlyError(error), true);
@@ -2705,14 +2739,19 @@ function startPodcastAdmin(root) {
 
   async function loadDistribution(episodeId) {
     if (!distributionRoot || !selectedShowId) return;
+    const selectedEpisodeId = episodeId
+      ?? distributionFilter?.elements.episodeId?.value
+      ?? "";
     const requestId = ++distributionRequestId;
     const requestedShowId = selectedShowId;
     const loading = document.createElement("p");
     loading.textContent = "Loading distribution state…";
     distributionRoot.replaceChildren(loading);
     try {
-      const path = episodeId
-        ? `/v1/admin/episodes/${encodeURIComponent(episodeId)}/distribution`
+      const path = selectedEpisodeId
+        ? `/v1/admin/episodes/${encodeURIComponent(
+          selectedEpisodeId
+        )}/distribution`
         : `/v1/admin/distribution?showId=${encodeURIComponent(
           requestedShowId
         )}`;
@@ -2738,6 +2777,9 @@ function startPodcastAdmin(root) {
       : [];
     const summary = payload.summary || {};
     const fragment = document.createDocumentFragment();
+    if (payload.release) {
+      fragment.append(renderReleaseChannels(payload.release));
+    }
     const overview = document.createElement("div");
     overview.className =
       "podcast-admin__metric-grid podcast-admin__distribution-summary";
@@ -2801,6 +2843,103 @@ function startPodcastAdmin(root) {
     }
     fragment.append(list);
     distributionRoot.replaceChildren(fragment);
+  }
+
+  function renderReleaseChannels(release) {
+    const section = document.createElement("section");
+    section.className = "podcast-admin__release-channels";
+    const heading = document.createElement("div");
+    heading.className = "podcast-admin__panel-heading";
+    const titleGroup = document.createElement("div");
+    const title = document.createElement("h3");
+    title.textContent = release.publicationRevision
+      ? `Release revision ${Number(release.publicationRevision)}`
+      : "Release channels";
+    const description = document.createElement("p");
+    description.textContent =
+      "Root jobs are shown separately from directory RSS ingestion.";
+    titleGroup.append(title, description);
+    heading.append(
+      titleGroup,
+      distributionBadge(releaseStatusLabel(release.status))
+    );
+    section.append(heading);
+
+    const channels = Array.isArray(release.channels)
+      ? release.channels
+      : [];
+    if (!channels.length) {
+      const empty = document.createElement("p");
+      empty.className = "podcast-admin__empty";
+      empty.textContent =
+        "This episode has not created a publication revision yet.";
+      section.append(empty);
+      return section;
+    }
+    const grid = document.createElement("div");
+    grid.className = "podcast-admin__release-channel-grid";
+    for (const channel of channels) {
+      const card = document.createElement("article");
+      const cardHeading = document.createElement("div");
+      cardHeading.className = "podcast-admin__directory-heading";
+      const channelTitle = document.createElement("h4");
+      channelTitle.textContent = String(channel.name || channel.id || "Channel");
+      cardHeading.append(
+        channelTitle,
+        distributionBadge(
+          distributionStatusLabel(channel.status),
+          channel.status === "succeeded" ? "is-ready" : ""
+        )
+      );
+      card.append(cardHeading);
+
+      const timing = document.createElement("p");
+      timing.textContent = [
+        channel.scheduledAt
+          ? `Scheduled ${formatDate(channel.scheduledAt)}`
+          : "",
+        channel.completedAt
+          ? `Completed ${formatDate(channel.completedAt)}`
+          : "",
+        `Attempts ${Math.max(0, Number(channel.attemptCount) || 0)}`
+      ].filter(Boolean).join(" · ");
+      card.append(timing);
+
+      if (channel.providerEvidence) {
+        const evidence = document.createElement("p");
+        evidence.textContent =
+          `Provider evidence: ${String(channel.providerEvidence)}`;
+        card.append(evidence);
+      }
+      if (channel.id === "news" && channel.siteStatus) {
+        const site = document.createElement("p");
+        site.textContent = [
+          `Site publication ${distributionStatusLabel(channel.siteStatus)}`,
+          channel.siteCommitSha
+            ? `commit ${String(channel.siteCommitSha).slice(0, 12)}`
+            : ""
+        ].filter(Boolean).join(" · ");
+        card.append(site);
+      }
+      if (channel.error) {
+        const error = document.createElement("p");
+        error.className = "podcast-admin__status is-error";
+        error.textContent = String(channel.error);
+        card.append(error);
+      }
+      grid.append(card);
+    }
+    section.append(grid);
+    return section;
+  }
+
+  function releaseStatusLabel(value) {
+    return {
+      not_published: "Not published",
+      in_progress: "Release in progress",
+      needs_attention: "Release needs attention",
+      complete: "Root channels complete"
+    }[String(value || "")] || "Unknown release state";
   }
 
   function distributionDestinationCard(destination, { episodeId }) {
@@ -2958,9 +3097,12 @@ function startPodcastAdmin(root) {
       setup_required: "Setup required",
       waiting_for_feed: "Waiting for RSS ingestion",
       queued: "Queued",
+      running: "Running",
       processing: "Processing",
+      succeeded: "Succeeded",
       observed: "Observed in directory",
       failed: "Needs attention",
+      canceled: "Canceled",
       disabled: "Disabled"
     }[String(value || "")] || "Unknown";
   }
