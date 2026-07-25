@@ -298,6 +298,25 @@
   overflow: hidden;
 }
 
+.podcast-admin__share-card-preview {
+  width: min(100%, 60rem);
+  margin-top: 1.25rem;
+  padding: clamp(0.5rem, 2vw, 1rem);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 0.75rem;
+  background: #101010;
+}
+
+.podcast-admin__share-card-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1200 / 630;
+  border-radius: 0.5rem;
+  background: #080808;
+  object-fit: contain;
+}
+
 .podcast-admin__announcement-review {
   margin-top: 1.25rem;
 }

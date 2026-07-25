@@ -120,6 +120,22 @@ function startPodcastAdmin(root) {
   const embedStatus = root.querySelector("[data-podcast-embed-status]");
   const embedCopyButton = root.querySelector("[data-podcast-embed-copy]");
   const embedOpenLink = root.querySelector("[data-podcast-embed-open]");
+  const shareCardForm = root.querySelector("[data-podcast-share-card-form]");
+  const shareCardPreview = root.querySelector(
+    "[data-podcast-share-card-preview]"
+  );
+  const shareCardStatus = root.querySelector(
+    "[data-podcast-share-card-status]"
+  );
+  const shareCardCopyButton = root.querySelector(
+    "[data-podcast-share-card-copy]"
+  );
+  const shareCardDownloadLink = root.querySelector(
+    "[data-podcast-share-card-download]"
+  );
+  const shareCardOpenLink = root.querySelector(
+    "[data-podcast-share-card-open]"
+  );
   const announcementForm = root.querySelector(
     "[data-podcast-announcement-form]"
   );
@@ -330,6 +346,15 @@ function startPodcastAdmin(root) {
     updatePodcastEmbed
   );
   embedCopyButton?.addEventListener("click", copyPodcastEmbed);
+  shareCardForm?.addEventListener(
+    "submit",
+    (event) => event.preventDefault()
+  );
+  shareCardForm?.elements.episodeId?.addEventListener(
+    "change",
+    updatePodcastShareCard
+  );
+  shareCardCopyButton?.addEventListener("click", copyPodcastShareCardUrl);
   announcementForm?.addEventListener(
     "submit",
     runAnnouncementDryRun
@@ -1015,7 +1040,7 @@ function startPodcastAdmin(root) {
     fillPodcastEmbedEpisodes();
   }
 
-  function publicEmbedEpisodes() {
+  function publicMarketingEpisodes() {
     const now = Date.now();
     return episodes.filter((episode) => {
       const publicAtMs = Date.parse(episode.publicAt || "");
@@ -1029,9 +1054,16 @@ function startPodcastAdmin(root) {
   }
 
   function fillPodcastEmbedEpisodes() {
-    if (!embedForm) return;
-    const select = embedForm.elements.episodeId;
-    const eligibleEpisodes = publicEmbedEpisodes();
+    if (embedForm) {
+      fillPublicEpisodeSelect(embedForm.elements.episodeId);
+      updatePodcastEmbed();
+    }
+    fillPodcastShareCardEpisodes();
+  }
+
+  function fillPublicEpisodeSelect(select) {
+    if (!select) return [];
+    const eligibleEpisodes = publicMarketingEpisodes();
     const previousValue = select.value;
     select.replaceChildren(
       eligibleEpisodes.length
@@ -1050,7 +1082,36 @@ function startPodcastAdmin(root) {
     if (!eligibleEpisodes.some(({ id }) => id === previousValue)) {
       select.value = eligibleEpisodes[0]?.id || "";
     }
-    updatePodcastEmbed();
+    return eligibleEpisodes;
+  }
+
+  function podcastPublicAssetUrls(show, episode) {
+    if (
+      !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(show.slug)
+      || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(episode.slug)
+    ) {
+      throw new Error("The public episode slug is invalid.");
+    }
+    const showUrl = new URL(show.canonicalUrl);
+    const canonicalUrl = new URL(episode.canonicalUrl);
+    const expectedPath =
+      `/news/podcasts/${show.slug}/${episode.slug}/`;
+    if (
+      canonicalUrl.origin !== showUrl.origin
+      || canonicalUrl.pathname !== expectedPath
+      || canonicalUrl.search
+      || canonicalUrl.hash
+    ) {
+      throw new Error("The episode canonical URL does not match this show.");
+    }
+    return {
+      canonicalUrl: canonicalUrl.toString(),
+      embedUrl: new URL("embed/", canonicalUrl).toString(),
+      shareCardUrl: new URL(
+        `/img/podcasts/${show.slug}/${episode.slug}/social-card.png`,
+        canonicalUrl.origin
+      ).toString()
+    };
   }
 
   function podcastEmbedFrame(embedUrl, title, { preview = false } = {}) {
@@ -1091,7 +1152,7 @@ function startPodcastAdmin(root) {
   function updatePodcastEmbed() {
     if (!embedForm) return;
     const show = shows.find(({ id }) => id === selectedShowId);
-    const episode = publicEmbedEpisodes().find(
+    const episode = publicMarketingEpisodes().find(
       ({ id }) => id === embedForm.elements.episodeId.value
     );
     if (!show || !episode) {
@@ -1104,19 +1165,7 @@ function startPodcastAdmin(root) {
     }
 
     try {
-      const showUrl = new URL(show.canonicalUrl);
-      const canonicalUrl = new URL(episode.canonicalUrl);
-      const expectedPath =
-        `/news/podcasts/${show.slug}/${episode.slug}/`;
-      if (
-        canonicalUrl.origin !== showUrl.origin
-        || canonicalUrl.pathname !== expectedPath
-        || canonicalUrl.search
-        || canonicalUrl.hash
-      ) {
-        throw new Error("The episode canonical URL does not match this show.");
-      }
-      const embedUrl = new URL("embed/", canonicalUrl).toString();
+      const { embedUrl } = podcastPublicAssetUrls(show, episode);
       const code = podcastEmbedFrame(embedUrl, episode.title).outerHTML;
       embedForm.elements.embedUrl.value = embedUrl;
       embedForm.elements.embedCode.value = code;
@@ -1153,6 +1202,99 @@ function startPodcastAdmin(root) {
       setStatus(
         embedStatus,
         "Copy is unavailable. The embed code is selected for manual copying.",
+        true
+      );
+    }
+  }
+
+  function fillPodcastShareCardEpisodes() {
+    if (!shareCardForm) return;
+    fillPublicEpisodeSelect(shareCardForm.elements.episodeId);
+    updatePodcastShareCard();
+  }
+
+  function clearPodcastShareCard(message) {
+    if (!shareCardForm) return;
+    shareCardForm.elements.shareCardUrl.value = "";
+    if (shareCardCopyButton) shareCardCopyButton.disabled = true;
+    for (const link of [shareCardDownloadLink, shareCardOpenLink]) {
+      if (!link) continue;
+      link.href = "#";
+      link.hidden = true;
+    }
+    shareCardPreview?.replaceChildren();
+    if (shareCardPreview) shareCardPreview.hidden = true;
+    setStatus(shareCardStatus, message || "");
+  }
+
+  function updatePodcastShareCard() {
+    if (!shareCardForm) return;
+    const show = shows.find(({ id }) => id === selectedShowId);
+    const episode = publicMarketingEpisodes().find(
+      ({ id }) => id === shareCardForm.elements.episodeId.value
+    );
+    if (!show || !episode) {
+      clearPodcastShareCard(
+        episodes.length
+          ? "No publicly released episode revision is available yet."
+          : "Create and publish an episode to generate a social card."
+      );
+      return;
+    }
+    try {
+      const { shareCardUrl } = podcastPublicAssetUrls(show, episode);
+      shareCardForm.elements.shareCardUrl.value = shareCardUrl;
+      if (shareCardCopyButton) shareCardCopyButton.disabled = false;
+      if (shareCardDownloadLink) {
+        shareCardDownloadLink.href = shareCardUrl;
+        shareCardDownloadLink.download = `${safeMarketingFilename(
+          `${show.slug}-${episode.slug}-social-card`,
+          "podcast-social-card"
+        )}.png`;
+        shareCardDownloadLink.hidden = false;
+      }
+      if (shareCardOpenLink) {
+        shareCardOpenLink.href = shareCardUrl;
+        shareCardOpenLink.hidden = false;
+      }
+      if (shareCardPreview) {
+        const image = document.createElement("img");
+        image.src = shareCardUrl;
+        image.alt = `${episode.title} social card`;
+        image.width = 1200;
+        image.height = 630;
+        image.loading = "lazy";
+        image.decoding = "async";
+        image.addEventListener("error", () => {
+          setStatus(
+            shareCardStatus,
+            "The card is not available at this deployment yet. Rebuild the site from the published episode revision.",
+            true
+          );
+        }, { once: true });
+        shareCardPreview.replaceChildren(image);
+        shareCardPreview.hidden = false;
+      }
+      setStatus(shareCardStatus, "");
+    } catch (error) {
+      clearPodcastShareCard(
+        error.message || "Unable to resolve the social-card URL."
+      );
+    }
+  }
+
+  async function copyPodcastShareCardUrl() {
+    const url = shareCardForm?.elements.shareCardUrl.value || "";
+    if (!url) return;
+    try {
+      await navigator.clipboard.writeText(url);
+      setStatus(shareCardStatus, "Social-card URL copied.");
+    } catch (_error) {
+      shareCardForm.elements.shareCardUrl.focus();
+      shareCardForm.elements.shareCardUrl.select();
+      setStatus(
+        shareCardStatus,
+        "Copy is unavailable. The image URL is selected for manual copying.",
         true
       );
     }

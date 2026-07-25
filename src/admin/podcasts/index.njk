@@ -439,6 +439,36 @@ permalink: admin/podcasts/index.html
             <p id="podcast-embed-status" class="podcast-admin__status" data-podcast-embed-status role="status" aria-live="polite"></p>
           </form>
 
+          <form class="podcast-admin__form" data-podcast-share-card-form>
+            <div class="podcast-admin__panel-heading">
+              <div>
+                <h3>Episode social card</h3>
+                <p>Preview and download the 1200×630 crawler-safe PNG generated from the show artwork and public episode revision.</p>
+              </div>
+              <p class="podcast-admin__pill">Build-time asset</p>
+            </div>
+            <div class="podcast-admin__callout">
+              <p>The card uses the same public-release gate as the embed and becomes the canonical News page’s Open Graph image. Generation uses the existing static build and shared Pool-characterized SVG primitive—no image SaaS or browser upload.</p>
+            </div>
+            <div class="podcast-admin__field-grid">
+              <label>Episode
+                <select name="episodeId" data-podcast-share-card-episode>
+                  <option value="">No public episodes available</option>
+                </select>
+              </label>
+              <label class="podcast-admin__field-wide">Social-card URL
+                <input name="shareCardUrl" type="url" readonly aria-readonly="true">
+              </label>
+            </div>
+            <div class="podcast-admin__share-card-preview" data-podcast-share-card-preview hidden></div>
+            <div class="podcast-admin__clip-actions">
+              <button class="btn btn-outline-light" type="button" data-podcast-share-card-copy disabled>Copy image URL</button>
+              <a class="btn btn-outline-light" href="#" download data-podcast-share-card-download hidden>Download PNG</a>
+              <a class="btn btn-outline-light" href="#" target="_blank" rel="noopener noreferrer" data-podcast-share-card-open hidden>Open image</a>
+            </div>
+            <p class="podcast-admin__status" data-podcast-share-card-status role="status" aria-live="polite"></p>
+          </form>
+
           <form class="podcast-admin__form" data-podcast-announcement-form>
             <div class="podcast-admin__panel-heading">
               <div>

@@ -13,6 +13,10 @@ eleventyComputed:
   summary: "{{ episode.summary }}"
   date: "{{ episode.publicAt }}"
   description: "{{ episode.summary }}"
+  og_image: "/img/podcasts/{{ episode.showSlug }}/{{ episode.slug }}/social-card.png"
+  og_image_width: 1200
+  og_image_height: 630
+  og_alt: "{{ episode.title }} · Dust Wave Podcasts"
 ---
 
 {% set show = podcastShows | podcastShowBySlug(episode.showSlug) %}

@@ -14,6 +14,12 @@ const source = await readFile(templatePath, 'utf8');
 const body = source.replace(/^---\n[\s\S]*?\n---\n/, '');
 const embedSource = await readFile(embedTemplatePath, 'utf8');
 const embedBody = embedSource.replace(/^---\n[\s\S]*?\n---\n/, '');
+assert.match(
+  source,
+  /og_image: "\/img\/podcasts\/\{\{ episode\.showSlug \}\}\/\{\{ episode\.slug \}\}\/social-card\.png"/
+);
+assert.match(source, /og_image_width: 1200/);
+assert.match(source, /og_image_height: 630/);
 const environment = new nunjucks.Environment(
   new nunjucks.FileSystemLoader(includePath),
   { autoescape: true, throwOnUndefined: true }

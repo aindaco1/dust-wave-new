@@ -50,3 +50,10 @@
   Marketing. It exposes only due public revisions, enforces the selected
   show's exact same-origin canonical path, builds escaped lazy iframe markup,
   provides live preview/copy/open controls, and performs no server write.
+- Added deterministic 1200×630 social cards for each published Podcast News
+  episode. The static build reuses the Pool-characterized shared SVG primitive,
+  validates and embeds only bounded local show artwork, rasterizes through the
+  existing Sharp dependency, and emits crawler-safe PNGs without a browser,
+  upload, or image SaaS. The canonical News page references that card, while
+  Podcast Marketing can preview, copy, download, or open only due public
+  revisions through the same exact canonical-path gate as the portable player.
