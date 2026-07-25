@@ -45,6 +45,9 @@ const episode = {
   audioUrl: 'https://media.dustwave.xyz/episodes/episode_fixture/audio',
   downloadUrl: 'https://media.dustwave.xyz/episodes/episode_fixture/audio?download=1',
   audioMimeType: 'audio/mpeg',
+  chapterUrl:
+    'https://feeds.dustwave.xyz/v1/shows/opera-en-la-selva/'
+    + 'episodes/una-charla-sobre-codigo/chapters.json',
   transcriptUrl:
     'https://feeds.dustwave.xyz/v1/shows/opera-en-la-selva/'
     + 'episodes/una-charla-sobre-codigo/transcripts',
@@ -71,6 +74,12 @@ assert.match(
   /data-player-id="opera-en-la-selva_una-charla-sobre-codigo"/
 );
 assert.match(rendered, /Transcripción \/ Transcript/);
+assert.match(rendered, /Capítulos \/ Chapters/);
+assert.match(
+  rendered,
+  /data-endpoint="https:\/\/feeds\.dustwave\.xyz\/v1\/shows\/opera-en-la-selva\/episodes\/una-charla-sobre-codigo\/chapters\.json"/
+);
+assert.match(rendered, /src="\/js\/podcast-chapters\.js" defer/);
 assert.match(rendered, /src="\/js\/podcast-transcript\.js" defer/);
 
 const structuredDataMatch = rendered.match(

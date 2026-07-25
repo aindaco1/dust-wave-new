@@ -43,6 +43,26 @@ eleventyComputed:
     <div class="e-content">
       <h2>Notas del episodio</h2>
       <p>{{ episode.summary }}</p>
+      {% set chapterUrl = episode.chapterUrl or ("https://feeds.dustwave.xyz/v1/shows/" + episode.showSlug + "/episodes/" + episode.slug + "/chapters.json") %}
+      <section
+        class="podcast-chapters"
+        data-podcast-chapters
+        data-endpoint="{{ chapterUrl }}"
+        data-player-id="{{ playerId }}"
+        data-language="{{ playerLanguage }}"
+        aria-labelledby="podcast-chapters-heading">
+        <h2 id="podcast-chapters-heading">Capítulos / Chapters</h2>
+        <p
+          class="podcast-chapters__status"
+          data-podcast-chapters-status
+          aria-live="polite">
+          Los capítulos aprobados aparecerán aquí. / Approved chapters will appear here.
+        </p>
+        <div
+          class="podcast-chapters__content"
+          data-podcast-chapters-content
+          hidden></div>
+      </section>
       {% set transcriptUrl = episode.transcriptUrl or ("https://feeds.dustwave.xyz/v1/shows/" + episode.showSlug + "/episodes/" + episode.slug + "/transcripts") %}
       <section
         class="podcast-transcript"
@@ -67,6 +87,7 @@ eleventyComputed:
   </div>
 </article>
 
+<script src="/js/podcast-chapters.js" defer></script>
 <script src="/js/podcast-transcript.js" defer></script>
 <script type="application/ld+json">
 {

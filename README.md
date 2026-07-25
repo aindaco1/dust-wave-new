@@ -59,6 +59,14 @@ timestamp seek-and-play. If no approved public transcript is available, the
 audio player and episode notes remain usable and the bilingual empty state is
 preserved.
 
+The same canonical page progressively loads an approved Podcasting 2.0 chapter
+document. Chapter titles and links are validated, rendered with DOM text nodes,
+and wired to the existing player's seek/time-subscription API so the current
+chapter follows playback. The page deliberately does not load remote chapter
+artwork; related links open with no referrer and opener isolation. Missing or
+ineligible chapters preserve a bilingual empty state without affecting audio,
+notes, or transcripts.
+
 ## Roadmap
 
 See [ROADMAP.md](ROADMAP.md) for planned product and infrastructure work, including the paid embedded video player plan.

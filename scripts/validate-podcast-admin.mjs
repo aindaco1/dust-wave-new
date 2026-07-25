@@ -49,6 +49,9 @@ assert.match(adminTemplate, /data-podcast-transcript-workbench/);
 assert.match(adminTemplate, /data-podcast-transcript-cues/);
 assert.match(adminTemplate, /data-podcast-transcript-pages/);
 assert.match(adminTemplate, /Word timing gated/);
+assert.match(adminTemplate, /data-podcast-chapter-workbench/);
+assert.match(adminTemplate, /data-podcast-chapter-rows/);
+assert.match(adminTemplate, /Podcasting 2\.0 feeds/);
 assert.match(adminTemplate, /data-podcast-clip-form/);
 assert.match(adminTemplate, /data-podcast-clip-preview/);
 assert.match(adminTemplate, /data-podcast-clip-list/);
@@ -127,6 +130,9 @@ assert.match(adminScript, /url\.protocol !== "https:"/);
 assert.match(adminScript, /navigator\.clipboard\.writeText\(value\)/);
 assert.match(adminScript, /trusted sponsor-delivery evidence/i);
 assert.match(adminScript, /mode: "timed_text"/);
+assert.match(adminScript, /function loadChapters/);
+assert.match(adminScript, /\/chapters\/approve/);
+assert.match(adminScript, /function checkedHttpsUrl/);
 assert.match(
   adminScript,
   /\/v1\/admin\/episodes\/\$\{encodeURIComponent\(episodeId\)\}\/transcripts/

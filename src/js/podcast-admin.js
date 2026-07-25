@@ -77,6 +77,20 @@ function startPodcastAdmin(root) {
   const transcriptNextButton = root.querySelector(
     "[data-podcast-transcript-next]"
   );
+  const chapterWorkbench = root.querySelector(
+    "[data-podcast-chapter-workbench]"
+  );
+  const chapterEpisodeSelect = root.querySelector(
+    "[data-podcast-chapter-episode]"
+  );
+  const chapterMeta = root.querySelector("[data-podcast-chapter-meta]");
+  const chapterRowsRoot = root.querySelector("[data-podcast-chapter-rows]");
+  const chapterStatus = root.querySelector("[data-podcast-chapter-status]");
+  const chapterAddButton = root.querySelector("[data-podcast-chapter-add]");
+  const chapterSaveButton = root.querySelector("[data-podcast-chapter-save]");
+  const chapterApproveButton = root.querySelector(
+    "[data-podcast-chapter-approve]"
+  );
   const clipForm = root.querySelector("[data-podcast-clip-form]");
   const clipPreview = root.querySelector("[data-podcast-clip-preview]");
   const clipStatus = root.querySelector("[data-podcast-clip-status]");
@@ -187,6 +201,8 @@ function startPodcastAdmin(root) {
   let canManageAdPlans = false;
   let canEditTranscripts = false;
   let canApproveTranscripts = false;
+  let canEditChapters = false;
+  let canApproveChapters = false;
   let canApproveClipYouTube = false;
   let transcript = null;
   let transcriptDurationSeconds = null;
@@ -194,6 +210,9 @@ function startPodcastAdmin(root) {
   let transcriptDirty = false;
   let transcriptPage = 0;
   const transcriptEditors = new Map();
+  let chapterSet = null;
+  let chapterRequestId = 0;
+  let chapterDirty = false;
   let clips = [];
   let selectedClipId = "";
   let clipRequestId = 0;
@@ -228,7 +247,10 @@ function startPodcastAdmin(root) {
     onSelect(tab) {
       if (tab !== "production") pauseClipMediaPlayers(clipList);
       if (tab !== "marketing") pauseClipMediaPlayers(clipLibrary);
-      if (tab === "production") loadTranscript();
+      if (tab === "production") {
+        loadTranscript();
+        loadChapters();
+      }
       if (tab === "distribution") loadDistribution();
       if (tab === "marketing") {
         updateMarketingTools();
@@ -307,6 +329,16 @@ function startPodcastAdmin(root) {
   transcriptNextButton?.addEventListener("click", () =>
     moveTranscriptPage(1)
   );
+  chapterEpisodeSelect?.addEventListener("change", loadChapters);
+  chapterAddButton?.addEventListener("click", addChapter);
+  chapterSaveButton?.addEventListener("click", saveChapters);
+  chapterApproveButton?.addEventListener("click", approveChapters);
+  chapterRowsRoot?.addEventListener("input", markChaptersDirty);
+  chapterRowsRoot?.addEventListener("change", markChaptersDirty);
+  chapterRowsRoot?.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-podcast-chapter-remove]");
+    if (button) removeChapter(button.dataset.podcastChapterRemove);
+  });
   clipForm?.addEventListener("submit", saveClipRecipe);
   clipNewButton?.addEventListener("click", resetClipRecipe);
   clipRenderButton?.addEventListener("click", prepareClipRender);
@@ -489,9 +521,11 @@ function startPodcastAdmin(root) {
     );
     canManageAdPlans = canManageCreatives;
     canEditTranscripts = canManageCreatives;
+    canEditChapters = canManageCreatives;
     canApproveTranscripts = (identity?.roles || []).some(({ role }) =>
       role === "super_admin" || role === "admin"
     );
+    canApproveChapters = canApproveTranscripts;
     canApproveClipYouTube = (identity?.roles || []).some(({ role }) =>
       role === "super_admin"
     );
@@ -520,6 +554,8 @@ function startPodcastAdmin(root) {
     canManageAdPlans = false;
     canEditTranscripts = false;
     canApproveTranscripts = false;
+    canEditChapters = false;
+    canApproveChapters = false;
     canApproveClipYouTube = false;
     transcript = null;
     transcriptDurationSeconds = null;
@@ -531,6 +567,12 @@ function startPodcastAdmin(root) {
     transcriptMeta?.replaceChildren();
     if (transcriptPages) transcriptPages.hidden = true;
     setStatus(transcriptStatus, "");
+    chapterSet = null;
+    chapterDirty = false;
+    chapterRequestId += 1;
+    chapterRowsRoot?.replaceChildren();
+    chapterMeta?.replaceChildren();
+    setStatus(chapterStatus, "");
     clips = [];
     selectedClipId = "";
     clipRequestId += 1;
@@ -937,7 +979,9 @@ function startPodcastAdmin(root) {
       fillEpisodeSelects();
       await loadAdPlan();
       const productionPanel = root.querySelector("#podcast-panel-production");
-      if (productionPanel && !productionPanel.hidden) await loadTranscript();
+      if (productionPanel && !productionPanel.hidden) {
+        await Promise.all([loadTranscript(), loadChapters()]);
+      }
     } catch (error) {
       setStatus(episodeStatus, friendlyError(error), true);
     }
@@ -1006,7 +1050,8 @@ function startPodcastAdmin(root) {
       uploadForm?.elements.episodeId,
       sponsorForm?.elements.episodeId,
       adPlanForm?.elements.episodeId,
-      transcriptEpisodeSelect
+      transcriptEpisodeSelect,
+      chapterEpisodeSelect
     ].filter(Boolean)) {
       const previousValue = select.value;
       select.replaceChildren(...episodes.map((episode) =>
@@ -1061,6 +1106,12 @@ function startPodcastAdmin(root) {
       if (transcriptMeta) {
         transcriptMeta.textContent =
           "Create an episode before reviewing a transcript.";
+      }
+      chapterSet = null;
+      chapterRowsRoot?.replaceChildren();
+      if (chapterMeta) {
+        chapterMeta.textContent =
+          "Create an episode before reviewing chapters.";
       }
       setStatus(sponsorStatus, "Create an episode before previewing sponsor decisions.");
       setStatus(adPlanStatus, "Create an episode before defining ad markers.");
@@ -1809,6 +1860,294 @@ function startPodcastAdmin(root) {
         textMarkdown
       };
     });
+  }
+
+  async function loadChapters() {
+    const episodeId = chapterEpisodeSelect?.value;
+    const requestId = ++chapterRequestId;
+    chapterRowsRoot?.replaceChildren();
+    chapterDirty = false;
+    if (!episodeId) {
+      chapterSet = null;
+      if (chapterWorkbench) chapterWorkbench.hidden = true;
+      if (chapterMeta) {
+        chapterMeta.textContent =
+          "Create an episode before reviewing chapters.";
+      }
+      return;
+    }
+    if (chapterWorkbench) chapterWorkbench.hidden = false;
+    setStatus(chapterStatus, "Loading chapter review state…");
+    try {
+      const payload = await client.request(
+        `/v1/admin/episodes/${encodeURIComponent(episodeId)}/chapters`
+      );
+      if (requestId !== chapterRequestId) return;
+      chapterSet = payload.chapterSet || emptyChapterSet(episodeId);
+      chapterDirty = false;
+      renderChapters();
+      setStatus(chapterStatus, "");
+    } catch (error) {
+      if (requestId !== chapterRequestId) return;
+      chapterSet = null;
+      chapterRowsRoot?.replaceChildren();
+      setStatus(chapterStatus, friendlyError(error), true);
+    }
+  }
+
+  function renderChapters() {
+    if (!chapterSet || !chapterRowsRoot) return;
+    const episode = episodes.find(
+      ({ id }) => id === chapterEpisodeSelect?.value
+    );
+    if (chapterMeta) {
+      chapterMeta.textContent = [
+        episode?.title || "Episode",
+        `revision ${Number(chapterSet.revision || 0)}`,
+        humanizeCode(chapterSet.status || "needs_review"),
+        `${chapterSet.chapters?.length || 0} chapter${
+          Number(chapterSet.chapters?.length || 0) === 1 ? "" : "s"
+        }`
+      ].join(" · ");
+    }
+    const chapters = chapterSet.chapters?.length
+      ? chapterSet.chapters
+      : [newChapter(0)];
+    chapterSet.chapters = chapters;
+    const rows = chapters.map((chapter, index) => {
+      const row = document.createElement("article");
+      row.className = "podcast-admin__chapter-row";
+      row.dataset.podcastChapterId = chapter.id;
+      row.innerHTML = `
+        <div class="podcast-admin__transcript-cue-heading">
+          <h3>Chapter ${index + 1}</h3>
+          <button
+            class="btn btn-outline-light"
+            type="button"
+            data-podcast-chapter-remove="${escapeAttribute(chapter.id)}">
+            Remove
+          </button>
+        </div>
+        <div class="podcast-admin__field-grid">
+          <label>Start (seconds)
+            <input data-chapter-start type="number" min="0" step="0.001" required>
+          </label>
+          <label>Title · español / English
+            <input data-chapter-title maxlength="160" required>
+          </label>
+        </div>
+        <div class="podcast-admin__field-grid">
+          <label>Related HTTPS link (optional)
+            <input data-chapter-url type="url" inputmode="url" maxlength="2048">
+          </label>
+          <label>HTTPS artwork URL (optional)
+            <input data-chapter-image-url type="url" inputmode="url" maxlength="2048">
+          </label>
+        </div>
+        <label class="podcast-admin__checkbox">
+          <input data-chapter-toc type="checkbox">
+          Show this marker in chapter tables of contents
+        </label>`;
+      row.querySelector("[data-chapter-start]").value =
+        millisecondsToSeconds(chapter.startsAtMs);
+      row.querySelector("[data-chapter-title]").value = chapter.title || "";
+      row.querySelector("[data-chapter-url]").value = chapter.url || "";
+      row.querySelector("[data-chapter-image-url]").value =
+        chapter.imageUrl || "";
+      row.querySelector("[data-chapter-toc]").checked = chapter.toc !== false;
+      row.querySelectorAll("input").forEach((input) => {
+        input.disabled = !canEditChapters;
+      });
+      row.querySelector("[data-podcast-chapter-remove]").disabled =
+        !canEditChapters || chapters.length === 1;
+      return row;
+    });
+    chapterRowsRoot.replaceChildren(...rows);
+    chapterAddButton.hidden = !canEditChapters;
+    chapterSaveButton.hidden = !canEditChapters;
+    chapterApproveButton.hidden = !canApproveChapters;
+    chapterApproveButton.disabled = !canApproveChapters
+      || Number(chapterSet.revision || 0) < 1
+      || chapterSet.status === "approved"
+      || chapterDirty;
+  }
+
+  function markChaptersDirty() {
+    if (!chapterSet || !canEditChapters) return;
+    chapterDirty = true;
+    if (chapterApproveButton) chapterApproveButton.disabled = true;
+  }
+
+  function addChapter() {
+    if (!chapterSet || !canEditChapters) return;
+    try {
+      const chapters = collectChapters({ requireTitles: false });
+      const lastStart = chapters.at(-1)?.startsAtMs ?? -1;
+      const durationMs = Number.isFinite(Number(chapterSet.durationSeconds))
+        ? Math.round(Number(chapterSet.durationSeconds) * 1_000)
+        : null;
+      let startsAtMs = lastStart < 0 ? 0 : lastStart + 120_000;
+      if (durationMs !== null && startsAtMs >= durationMs) {
+        startsAtMs = durationMs - 1_000;
+      }
+      if (startsAtMs <= lastStart || startsAtMs < 0) {
+        throw new Error(
+          "There is no remaining episode time for another chapter."
+        );
+      }
+      chapterSet.chapters = chapters.concat(newChapter(startsAtMs));
+      chapterDirty = true;
+      renderChapters();
+      chapterRowsRoot.lastElementChild?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest"
+      });
+    } catch (error) {
+      setStatus(chapterStatus, chapterInputError(error), true);
+    }
+  }
+
+  function removeChapter(chapterId) {
+    if (!chapterSet || !canEditChapters) return;
+    try {
+      const chapters = collectChapters({ requireTitles: false });
+      if (chapters.length <= 1) {
+        throw new Error("An approved chapter document needs one chapter.");
+      }
+      chapterSet.chapters = chapters.filter(({ id }) => id !== chapterId);
+      chapterDirty = true;
+      renderChapters();
+    } catch (error) {
+      setStatus(chapterStatus, chapterInputError(error), true);
+    }
+  }
+
+  function collectChapters({ requireTitles = true } = {}) {
+    const rows = Array.from(
+      chapterRowsRoot?.querySelectorAll("[data-podcast-chapter-id]") || []
+    );
+    if (!rows.length) throw new Error("Add at least one chapter.");
+    const durationMs = Number.isFinite(Number(chapterSet?.durationSeconds))
+      ? Math.round(Number(chapterSet.durationSeconds) * 1_000)
+      : null;
+    let previousStart = -1;
+    return rows.map((row, index) => {
+      const startsAtMs = secondsToMilliseconds(
+        row.querySelector("[data-chapter-start]").value,
+        `Chapter ${index + 1} start`
+      );
+      if (index === 0 && startsAtMs !== 0) {
+        throw new Error("The first chapter must start at 00:00.");
+      }
+      if (startsAtMs <= previousStart) {
+        throw new Error(
+          `Chapter ${index + 1} must start after the previous chapter.`
+        );
+      }
+      if (durationMs !== null && startsAtMs >= durationMs) {
+        throw new Error(
+          `Chapter ${index + 1} starts outside the episode duration.`
+        );
+      }
+      previousStart = startsAtMs;
+      const title = row.querySelector("[data-chapter-title]").value.trim();
+      if (requireTitles && !title) {
+        throw new Error(`Chapter ${index + 1} needs a title.`);
+      }
+      const url = checkedHttpsUrl(
+        row.querySelector("[data-chapter-url]").value,
+        `Chapter ${index + 1} link`
+      );
+      const imageUrl = checkedHttpsUrl(
+        row.querySelector("[data-chapter-image-url]").value,
+        `Chapter ${index + 1} artwork`
+      );
+      return {
+        id: row.dataset.podcastChapterId,
+        startsAtMs,
+        title,
+        url,
+        imageUrl,
+        toc: row.querySelector("[data-chapter-toc]").checked
+      };
+    });
+  }
+
+  async function saveChapters() {
+    if (!chapterSet || !canEditChapters) return;
+    chapterSaveButton.disabled = true;
+    chapterAddButton.disabled = true;
+    setStatus(chapterStatus, "Saving versioned chapter draft…");
+    try {
+      const episodeId = chapterEpisodeSelect.value;
+      const payload = await client.request(
+        `/v1/admin/episodes/${encodeURIComponent(episodeId)}/chapters`,
+        {
+          method: "PUT",
+          body: {
+            mutationId: operationId("chapter_edit"),
+            baseRevision: Number(chapterSet.revision || 0),
+            chapters: collectChapters()
+          }
+        }
+      );
+      chapterSet = payload.chapterSet;
+      chapterDirty = false;
+      renderChapters();
+      setStatus(
+        chapterStatus,
+        "Chapter draft saved. The prior approved revision remains public until approval."
+      );
+    } catch (error) {
+      setStatus(
+        chapterStatus,
+        error instanceof AdminApiError
+          ? friendlyError(error)
+          : chapterInputError(error),
+        true
+      );
+    } finally {
+      chapterSaveButton.disabled = false;
+      chapterAddButton.disabled = false;
+    }
+  }
+
+  async function approveChapters() {
+    if (!chapterSet || !canApproveChapters) return;
+    if (chapterDirty) {
+      setStatus(
+        chapterStatus,
+        "Save the current chapter edits before approving this revision.",
+        true
+      );
+      return;
+    }
+    chapterApproveButton.disabled = true;
+    setStatus(chapterStatus, "Approving reviewed chapter revision…");
+    try {
+      const episodeId = chapterEpisodeSelect.value;
+      const payload = await client.request(
+        `/v1/admin/episodes/${encodeURIComponent(episodeId)}/chapters/approve`,
+        {
+          method: "POST",
+          body: {
+            approvalId: operationId("chapter_approval"),
+            expectedRevision: Number(chapterSet.revision)
+          }
+        }
+      );
+      chapterSet = payload.chapterSet;
+      chapterDirty = false;
+      renderChapters();
+      setStatus(
+        chapterStatus,
+        "Chapter revision approved for eligible feeds and canonical News pages."
+      );
+    } catch (error) {
+      setStatus(chapterStatus, friendlyError(error), true);
+    } finally {
+      if (chapterSet) renderChapters();
+    }
   }
 
   async function loadClips({ preserveStatus = false } = {}) {
@@ -4086,6 +4425,30 @@ function newTranscriptCue(startsAtMs = 0, endsAtMs = 5_000) {
   };
 }
 
+function emptyChapterSet(episodeId) {
+  return {
+    episodeId,
+    durationSeconds: null,
+    status: "needs_review",
+    revision: 0,
+    contentSha256: null,
+    approvedRevision: null,
+    approvedAt: null,
+    chapters: [newChapter(0)]
+  };
+}
+
+function newChapter(startsAtMs = 0) {
+  return {
+    id: operationId("chapter"),
+    startsAtMs,
+    title: "",
+    url: "",
+    imageUrl: "",
+    toc: true
+  };
+}
+
 function operationId(prefix) {
   return `${prefix}_${crypto.randomUUID().replace(/-/g, "")}`;
 }
@@ -4136,6 +4499,27 @@ function transcriptInputError(error) {
     : "The transcript cue values are invalid.";
 }
 
+function chapterInputError(error) {
+  return error instanceof Error
+    ? error.message
+    : "The chapter values are invalid.";
+}
+
+function checkedHttpsUrl(value, label) {
+  const text = String(value || "").trim();
+  if (!text) return "";
+  let url;
+  try {
+    url = new URL(text);
+  } catch {
+    throw new Error(`${label} must be a complete HTTPS URL.`);
+  }
+  if (url.protocol !== "https:" || url.username || url.password) {
+    throw new Error(`${label} must be a complete HTTPS URL.`);
+  }
+  return url.href;
+}
+
 function friendlyError(error) {
   if (!(error instanceof AdminApiError)) {
     return "The Podcast service could not be reached. Please retry.";
@@ -4175,6 +4559,15 @@ function friendlyError(error) {
   }
   if (error.code === "transcript_approval_conflict") {
     return "This transcript approval changed in another session. Reload and review it.";
+  }
+  if (error.code === "chapter_revision_conflict") {
+    return "These chapters changed in another session. Reload them before saving.";
+  }
+  if (error.code === "chapter_mutation_conflict") {
+    return "That chapter save identifier was already used for different content.";
+  }
+  if (error.code === "chapter_approval_conflict") {
+    return "This chapter approval changed in another session. Reload and review it.";
   }
   if (error.code === "clip_approved_transcript_required") {
     return "Approve this transcript language before creating a clip.";

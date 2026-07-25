@@ -495,6 +495,21 @@ window.DWDigestAudio = {
 		else window.__safeMediaPlay?.(media);
 	}
 	return true;
+	},
+	subscribeTime(playerId, listener) {
+		const waveEl = document.getElementById(`wave_${playerId}`);
+		const media = waveEl?.closest(".audio-card")?.querySelector("audio");
+		if (!media || typeof listener !== "function") return () => {};
+		const notify = () => listener(Number(media.currentTime) || 0);
+		for (const eventName of ["timeupdate", "loadedmetadata", "seeking"]) {
+			media.addEventListener(eventName, notify);
+		}
+		notify();
+		return () => {
+			for (const eventName of ["timeupdate", "loadedmetadata", "seeking"]) {
+				media.removeEventListener(eventName, notify);
+			}
+		};
 	}
 };
 })();

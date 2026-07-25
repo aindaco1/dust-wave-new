@@ -226,6 +226,31 @@ permalink: admin/podcasts/index.html
           </div>
           <div class="podcast-admin__panel-heading podcast-admin__section-heading">
             <div>
+              <h2>Chapter review</h2>
+              <p>Build a bilingual-capable table of contents for the existing player and Podcasting 2.0 feeds, then approve one immutable revision.</p>
+            </div>
+            <p class="podcast-admin__pill">Versioned · fail closed</p>
+          </div>
+          <div class="podcast-admin__callout">
+            <p>The first chapter starts at 00:00. Titles can be Spanish, English, or paired; optional links and artwork must use HTTPS. Apple recommends concise titles and at least three chapters for longer episodes.</p>
+          </div>
+          <div class="podcast-admin__form" data-podcast-chapter-workbench>
+            <div class="podcast-admin__field-grid">
+              <label>Episode
+                <select data-podcast-chapter-episode required></select>
+              </label>
+            </div>
+            <div class="podcast-admin__transcript-meta" data-podcast-chapter-meta aria-live="polite"></div>
+            <div class="podcast-admin__chapter-rows" data-podcast-chapter-rows></div>
+            <div class="podcast-admin__transcript-actions">
+              <button class="btn btn-outline-light" type="button" data-podcast-chapter-add>Add chapter</button>
+              <button class="btn btn-danger" type="button" data-podcast-chapter-save>Save review draft</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-chapter-approve>Approve revision</button>
+            </div>
+            <p class="podcast-admin__status" data-podcast-chapter-status role="status" aria-live="polite"></p>
+          </div>
+          <div class="podcast-admin__panel-heading podcast-admin__section-heading">
+            <div>
               <h2>Clip factory</h2>
               <p>Save a captioned audiogram recipe from an approved transcript range, then preview and download completed private renders.</p>
             </div>

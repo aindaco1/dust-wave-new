@@ -632,6 +632,19 @@
   padding: 1rem;
 }
 
+.podcast-admin__chapter-rows {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.podcast-admin__chapter-row {
+  background: #101010;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 0.65rem;
+  padding: 1rem;
+}
+
 .podcast-admin__transcript-cue .dw-editor__surface {
   min-height: 6rem;
 }
@@ -673,7 +686,8 @@
   }
 
   .podcast-admin__transcript-actions .btn,
-  .podcast-admin__transcript-pages .btn {
+  .podcast-admin__transcript-pages .btn,
+  .podcast-admin__chapter-row .btn {
     width: 100%;
   }
 
