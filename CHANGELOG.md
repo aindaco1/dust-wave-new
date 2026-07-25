@@ -71,3 +71,6 @@
 - Added confirmed, role-scoped retry controls for failed immutable RSS, News,
   and YouTube root jobs. Producer/Admin/Super-admin roles can recover the exact
   current revision while Analysts retain read-only release evidence.
+- Added evidence-backed per-episode directory reconciliation. Producer+ roles
+  can mark the exact current revision observed only with an HTTPS evidence link,
+  or record a bounded failure detail; incomplete owner setup stays immutable.

@@ -503,6 +503,15 @@
   margin: 0;
 }
 
+.podcast-admin__directory-observation-form {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.podcast-admin__directory-observation-form textarea {
+  min-height: 3rem;
+  resize: vertical;
+}
+
 .podcast-admin__episode-actions {
   display: flex;
   gap: 0.5rem;

@@ -250,6 +250,10 @@ function startPodcastAdmin(root) {
     "submit",
     updateDistributionDestination
   );
+  distributionRoot?.addEventListener(
+    "submit",
+    updateDirectoryObservation
+  );
   distributionFilter?.elements.episodeId?.addEventListener(
     "change",
     () => loadDistribution()
@@ -2932,7 +2936,7 @@ function startPodcastAdmin(root) {
       if (
         channel.retryable
         && episodeId
-        && canRetrySelectedShowPublication()
+        && canOperateSelectedShowPublication()
       ) {
         const actions = document.createElement("div");
         actions.className = "podcast-admin__release-channel-actions";
@@ -3031,8 +3035,13 @@ function startPodcastAdmin(root) {
       destination.listingUrl,
       "Open public listing"
     );
+    const evidenceLink = safeDistributionLink(
+      destination.evidenceUrl,
+      "Open episode evidence"
+    );
     if (setupLink) links.append(setupLink);
     if (listingLink) links.append(listingLink);
+    if (evidenceLink) links.append(evidenceLink);
     if (links.childElementCount) card.append(links);
 
     for (const message of [
@@ -3110,7 +3119,104 @@ function startPodcastAdmin(root) {
       );
       card.append(form);
     }
+    if (
+      episodeId
+      && Number(destination.publicationRevision) > 0
+      && destination.publicationStatus
+      && !["setup_required", "disabled"].includes(
+        destination.publicationStatus
+      )
+      && canOperateSelectedShowPublication()
+    ) {
+      card.append(directoryObservationForm(destination, { episodeId }));
+    }
     return card;
+  }
+
+  function directoryObservationForm(destination, { episodeId }) {
+    const form = document.createElement("form");
+    form.className =
+      "podcast-admin__distribution-form podcast-admin__directory-observation-form";
+    form.dataset.podcastDirectoryObservationForm = "";
+    form.dataset.destinationId = String(destination.id || "");
+    form.dataset.episodeId = String(episodeId);
+    form.dataset.publicationRevision = String(
+      Number(destination.publicationRevision) || 0
+    );
+
+    const stateLabel = document.createElement("label");
+    stateLabel.textContent = "Episode directory state";
+    const state = document.createElement("select");
+    state.name = "status";
+    state.append(
+      new Option(
+        "Observed in directory",
+        "observed",
+        false,
+        destination.publicationStatus !== "failed"
+      ),
+      new Option(
+        "Needs attention",
+        "failed",
+        false,
+        destination.publicationStatus === "failed"
+      )
+    );
+    stateLabel.append(state);
+
+    const evidenceLabel = document.createElement("label");
+    evidenceLabel.textContent = "HTTPS episode evidence";
+    const evidence = document.createElement("input");
+    evidence.name = "evidenceUrl";
+    evidence.type = "url";
+    evidence.inputMode = "url";
+    evidence.maxLength = 2048;
+    evidence.placeholder = "https://";
+    evidence.value = String(destination.evidenceUrl || "");
+    evidenceLabel.append(evidence);
+
+    const errorLabel = document.createElement("label");
+    errorLabel.dataset.podcastDirectoryObservationError = "";
+    errorLabel.textContent = "Failure detail";
+    const error = document.createElement("textarea");
+    error.name = "error";
+    error.rows = 2;
+    error.maxLength = 500;
+    error.value = String(destination.publicationError || "");
+    errorLabel.append(error);
+
+    const save = document.createElement("button");
+    save.className = "btn btn-outline-light";
+    save.type = "submit";
+    save.textContent = "Save episode evidence";
+    const formStatus = document.createElement("p");
+    formStatus.className = "podcast-admin__status";
+    formStatus.dataset.podcastDirectoryObservationStatus = "";
+    formStatus.setAttribute("role", "status");
+    formStatus.setAttribute("aria-live", "polite");
+    form.append(
+      stateLabel,
+      evidenceLabel,
+      errorLabel,
+      save,
+      formStatus
+    );
+    state.addEventListener(
+      "change",
+      () => updateDirectoryObservationFields(form)
+    );
+    updateDirectoryObservationFields(form);
+    return form;
+  }
+
+  function updateDirectoryObservationFields(form) {
+    const failed = form.elements.status.value === "failed";
+    const errorLabel = form.querySelector(
+      "[data-podcast-directory-observation-error]"
+    );
+    errorLabel.hidden = !failed;
+    form.elements.error.required = failed;
+    form.elements.evidenceUrl.required = !failed;
   }
 
   function distributionBadge(label, className = "") {
@@ -3167,7 +3273,7 @@ function startPodcastAdmin(root) {
     );
   }
 
-  function canRetrySelectedShowPublication() {
+  function canOperateSelectedShowPublication() {
     return (adminIdentity?.roles || []).some(({ role, showId }) =>
       ["super_admin", "admin", "producer"].includes(role)
       && (role === "super_admin" || !showId || showId === selectedShowId)
@@ -3206,7 +3312,7 @@ function startPodcastAdmin(root) {
   }
 
   async function retryReleaseChannel(button) {
-    if (!canRetrySelectedShowPublication()) return;
+    if (!canOperateSelectedShowPublication()) return;
     const episodeId = String(button.dataset.episodeId || "");
     const destination = String(button.dataset.destination || "");
     const publicationRevision = Number(
@@ -3281,6 +3387,58 @@ function startPodcastAdmin(root) {
       );
       setStatus(status, "Directory setup saved.");
       await loadDistribution(form.dataset.episodeId || undefined);
+    } catch (error) {
+      setStatus(status, friendlyError(error), true);
+      button.disabled = false;
+    }
+  }
+
+  async function updateDirectoryObservation(event) {
+    const form = event.target.closest(
+      "[data-podcast-directory-observation-form]"
+    );
+    if (!form) return;
+    event.preventDefault();
+    if (!canOperateSelectedShowPublication()) return;
+    const episodeId = String(form.dataset.episodeId || "");
+    const destinationId = String(form.dataset.destinationId || "");
+    const publicationRevision = Number(
+      form.dataset.publicationRevision || 0
+    );
+    if (
+      !episodeId
+      || !/^[A-Za-z0-9_-]+$/.test(destinationId)
+      || !Number.isSafeInteger(publicationRevision)
+      || publicationRevision <= 0
+    ) return;
+    const button = form.querySelector('button[type="submit"]');
+    const status = form.querySelector(
+      "[data-podcast-directory-observation-status]"
+    );
+    button.disabled = true;
+    setStatus(status, "Saving episode evidence…");
+    try {
+      const result = await client.request(
+        `/v1/admin/episodes/${encodeURIComponent(
+          episodeId
+        )}/distribution/${encodeURIComponent(destinationId)}`,
+        {
+          method: "PATCH",
+          body: {
+            publicationRevision,
+            status: form.elements.status.value,
+            evidenceUrl: form.elements.evidenceUrl.value,
+            error: form.elements.error.value
+          }
+        }
+      );
+      setStatus(
+        status,
+        result.idempotent
+          ? "Directory evidence is already current."
+          : "Directory evidence saved."
+      );
+      await loadDistribution(episodeId);
     } catch (error) {
       setStatus(status, friendlyError(error), true);
       button.disabled = false;
