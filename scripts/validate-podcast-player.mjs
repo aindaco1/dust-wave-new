@@ -39,6 +39,8 @@ assert.match(
   /const cards = Array\.from\(document\.querySelectorAll\("\.audio-card"\)\);\s+if \(!cards\.length\) return;\s+\s*try \{ await ensureWavesurferLoaded\(\);/
 );
 assert.match(playerScript, /playerLanguage\.toLowerCase\(\)\.startsWith\('es'\)/);
+assert.match(playerScript, /seekTo\(playerId, seconds/);
+assert.match(playerScript, /document\.getElementById\(`wave_\$\{playerId\}`\)/);
 assert.doesNotMatch(playerScript, /unpkg\.com|cdn\.jsdelivr\.net/);
 assert.match(
   footer,

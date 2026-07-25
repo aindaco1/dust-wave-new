@@ -43,11 +43,31 @@ eleventyComputed:
     <div class="e-content">
       <h2>Notas del episodio</h2>
       <p>{{ episode.summary }}</p>
-      <p>La transcripción y los capítulos aparecerán aquí cuando estén revisados.</p>
+      {% set transcriptUrl = episode.transcriptUrl or ("https://feeds.dustwave.xyz/v1/shows/" + episode.showSlug + "/episodes/" + episode.slug + "/transcripts") %}
+      <section
+        class="podcast-transcript"
+        data-podcast-transcript
+        data-endpoint="{{ transcriptUrl }}"
+        data-player-id="{{ playerId }}"
+        data-language="{{ playerLanguage }}"
+        aria-labelledby="podcast-transcript-heading">
+        <h2 id="podcast-transcript-heading">Transcripción / Transcript</h2>
+        <p
+          class="podcast-transcript__status"
+          data-podcast-transcript-status
+          aria-live="polite">
+          Las transcripciones aprobadas aparecerán aquí. / Approved transcripts will appear here.
+        </p>
+        <div
+          class="podcast-transcript__content"
+          data-podcast-transcript-content
+          hidden></div>
+      </section>
     </div>
   </div>
 </article>
 
+<script src="/js/podcast-transcript.js" defer></script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",

@@ -140,7 +140,8 @@ gulp.task('purgecss', function purgeCssTask() {
         // production extraction pass as well as static Eleventy output.
         content: [
           `${DIR.dist}/**/*.html`,
-          `${DIR.dist}/js/**/*.js`
+          `${DIR.dist}/js/**/*.js`,
+          `${DIR.src}/news/podcasts/**/*.njk`
         ],
         safelist: ['collapsed', 'collapse', 'active', 'show', 'collapsing']
       })

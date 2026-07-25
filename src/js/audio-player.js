@@ -474,6 +474,27 @@ window.DWDigestAudio = {
 	document.querySelectorAll(".audio-card .wave").forEach(w => { w.dataset.wsReady = "0"; });
 	try { document.querySelectorAll('.audio-card').forEach(window.__AudioSquelchAttach?.bind(null) || (()=>{})); } catch {}
 	boot();
+	},
+	seekTo(playerId, seconds, { play = false } = {}) {
+	const waveEl = document.getElementById(`wave_${playerId}`);
+	const card = waveEl?.closest(".audio-card");
+	const media = card?.querySelector("audio");
+	const target = Number(seconds);
+	if (!card || !media || !Number.isFinite(target) || target < 0) return false;
+
+	const duration = card._ws?.getDuration?.() || media.duration || 0;
+	const bounded = duration > 0
+		? Math.min(target, Math.max(0, duration - 0.01))
+		: target;
+	if (card._ws && duration > 0) card._ws.seekTo(bounded / duration);
+	else {
+		try { media.currentTime = bounded; } catch {}
+	}
+	if (play) {
+		if (card._ws) window.__safePlay?.(() => card._ws.play());
+		else window.__safeMediaPlay?.(media);
+	}
+	return true;
 	}
 };
 })();

@@ -51,6 +51,14 @@ has a Checkout Turnstile site key. Subscriber billing controls appear only
 when the authenticated, non-secret session projection reports a show-scoped
 Stripe billing source.
 
+Canonical podcast News pages progressively fetch the episode's approved
+English/Spanish transcript URL from the immutable publication snapshot. The
+browser validates the bounded response again, builds the transcript only with
+DOM text nodes, and uses the existing Digest/Podcast player contract for
+timestamp seek-and-play. If no approved public transcript is available, the
+audio player and episode notes remain usable and the bilingual empty state is
+preserved.
+
 ## Roadmap
 
 See [ROADMAP.md](ROADMAP.md) for planned product and infrastructure work, including the paid embedded video player plan.

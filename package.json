@@ -19,7 +19,7 @@
     "build-assets": "gulp dist-assets && gulp sass",
     "build:og": "node scripts/render-og-cards.mjs",
     "build:podcast-cards": "node scripts/render-podcast-social-cards.mjs",
-    "test:podcasts": "node scripts/validate-podcast-shows.mjs && node scripts/validate-podcast-episode-template.mjs && node scripts/validate-podcast-social-cards.mjs && node scripts/validate-podcast-player.mjs && node scripts/validate-podcast-admin.mjs && node scripts/validate-podcast-member.mjs && node scripts/validate-podcast-checkout.mjs && node --check src/js/podcast-member.js && node --check src/js/podcast-checkout.js",
+    "test:podcasts": "node scripts/validate-podcast-shows.mjs && node scripts/validate-podcast-episode-template.mjs && node scripts/validate-podcast-social-cards.mjs && node scripts/validate-podcast-player.mjs && node scripts/validate-podcast-transcript.mjs && node scripts/validate-podcast-admin.mjs && node scripts/validate-podcast-member.mjs && node scripts/validate-podcast-checkout.mjs && node --check src/js/podcast-member.js && node --check src/js/podcast-checkout.js && node --check src/js/podcast-transcript.js",
     "ping:bridgy": "node scripts/ping-bridgy.mjs",
     "ping:bridgy:all": "node scripts/ping-bridgy.mjs --all",
     "11ty": "ELEVENTY_ENV=development eleventy && gulp inject-css",
