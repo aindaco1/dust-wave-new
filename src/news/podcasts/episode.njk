@@ -1,5 +1,6 @@
 ---
 layout: layouts/new.njk
+bodyModifier: podcast-episode-page
 tags:
   - news
   - podcast
@@ -20,9 +21,16 @@ eleventyComputed:
 ---
 
 {% set show = podcastShows | podcastShowBySlug(episode.showSlug) %}
+{% set isPremiumTeaser = episode.pageMode == "premium_teaser" %}
 <article class="podcast-episode h-entry">
   <div class="container py-vh-3">
-    <p class="podcast-show__eyebrow">Un episodio de Dust Wave Podcasts</p>
+    <p class="podcast-show__eyebrow">
+      {% if isPremiumTeaser %}
+      Episodio premium · Premium episode
+      {% else %}
+      Un episodio de Dust Wave Podcasts
+      {% endif %}
+    </p>
     <h1 class="p-name">{{ episode.title }}</h1>
     {% if show %}
     <p><a href="/podcasts/{{ show.slug }}/">{{ show.title }}</a></p>
@@ -30,6 +38,7 @@ eleventyComputed:
     <p class="p-summary">{{ episode.summary }}</p>
     <time class="dt-published" datetime="{{ episode.publicAt }}">{{ episode.publicAt | readablePodcastDate }}</time>
 
+    {% if not isPremiumTeaser %}
     {% set playerId = episode.showSlug + "_" + episode.slug %}
     {% set title = episode.title %}
     {% set audioUrl = episode.audioUrl %}
@@ -39,8 +48,29 @@ eleventyComputed:
     {% set peaksUrl = episode.peaksUrl %}
     {% set playerLanguage = show.language if show else "es" %}
     {% include "snippets/audio-player.njk" %}
+    {% endif %}
 
     <div class="e-content">
+      {% if isPremiumTeaser %}
+      <section class="podcast-premium-teaser" aria-labelledby="podcast-premium-teaser-title">
+        <p class="podcast-premium-teaser__label">Solo para suscriptores · Subscribers only</p>
+        <h2 id="podcast-premium-teaser-title">Escucha este episodio con Podcast Premium</h2>
+        <p>
+          Este episodio extra está disponible en el feed privado del podcast.
+          Suscríbete para escuchar sin anuncios, recibir acceso anticipado y
+          desbloquear episodios extra.
+        </p>
+        <p lang="en">
+          This bonus episode is available in the podcast’s private feed.
+          Subscribe for ad-free listening, early access, and bonus episodes.
+        </p>
+        <a
+          class="btn btn-dark podcast-premium-teaser__cta"
+          href="{{ episode.subscribeUrl }}">
+          Ver Podcast Premium · Explore Podcast Premium
+        </a>
+      </section>
+      {% else %}
       <h2>Notas del episodio</h2>
       <p>{{ episode.summary }}</p>
       {% set chapterUrl = episode.chapterUrl or ("https://feeds.dustwave.xyz/v1/shows/" + episode.showSlug + "/episodes/" + episode.slug + "/chapters.json") %}
@@ -83,29 +113,38 @@ eleventyComputed:
           data-podcast-transcript-content
           hidden></div>
       </section>
+      {% endif %}
     </div>
   </div>
 </article>
 
+{% if not isPremiumTeaser %}
 <script src="/js/podcast-chapters.js" defer></script>
 <script src="/js/podcast-transcript.js" defer></script>
+{% endif %}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "PodcastEpisode",
-  "name": {{ episode.title | dump | safe }},
-  "description": {{ episode.summary | dump | safe }},
-  "datePublished": {{ episode.publicAt | dump | safe }},
-  "url": {{ (metadata.url + "/news/podcasts/" + episode.showSlug + "/" + episode.slug + "/") | dump | safe }},
+  "name": {{ episode.title | safeJsonLd | safe }},
+  "description": {{ episode.summary | safeJsonLd | safe }},
+  "datePublished": {{ episode.publicAt | safeJsonLd | safe }},
+  "url": {{ (metadata.url + "/news/podcasts/" + episode.showSlug + "/" + episode.slug + "/") | safeJsonLd | safe }}{% if isPremiumTeaser %},
+  "isAccessibleForFree": false,
+  "offers": {
+    "@type": "Offer",
+    "url": {{ (metadata.url + episode.subscribeUrl) | safeJsonLd | safe }},
+    "availability": "https://schema.org/InStock"
+  }{% else %},
   "associatedMedia": {
     "@type": "MediaObject",
-    "contentUrl": {{ episode.audioUrl | dump | safe }},
-    "encodingFormat": {{ episode.audioMimeType | dump | safe }}
-  }{% if show %},
+    "contentUrl": {{ episode.audioUrl | safeJsonLd | safe }},
+    "encodingFormat": {{ episode.audioMimeType | safeJsonLd | safe }}
+  }{% endif %}{% if show %},
   "partOfSeries": {
     "@type": "PodcastSeries",
-    "name": {{ show.title | dump | safe }},
-    "url": {{ (metadata.url + "/podcasts/" + show.slug + "/") | dump | safe }}
+    "name": {{ show.title | safeJsonLd | safe }},
+    "url": {{ (metadata.url + "/podcasts/" + show.slug + "/") | safeJsonLd | safe }}
   }{% endif %}
 }
 </script>

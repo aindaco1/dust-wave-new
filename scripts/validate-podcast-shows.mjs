@@ -118,13 +118,59 @@ for (const episode of publications) {
     `${episode.id}: showSlug must reference a configured show`
   );
   assert.match(episode.slug, /^[a-z0-9]+(?:-[a-z0-9]+)*$/, `${episode.id}: slug is invalid`);
+  assert.equal(
+    episode.publicationSchemaVersion,
+    1,
+    `${episode.id}: publication schema version is unsupported`
+  );
+  assert(
+    ['full_episode', 'premium_teaser'].includes(episode.pageMode),
+    `${episode.id}: pageMode is invalid`
+  );
+  assert(
+    typeof episode.title === 'string' && episode.title.trim(),
+    `${episode.id}: title is required`
+  );
+  assert(
+    typeof episode.summary === 'string' && episode.summary.trim(),
+    `${episode.id}: summary is required`
+  );
   assert(
     typeof episode.url === 'string'
       && episode.url === `/news/podcasts/${episode.showSlug}/${episode.slug}/`,
     `${episode.id}: canonical News URL is invalid`
   );
-  assert.match(episode.audioUrl, /^https:\/\/media\.dustwave\.xyz\/episodes\/[A-Za-z0-9_-]+\/audio$/);
-  assert.match(episode.downloadUrl, /^https:\/\/media\.dustwave\.xyz\/episodes\/[A-Za-z0-9_-]+\/audio\?download=1$/);
+  assert.equal(
+    episode.subscribeUrl,
+    `/podcasts/${episode.showSlug}/#podcast-membership`,
+    `${episode.id}: subscription URL is invalid`
+  );
+  if (episode.pageMode === 'full_episode') {
+    assert.match(episode.audioUrl, /^https:\/\/media\.dustwave\.xyz\/episodes\/[A-Za-z0-9_-]+\/audio$/);
+    assert.match(episode.downloadUrl, /^https:\/\/media\.dustwave\.xyz\/episodes\/[A-Za-z0-9_-]+\/audio\?download=1$/);
+    assert.match(episode.transcriptUrl, /^https:\/\/feeds\.dustwave\.xyz\/v1\/shows\/[a-z0-9-]+\/episodes\/[a-z0-9-]+\/transcripts$/);
+    assert.match(episode.chapterUrl, /^https:\/\/feeds\.dustwave\.xyz\/v1\/shows\/[a-z0-9-]+\/episodes\/[a-z0-9-]+\/chapters\.json$/);
+    assert(Number.isSafeInteger(episode.duration) && episode.duration > 0);
+    assert(Number.isSafeInteger(episode.audioBytes) && episode.audioBytes > 0);
+  } else {
+    for (const field of [
+      'audioUrl',
+      'downloadUrl',
+      'audioMimeType',
+      'audioBytes',
+      'duration',
+      'transcriptUrl',
+      'chapterUrl',
+      'peaksUrl',
+      'premiumAt',
+      'token'
+    ]) {
+      assert(
+        !Object.hasOwn(episode, field),
+        `${episode.id}: premium teaser must omit ${field}`
+      );
+    }
+  }
   assert(Number.isSafeInteger(episode.publicationRevision) && episode.publicationRevision > 0);
 }
 

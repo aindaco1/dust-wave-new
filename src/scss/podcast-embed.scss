@@ -57,6 +57,38 @@ body {
   font-size: .82rem;
 }
 
+.podcast-embed__premium {
+  padding: clamp(.85rem, 4vw, 1.25rem);
+  border: 1px solid rgba(255, 213, 77, .5);
+  border-radius: .75rem;
+  background: #181818;
+}
+
+.podcast-embed__premium p,
+.podcast-embed__premium h2 {
+  margin: 0 0 .65rem;
+  overflow-wrap: anywhere;
+}
+
+.podcast-embed__premium p {
+  color: #ffd54d;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.podcast-embed__premium h2 {
+  font-size: clamp(.95rem, 3.5vw, 1.15rem);
+  line-height: 1.25;
+}
+
+.podcast-embed__premium a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+}
+
 .podcast-embed :is(button, a):focus-visible {
   outline: .2rem solid #ffd54d;
   outline-offset: .2rem;

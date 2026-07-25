@@ -63,7 +63,10 @@ eleventyComputed:
     </div>
   </header>
 
-  <section class="podcast-show__membership" aria-labelledby="podcast-membership-title">
+  <section
+    class="podcast-show__membership"
+    id="podcast-membership"
+    aria-labelledby="podcast-membership-title">
     <div class="container">
       <div class="row g-4">
         <div class="col-12 col-lg-6">
@@ -334,16 +337,29 @@ eleventyComputed:
             <article class="podcast-show__episode">
               <h3><a href="{{ episode.url }}">{{ episode.title }}</a></h3>
               {% if episode.summary %}<p>{{ episode.summary }}</p>{% endif %}
-              {% set playerId = show.slug + "_" + episode.slug %}
-              {% set title = episode.title %}
-              {% set audioUrl = episode.audioUrl %}
-              {% set downloadUrl = episode.downloadUrl or episode.audioUrl %}
-              {% set artworkUrl = episode.artwork or show.artwork %}
-              {% set artworkAlt = "Portada de " + episode.title %}
-              {% set peaksUrl = episode.peaksUrl %}
-              {% set playerLanguage = show.language %}
-              {% include "snippets/audio-player.njk" %}
-              <p><a href="{{ episode.url }}">Notas, transcripción y capítulos del episodio</a></p>
+              {% if episode.pageMode == "premium_teaser" %}
+              <p class="podcast-premium-teaser__label">
+                Episodio premium · Premium episode
+              </p>
+              <p>
+                <a
+                  class="btn btn-dark podcast-premium-teaser__cta"
+                  href="{{ episode.subscribeUrl }}">
+                  Suscríbete para escuchar · Subscribe to listen
+                </a>
+              </p>
+              {% else %}
+                {% set playerId = show.slug + "_" + episode.slug %}
+                {% set title = episode.title %}
+                {% set audioUrl = episode.audioUrl %}
+                {% set downloadUrl = episode.downloadUrl or episode.audioUrl %}
+                {% set artworkUrl = episode.artwork or show.artwork %}
+                {% set artworkAlt = "Portada de " + episode.title %}
+                {% set peaksUrl = episode.peaksUrl %}
+                {% set playerLanguage = show.language %}
+                {% include "snippets/audio-player.njk" %}
+                <p><a href="{{ episode.url }}">Notas, transcripción y capítulos del episodio</a></p>
+              {% endif %}
             </article>
           {% endfor %}
         </div>
@@ -362,15 +378,15 @@ eleventyComputed:
 {
   "@context": "https://schema.org",
   "@type": "PodcastSeries",
-  "name": {{ show.title | dump | safe }},
-  "description": {{ (show.description + " " + show.descriptionEn) | dump | safe }},
-  "url": {{ (metadata.url + "/podcasts/" + show.slug + "/") | dump | safe }},
-  "image": {{ (metadata.url + show.artwork) | dump | safe }},
-  "inLanguage": {{ show.language | dump | safe }},
+  "name": {{ show.title | safeJsonLd | safe }},
+  "description": {{ (show.description + " " + show.descriptionEn) | safeJsonLd | safe }},
+  "url": {{ (metadata.url + "/podcasts/" + show.slug + "/") | safeJsonLd | safe }},
+  "image": {{ (metadata.url + show.artwork) | safeJsonLd | safe }},
+  "inLanguage": {{ show.language | safeJsonLd | safe }},
   "publisher": {
     "@type": "Organization",
     "name": "Dust Wave",
-    "url": {{ metadata.url | dump | safe }}
+    "url": {{ metadata.url | safeJsonLd | safe }}
   }
 }
 </script>

@@ -10,6 +10,7 @@ sitemap:
   ignore: true
 ---
 {% set show = podcastShows | podcastShowBySlug(episode.showSlug) %}
+{% set isPremiumTeaser = episode.pageMode == "premium_teaser" %}
 <!doctype html>
 <html lang="{{ show.language if show and show.language else 'en' }}">
 <head>
@@ -19,7 +20,7 @@ sitemap:
   <meta name="referrer" content="no-referrer">
   <meta
     http-equiv="Content-Security-Policy"
-    content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src https://media.dustwave.xyz; connect-src 'self' https://media.dustwave.xyz; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+    content="default-src 'none'; {% if not isPremiumTeaser %}script-src 'self'; {% endif %}style-src 'self' 'unsafe-inline'; img-src 'self' data:; {% if not isPremiumTeaser %}media-src https://media.dustwave.xyz; connect-src 'self' https://media.dustwave.xyz; {% endif %}font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
   <title>{{ episode.title }} · {{ show.title if show else "Dust Wave Podcasts" }}</title>
   <link rel="canonical" href="{{ metadata.url }}/news/podcasts/{{ episode.showSlug }}/{{ episode.slug }}/">
   <link rel="stylesheet" href="/css/podcast-embed{% if environment == 'production' %}.min{% endif %}.css">
@@ -31,15 +32,27 @@ sitemap:
       <h1>{{ episode.title }}</h1>
     </header>
 
-    {% set playerId = "embed_" + episode.showSlug + "_" + episode.slug %}
-    {% set title = episode.title %}
-    {% set audioUrl = episode.audioUrl %}
-    {% set downloadUrl = episode.downloadUrl or episode.audioUrl %}
-    {% set artworkUrl = show.artwork if show else null %}
-    {% set artworkAlt = "Portada de " + (show.title if show else episode.title) %}
-    {% set peaksUrl = episode.peaksUrl %}
-    {% set playerLanguage = show.language if show else "es" %}
-    {% include "snippets/audio-player.njk" %}
+    {% if isPremiumTeaser %}
+    <section class="podcast-embed__premium" aria-labelledby="podcast-embed-premium-title">
+      <p>Solo para suscriptores · Subscribers only</p>
+      <h2 id="podcast-embed-premium-title">
+        Escucha este episodio con Podcast Premium
+      </h2>
+      <a href="{{ episode.subscribeUrl }}" target="_blank" rel="noopener noreferrer">
+        Ver Podcast Premium · Explore Podcast Premium
+      </a>
+    </section>
+    {% else %}
+      {% set playerId = "embed_" + episode.showSlug + "_" + episode.slug %}
+      {% set title = episode.title %}
+      {% set audioUrl = episode.audioUrl %}
+      {% set downloadUrl = episode.downloadUrl or episode.audioUrl %}
+      {% set artworkUrl = show.artwork if show else null %}
+      {% set artworkAlt = "Portada de " + (show.title if show else episode.title) %}
+      {% set peaksUrl = episode.peaksUrl %}
+      {% set playerLanguage = show.language if show else "es" %}
+      {% include "snippets/audio-player.njk" %}
+    {% endif %}
 
     <a
       class="podcast-embed__episode-link"
@@ -47,6 +60,6 @@ sitemap:
       target="_blank"
       rel="noopener noreferrer">{{ "Episode notes on Dust Wave" if show and show.language == "en" else "Notas del episodio en Dust Wave" }}</a>
   </main>
-  <script src="/js/audio-player.js" defer></script>
+  {% if not isPremiumTeaser %}<script src="/js/audio-player.js" defer></script>{% endif %}
 </body>
 </html>

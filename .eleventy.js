@@ -1,4 +1,5 @@
 const { DateTime } = require("luxon");
+const { safeJsonLd } = require("./lib/safe-json-ld.cjs");
 const navigationPlugin = require('@11ty/eleventy-navigation');
 const rssPlugin = require('@11ty/eleventy-plugin-rss');
 const Image = require("@11ty/eleventy-img");
@@ -248,6 +249,7 @@ ${content}
     const parsed = DateTime.fromISO(String(value || ''), { setZone: true });
     return parsed.isValid ? parsed.setZone('America/Denver').toFormat('LLLL d, yyyy') : '';
   });
+  eleventyConfig.addFilter("safeJsonLd", safeJsonLd);
 
   // Substack excerpt filter - splits content at <!-- more:substack --> marker
   // Returns only the content before the marker for the Substack feed

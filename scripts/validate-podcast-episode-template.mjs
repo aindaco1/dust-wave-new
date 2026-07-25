@@ -2,6 +2,9 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import nunjucks from 'nunjucks';
+import safeJsonLdModule from '../lib/safe-json-ld.cjs';
+
+const { safeJsonLd } = safeJsonLdModule;
 
 const repositoryRoot = path.resolve(import.meta.dirname, '..');
 const templatePath = path.join(repositoryRoot, 'src/news/podcasts/episode.njk');
@@ -29,6 +32,7 @@ environment.addFilter('podcastShowBySlug', (shows, showSlug) => {
   return shows.find((show) => show.slug === showSlug) ?? null;
 });
 environment.addFilter('readablePodcastDate', () => 'July 23, 2026');
+environment.addFilter('safeJsonLd', safeJsonLd);
 
 const show = {
   slug: 'opera-en-la-selva',
@@ -37,6 +41,8 @@ const show = {
   language: 'es'
 };
 const episode = {
+  publicationSchemaVersion: 1,
+  pageMode: 'full_episode',
   showSlug: show.slug,
   slug: 'una-charla-sobre-codigo',
   title: 'Una charla sobre "código"',
@@ -51,6 +57,7 @@ const episode = {
   transcriptUrl:
     'https://feeds.dustwave.xyz/v1/shows/opera-en-la-selva/'
     + 'episodes/una-charla-sobre-codigo/transcripts',
+  subscribeUrl: '/podcasts/opera-en-la-selva/#podcast-membership',
   peaksUrl: null
 };
 
@@ -146,6 +153,61 @@ assert.match(renderedEnglishEmbed, /aria-label="Play Una charla/);
 assert.match(renderedEnglishEmbed, /aria-label="Rewind 10 seconds"/);
 assert.match(renderedEnglishEmbed, /Episode notes on Dust Wave/);
 
+const premiumTeaser = {
+  publicationSchemaVersion: 1,
+  pageMode: 'premium_teaser',
+  showSlug: show.slug,
+  slug: 'episodio-extra',
+  title: 'Extra <img src=x onerror=alert(1)>',
+  summary: 'Una charla premium <script>alert(1)</script>.',
+  publicAt: '2026-07-23T15:00:00Z',
+  subscribeUrl: '/podcasts/opera-en-la-selva/#podcast-membership'
+};
+const renderedPremiumTeaser = environment.renderString(body, {
+  episode: premiumTeaser,
+  metadata: { url: 'https://dustwave.xyz' },
+  podcastShows: [show]
+});
+assert.match(renderedPremiumTeaser, /Episodio premium · Premium episode/);
+assert.match(renderedPremiumTeaser, /Solo para suscriptores · Subscribers only/);
+assert.match(
+  renderedPremiumTeaser,
+  /href="\/podcasts\/opera-en-la-selva\/#podcast-membership"/
+);
+assert.match(renderedPremiumTeaser, /Extra &lt;img src=x onerror=alert\(1\)&gt;/);
+assert.doesNotMatch(renderedPremiumTeaser, /<img src=x|<script>alert\(1\)/);
+assert.doesNotMatch(
+  renderedPremiumTeaser,
+  /audio-card|data-audio|media\.dustwave|\/transcripts|\/chapters|podcast-transcript\.js|podcast-chapters\.js/
+);
+const premiumStructuredDataMatch = renderedPremiumTeaser.match(
+  /<script type="application\/ld\+json">\s*([\s\S]*?)\s*<\/script>/
+);
+assert(premiumStructuredDataMatch, 'premium teaser must contain structured data');
+const premiumStructuredData = JSON.parse(premiumStructuredDataMatch[1]);
+assert.equal(premiumStructuredData.isAccessibleForFree, false);
+assert.equal(
+  premiumStructuredData.offers.url,
+  'https://dustwave.xyz/podcasts/opera-en-la-selva/#podcast-membership'
+);
+assert.equal('associatedMedia' in premiumStructuredData, false);
+
+const renderedPremiumEmbed = environment.renderString(embedBody, {
+  episode: premiumTeaser,
+  environment: 'production',
+  metadata: { url: 'https://dustwave.xyz' },
+  podcastShows: [show]
+});
+assert.match(renderedPremiumEmbed, /Solo para suscriptores · Subscribers only/);
+assert.match(
+  renderedPremiumEmbed,
+  /href="\/podcasts\/opera-en-la-selva\/#podcast-membership"/
+);
+assert.doesNotMatch(
+  renderedPremiumEmbed,
+  /audio-card|data-audio|media\.dustwave|audio-player\.js|<audio/
+);
+
 console.log(
-  'Validated canonical podcast News rendering, structured data, and portable embed rendering.'
+  'Validated full and premium-teaser News, structured data, and portable embeds.'
 );

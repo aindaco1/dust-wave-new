@@ -67,6 +67,15 @@ artwork; related links open with no referrer and opener isolation. Missing or
 ineligible chapters preserve a bilingual empty state without affecting audio,
 notes, or transcripts.
 
+The publication JSON is a versioned `full_episode|premium_teaser`
+discriminated contract. Premium-bonus public snapshots are deliberately
+media-free: the canonical News page, show aggregate, and noindex embed render
+only public teaser copy and a subscription CTA, without the shared player,
+download, transcript/chapter clients, media CSP origins, duration, private
+timing, or token-shaped data. Build validation rejects a teaser that contains
+any of those fields. Podcast episode and show JSON-LD use the shared
+HTML-significant-character-safe serializer.
+
 The private Production tab also layers timestamped plain-text review over the
 Worker's exact current audio, transcript, chapter, clip, and ad-plan revisions.
 It renders review text only through DOM text nodes, distinguishes current from
