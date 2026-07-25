@@ -353,10 +353,90 @@ permalink: admin/podcasts/index.html
             </div>
             <p class="podcast-admin__status" data-podcast-clip-youtube-status role="status" aria-live="polite"></p>
           </form>
-          <div class="podcast-admin__callout">
-            <p>Pool-style tagged links, QR codes, embeds, share previews, and Resend announcements remain the next adapter-backed slice.</p>
-            <p>No announcement can send until its dry-run audience and revision are reviewed.</p>
-          </div>
+          <form class="podcast-admin__form" data-podcast-marketing-link-form>
+            <div class="podcast-admin__panel-heading">
+              <div>
+                <h3>Canonical share kit</h3>
+                <p>Build a Pool-style tagged show link and downloadable QR assets locally in this browser.</p>
+              </div>
+              <p class="podcast-admin__pill">No server writes</p>
+            </div>
+            <div class="podcast-admin__field-grid podcast-admin__field-grid--three">
+              <label>Source
+                <input name="source" maxlength="160" value="podcast">
+              </label>
+              <label>Medium
+                <input name="medium" maxlength="160" value="owned">
+              </label>
+              <label>Campaign
+                <input name="campaign" maxlength="160">
+              </label>
+              <label>Content
+                <input name="content" maxlength="160" placeholder="launch-card">
+              </label>
+              <label>Referral
+                <input name="ref" maxlength="64" placeholder="partner-name">
+              </label>
+              <label class="podcast-admin__field-wide">Tagged canonical URL
+                <input name="taggedUrl" type="url" readonly>
+              </label>
+            </div>
+            <div class="podcast-admin__marketing-preview">
+              <div data-podcast-marketing-qr aria-live="polite"></div>
+              <div>
+                <p class="podcast-admin__pill">Share preview</p>
+                <h4 data-podcast-marketing-preview-title></h4>
+                <p data-podcast-marketing-preview-url></p>
+              </div>
+            </div>
+            <div class="podcast-admin__clip-actions">
+              <button class="btn btn-outline-light" type="button" data-podcast-marketing-copy>Copy link</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-marketing-share>Share</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-marketing-qr-png>Download QR PNG</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-marketing-qr-svg>Download QR SVG</button>
+            </div>
+            <p class="podcast-admin__status" data-podcast-marketing-link-status role="status" aria-live="polite"></p>
+          </form>
+
+          <form class="podcast-admin__form" data-podcast-announcement-form>
+            <div class="podcast-admin__panel-heading">
+              <div>
+                <h3>Episode announcement review</h3>
+                <p>Compose with the shared Pool/Store editor and review the exact, consented audience projection.</p>
+              </div>
+              <p class="podcast-admin__pill">Review only</p>
+            </div>
+            <div class="podcast-admin__callout">
+              <p>This checkpoint has no send route. It cannot call Resend. Eligibility requires an explicit show-level opt-in in the listener account plus an active subscription.</p>
+            </div>
+            <div class="podcast-admin__field-grid">
+              <label>Language
+                <select name="language">
+                  <option value="es">Español</option>
+                  <option value="en">English</option>
+                </select>
+              </label>
+              <label>Subject
+                <input name="subject" maxlength="160" required>
+              </label>
+              <label class="podcast-admin__field-wide">Heading
+                <input name="heading" maxlength="160">
+              </label>
+              <div class="podcast-admin__field-wide">
+                <span class="podcast-admin__field-label">Announcement content</span>
+                <div data-podcast-announcement-editor></div>
+              </div>
+              <label>CTA label
+                <input name="ctaLabel" maxlength="80">
+              </label>
+              <label>CTA URL
+                <input name="ctaUrl" type="url" maxlength="2048">
+              </label>
+            </div>
+            <button class="btn btn-danger" type="submit">Run audience dry-run</button>
+            <p class="podcast-admin__status" data-podcast-announcement-status role="status" aria-live="polite"></p>
+            <div class="podcast-admin__announcement-review" data-podcast-announcement-review aria-live="polite"></div>
+          </form>
         </section>
 
         <section id="podcast-panel-sponsors" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-sponsors" hidden>
