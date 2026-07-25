@@ -55,6 +55,9 @@ assert.match(adminTemplate, /Podcasting 2\.0 feeds/);
 assert.match(adminTemplate, /data-podcast-review-form/);
 assert.match(adminTemplate, /data-podcast-review-list/);
 assert.match(adminTemplate, /publishing yet/);
+assert.match(adminTemplate, /data-podcast-publication-readiness/);
+assert.match(adminTemplate, /data-podcast-readiness-refresh/);
+assert.match(adminTemplate, /not connected to Publish/);
 assert.match(adminTemplate, /data-podcast-clip-form/);
 assert.match(adminTemplate, /data-podcast-clip-preview/);
 assert.match(adminTemplate, /data-podcast-clip-list/);
@@ -140,6 +143,14 @@ assert.match(adminScript, /function loadProductionReviews/);
 assert.match(adminScript, /\/review-comments\//);
 assert.match(adminScript, /publishing gate not yet enforced/);
 assert.match(adminScript, /body\.textContent = comment\.bodyText/);
+assert.match(adminScript, /function loadPublicationReadiness/);
+assert.match(
+  adminScript,
+  /\/v1\/admin\/episodes\/\$\{encodeURIComponent\(episodeId\)\}\/readiness/
+);
+assert.match(adminScript, /function renderPublicationReadiness/);
+assert.match(adminScript, /summary\.textContent = String\(readinessNode\.summary/);
+assert.match(adminScript, /publishingEnforced/);
 assert.match(
   adminScript,
   /\/v1\/admin\/episodes\/\$\{encodeURIComponent\(episodeId\)\}\/transcripts/

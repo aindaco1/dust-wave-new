@@ -103,6 +103,18 @@ function startPodcastAdmin(root) {
     "[data-podcast-review-readiness]"
   );
   const reviewList = root.querySelector("[data-podcast-review-list]");
+  const readinessSummary = root.querySelector(
+    "[data-podcast-readiness-summary]"
+  );
+  const readinessGroups = root.querySelector(
+    "[data-podcast-readiness-groups]"
+  );
+  const readinessStatus = root.querySelector(
+    "[data-podcast-readiness-status]"
+  );
+  const readinessRefresh = root.querySelector(
+    "[data-podcast-readiness-refresh]"
+  );
   const clipForm = root.querySelector("[data-podcast-clip-form]");
   const clipPreview = root.querySelector("[data-podcast-clip-preview]");
   const clipStatus = root.querySelector("[data-podcast-clip-status]");
@@ -229,6 +241,8 @@ function startPodcastAdmin(root) {
   let chapterDirty = false;
   let productionReviews = null;
   let reviewRequestId = 0;
+  let publicationReadiness = null;
+  let readinessRequestId = 0;
   let clips = [];
   let selectedClipId = "";
   let clipRequestId = 0;
@@ -360,6 +374,9 @@ function startPodcastAdmin(root) {
   reviewForm?.addEventListener("submit", createProductionReviewComment);
   reviewList?.addEventListener("change", handleProductionReviewChange);
   reviewList?.addEventListener("click", handleProductionReviewClick);
+  readinessRefresh?.addEventListener("click", () =>
+    loadPublicationReadiness()
+  );
   clipForm?.addEventListener("submit", saveClipRecipe);
   clipNewButton?.addEventListener("click", resetClipRecipe);
   clipRenderButton?.addEventListener("click", prepareClipRender);
@@ -600,9 +617,14 @@ function startPodcastAdmin(root) {
     setStatus(chapterStatus, "");
     productionReviews = null;
     reviewRequestId += 1;
+    publicationReadiness = null;
+    readinessRequestId += 1;
     reviewTargetSelect?.replaceChildren();
     reviewList?.replaceChildren();
     reviewReadiness?.replaceChildren();
+    readinessGroups?.replaceChildren();
+    if (readinessSummary) readinessSummary.textContent = "";
+    setStatus(readinessStatus, "");
     reviewForm?.reset();
     setStatus(reviewStatus, "");
     clips = [];
@@ -1153,9 +1175,15 @@ function startPodcastAdmin(root) {
       productionReviews = null;
       reviewTargetSelect?.replaceChildren();
       reviewList?.replaceChildren();
+      publicationReadiness = null;
+      readinessGroups?.replaceChildren();
       if (reviewReadiness) {
         reviewReadiness.textContent =
           "Create an episode before starting production review.";
+      }
+      if (readinessSummary) {
+        readinessSummary.textContent =
+          "Create an episode before inspecting publication readiness.";
       }
       setStatus(sponsorStatus, "Create an episode before previewing sponsor decisions.");
       setStatus(adPlanStatus, "Create an episode before defining ad markers.");
@@ -1774,6 +1802,7 @@ function startPodcastAdmin(root) {
         transcriptStatus,
         "Transcript draft saved. Approval and word-alignment are independent gates."
       );
+      await refreshReviewEvidenceForEpisode(episodeId);
     } catch (error) {
       setStatus(
         transcriptStatus,
@@ -1822,6 +1851,7 @@ function startPodcastAdmin(root) {
           ? "Transcript approved; matching word alignment is available."
           : "Transcript approved; word controls remain locked until matching alignment passes."
       );
+      await refreshReviewEvidenceForEpisode(episodeId);
     } catch (error) {
       setStatus(transcriptStatus, friendlyError(error), true);
     } finally {
@@ -2142,6 +2172,7 @@ function startPodcastAdmin(root) {
         chapterStatus,
         "Chapter draft saved. The prior approved revision remains public until approval."
       );
+      await refreshReviewEvidenceForEpisode(episodeId);
     } catch (error) {
       setStatus(
         chapterStatus,
@@ -2187,6 +2218,7 @@ function startPodcastAdmin(root) {
         chapterStatus,
         "Chapter revision approved for eligible feeds and canonical News pages."
       );
+      await refreshReviewEvidenceForEpisode(episodeId);
     } catch (error) {
       setStatus(chapterStatus, friendlyError(error), true);
     } finally {
@@ -2205,8 +2237,10 @@ function startPodcastAdmin(root) {
         reviewReadiness.textContent =
           "Create an episode before starting production review.";
       }
+      await loadPublicationReadiness("");
       return;
     }
+    const readinessPromise = loadPublicationReadiness(episodeId);
     setStatus(reviewStatus, "Loading exact-revision review state…");
     try {
       const payload = await client.request(
@@ -2219,7 +2253,148 @@ function startPodcastAdmin(root) {
     } catch (error) {
       if (requestId !== reviewRequestId) return;
       setStatus(reviewStatus, friendlyError(error), true);
+    } finally {
+      await readinessPromise;
     }
+  }
+
+  async function refreshReviewEvidenceForEpisode(episodeId) {
+    if (episodeId === reviewEpisodeSelect?.value) {
+      await loadProductionReviews();
+    }
+  }
+
+  async function loadPublicationReadiness(
+    episodeId = reviewEpisodeSelect?.value || ""
+  ) {
+    const requestId = ++readinessRequestId;
+    publicationReadiness = null;
+    readinessGroups?.replaceChildren();
+    if (!episodeId) {
+      if (readinessSummary) {
+        readinessSummary.textContent =
+          "Create an episode before inspecting publication readiness.";
+      }
+      setStatus(readinessStatus, "");
+      return;
+    }
+    setStatus(readinessStatus, "Loading read-only dependency snapshot…");
+    try {
+      const payload = await client.request(
+        `/v1/admin/episodes/${encodeURIComponent(episodeId)}/readiness`
+      );
+      if (requestId !== readinessRequestId) return;
+      publicationReadiness = payload;
+      renderPublicationReadiness();
+      setStatus(readinessStatus, "");
+    } catch (error) {
+      if (requestId !== readinessRequestId) return;
+      if (readinessSummary) {
+        readinessSummary.textContent =
+          "The dependency snapshot could not be loaded.";
+      }
+      setStatus(readinessStatus, friendlyError(error), true);
+    }
+  }
+
+  function renderPublicationReadiness() {
+    if (
+      !publicationReadiness
+      || !readinessSummary
+      || !readinessGroups
+    ) return;
+    const legacy = publicationReadiness.legacyGate || {};
+    const candidate = publicationReadiness.candidateGate || {};
+    const digest = String(publicationReadiness.snapshotDigest || "");
+    readinessSummary.textContent = [
+      legacy.ready
+        ? "Current Publish checks pass"
+        : `${(legacy.missing || []).length} current Publish check${
+          (legacy.missing || []).length === 1 ? "" : "s"
+        } missing`,
+      candidate.ready
+        ? "launch candidate ready"
+        : `${Number(candidate.blockerCount || 0)} candidate blocker${
+          Number(candidate.blockerCount || 0) === 1 ? "" : "s"
+        }`,
+      `${Number(candidate.warningCount || 0)} warning${
+        Number(candidate.warningCount || 0) === 1 ? "" : "s"
+      }`,
+      `publication revision ${Number(
+        publicationReadiness.publicationRevision || 0
+      )}`,
+      digest ? `snapshot ${digest.slice(0, 12)}` : "",
+      candidate.publishingEnforced ? "enforced" : "not enforced"
+    ].filter(Boolean).join(" · ");
+
+    const groups = new Map();
+    for (const readinessNode of publicationReadiness.nodes || []) {
+      const group = String(readinessNode.group || "core");
+      const current = groups.get(group) || [];
+      current.push(readinessNode);
+      groups.set(group, current);
+    }
+    const groupOrder = ["core", "editorial", "monetization", "distribution"];
+    readinessGroups.replaceChildren(...groupOrder
+      .filter((group) => groups.has(group))
+      .map((group) => renderReadinessGroup(group, groups.get(group))));
+  }
+
+  function renderReadinessGroup(group, nodes) {
+    const section = document.createElement("section");
+    section.className = "podcast-admin__readiness-group";
+    const heading = document.createElement("h3");
+    heading.textContent = {
+      core: "Core release",
+      editorial: "Editorial evidence",
+      monetization: "Monetization",
+      distribution: "Distribution"
+    }[group] || humanizeCode(group);
+    const list = document.createElement("div");
+    list.className = "podcast-admin__readiness-list";
+    list.replaceChildren(...nodes.map(renderReadinessNode));
+    section.append(heading, list);
+    return section;
+  }
+
+  function renderReadinessNode(readinessNode) {
+    const card = document.createElement("article");
+    const status = String(readinessNode.status || "missing");
+    const severity = String(readinessNode.severity || "info");
+    card.className =
+      `podcast-admin__readiness-card is-${status} severity-${severity}`;
+    const heading = document.createElement("div");
+    heading.className = "podcast-admin__readiness-card-heading";
+    const title = document.createElement("h4");
+    title.textContent = String(readinessNode.label || "Dependency");
+    const pill = document.createElement("span");
+    pill.className = "podcast-admin__pill";
+    pill.textContent = `${humanizeCode(status)} · ${humanizeCode(severity)}`;
+    heading.append(title, pill);
+    const summary = document.createElement("p");
+    summary.textContent = String(readinessNode.summary || "");
+    const evidence = document.createElement("details");
+    const evidenceSummary = document.createElement("summary");
+    evidenceSummary.textContent = "Evidence";
+    const values = document.createElement("dl");
+    values.className = "podcast-admin__readiness-evidence";
+    for (const [key, value] of Object.entries(readinessNode.evidence || {})) {
+      const term = document.createElement("dt");
+      term.textContent = humanizeCode(key);
+      const description = document.createElement("dd");
+      description.textContent = readinessEvidenceValue(value);
+      values.append(term, description);
+    }
+    evidence.append(evidenceSummary, values);
+    card.append(heading, summary, evidence);
+    return card;
+  }
+
+  function readinessEvidenceValue(value) {
+    if (Array.isArray(value)) return value.length ? value.join(", ") : "None";
+    if (typeof value === "boolean") return value ? "Yes" : "No";
+    if (value === null || value === undefined || value === "") return "None";
+    return String(value);
   }
 
   function renderProductionReviews() {
@@ -2246,10 +2421,16 @@ function startPodcastAdmin(root) {
       reviewReadiness.textContent = targets.length === 0
         ? "No versioned audio, transcript, chapter, clip, or ad-plan target is ready for review."
         : [
+            `${Number(readiness.currentTargetCount || targets.length)} current target${
+              Number(readiness.currentTargetCount || targets.length) === 1
+                ? ""
+                : "s"
+            }`,
             `${Number(readiness.currentReviewCount || 0)} current review target${
               Number(readiness.currentReviewCount || 0) === 1 ? "" : "s"
             }`,
             `${Number(readiness.approvedCurrentReviewCount || 0)} approved`,
+            `${Number(readiness.unreviewedCurrentTargetCount || 0)} unreviewed`,
             `${Number(readiness.openBlockerCount || 0)} open blocker${
               Number(readiness.openBlockerCount || 0) === 1 ? "" : "s"
             }`,
@@ -2462,6 +2643,7 @@ function startPodcastAdmin(root) {
       reviewForm.elements.blocker.checked = false;
       renderProductionReviews();
       setStatus(reviewStatus, "Production review note added.");
+      await loadPublicationReadiness();
     } catch (error) {
       setStatus(
         reviewStatus,
@@ -2545,6 +2727,7 @@ function startPodcastAdmin(root) {
       productionReviews = payload;
       renderProductionReviews();
       setStatus(reviewStatus, "Production review state saved.");
+      await loadPublicationReadiness();
     } catch (error) {
       renderProductionReviews();
       setStatus(reviewStatus, friendlyError(error), true);
@@ -2572,6 +2755,7 @@ function startPodcastAdmin(root) {
       productionReviews = payload;
       renderProductionReviews();
       setStatus(reviewStatus, "Review-note state updated.");
+      await loadPublicationReadiness();
     } catch (error) {
       setStatus(reviewStatus, friendlyError(error), true);
     } finally {
@@ -3287,6 +3471,9 @@ function startPodcastAdmin(root) {
         clipStatus,
         "Clip recipe saved. Word cuts and public upload remain locked."
       );
+      await refreshReviewEvidenceForEpisode(
+        transcriptEpisodeSelect.value
+      );
     } catch (error) {
       setStatus(clipStatus, friendlyError(error), true);
       updateClipAvailability();
@@ -3428,6 +3615,9 @@ function startPodcastAdmin(root) {
         "Plan submitted. Download its manifest for the isolated staging processor; review is required after evidence returns."
       );
       await loadAdPlan({ preserveStatus: true });
+      await refreshReviewEvidenceForEpisode(
+        adPlanForm.elements.episodeId.value
+      );
     } catch (error) {
       setStatus(adPlanStatus, friendlyError(error), true);
     } finally {
@@ -3477,6 +3667,9 @@ function startPodcastAdmin(root) {
           : "Plan rejected."
       );
       await loadAdPlan({ preserveStatus: true });
+      await refreshReviewEvidenceForEpisode(
+        adPlanForm.elements.episodeId.value
+      );
     } catch (error) {
       setStatus(adPlanStatus, friendlyError(error), true);
       button.disabled = false;

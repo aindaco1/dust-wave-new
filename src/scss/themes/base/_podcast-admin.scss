@@ -703,6 +703,96 @@
   gap: 0.35rem;
 }
 
+.podcast-admin__readiness-groups,
+.podcast-admin__readiness-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.podcast-admin__readiness-groups {
+  margin-top: 1rem;
+}
+
+[data-podcast-readiness-refresh] {
+  min-height: 2.75rem;
+}
+
+.podcast-admin__readiness-group > h3 {
+  margin: 0 0 0.75rem;
+}
+
+.podcast-admin__readiness-list {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+}
+
+.podcast-admin__readiness-card {
+  background: #101010;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-top: 0.3rem solid #8d8d8d;
+  border-radius: 0.65rem;
+  min-width: 0;
+  padding: 1rem;
+}
+
+.podcast-admin__readiness-card.is-ready {
+  border-top-color: #75c78b;
+}
+
+.podcast-admin__readiness-card.is-pending,
+.podcast-admin__readiness-card.is-stale {
+  border-top-color: #e5b75b;
+}
+
+.podcast-admin__readiness-card.is-missing,
+.podcast-admin__readiness-card.is-failed {
+  border-top-color: #ee7e7e;
+}
+
+.podcast-admin__readiness-card-heading {
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.podcast-admin__readiness-card-heading h4 {
+  margin: 0;
+}
+
+.podcast-admin__readiness-card > p {
+  color: #d6d6d6;
+  margin: 0.75rem 0;
+}
+
+.podcast-admin__readiness-card details {
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  margin-top: 0.75rem;
+}
+
+.podcast-admin__readiness-card summary {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  min-height: 2.75rem;
+}
+
+.podcast-admin__readiness-evidence {
+  display: grid;
+  gap: 0.5rem 0.75rem;
+  grid-template-columns: minmax(7rem, auto) minmax(0, 1fr);
+  margin: 0;
+}
+
+.podcast-admin__readiness-evidence dt {
+  color: #bdb7ae;
+}
+
+.podcast-admin__readiness-evidence dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
 [data-podcast-review-form] .podcast-admin__checkbox,
 .podcast-admin__review-controls .podcast-admin__checkbox {
   align-items: center;
@@ -773,6 +863,14 @@
 
   [data-podcast-review-form] > .btn {
     width: 100%;
+  }
+
+  .podcast-admin__readiness-evidence {
+    grid-template-columns: 1fr;
+  }
+
+  .podcast-admin__readiness-evidence dd {
+    margin-bottom: 0.35rem;
   }
 
   .podcast-admin__transcript-pages {
