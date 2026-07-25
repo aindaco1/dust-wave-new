@@ -40,6 +40,11 @@ assert.match(
 );
 assert.match(playerScript, /playerLanguage\.toLowerCase\(\)\.startsWith\('es'\)/);
 assert.match(playerScript, /seekTo\(playerId, seconds/);
+assert.match(playerScript, /async mount\(scope = document\)/);
+assert.match(playerScript, /card\.dataset\.audioCredentials === "include"/);
+assert.match(playerScript, /const svgBack = `<svg/);
+assert.match(playerScript, /const svgForward = `<svg/);
+assert.match(playerScript, /const svgDownload = `<svg/);
 assert.match(playerScript, /document\.getElementById\(`wave_\$\{playerId\}`\)/);
 assert.doesNotMatch(playerScript, /unpkg\.com|cdn\.jsdelivr\.net/);
 assert.match(
@@ -51,6 +56,13 @@ assert.match(themeStyles, /@import "themes\/base\/audio-player"/);
 assert.match(embedStyles, /@import "themes\/base\/audio-player"/);
 assert.match(playerStyles, /\.audio-card/);
 assert.match(playerStyles, /@media \(max-width: 420px\)/);
+assert.match(playerStyles, /@media \(max-width: 360px\)/);
+assert.match(playerStyles, /flex-wrap: wrap/);
+assert.match(
+  playerStyles,
+  /button:not\(\[data-audio-speed\]\)\{ width:44px; height:44px;/
+);
+assert.match(playerStyles, /:focus-visible/);
 assert.match(gulpfile, /function copyAudioPlayerVendor/);
 assert.match(gulpfile, /wavesurfer\.js\/dist\/wavesurfer\.min\.js/);
 assert.match(gulpfile, /function copyThirdPartyNotices/);

@@ -1,0 +1,343 @@
+import { createServer } from "node:http";
+
+const host = "127.0.0.1";
+const port = Number(process.env.PODCAST_ADMIN_MOCK_PORT || 4174);
+const websiteOrigin =
+  process.env.PODCAST_ADMIN_WEBSITE_ORIGIN || "http://127.0.0.1:4173";
+const adminRole =
+  process.env.PODCAST_ADMIN_MOCK_ROLE === "producer"
+    ? "producer"
+    : "super_admin";
+const sha = (character) => character.repeat(64);
+
+const show = {
+  id: "show_opera_en_la_selva",
+  slug: "opera-en-la-selva",
+  title: "Ópera en la Selva",
+  description: "Conversaciones desde la selva, en español y en inglés.",
+  descriptionEn: "Conversations from the rainforest, in Spanish and English.",
+  language: "es",
+  status: "active",
+  episodeCount: 1,
+  earlyAccessDays: 7,
+  premiumEnabled: true,
+  freeMiniEpisodeEnabled: true,
+  youtubeChannelUrl: "https://www.youtube.com/@dustwavecollective",
+  canonicalUrl: "https://dustwave.xyz/podcasts/opera-en-la-selva/"
+};
+
+const episode = {
+  id: "episode_mock",
+  showId: show.id,
+  slug: "episodio-de-prueba",
+  title: "Episodio de prueba / Test episode",
+  summary: "A controlled browser-QA fixture.",
+  status: "draft",
+  access: "public",
+  mediaStatus: "ready",
+  audioFilename: "episode-source.wav",
+  publicationRevision: 0,
+  publicAt: null,
+  canonicalUrl:
+    "https://dustwave.xyz/news/podcasts/opera-en-la-selva/episodio-de-prueba/"
+};
+
+const audioMasterPayload = {
+  state: {
+    revision: 1,
+    currentMasterId: "master_mock",
+    updatedAt: "2026-07-25T12:00:00.000Z"
+  },
+  current: {
+    id: "master_mock",
+    revision: 1,
+    originKind: "source_original",
+    objectBytes: 14_400_000,
+    mimeType: "audio/wav",
+    sourceSha256: sha("a"),
+    qualityControlReportSha256: sha("b"),
+    approvalReason:
+      'Exact-source review <img id="qa-master-injection" src=x> remains text.',
+    approvedAt: "2026-07-25T12:00:00.000Z"
+  },
+  eligibleSource: {
+    qualityControlRunId: "qc_mock",
+    warningCount: 1,
+    objectBytes: 14_400_000,
+    policyRevision: 1,
+    durationMs: 180_000
+  },
+  masters: [],
+  previews: [
+    {
+      id: 'enhance_<img id="qa-preview-injection" src=x>',
+      status: "ready",
+      recipe: {
+        presetId: "dialogue-gentle-v1",
+        previewStartMs: 15_000,
+        previewDurationMs: 45_000
+      },
+      original: {
+        mediaUrl:
+          "/v1/admin/audio-enhancements/enhance_mock/media/original",
+        bytes: 1_080_000,
+        sha256: sha("c"),
+        durationMs: 45_000
+      },
+      enhanced: {
+        mediaUrl:
+          "/v1/admin/audio-enhancements/enhance_mock/media/enhanced",
+        bytes: 1_080_000,
+        sha256: sha("d"),
+        durationMs: 45_000
+      },
+      warning:
+        'Private preview only <script id="qa-warning-injection">bad()</script>'
+    }
+  ],
+  presets: [
+    {
+      id: "dialogue-gentle-v1",
+      label: "Gentle dialogue cleanup",
+      description: "Conservative cleanup and loudness matching"
+    },
+    {
+      id: "loudness-only-v1",
+      label: "Loudness only",
+      description: "No tonal processing"
+    }
+  ],
+  safeguards: {
+    sourceApprovalRole: "super_admin",
+    enhancementPreviewIsMaster: false,
+    replacementInvalidatesDerivedApprovals: true
+  },
+  processor: {
+    available: true,
+    mode: "staging_manual"
+  }
+};
+
+function json(response, status = 200) {
+  return {
+    status,
+    contentType: "application/json; charset=utf-8",
+    body: JSON.stringify(response)
+  };
+}
+
+function responseFor(request) {
+  const url = new URL(request.url, `http://${request.headers.host}`);
+  const path = url.pathname;
+  if (request.method === "GET" && path === "/v1/admin/session") {
+    return json({
+      identity: {
+        id: "admin_browser_qa",
+        email: "browser-qa@example.invalid",
+        roles: [{ role: adminRole }]
+      },
+      csrfToken: "browser-qa-csrf"
+    });
+  }
+  if (request.method === "GET" && path === "/v1/admin/shows") {
+    return json({ shows: [show] });
+  }
+  if (
+    request.method === "GET"
+    && path === `/v1/admin/shows/${show.id}/episodes`
+  ) {
+    return json({ episodes: [episode] });
+  }
+  if (
+    request.method === "GET"
+    && path === `/v1/admin/shows/${show.id}/audio-qc-policy`
+  ) {
+    return json({
+      policy: {
+        revision: 1,
+        monoIntegratedLufs: -19,
+        stereoIntegratedLufs: -16,
+        integratedLufsTolerance: 1,
+        maximumTruePeakDbtp: -1,
+        maximumDcOffset: 0.02,
+        maximumChannelImbalanceLu: 1.5,
+        maximumLeadingSilenceMs: 2_000,
+        maximumTrailingSilenceMs: 3_000,
+        maximumInternalSilenceMs: 8_000,
+        silenceThresholdDb: -50
+      }
+    });
+  }
+  if (
+    request.method === "GET"
+    && path === `/v1/admin/episodes/${episode.id}/ad-plan`
+  ) {
+    return json({
+      latestPlan: null,
+      source: { ready: true, bytes: 14_400_000, durationSeconds: 180 },
+      active: { markers: [], segments: [] },
+      processorManifest: null
+    });
+  }
+  if (
+    request.method === "GET"
+    && path === `/v1/admin/episodes/${episode.id}/audio-qc`
+  ) {
+    return json({
+      source: {
+        filename: "episode-source.wav",
+        objectBytes: 14_400_000
+      },
+      policy: { revision: 1 },
+      processor: { available: true },
+      runs: [
+        {
+          id: "qc_mock",
+          status: "succeeded",
+          summary: {
+            blockerCount: 0,
+            warningCount: 1,
+            integratedLufs: -18.7,
+            truePeakDbtp: -1.4,
+            durationMs: 180_000
+          },
+          report: { quality: { findings: [] } }
+        }
+      ]
+    });
+  }
+  if (
+    request.method === "GET"
+    && path === `/v1/admin/episodes/${episode.id}/audio-master`
+  ) {
+    return json(audioMasterPayload);
+  }
+  if (
+    request.method === "GET"
+    && path === `/v1/admin/episodes/${episode.id}/transcripts`
+  ) {
+    return json({ durationSeconds: 180, transcripts: [] });
+  }
+  if (
+    request.method === "GET"
+    && path === `/v1/admin/episodes/${episode.id}/chapters`
+  ) {
+    return json({ chapterSet: null });
+  }
+  if (
+    request.method === "GET"
+    && path === `/v1/admin/episodes/${episode.id}/reviews`
+  ) {
+    return json({
+      targetOptions: [],
+      reviews: [],
+      readiness: {
+        currentTargetCount: 0,
+        currentReviewCount: 0,
+        approvedCurrentReviewCount: 0,
+        unreviewedCurrentTargetCount: 0,
+        openBlockerCount: 0,
+        reviewReady: false
+      }
+    });
+  }
+  if (
+    request.method === "GET"
+    && path === `/v1/admin/episodes/${episode.id}/readiness`
+  ) {
+    return json({
+      publicationRevision: 0,
+      publicationGateMode: "shadow",
+      snapshotDigest: sha("e"),
+      legacyGate: { ready: false, missing: ["publication"] },
+      candidateGate: {
+        ready: false,
+        blockerCount: 1,
+        warningCount: 1,
+        overrideAvailable: true
+      },
+      nodes: [
+        {
+          id: "core.working_master",
+          group: "core",
+          label: "Working master",
+          status: "ready",
+          severity: "blocker",
+          summary: "Exact source and QC evidence are approved.",
+          evidence: { revision: 1, sourceSha256: sha("a") }
+        }
+      ]
+    });
+  }
+  if (
+    request.method === "GET"
+    && path === `/v1/admin/episodes/${episode.id}/clips`
+  ) {
+    return json({ clips: [] });
+  }
+  if (
+    request.method === "GET"
+    && path === "/v1/admin/ads/campaigns"
+  ) {
+    return json({ campaigns: [] });
+  }
+  if (
+    request.method === "GET"
+    && path.startsWith("/v1/admin/audio-enhancements/")
+    && path.includes("/media/")
+  ) {
+    return {
+      status: 200,
+      contentType: "audio/wav",
+      body: silentWav()
+    };
+  }
+  return json({ error: "mock_route_not_found", method: request.method, path }, 404);
+}
+
+function silentWav() {
+  const samples = 8_000;
+  const bytes = Buffer.alloc(44 + samples * 2);
+  bytes.write("RIFF", 0);
+  bytes.writeUInt32LE(bytes.length - 8, 4);
+  bytes.write("WAVEfmt ", 8);
+  bytes.writeUInt32LE(16, 16);
+  bytes.writeUInt16LE(1, 20);
+  bytes.writeUInt16LE(1, 22);
+  bytes.writeUInt32LE(8_000, 24);
+  bytes.writeUInt32LE(16_000, 28);
+  bytes.writeUInt16LE(2, 32);
+  bytes.writeUInt16LE(16, 34);
+  bytes.write("data", 36);
+  bytes.writeUInt32LE(samples * 2, 40);
+  return bytes;
+}
+
+const server = createServer((request, response) => {
+  response.setHeader("access-control-allow-origin", websiteOrigin);
+  response.setHeader("access-control-allow-credentials", "true");
+  response.setHeader(
+    "access-control-allow-headers",
+    "content-type, x-podcast-csrf"
+  );
+  response.setHeader(
+    "access-control-allow-methods",
+    "GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS"
+  );
+  response.setHeader("cache-control", "no-store");
+  if (request.method === "OPTIONS") {
+    response.writeHead(204);
+    response.end();
+    return;
+  }
+  const result = responseFor(request);
+  response.setHeader("content-type", result.contentType);
+  response.writeHead(result.status);
+  response.end(request.method === "HEAD" ? undefined : result.body);
+});
+
+server.listen(port, host, () => {
+  process.stdout.write(
+    `Podcast admin mock API listening on http://${host}:${port}\n`
+  );
+});

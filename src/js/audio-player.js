@@ -5,7 +5,6 @@
 	11) AUDIO: unlock & safe play helpers (global hooks preserved)
 ========================================================================= */
 (() => {
-if (!document.querySelector(".audio-card")) return;
 let unlocked = false;
 const pending = [];
 
@@ -260,6 +259,10 @@ function wireControls(card, ws) {
 	// Skip buttons
 	let backBtn = hardenControl(ctrls.querySelector(".skip-back"));
 	let fwdBtn  = hardenControl(ctrls.querySelector(".skip-fwd"));
+	const svgBack = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 5V2L7 6l5 4V7a6 6 0 1 1-5.7 8H4.2A8 8 0 1 0 12 5z"></path></svg>`;
+	const svgForward = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 5V2l5 4-5 4V7a6 6 0 1 0 5.7 8h2.1A8 8 0 1 1 12 5z"></path></svg>`;
+	if (backBtn && !backBtn.querySelector("svg")) backBtn.innerHTML = svgBack;
+	if (fwdBtn && !fwdBtn.querySelector("svg")) fwdBtn.innerHTML = svgForward;
 	if (backBtn) bindThrottled(backBtn, "click", () => skipSeconds(ws, -10), "ws-skipback");
 	if (fwdBtn)  bindThrottled(fwdBtn,  "click", () => skipSeconds(ws, +30), "ws-skipfwd");
 
@@ -289,6 +292,10 @@ function wireControls(card, ws) {
 
 	// Download (don’t bubble)
 	const dl = ctrls.querySelector('.download');
+	if (dl && !dl.querySelector("svg")) {
+	const svgDownload = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M5 20h14v-2H5v2zM12 2v10.59l3.3-3.3 1.4 1.41L12 16.41l-4.7-4.71 1.4-1.41L11 12.59V2h1z"></path></svg>`;
+	dl.innerHTML = svgDownload;
+	}
 	if (dl && !dl.__bound_dl) {
 	dl.addEventListener('click', (e) => e.stopPropagation());
 	dl.style.touchAction = 'manipulation';
@@ -316,9 +323,11 @@ async function createWaveForCard(card, opts={eager:false}) {
 		media.style.display = 'none';
 		waveEl.insertAdjacentElement('afterend', media);
 	} else {
-		media.preload = opts.eager ? 'metadata' : (media.preload || 'none');
-		media.crossOrigin = media.crossOrigin || 'anonymous';
+	media.preload = opts.eager ? 'metadata' : (media.preload || 'none');
 	}
+	media.crossOrigin = card.dataset.audioCredentials === "include"
+		? "use-credentials"
+		: (media.crossOrigin || "anonymous");
 
 	// skeleton + fallback progress + overlay
 	waveEl.classList.add("wave--skeleton","wave--fallback","wave--loading");
@@ -470,6 +479,13 @@ async function boot() {
 
 // public reinit (unchanged contract)
 window.DWDigestAudio = {
+	async mount(scope = document) {
+	const cards = Array.from(scope.querySelectorAll?.(".audio-card") || []);
+	if (!cards.length) return;
+	try { await ensureWavesurferLoaded(); }
+	catch (e) { console.error(e); return; }
+	for (const card of cards) await createWaveForCard(card, { eager:false });
+	},
 	reinit() {
 	document.querySelectorAll(".audio-card .wave").forEach(w => { w.dataset.wsReady = "0"; });
 	try { document.querySelectorAll('.audio-card').forEach(window.__AudioSquelchAttach?.bind(null) || (()=>{})); } catch {}
@@ -518,7 +534,6 @@ window.DWDigestAudio = {
 11) Scroll squelch to prevent UA autoscroll when clicking audio controls
 ========================================================================= */
 (() => {
-if (!document.querySelector(".audio-card")) return;
 let squelchUntil = 0;
 const ARM_MS = 500;
 const now = () => performance.now();

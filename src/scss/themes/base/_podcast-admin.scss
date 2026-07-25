@@ -709,23 +709,31 @@
 
 .podcast-admin__readiness-groups,
 .podcast-admin__readiness-list,
-.podcast-admin__audio-qc-results {
+.podcast-admin__audio-qc-results,
+.podcast-admin__audio-enhancement-results {
   display: grid;
   gap: 1rem;
 }
 
 .podcast-admin__readiness-groups,
-.podcast-admin__audio-qc-results {
+.podcast-admin__audio-qc-results,
+.podcast-admin__audio-enhancement-results {
   margin-top: 1rem;
 }
 
 [data-podcast-readiness-refresh],
 [data-podcast-audio-qc-queue],
-[data-podcast-audio-qc-refresh] {
+[data-podcast-audio-qc-refresh],
+[data-podcast-audio-master-refresh],
+[data-podcast-audio-master-approval] .btn,
+[data-podcast-audio-enhancement-form] .btn {
   min-height: 2.75rem;
 }
 
-[data-podcast-audio-qc-status] {
+[data-podcast-audio-qc-status],
+[data-podcast-audio-master-summary],
+[data-podcast-audio-master-approval-status],
+[data-podcast-audio-enhancement-status] {
   overflow-wrap: anywhere;
 }
 
@@ -735,6 +743,50 @@
 
 .podcast-admin__audio-qc-policy {
   margin: 1rem 0;
+}
+
+.podcast-admin__audio-master-current,
+.podcast-admin__audio-master-approval,
+.podcast-admin__audio-enhancement-form {
+  margin-top: 1rem;
+}
+
+.podcast-admin__audio-enhancement-comparison {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 1rem;
+}
+
+.podcast-admin__audio-enhancement-player {
+  min-width: 0;
+}
+
+.podcast-admin__audio-enhancement-player h4 {
+  margin: 0 0 0.5rem;
+}
+
+.podcast-admin__audio-enhancement-player .audio-card {
+  margin: 0;
+  min-width: 0;
+}
+
+.podcast-admin__audio-enhancement-player .art-col:empty {
+  display: none;
+}
+
+.podcast-admin__audio-enhancement-warning {
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  color: #d6d6d6;
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+  padding-top: 0.75rem;
+}
+
+@media (max-width: 48rem) {
+  .podcast-admin__audio-enhancement-comparison {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .podcast-admin__readiness-group > h3 {

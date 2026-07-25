@@ -35,6 +35,7 @@ const sharedPackage = JSON.parse(
 assert.match(adminTemplate, /permalink: admin\/podcasts\/index\.html/);
 assert.match(adminLayout, /noindex,nofollow,noarchive/);
 assert.match(adminLayout, /type="module" src="\/js\/podcast-admin\.js"/);
+assert.match(adminLayout, /src="\/js\/audio-player\.js" defer/);
 assert.match(adminConfig, /https:\/\/feeds\.dustwave\.xyz/);
 assert.doesNotMatch(adminConfig, /workers\.dev/);
 assert.match(adminTemplate, /data-podcast-auth/);
@@ -55,6 +56,12 @@ assert.match(adminTemplate, /data-podcast-audio-qc-policy-form/);
 assert.match(adminTemplate, /Admin and Super-admin changes apply only to future QC runs/);
 assert.match(adminTemplate, /Measure the immutable source/);
 assert.match(adminTemplate, /never overwrites audio or publishes an episode/);
+assert.match(adminTemplate, /data-podcast-audio-master/);
+assert.match(adminTemplate, /data-podcast-audio-master-approval/);
+assert.match(adminTemplate, /data-podcast-audio-enhancement-form/);
+assert.match(adminTemplate, /data-podcast-audio-enhancement-results/);
+assert.match(adminTemplate, /An enhancement preview is never a master/);
+assert.match(adminTemplate, /Replacing an approved master makes transcript, chapter, clip, and readiness approvals stale/);
 assert.match(adminTemplate, /data-podcast-transcript-workbench/);
 assert.match(adminTemplate, /data-podcast-transcript-cues/);
 assert.match(adminTemplate, /data-podcast-transcript-pages/);
@@ -168,6 +175,28 @@ assert.match(
 assert.match(adminScript, /`qc_\$\{crypto\.randomUUID/);
 assert.match(adminScript, /item\.append\(label, evidence\)/);
 assert.match(adminStyles, /\.podcast-admin__audio-qc-findings/);
+assert.match(adminScript, /function loadAudioMaster/);
+assert.match(adminScript, /function approveSourceWorkingMaster/);
+assert.match(adminScript, /function queueAudioEnhancementPreview/);
+assert.match(
+  adminScript,
+  /audio-master\/approve-source/
+);
+assert.match(adminScript, /audio-enhancement-previews/);
+assert.match(adminScript, /baseRevision: Number\(state\.revision/);
+assert.match(adminScript, /acknowledgeExactSource/);
+assert.match(adminScript, /DWDigestAudio\?\.mount/);
+assert.match(adminScript, /audio\.crossOrigin = "use-credentials"/);
+assert.match(adminScript, /function checkedAudioEnhancementMediaUrl/);
+assert.match(
+  adminScript,
+  /mediaUrl\.origin !== apiBase\.origin/
+);
+assert.match(
+  adminScript,
+  /audio-enhancements\\\/\[A-Za-z0-9_-\]\+\\\/media/
+);
+assert.match(adminStyles, /\.podcast-admin__audio-enhancement-comparison/);
 assert.match(adminScript, /\/review-comments\//);
 assert.match(adminScript, /function publicationGateLabel/);
 assert.match(adminScript, /body\.textContent = comment\.bodyText/);

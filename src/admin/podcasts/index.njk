@@ -253,6 +253,62 @@ permalink: admin/podcasts/index.html
           </section>
           <div class="podcast-admin__panel-heading podcast-admin__section-heading">
             <div>
+              <h2>Working master and A/B preview</h2>
+              <p>Approve one byte-exact, zero-blocker source as the episode’s working master. Compare private enhancement presets without changing source or delivery audio.</p>
+            </div>
+            <p class="podcast-admin__pill">Explicit · reversible</p>
+          </div>
+          <div class="podcast-admin__callout">
+            <p>An enhancement preview is never a master. A processed master will require a full-length render and a new quality-control pass. Replacing an approved master makes transcript, chapter, clip, and readiness approvals stale.</p>
+          </div>
+          <section class="podcast-admin__audio-master" data-podcast-audio-master aria-label="Working audio master">
+            <div class="podcast-admin__field-grid">
+              <label>Episode
+                <select data-podcast-audio-master-episode required></select>
+              </label>
+            </div>
+            <div class="podcast-admin__transcript-actions">
+              <button class="btn btn-outline-light" type="button" data-podcast-audio-master-refresh>Refresh master state</button>
+            </div>
+            <p class="podcast-admin__transcript-meta" data-podcast-audio-master-summary aria-live="polite">Choose an episode with a successful source-audio QC run.</p>
+            <div class="podcast-admin__audio-master-current" data-podcast-audio-master-current></div>
+
+            <form class="podcast-admin__form podcast-admin__audio-master-approval" data-podcast-audio-master-approval hidden>
+              <h3>Approve exact source</h3>
+              <p>Super-admin only. The current source object, SHA-256, policy revision, and QC report are recorded as immutable evidence.</p>
+              <label>Approval reason
+                <textarea name="approvalReason" rows="3" maxlength="500" required></textarea>
+              </label>
+              <label class="podcast-admin__checkbox">
+                <input name="acknowledgeExactSource" type="checkbox" required>
+                I reviewed the current zero-blocker QC evidence and approve these exact source bytes.
+              </label>
+              <button class="btn btn-danger" type="submit">Approve working master</button>
+              <p class="podcast-admin__status" data-podcast-audio-master-approval-status role="status" aria-live="polite"></p>
+            </form>
+
+            <form class="podcast-admin__form podcast-admin__audio-enhancement-form" data-podcast-audio-enhancement-form hidden>
+              <h3>Private enhancement comparison</h3>
+              <p>Producer and above. Both previews use the same MP3 profile and remain private; queueing never approves or publishes audio.</p>
+              <div class="podcast-admin__field-grid podcast-admin__field-grid--three">
+                <label>Preset
+                  <select name="presetId" required></select>
+                </label>
+                <label>Start (seconds)
+                  <input name="previewStartSeconds" type="number" min="0" step="0.1" value="0" required>
+                </label>
+                <label>Length (seconds)
+                  <input name="previewDurationSeconds" type="number" min="5" max="90" step="1" value="45" required>
+                </label>
+              </div>
+              <button class="btn btn-outline-light" type="submit">Queue private A/B preview</button>
+              <p class="podcast-admin__status" data-podcast-audio-enhancement-status role="status" aria-live="polite"></p>
+            </form>
+
+            <div class="podcast-admin__audio-enhancement-results" data-podcast-audio-enhancement-results></div>
+          </section>
+          <div class="podcast-admin__panel-heading podcast-admin__section-heading">
+            <div>
               <h2>Transcript review</h2>
               <p>Edit bilingual timed cues with the shared Pool/Store editor, confirm public speaker labels, and approve a versioned revision.</p>
             </div>
