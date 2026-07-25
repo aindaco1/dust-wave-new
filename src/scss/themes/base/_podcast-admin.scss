@@ -97,6 +97,18 @@
   width: 100%;
 }
 
+.podcast-admin :is(
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  [contenteditable="true"]
+):focus-visible {
+  outline: 3px solid #ff5964;
+  outline-offset: 3px;
+}
+
 .podcast-admin__checkbox {
   align-items: center;
   display: flex !important;
@@ -170,7 +182,8 @@
 
 .podcast-admin__episode-list,
 .podcast-admin__campaign-list,
-.podcast-admin__directory-list {
+.podcast-admin__directory-list,
+.podcast-admin__transcript-cues {
   display: grid;
   gap: 0.75rem;
   margin-top: 2rem;
@@ -282,6 +295,45 @@
   min-height: 12rem;
 }
 
+.podcast-admin__transcript-meta {
+  color: #c7c2bb;
+  margin-top: 1.25rem;
+}
+
+.podcast-admin__transcript-cue {
+  background: #101010;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 0.65rem;
+  padding: 1rem;
+}
+
+.podcast-admin__transcript-cue .dw-editor__surface {
+  min-height: 6rem;
+}
+
+.podcast-admin__transcript-cue-heading,
+.podcast-admin__transcript-actions,
+.podcast-admin__transcript-pages {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.podcast-admin__transcript-cue-heading h3 {
+  margin: 0;
+}
+
+.podcast-admin__transcript-actions {
+  justify-content: flex-start;
+  margin-top: 1.25rem;
+}
+
+.podcast-admin__transcript-pages {
+  margin-top: 1rem;
+}
+
 .podcast-admin progress {
   margin: 1rem 0;
   width: 100%;
@@ -293,6 +345,15 @@
   .podcast-admin__episode,
   .podcast-admin__campaign {
     display: grid;
+  }
+
+  .podcast-admin__transcript-actions .btn,
+  .podcast-admin__transcript-pages .btn {
+    width: 100%;
+  }
+
+  .podcast-admin__transcript-pages {
+    justify-content: center;
   }
 
   .podcast-admin__inline-form,

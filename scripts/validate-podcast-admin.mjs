@@ -39,6 +39,11 @@ assert.match(adminTemplate, /data-podcast-upload-form/);
 assert.match(adminTemplate, /data-podcast-ad-plan-form/);
 assert.match(adminTemplate, /data-podcast-ad-plan-result/);
 assert.match(adminTemplate, /data-podcast-distribution/);
+assert.match(adminTemplate, /data-tab="production"/);
+assert.match(adminTemplate, /data-podcast-transcript-workbench/);
+assert.match(adminTemplate, /data-podcast-transcript-cues/);
+assert.match(adminTemplate, /data-podcast-transcript-pages/);
+assert.match(adminTemplate, /Word timing gated/);
 assert.match(adminTemplate, /data-tab="marketing"/);
 assert.match(adminTemplate, /data-tab="sponsors"/);
 assert.match(adminTemplate, /data-tab="analytics"/);
@@ -64,6 +69,21 @@ assert.match(adminScript, /validated\.validationStatus !== "ready"/);
 assert.match(adminScript, /payload\.previewOnly/);
 assert.match(adminScript, /\/v1\/admin\/ads\/reconciliation/);
 assert.match(adminScript, /trusted sponsor-delivery evidence/i);
+assert.match(adminScript, /mode: "timed_text"/);
+assert.match(
+  adminScript,
+  /\/v1\/admin\/episodes\/\$\{encodeURIComponent\(episodeId\)\}\/transcripts/
+);
+assert.match(adminScript, /baseRevision: Number\(transcript\.revision/);
+assert.match(adminScript, /expectedRevision: Number\(transcript\.revision\)/);
+assert.match(adminScript, /speakerConfirmed/);
+assert.match(adminScript, /wordControlsEnabled/);
+assert.match(adminScript, /TRANSCRIPT_CUES_PER_PAGE = 100/);
+assert.match(adminScript, /syncVisibleTranscriptCues/);
+assert.doesNotMatch(
+  adminScript,
+  /(?:localStorage|sessionStorage)\.(?:setItem|getItem)\([^)]*transcript/i
+);
 assert.match(gulpfile, /copySharedAdminShell/);
 assert.equal(sharedPackage.name, '@dustwave/admin-shell');
 assert.equal(sharedPackage.version, '0.1.0');

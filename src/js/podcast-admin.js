@@ -3,6 +3,8 @@ import { mountRichTextEditor } from "./dust-wave-admin-shell/editor.js";
 import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js";
 import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js";
 
+const TRANSCRIPT_CUES_PER_PAGE = 100;
+
 const root = document.querySelector("[data-podcast-admin]");
 if (root) startPodcastAdmin(root);
 
@@ -28,6 +30,43 @@ function startPodcastAdmin(root) {
   const uploadForm = root.querySelector("[data-podcast-upload-form]");
   const uploadStatus = root.querySelector("[data-podcast-upload-status]");
   const uploadProgress = root.querySelector("[data-podcast-upload-progress]");
+  const transcriptWorkbench = root.querySelector(
+    "[data-podcast-transcript-workbench]"
+  );
+  const transcriptEpisodeSelect = root.querySelector(
+    "[data-podcast-transcript-episode]"
+  );
+  const transcriptLanguageSelect = root.querySelector(
+    "[data-podcast-transcript-language]"
+  );
+  const transcriptMeta = root.querySelector("[data-podcast-transcript-meta]");
+  const transcriptCuesRoot = root.querySelector(
+    "[data-podcast-transcript-cues]"
+  );
+  const transcriptStatus = root.querySelector(
+    "[data-podcast-transcript-status]"
+  );
+  const transcriptAddButton = root.querySelector(
+    "[data-podcast-transcript-add]"
+  );
+  const transcriptSaveButton = root.querySelector(
+    "[data-podcast-transcript-save]"
+  );
+  const transcriptApproveButton = root.querySelector(
+    "[data-podcast-transcript-approve]"
+  );
+  const transcriptPages = root.querySelector(
+    "[data-podcast-transcript-pages]"
+  );
+  const transcriptPageLabel = root.querySelector(
+    "[data-podcast-transcript-page]"
+  );
+  const transcriptPreviousButton = root.querySelector(
+    "[data-podcast-transcript-previous]"
+  );
+  const transcriptNextButton = root.querySelector(
+    "[data-podcast-transcript-next]"
+  );
   const adPlanForm = root.querySelector("[data-podcast-ad-plan-form]");
   const adPlanStatus = root.querySelector("[data-podcast-ad-plan-status]");
   const adPlanResult = root.querySelector("[data-podcast-ad-plan-result]");
@@ -63,6 +102,14 @@ function startPodcastAdmin(root) {
   let canManageCampaigns = false;
   let canManageCreatives = false;
   let canManageAdPlans = false;
+  let canEditTranscripts = false;
+  let canApproveTranscripts = false;
+  let transcript = null;
+  let transcriptDurationSeconds = null;
+  let transcriptRequestId = 0;
+  let transcriptDirty = false;
+  let transcriptPage = 0;
+  const transcriptEditors = new Map();
   let latestProcessorManifest = null;
   let turnstileToken = "";
   let turnstileWidgetId;
@@ -74,6 +121,7 @@ function startPodcastAdmin(root) {
   mountAccessibleTabs(root.querySelector("[data-podcast-tabs]"), {
     storageKey: "dustwave-podcast-admin-tab",
     onSelect(tab) {
+      if (tab === "production") loadTranscript();
       if (tab === "distribution") loadDistribution();
       if (tab === "billing") loadBilling();
       if (tab === "sponsors") loadCampaigns();
@@ -108,6 +156,21 @@ function startPodcastAdmin(root) {
     episodeForm.elements.slug.dataset.edited = "true";
   });
   uploadForm?.addEventListener("submit", uploadMedia);
+  transcriptEpisodeSelect?.addEventListener("change", loadTranscript);
+  transcriptLanguageSelect?.addEventListener("change", loadTranscript);
+  transcriptAddButton?.addEventListener("click", addTranscriptCue);
+  transcriptSaveButton?.addEventListener("click", saveTranscript);
+  transcriptApproveButton?.addEventListener("click", approveTranscript);
+  transcriptPreviousButton?.addEventListener("click", () =>
+    moveTranscriptPage(-1)
+  );
+  transcriptNextButton?.addEventListener("click", () =>
+    moveTranscriptPage(1)
+  );
+  transcriptCuesRoot?.addEventListener("click", (event) => {
+    const remove = event.target.closest("[data-podcast-transcript-remove]");
+    if (remove) removeTranscriptCue(remove.dataset.podcastTranscriptRemove);
+  });
   adPlanForm?.addEventListener("submit", submitAdPlan);
   adPlanForm?.elements.episodeId?.addEventListener("change", () => loadAdPlan());
   adPlanForm?.elements.midRoll?.addEventListener("change", updateAdPlanFields);
@@ -201,6 +264,10 @@ function startPodcastAdmin(root) {
       ["super_admin", "admin", "producer"].includes(role)
     );
     canManageAdPlans = canManageCreatives;
+    canEditTranscripts = canManageCreatives;
+    canApproveTranscripts = (identity?.roles || []).some(({ role }) =>
+      role === "super_admin" || role === "admin"
+    );
     campaignForm.hidden = !canManageCampaigns;
     creativeForm.hidden = !canManageCreatives;
     adPlanForm.hidden = !canManageAdPlans;
@@ -222,6 +289,18 @@ function startPodcastAdmin(root) {
     canManageCampaigns = false;
     canManageCreatives = false;
     canManageAdPlans = false;
+    canEditTranscripts = false;
+    canApproveTranscripts = false;
+    transcript = null;
+    transcriptDurationSeconds = null;
+    transcriptDirty = false;
+    transcriptPage = 0;
+    transcriptRequestId += 1;
+    transcriptEditors.clear();
+    transcriptCuesRoot?.replaceChildren();
+    transcriptMeta?.replaceChildren();
+    if (transcriptPages) transcriptPages.hidden = true;
+    setStatus(transcriptStatus, "");
     latestProcessorManifest = null;
     sponsorResult?.replaceChildren();
     campaignList?.replaceChildren();
@@ -328,6 +407,8 @@ function startPodcastAdmin(root) {
       renderEpisodes();
       fillEpisodeSelects();
       await loadAdPlan();
+      const productionPanel = root.querySelector("#podcast-panel-production");
+      if (productionPanel && !productionPanel.hidden) await loadTranscript();
     } catch (error) {
       setStatus(episodeStatus, friendlyError(error), true);
     }
@@ -395,7 +476,8 @@ function startPodcastAdmin(root) {
     for (const select of [
       uploadForm?.elements.episodeId,
       sponsorForm?.elements.episodeId,
-      adPlanForm?.elements.episodeId
+      adPlanForm?.elements.episodeId,
+      transcriptEpisodeSelect
     ].filter(Boolean)) {
       const previousValue = select.value;
       select.replaceChildren(...episodes.map((episode) =>
@@ -429,6 +511,13 @@ function startPodcastAdmin(root) {
     if (episodes.length === 0) {
       sponsorResult?.replaceChildren();
       adPlanResult?.replaceChildren();
+      transcript = null;
+      transcriptEditors.clear();
+      transcriptCuesRoot?.replaceChildren();
+      if (transcriptMeta) {
+        transcriptMeta.textContent =
+          "Create an episode before reviewing a transcript.";
+      }
       setStatus(sponsorStatus, "Create an episode before previewing sponsor decisions.");
       setStatus(adPlanStatus, "Create an episode before defining ad markers.");
     } else {
@@ -484,6 +573,403 @@ function startPodcastAdmin(root) {
     } finally {
       button.disabled = false;
     }
+  }
+
+  async function loadTranscript() {
+    const episodeId = transcriptEpisodeSelect?.value;
+    const language = transcriptLanguageSelect?.value || "es";
+    transcriptRequestId += 1;
+    const requestId = transcriptRequestId;
+    transcriptPage = 0;
+    transcriptEditors.clear();
+    transcriptCuesRoot?.replaceChildren();
+    if (!episodeId) {
+      transcript = null;
+      if (transcriptWorkbench) transcriptWorkbench.hidden = true;
+      if (transcriptPages) transcriptPages.hidden = true;
+      if (transcriptMeta) {
+        transcriptMeta.textContent =
+          "Create an episode before reviewing a transcript.";
+      }
+      return;
+    }
+    if (transcriptWorkbench) transcriptWorkbench.hidden = false;
+    setStatus(transcriptStatus, "Loading transcript review state…");
+    try {
+      const payload = await client.request(
+        `/v1/admin/episodes/${encodeURIComponent(episodeId)}/transcripts`
+      );
+      if (requestId !== transcriptRequestId) return;
+      transcriptDurationSeconds = Number.isFinite(
+        Number(payload.durationSeconds)
+      )
+        ? Number(payload.durationSeconds)
+        : null;
+      transcript = (payload.transcripts || []).find(
+        (candidate) => candidate.language === language
+      ) || emptyTranscript(language);
+      transcriptDirty = false;
+      renderTranscript();
+      setStatus(transcriptStatus, "");
+    } catch (error) {
+      if (requestId !== transcriptRequestId) return;
+      transcript = null;
+      transcriptEditors.clear();
+      transcriptCuesRoot?.replaceChildren();
+      if (transcriptPages) transcriptPages.hidden = true;
+      setStatus(transcriptStatus, friendlyError(error), true);
+    }
+  }
+
+  function renderTranscript() {
+    if (!transcript || !transcriptCuesRoot) return;
+    const episode = episodes.find(
+      ({ id }) => id === transcriptEpisodeSelect?.value
+    );
+    const alignment = transcript.alignment || {};
+    const alignmentLabel = alignment.status === "passed"
+      ? `${Number(alignment.alignedWordCount || 0)} aligned words`
+      : humanizeCode(alignment.status || "not_run");
+    if (transcriptMeta) {
+      transcriptMeta.textContent = [
+        episode?.title || "Episode",
+        `revision ${Number(transcript.revision || 0)}`,
+        humanizeCode(transcript.status || "new"),
+        `alignment: ${alignmentLabel}`,
+        alignment.wordControlsEnabled
+          ? "word controls available"
+          : "word controls locked"
+      ].join(" · ");
+    }
+    transcriptEditors.clear();
+    const cues = transcript.cues?.length
+      ? transcript.cues
+      : [newTranscriptCue()];
+    transcript.cues = cues;
+    const pageCount = Math.max(
+      1,
+      Math.ceil(cues.length / TRANSCRIPT_CUES_PER_PAGE)
+    );
+    transcriptPage = Math.min(transcriptPage, pageCount - 1);
+    const firstCueIndex = transcriptPage * TRANSCRIPT_CUES_PER_PAGE;
+    const lastCueIndex = Math.min(
+      cues.length,
+      firstCueIndex + TRANSCRIPT_CUES_PER_PAGE
+    );
+    const visibleCues = cues.slice(firstCueIndex, lastCueIndex);
+    if (transcriptPages) transcriptPages.hidden = pageCount <= 1;
+    if (transcriptPageLabel) {
+      transcriptPageLabel.textContent =
+        `Cues ${firstCueIndex + 1}–${lastCueIndex} of ${cues.length}`;
+    }
+    if (transcriptPreviousButton) {
+      transcriptPreviousButton.disabled = transcriptPage === 0;
+    }
+    if (transcriptNextButton) {
+      transcriptNextButton.disabled = transcriptPage >= pageCount - 1;
+    }
+    const rows = visibleCues.map((cue, visibleIndex) => {
+      const index = firstCueIndex + visibleIndex;
+      const row = document.createElement("article");
+      row.className = "podcast-admin__transcript-cue";
+      row.dataset.transcriptCueId = cue.id;
+      row.innerHTML = `
+        <div class="podcast-admin__transcript-cue-heading">
+          <h3>Cue ${index + 1}</h3>
+          <button
+            class="btn btn-outline-light"
+            type="button"
+            data-podcast-transcript-remove="${escapeAttribute(cue.id)}">
+            Remove
+          </button>
+        </div>
+        <div class="podcast-admin__field-grid">
+          <label>Start (seconds)
+            <input data-transcript-start type="number" min="0" step="0.001" required>
+          </label>
+          <label>End (seconds)
+            <input data-transcript-end type="number" min="0.001" step="0.001" required>
+          </label>
+          <label>Public speaker label
+            <input data-transcript-speaker maxlength="80">
+          </label>
+          <label class="podcast-admin__checkbox">
+            <input data-transcript-speaker-confirmed type="checkbox">
+            I confirmed this public speaker name
+          </label>
+        </div>
+        <label>Caption text</label>
+        <div data-transcript-editor></div>`;
+      const start = row.querySelector("[data-transcript-start]");
+      const end = row.querySelector("[data-transcript-end]");
+      const speaker = row.querySelector("[data-transcript-speaker]");
+      const confirmed = row.querySelector(
+        "[data-transcript-speaker-confirmed]"
+      );
+      start.value = millisecondsToSeconds(cue.startsAtMs);
+      end.value = millisecondsToSeconds(cue.endsAtMs);
+      speaker.value = cue.speakerLabel || "";
+      confirmed.checked = cue.speakerConfirmed === true;
+      confirmed.disabled = !canEditTranscripts || !speaker.value;
+      speaker.addEventListener("input", () => {
+        transcriptDirty = true;
+        confirmed.disabled = !canEditTranscripts || !speaker.value.trim();
+        if (!speaker.value.trim()) confirmed.checked = false;
+        transcriptApproveButton.disabled = true;
+      });
+      for (const control of [start, end, confirmed]) {
+        control.addEventListener("input", () => {
+          transcriptDirty = true;
+          transcriptApproveButton.disabled = true;
+        });
+      }
+      for (const control of [start, end, speaker]) {
+        control.disabled = !canEditTranscripts;
+      }
+      const remove = row.querySelector("[data-podcast-transcript-remove]");
+      remove.disabled = !canEditTranscripts || cues.length === 1;
+      const editor = mountRichTextEditor(
+        row.querySelector("[data-transcript-editor]"),
+        {
+          value: cue.textMarkdown || "",
+          mode: "timed_text",
+          label: `Cue ${index + 1} caption`,
+          onChange() {
+            transcriptDirty = true;
+            transcriptApproveButton.disabled = true;
+          }
+        }
+      );
+      if (!canEditTranscripts) {
+        editor.editor.contentEditable = "false";
+        row.querySelectorAll(".dw-editor__toolbar button").forEach((button) => {
+          button.disabled = true;
+        });
+      }
+      transcriptEditors.set(cue.id, editor);
+      return row;
+    });
+    transcriptCuesRoot.replaceChildren(...rows);
+    transcriptAddButton.hidden = !canEditTranscripts;
+    transcriptSaveButton.hidden = !canEditTranscripts;
+    transcriptApproveButton.hidden = !canApproveTranscripts;
+    transcriptApproveButton.disabled = !canApproveTranscripts
+      || Number(transcript.revision || 0) < 1
+      || transcript.status === "approved"
+      || transcriptDirty
+      || transcript.speakerLabelsConfirmed !== true;
+  }
+
+  function addTranscriptCue() {
+    if (!transcript || !canEditTranscripts) return;
+    try {
+      const cues = syncVisibleTranscriptCues({ requireText: false });
+      const last = cues.at(-1);
+      const startsAtMs = last?.endsAtMs || 0;
+      const episodeEndMs = transcriptDurationSeconds === null
+        ? null
+        : Math.round(transcriptDurationSeconds * 1_000);
+      if (episodeEndMs !== null && startsAtMs >= episodeEndMs) {
+        throw new Error(
+          "The last cue already reaches the reviewed episode duration."
+        );
+      }
+      const endsAtMs = episodeEndMs === null
+        ? startsAtMs + 5_000
+        : Math.min(startsAtMs + 5_000, episodeEndMs);
+      transcript.cues = cues.concat(newTranscriptCue(startsAtMs, endsAtMs));
+      transcriptPage = Math.floor(
+        (transcript.cues.length - 1) / TRANSCRIPT_CUES_PER_PAGE
+      );
+      transcriptDirty = true;
+      renderTranscript();
+      transcriptCuesRoot.lastElementChild?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest"
+      });
+    } catch (error) {
+      setStatus(transcriptStatus, transcriptInputError(error), true);
+    }
+  }
+
+  function removeTranscriptCue(cueId) {
+    if (!transcript || !canEditTranscripts) return;
+    try {
+      const cues = syncVisibleTranscriptCues({ requireText: false });
+      if (cues.length <= 1) {
+        throw new Error("A transcript must keep at least one cue.");
+      }
+      transcript.cues = cues.filter(({ id }) => id !== cueId);
+      transcriptPage = Math.min(
+        transcriptPage,
+        Math.max(
+          0,
+          Math.ceil(transcript.cues.length / TRANSCRIPT_CUES_PER_PAGE) - 1
+        )
+      );
+      transcriptDirty = true;
+      renderTranscript();
+    } catch (error) {
+      setStatus(transcriptStatus, transcriptInputError(error), true);
+    }
+  }
+
+  async function saveTranscript() {
+    if (!transcript || !canEditTranscripts) return;
+    transcriptSaveButton.disabled = true;
+    transcriptAddButton.disabled = true;
+    setStatus(transcriptStatus, "Saving versioned transcript draft…");
+    try {
+      const episodeId = transcriptEpisodeSelect.value;
+      const language = transcriptLanguageSelect.value;
+      const payload = await client.request(
+        `/v1/admin/episodes/${encodeURIComponent(episodeId)}/transcripts/${encodeURIComponent(language)}`,
+        {
+          method: "PUT",
+          body: {
+            mutationId: operationId("transcript_edit"),
+            baseRevision: Number(transcript.revision || 0),
+            cues: syncVisibleTranscriptCues()
+          }
+        }
+      );
+      transcript = payload.transcript;
+      transcriptDirty = false;
+      renderTranscript();
+      setStatus(
+        transcriptStatus,
+        "Transcript draft saved. Approval and word-alignment are independent gates."
+      );
+    } catch (error) {
+      setStatus(
+        transcriptStatus,
+        error instanceof AdminApiError
+          ? friendlyError(error)
+          : transcriptInputError(error),
+        true
+      );
+    } finally {
+      transcriptSaveButton.disabled = false;
+      transcriptAddButton.disabled = false;
+    }
+  }
+
+  async function approveTranscript() {
+    if (!transcript || !canApproveTranscripts) return;
+    if (transcriptDirty) {
+      setStatus(
+        transcriptStatus,
+        "Save the current cue edits before approving this revision.",
+        true
+      );
+      return;
+    }
+    transcriptApproveButton.disabled = true;
+    setStatus(transcriptStatus, "Approving reviewed transcript revision…");
+    try {
+      const episodeId = transcriptEpisodeSelect.value;
+      const language = transcriptLanguageSelect.value;
+      const payload = await client.request(
+        `/v1/admin/episodes/${encodeURIComponent(episodeId)}/transcripts/${encodeURIComponent(language)}/approve`,
+        {
+          method: "POST",
+          body: {
+            approvalId: operationId("transcript_approval"),
+            expectedRevision: Number(transcript.revision)
+          }
+        }
+      );
+      transcript = payload.transcript;
+      transcriptDirty = false;
+      renderTranscript();
+      setStatus(
+        transcriptStatus,
+        transcript.alignment?.wordControlsEnabled
+          ? "Transcript approved; matching word alignment is available."
+          : "Transcript approved; word controls remain locked until matching alignment passes."
+      );
+    } catch (error) {
+      setStatus(transcriptStatus, friendlyError(error), true);
+    } finally {
+      if (transcript) renderTranscript();
+    }
+  }
+
+  function moveTranscriptPage(offset) {
+    if (!transcript) return;
+    try {
+      syncVisibleTranscriptCues({ requireText: false });
+      const pageCount = Math.max(
+        1,
+        Math.ceil(transcript.cues.length / TRANSCRIPT_CUES_PER_PAGE)
+      );
+      transcriptPage = Math.max(
+        0,
+        Math.min(pageCount - 1, transcriptPage + offset)
+      );
+      renderTranscript();
+    } catch (error) {
+      setStatus(transcriptStatus, transcriptInputError(error), true);
+    }
+  }
+
+  function syncVisibleTranscriptCues({ requireText = true } = {}) {
+    const visibleCues = collectVisibleTranscriptCues({ requireText });
+    const visibleById = new Map(
+      visibleCues.map((cue) => [cue.id, cue])
+    );
+    transcript.cues = transcript.cues.map(
+      (cue) => visibleById.get(cue.id) || cue
+    );
+    if (requireText) {
+      const missingIndex = transcript.cues.findIndex(
+        ({ textMarkdown }) => !String(textMarkdown || "").trim()
+      );
+      if (missingIndex >= 0) {
+        throw new Error(`Cue ${missingIndex + 1} needs caption text.`);
+      }
+    }
+    return transcript.cues;
+  }
+
+  function collectVisibleTranscriptCues({ requireText = true } = {}) {
+    const rows = Array.from(
+      transcriptCuesRoot?.querySelectorAll("[data-transcript-cue-id]") || []
+    );
+    if (!rows.length) throw new Error("Add at least one transcript cue.");
+    return rows.map((row, index) => {
+      const cueNumber =
+        transcriptPage * TRANSCRIPT_CUES_PER_PAGE + index + 1;
+      const startsAtMs = secondsToMilliseconds(
+        row.querySelector("[data-transcript-start]").value,
+        `Cue ${cueNumber} start`
+      );
+      const endsAtMs = secondsToMilliseconds(
+        row.querySelector("[data-transcript-end]").value,
+        `Cue ${cueNumber} end`
+      );
+      const speakerLabel = row
+        .querySelector("[data-transcript-speaker]")
+        .value
+        .trim();
+      const textMarkdown = transcriptEditors
+        .get(row.dataset.transcriptCueId)
+        ?.getMarkdown()
+        .trim();
+      if (requireText && !textMarkdown) {
+        throw new Error(`Cue ${cueNumber} needs caption text.`);
+      }
+      return {
+        id: row.dataset.transcriptCueId,
+        startsAtMs,
+        endsAtMs,
+        speakerLabel,
+        speakerConfirmed: speakerLabel
+          ? row.querySelector("[data-transcript-speaker-confirmed]").checked
+          : false,
+        textMarkdown
+      };
+    });
   }
 
   function updateAdPlanFields() {
@@ -1214,6 +1700,66 @@ function setStatus(element, message, error = false) {
   element.classList.toggle("is-error", error);
 }
 
+function emptyTranscript(language) {
+  return {
+    id: null,
+    language,
+    source: "editor",
+    status: "new",
+    revision: 0,
+    speakerLabelsConfirmed: true,
+    approvedRevision: null,
+    approvedAt: null,
+    cues: [newTranscriptCue()],
+    alignment: {
+      id: null,
+      status: "not_run",
+      adapter: null,
+      model: null,
+      completedAt: null,
+      alignedWordCount: 0,
+      wordControlsEnabled: false
+    }
+  };
+}
+
+function newTranscriptCue(startsAtMs = 0, endsAtMs = 5_000) {
+  return {
+    id: operationId("cue"),
+    startsAtMs,
+    endsAtMs,
+    speakerLabel: "",
+    speakerConfirmed: false,
+    textMarkdown: ""
+  };
+}
+
+function operationId(prefix) {
+  return `${prefix}_${crypto.randomUUID().replace(/-/g, "")}`;
+}
+
+function millisecondsToSeconds(value) {
+  return (Number(value || 0) / 1_000).toFixed(3).replace(/\.?0+$/, "");
+}
+
+function secondsToMilliseconds(value, label) {
+  const seconds = Number(value);
+  if (!Number.isFinite(seconds) || seconds < 0) {
+    throw new Error(`${label} must be a non-negative number.`);
+  }
+  const milliseconds = Math.round(seconds * 1_000);
+  if (!Number.isSafeInteger(milliseconds)) {
+    throw new Error(`${label} is outside the supported range.`);
+  }
+  return milliseconds;
+}
+
+function transcriptInputError(error) {
+  return error instanceof Error
+    ? error.message
+    : "The transcript cue values are invalid.";
+}
+
 function friendlyError(error) {
   if (!(error instanceof AdminApiError)) {
     return "The Podcast service could not be reached. Please retry.";
@@ -1241,6 +1787,18 @@ function friendlyError(error) {
   }
   if (error.code === "ad_plan_source_changed") {
     return "The delivery audio changed. Submit and process a new ad plan.";
+  }
+  if (error.code === "transcript_revision_conflict") {
+    return "This transcript changed in another session. Reload it before saving.";
+  }
+  if (error.code === "transcript_mutation_conflict") {
+    return "That transcript save identifier was already used for different content.";
+  }
+  if (error.code === "transcript_speaker_labels_unconfirmed") {
+    return "Confirm every non-empty public speaker label before approval.";
+  }
+  if (error.code === "transcript_approval_conflict") {
+    return "This transcript approval changed in another session. Reload and review it.";
   }
   return error.message || error.code;
 }

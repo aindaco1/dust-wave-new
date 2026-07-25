@@ -47,6 +47,7 @@ permalink: admin/podcasts/index.html
       <div class="podcast-admin__tab-list" role="tablist" aria-label="Podcast administration">
         <button id="podcast-tab-overview" type="button" role="tab" data-tab="overview" aria-controls="podcast-panel-overview">Overview</button>
         <button id="podcast-tab-episodes" type="button" role="tab" data-tab="episodes" aria-controls="podcast-panel-episodes">Episodes</button>
+        <button id="podcast-tab-production" type="button" role="tab" data-tab="production" aria-controls="podcast-panel-production">Production</button>
         <button id="podcast-tab-distribution" type="button" role="tab" data-tab="distribution" aria-controls="podcast-panel-distribution">Distribution</button>
         <button id="podcast-tab-marketing" type="button" role="tab" data-tab="marketing" aria-controls="podcast-panel-marketing">Marketing</button>
         <button id="podcast-tab-sponsors" type="button" role="tab" data-tab="sponsors" aria-controls="podcast-panel-sponsors">Sponsors</button>
@@ -184,6 +185,45 @@ permalink: admin/podcasts/index.html
           <div data-podcast-ad-plan-result aria-live="polite"></div>
 
           <div class="podcast-admin__episode-list" data-podcast-episode-list></div>
+        </section>
+
+        <section id="podcast-panel-production" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-production" hidden>
+          <div class="podcast-admin__panel-heading">
+            <div>
+              <h2>Transcript review</h2>
+              <p>Edit bilingual timed cues with the shared Pool/Store editor, confirm public speaker labels, and approve a versioned revision.</p>
+            </div>
+            <p class="podcast-admin__pill">Word timing gated</p>
+          </div>
+          <div class="podcast-admin__callout">
+            <p>Cue editing does not invent word timing. Word-linked navigation and word-accurate clip cuts remain unavailable until a matching English/Spanish alignment revision passes the launch quality gate.</p>
+          </div>
+          <div class="podcast-admin__form" data-podcast-transcript-workbench>
+            <div class="podcast-admin__field-grid">
+              <label>Episode
+                <select data-podcast-transcript-episode required></select>
+              </label>
+              <label>Transcript language
+                <select data-podcast-transcript-language>
+                  <option value="es">Español</option>
+                  <option value="en">English</option>
+                </select>
+              </label>
+            </div>
+            <div class="podcast-admin__transcript-meta" data-podcast-transcript-meta aria-live="polite"></div>
+            <div class="podcast-admin__transcript-cues" data-podcast-transcript-cues></div>
+            <nav class="podcast-admin__transcript-pages" data-podcast-transcript-pages aria-label="Transcript cue pages" hidden>
+              <button class="btn btn-outline-light" type="button" data-podcast-transcript-previous>Previous cues</button>
+              <span data-podcast-transcript-page aria-live="polite"></span>
+              <button class="btn btn-outline-light" type="button" data-podcast-transcript-next>Next cues</button>
+            </nav>
+            <div class="podcast-admin__transcript-actions">
+              <button class="btn btn-outline-light" type="button" data-podcast-transcript-add>Add cue</button>
+              <button class="btn btn-danger" type="button" data-podcast-transcript-save>Save review draft</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-transcript-approve>Approve revision</button>
+            </div>
+            <p class="podcast-admin__status" data-podcast-transcript-status role="status" aria-live="polite"></p>
+          </div>
         </section>
 
         <section id="podcast-panel-distribution" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-distribution" hidden>
