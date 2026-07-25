@@ -115,6 +115,20 @@ function startPodcastAdmin(root) {
   const readinessRefresh = root.querySelector(
     "[data-podcast-readiness-refresh]"
   );
+  const audioQcEpisodeSelect = root.querySelector(
+    "[data-podcast-audio-qc-episode]"
+  );
+  const audioQcQueue = root.querySelector("[data-podcast-audio-qc-queue]");
+  const audioQcRefresh = root.querySelector(
+    "[data-podcast-audio-qc-refresh]"
+  );
+  const audioQcSummary = root.querySelector(
+    "[data-podcast-audio-qc-summary]"
+  );
+  const audioQcResults = root.querySelector(
+    "[data-podcast-audio-qc-results]"
+  );
+  const audioQcStatus = root.querySelector("[data-podcast-audio-qc-status]");
   const clipForm = root.querySelector("[data-podcast-clip-form]");
   const clipPreview = root.querySelector("[data-podcast-clip-preview]");
   const clipStatus = root.querySelector("[data-podcast-clip-status]");
@@ -229,6 +243,7 @@ function startPodcastAdmin(root) {
   let canApproveChapters = false;
   let canEditReviews = false;
   let canApproveReviews = false;
+  let canRunAudioQc = false;
   let canApproveClipYouTube = false;
   let transcript = null;
   let transcriptDurationSeconds = null;
@@ -243,6 +258,8 @@ function startPodcastAdmin(root) {
   let reviewRequestId = 0;
   let publicationReadiness = null;
   let readinessRequestId = 0;
+  let audioQcState = null;
+  let audioQcRequestId = 0;
   let clips = [];
   let selectedClipId = "";
   let clipRequestId = 0;
@@ -278,6 +295,7 @@ function startPodcastAdmin(root) {
       if (tab !== "production") pauseClipMediaPlayers(clipList);
       if (tab !== "marketing") pauseClipMediaPlayers(clipLibrary);
       if (tab === "production") {
+        loadAudioQc();
         loadTranscript();
         loadChapters();
         loadProductionReviews();
@@ -377,6 +395,9 @@ function startPodcastAdmin(root) {
   readinessRefresh?.addEventListener("click", () =>
     loadPublicationReadiness()
   );
+  audioQcEpisodeSelect?.addEventListener("change", loadAudioQc);
+  audioQcQueue?.addEventListener("click", queueAudioQc);
+  audioQcRefresh?.addEventListener("click", loadAudioQc);
   clipForm?.addEventListener("submit", saveClipRecipe);
   clipNewButton?.addEventListener("click", resetClipRecipe);
   clipRenderButton?.addEventListener("click", prepareClipRender);
@@ -561,6 +582,7 @@ function startPodcastAdmin(root) {
     canEditTranscripts = canManageCreatives;
     canEditChapters = canManageCreatives;
     canEditReviews = canManageCreatives;
+    canRunAudioQc = canManageCreatives;
     canApproveTranscripts = (identity?.roles || []).some(({ role }) =>
       role === "super_admin" || role === "admin"
     );
@@ -598,6 +620,7 @@ function startPodcastAdmin(root) {
     canApproveChapters = false;
     canEditReviews = false;
     canApproveReviews = false;
+    canRunAudioQc = false;
     canApproveClipYouTube = false;
     transcript = null;
     transcriptDurationSeconds = null;
@@ -625,6 +648,11 @@ function startPodcastAdmin(root) {
     readinessGroups?.replaceChildren();
     if (readinessSummary) readinessSummary.textContent = "";
     setStatus(readinessStatus, "");
+    audioQcState = null;
+    audioQcRequestId += 1;
+    audioQcResults?.replaceChildren();
+    if (audioQcSummary) audioQcSummary.textContent = "";
+    setStatus(audioQcStatus, "");
     reviewForm?.reset();
     setStatus(reviewStatus, "");
     clips = [];
@@ -1035,6 +1063,7 @@ function startPodcastAdmin(root) {
       const productionPanel = root.querySelector("#podcast-panel-production");
       if (productionPanel && !productionPanel.hidden) {
         await Promise.all([
+          loadAudioQc(),
           loadTranscript(),
           loadChapters(),
           loadProductionReviews()
@@ -1110,7 +1139,8 @@ function startPodcastAdmin(root) {
       adPlanForm?.elements.episodeId,
       transcriptEpisodeSelect,
       chapterEpisodeSelect,
-      reviewEpisodeSelect
+      reviewEpisodeSelect,
+      audioQcEpisodeSelect
     ].filter(Boolean)) {
       const previousValue = select.value;
       select.replaceChildren(...episodes.map((episode) =>
@@ -1177,6 +1207,13 @@ function startPodcastAdmin(root) {
       reviewList?.replaceChildren();
       publicationReadiness = null;
       readinessGroups?.replaceChildren();
+      audioQcState = null;
+      audioQcResults?.replaceChildren();
+      if (audioQcSummary) {
+        audioQcSummary.textContent =
+          "Create an episode before measuring source audio.";
+      }
+      if (audioQcQueue) audioQcQueue.disabled = true;
       if (reviewReadiness) {
         reviewReadiness.textContent =
           "Create an episode before starting production review.";
@@ -2224,6 +2261,185 @@ function startPodcastAdmin(root) {
     } finally {
       if (chapterSet) renderChapters();
     }
+  }
+
+  async function loadAudioQc() {
+    const episodeId = audioQcEpisodeSelect?.value || "";
+    const requestId = ++audioQcRequestId;
+    audioQcState = null;
+    audioQcResults?.replaceChildren();
+    if (!episodeId) {
+      if (audioQcSummary) {
+        audioQcSummary.textContent =
+          "Create an episode before measuring source audio.";
+      }
+      if (audioQcQueue) audioQcQueue.disabled = true;
+      setStatus(audioQcStatus, "");
+      return;
+    }
+    if (audioQcQueue) audioQcQueue.disabled = true;
+    setStatus(audioQcStatus, "Loading source-audio QC evidence…");
+    try {
+      const payload = await client.request(
+        `/v1/admin/episodes/${encodeURIComponent(episodeId)}/audio-qc`
+      );
+      if (requestId !== audioQcRequestId) return;
+      audioQcState = payload;
+      renderAudioQc();
+      setStatus(audioQcStatus, "");
+    } catch (error) {
+      if (requestId !== audioQcRequestId) return;
+      if (audioQcSummary) {
+        audioQcSummary.textContent =
+          "Source-audio QC evidence could not be loaded.";
+      }
+      setStatus(audioQcStatus, friendlyError(error), true);
+    }
+  }
+
+  function renderAudioQc() {
+    if (
+      !audioQcState
+      || !audioQcSummary
+      || !audioQcResults
+    ) return;
+    const source = audioQcState.source;
+    const policy = audioQcState.policy || {};
+    const processor = audioQcState.processor || {};
+    const runs = Array.isArray(audioQcState.runs)
+      ? audioQcState.runs
+      : [];
+    audioQcSummary.textContent = source
+      ? [
+          `Source: ${String(source.filename || "private audio")}`,
+          formatBytes(Number(source.objectBytes || 0)),
+          `policy r${Number(policy.revision || 0)}`,
+          processor.available
+            ? "signed staging processor ready"
+            : "processor unavailable"
+        ].join(" · ")
+      : "Complete a source-audio upload before queueing measured QC.";
+    if (audioQcQueue) {
+      audioQcQueue.disabled =
+        !canRunAudioQc || !source || !processor.available;
+    }
+    if (!runs.length) {
+      const empty = document.createElement("p");
+      empty.className = "podcast-admin__empty";
+      empty.textContent =
+        "No quality report exists for this source and policy yet.";
+      audioQcResults.replaceChildren(empty);
+      return;
+    }
+    audioQcResults.replaceChildren(...runs.map(renderAudioQcRun));
+  }
+
+  function renderAudioQcRun(run) {
+    const article = document.createElement("article");
+    const status = String(run.status || "queued");
+    article.className =
+      `podcast-admin__readiness-card is-${audioQcCardStatus(status)}`;
+    const heading = document.createElement("div");
+    heading.className = "podcast-admin__readiness-card-heading";
+    const title = document.createElement("h3");
+    title.textContent = `QC run ${String(run.id || "")}`;
+    const pill = document.createElement("span");
+    pill.className = "podcast-admin__pill";
+    pill.textContent = status;
+    heading.append(title, pill);
+    const summary = document.createElement("p");
+    if (status === "succeeded") {
+      const values = run.summary || {};
+      summary.textContent = [
+        `${Number(values.blockerCount || 0)} blocker${
+          Number(values.blockerCount || 0) === 1 ? "" : "s"
+        }`,
+        `${Number(values.warningCount || 0)} warning${
+          Number(values.warningCount || 0) === 1 ? "" : "s"
+        }`,
+        `${Number(values.integratedLufs || 0)} LUFS`,
+        `${Number(values.truePeakDbtp || 0)} dBTP`,
+        formatDurationMilliseconds(Number(values.durationMs || 0))
+      ].join(" · ");
+    } else if (status === "failed") {
+      summary.textContent =
+        `Processor failed safely: ${humanizeCode(run.failureCode || "processor_failed")}.`;
+    } else {
+      summary.textContent =
+        "Queued for the owner-controlled staging workflow; no audio was changed.";
+    }
+    article.append(heading, summary);
+    if (status === "succeeded") {
+      const report = run.report || {};
+      const quality = report.quality || {};
+      const findings = Array.isArray(quality.findings)
+        ? quality.findings
+        : [];
+      const details = document.createElement("details");
+      const detailsSummary = document.createElement("summary");
+      detailsSummary.textContent = findings.length
+        ? `Review ${findings.length} measured finding${
+            findings.length === 1 ? "" : "s"
+          }`
+        : "Review clean measured evidence";
+      const list = document.createElement("ul");
+      list.className = "podcast-admin__audio-qc-findings";
+      if (!findings.length) {
+        const item = document.createElement("li");
+        item.textContent = "No policy warning or blocker was measured.";
+        list.append(item);
+      } else {
+        for (const finding of findings) {
+          const item = document.createElement("li");
+          const label = document.createElement("strong");
+          label.textContent =
+            `${humanizeCode(finding.code)} · ${String(finding.severity)}`;
+          const evidence = document.createElement("span");
+          evidence.textContent = [
+            `${Number(finding.measured)} ${String(finding.unit || "")}`,
+            `limit ${Number(finding.limit)} ${String(finding.unit || "")}`,
+            String(finding.remediation || "")
+          ].join(" · ");
+          item.append(label, evidence);
+          list.append(item);
+        }
+      }
+      details.append(detailsSummary, list);
+      article.append(details);
+    }
+    return article;
+  }
+
+  async function queueAudioQc() {
+    const episodeId = audioQcEpisodeSelect?.value || "";
+    if (!episodeId || !canRunAudioQc || !audioQcState?.source) return;
+    audioQcQueue.disabled = true;
+    setStatus(audioQcStatus, "Snapshotting private source and QC policy…");
+    try {
+      const runId = `qc_${crypto.randomUUID().replace(/-/g, "")}`;
+      const payload = await client.request(
+        `/v1/admin/episodes/${encodeURIComponent(episodeId)}/audio-qc`,
+        {
+          method: "POST",
+          body: { runId }
+        }
+      );
+      await loadAudioQc();
+      setStatus(
+        audioQcStatus,
+        `QC run ${String(payload.run?.id || runId)} is queued. `
+          + "Dispatch the pinned staging audio-QC workflow, then refresh this report."
+      );
+    } catch (error) {
+      setStatus(audioQcStatus, friendlyError(error), true);
+      renderAudioQc();
+    }
+  }
+
+  function audioQcCardStatus(status) {
+    if (status === "succeeded") return "ready";
+    if (status === "failed") return "failed";
+    return "pending";
   }
 
   async function loadProductionReviews() {
@@ -5261,6 +5477,21 @@ function friendlyError(error) {
   }
   if (error.code === "admin_auth_not_configured") return "Staging login providers are not configured yet.";
   if (error.code === "invalid_csrf_token") return "Your secure session changed. Refresh and retry.";
+  if (error.code === "audio_qc_source_not_ready") {
+    return "Complete a private source-audio upload before queueing QC.";
+  }
+  if (error.code === "audio_qc_source_mismatch") {
+    return "The private source object changed or disappeared. Upload or select the source again.";
+  }
+  if (error.code === "audio_qc_run_exists") {
+    return "This exact source and policy already have an active or completed QC run.";
+  }
+  if (
+    error.code === "audio_qc_run_conflict"
+    || error.code === "audio_qc_completion_conflict"
+  ) {
+    return "The QC run changed in another session. Refresh its report.";
+  }
   if (error.code === "episode_not_ready") return `Episode is not ready: ${(error.details?.missing || []).join(", ")}.`;
   if (error.code === "publication_snapshot_required") {
     return "Refresh publication readiness before publishing this episode.";
@@ -5412,6 +5643,25 @@ function slugify(value) {
 
 function formatDate(value) {
   return value ? new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(new Date(value)) : "not set";
+}
+
+function formatBytes(value) {
+  const bytes = Number(value);
+  if (!Number.isFinite(bytes) || bytes <= 0) return "0 bytes";
+  if (bytes < 1_024) return `${Math.round(bytes)} bytes`;
+  if (bytes < 1_024 ** 2) return `${(bytes / 1_024).toFixed(1)} KiB`;
+  if (bytes < 1_024 ** 3) {
+    return `${(bytes / (1_024 ** 2)).toFixed(1)} MiB`;
+  }
+  return `${(bytes / (1_024 ** 3)).toFixed(2)} GiB`;
+}
+
+function formatDurationMilliseconds(value) {
+  const milliseconds = Number(value);
+  if (!Number.isFinite(milliseconds) || milliseconds < 1) {
+    return "duration unavailable";
+  }
+  return millisecondsToTimestamp(Math.round(milliseconds));
 }
 
 function publicationGateLabel(value) {

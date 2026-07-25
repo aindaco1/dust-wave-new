@@ -190,6 +190,30 @@ permalink: admin/podcasts/index.html
         <section id="podcast-panel-production" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-production" hidden>
           <div class="podcast-admin__panel-heading">
             <div>
+              <h2>Source audio quality</h2>
+              <p>Measure the immutable source before enhancement or delivery rendering. Reports compare mono/stereo loudness, true peak, clipping, offset, channel balance, and silence against the show policy.</p>
+            </div>
+            <p class="podcast-admin__pill">Measured · non-destructive</p>
+          </div>
+          <div class="podcast-admin__callout">
+            <p>Queueing snapshots the completed private source, show policy, R2 ETag, and processor manifest. The owner-controlled staging workflow fully decodes the source and returns signed evidence; it never overwrites audio or publishes an episode.</p>
+          </div>
+          <section class="podcast-admin__audio-qc" data-podcast-audio-qc aria-label="Source audio quality">
+            <div class="podcast-admin__field-grid">
+              <label>Episode
+                <select data-podcast-audio-qc-episode required></select>
+              </label>
+            </div>
+            <div class="podcast-admin__transcript-actions">
+              <button class="btn btn-danger" type="button" data-podcast-audio-qc-queue>Queue measured QC</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-audio-qc-refresh>Refresh report</button>
+            </div>
+            <p class="podcast-admin__transcript-meta" data-podcast-audio-qc-summary aria-live="polite">Choose an episode with completed source audio.</p>
+            <div class="podcast-admin__audio-qc-results" data-podcast-audio-qc-results></div>
+            <p class="podcast-admin__status" data-podcast-audio-qc-status role="status" aria-live="polite"></p>
+          </section>
+          <div class="podcast-admin__panel-heading podcast-admin__section-heading">
+            <div>
               <h2>Transcript review</h2>
               <p>Edit bilingual timed cues with the shared Pool/Store editor, confirm public speaker labels, and approve a versioned revision.</p>
             </div>

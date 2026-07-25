@@ -708,17 +708,25 @@
 }
 
 .podcast-admin__readiness-groups,
-.podcast-admin__readiness-list {
+.podcast-admin__readiness-list,
+.podcast-admin__audio-qc-results {
   display: grid;
   gap: 1rem;
 }
 
-.podcast-admin__readiness-groups {
+.podcast-admin__readiness-groups,
+.podcast-admin__audio-qc-results {
   margin-top: 1rem;
 }
 
-[data-podcast-readiness-refresh] {
+[data-podcast-readiness-refresh],
+[data-podcast-audio-qc-queue],
+[data-podcast-audio-qc-refresh] {
   min-height: 2.75rem;
+}
+
+[data-podcast-audio-qc-status] {
+  overflow-wrap: anywhere;
 }
 
 .podcast-admin__readiness-group > h3 {
@@ -760,8 +768,11 @@
   justify-content: space-between;
 }
 
+.podcast-admin__readiness-card-heading h3,
 .podcast-admin__readiness-card-heading h4 {
   margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .podcast-admin__readiness-card > p {
@@ -795,6 +806,28 @@
 .podcast-admin__readiness-evidence dd {
   margin: 0;
   overflow-wrap: anywhere;
+}
+
+.podcast-admin__audio-qc-findings {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0.75rem 0 0;
+  padding-left: 1.25rem;
+}
+
+.podcast-admin__audio-qc-findings li,
+.podcast-admin__audio-qc-findings span {
+  overflow-wrap: anywhere;
+}
+
+.podcast-admin__audio-qc-findings strong,
+.podcast-admin__audio-qc-findings span {
+  display: block;
+}
+
+.podcast-admin__audio-qc-findings span {
+  color: #d6d6d6;
+  margin-top: 0.25rem;
 }
 
 [data-podcast-review-form] .podcast-admin__checkbox,

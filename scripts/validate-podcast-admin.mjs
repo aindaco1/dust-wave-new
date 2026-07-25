@@ -49,6 +49,10 @@ assert.match(adminTemplate, /lang="es"/);
 assert.match(adminTemplate, /data-podcast-distribution-filter/);
 assert.match(adminTemplate, /exact RSS, News, YouTube, and per-directory states/);
 assert.match(adminTemplate, /data-tab="production"/);
+assert.match(adminTemplate, /data-podcast-audio-qc/);
+assert.match(adminTemplate, /data-podcast-audio-qc-queue/);
+assert.match(adminTemplate, /Measure the immutable source/);
+assert.match(adminTemplate, /never overwrites audio or publishes an episode/);
 assert.match(adminTemplate, /data-podcast-transcript-workbench/);
 assert.match(adminTemplate, /data-podcast-transcript-cues/);
 assert.match(adminTemplate, /data-podcast-transcript-pages/);
@@ -145,6 +149,15 @@ assert.match(adminScript, /function loadChapters/);
 assert.match(adminScript, /\/chapters\/approve/);
 assert.match(adminScript, /function checkedHttpsUrl/);
 assert.match(adminScript, /function loadProductionReviews/);
+assert.match(adminScript, /function loadAudioQc/);
+assert.match(adminScript, /function renderAudioQcRun/);
+assert.match(
+  adminScript,
+  /\/v1\/admin\/episodes\/\$\{encodeURIComponent\(episodeId\)\}\/audio-qc/
+);
+assert.match(adminScript, /`qc_\$\{crypto\.randomUUID/);
+assert.match(adminScript, /item\.append\(label, evidence\)/);
+assert.match(adminStyles, /\.podcast-admin__audio-qc-findings/);
 assert.match(adminScript, /\/review-comments\//);
 assert.match(adminScript, /function publicationGateLabel/);
 assert.match(adminScript, /body\.textContent = comment\.bodyText/);
