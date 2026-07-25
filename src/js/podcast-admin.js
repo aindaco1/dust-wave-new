@@ -61,6 +61,21 @@ function startPodcastAdmin(root) {
   const transcriptLanguageSelect = root.querySelector(
     "[data-podcast-transcript-language]"
   );
+  const transcriptionQueueButton = root.querySelector(
+    "[data-podcast-transcription-queue]"
+  );
+  const transcriptionRefreshButton = root.querySelector(
+    "[data-podcast-transcription-refresh]"
+  );
+  const transcriptionSummary = root.querySelector(
+    "[data-podcast-transcription-summary]"
+  );
+  const transcriptionStatus = root.querySelector(
+    "[data-podcast-transcription-status]"
+  );
+  const transcriptionJobsRoot = root.querySelector(
+    "[data-podcast-transcription-jobs]"
+  );
   const transcriptMeta = root.querySelector("[data-podcast-transcript-meta]");
   const transcriptCuesRoot = root.querySelector(
     "[data-podcast-transcript-cues]"
@@ -297,6 +312,8 @@ function startPodcastAdmin(root) {
   let canRunAudioEnhancements = false;
   let canApproveClipYouTube = false;
   let transcript = null;
+  let transcriptionState = null;
+  let transcriptionRequestId = 0;
   let transcriptDurationSeconds = null;
   let transcriptRequestId = 0;
   let transcriptDirty = false;
@@ -426,6 +443,14 @@ function startPodcastAdmin(root) {
   uploadForm?.addEventListener("submit", uploadMedia);
   transcriptEpisodeSelect?.addEventListener("change", loadTranscript);
   transcriptLanguageSelect?.addEventListener("change", loadTranscript);
+  transcriptionQueueButton?.addEventListener(
+    "click",
+    queueTranscription
+  );
+  transcriptionRefreshButton?.addEventListener(
+    "click",
+    loadTranscript
+  );
   transcriptAddButton?.addEventListener("click", addTranscriptCue);
   transcriptSaveButton?.addEventListener("click", saveTranscript);
   transcriptApproveButton?.addEventListener("click", approveTranscript);
@@ -701,6 +726,8 @@ function startPodcastAdmin(root) {
     canRunAudioEnhancements = false;
     canApproveClipYouTube = false;
     transcript = null;
+    transcriptionState = null;
+    transcriptionRequestId += 1;
     transcriptDurationSeconds = null;
     transcriptDirty = false;
     transcriptPage = 0;
@@ -708,6 +735,9 @@ function startPodcastAdmin(root) {
     transcriptEditors.clear();
     transcriptCuesRoot?.replaceChildren();
     transcriptMeta?.replaceChildren();
+    transcriptionSummary?.replaceChildren();
+    transcriptionJobsRoot?.replaceChildren();
+    setStatus(transcriptionStatus, "");
     if (transcriptPages) transcriptPages.hidden = true;
     setStatus(transcriptStatus, "");
     chapterSet = null;
@@ -834,6 +864,10 @@ function startPodcastAdmin(root) {
     }
     showForm.elements.premiumEnabled.checked = show.premiumEnabled;
     showForm.elements.freeMiniEpisodeEnabled.checked = show.freeMiniEpisodeEnabled;
+    if (episodeForm?.elements.sourceLanguage) {
+      episodeForm.elements.sourceLanguage.value =
+        show.language === "en" ? "en" : "es";
+    }
   }
 
   function updateMarketingTools({ showChanged = false } = {}) {
@@ -1185,12 +1219,16 @@ function startPodcastAdmin(root) {
             summary: episodeForm.elements.summary.value,
             contentHtml: notesEditor.getHtml(),
             access: episodeForm.elements.access.value,
+            sourceLanguage: episodeForm.elements.sourceLanguage.value,
             premiumAt: isoOrNull(episodeForm.elements.premiumAt.value),
             publicAt: isoOrNull(episodeForm.elements.publicAt.value)
           }
         }
       );
       episodeForm.reset();
+      const show = shows.find(({ id }) => id === selectedShowId);
+      episodeForm.elements.sourceLanguage.value =
+        show?.language === "en" ? "en" : "es";
       episodeForm.elements.slug.dataset.edited = "";
       notesEditor.setValue("");
       setStatus(episodeStatus, "Draft created. Attach delivery audio before publishing.");
@@ -1217,7 +1255,7 @@ function startPodcastAdmin(root) {
           <h3>${escapeHtml(episode.title)}</h3>
           <p>${escapeHtml(episode.summary)}</p>
           <p>Media: ${escapeHtml(episode.mediaStatus)}${episode.audioFilename ? ` · ${escapeHtml(episode.audioFilename)}` : ""}</p>
-          <p>Revision: ${Number(episode.publicationRevision || 0)} · Public: ${escapeHtml(formatDate(episode.publicAt))}</p>
+          <p>Source language: ${escapeHtml(humanizeCode(episode.sourceLanguage || "not set"))} · Revision: ${Number(episode.publicationRevision || 0)} · Public: ${escapeHtml(formatDate(episode.publicAt))}</p>
         </div>
         <div class="podcast-admin__episode-actions">
           <a class="btn btn-outline-light" href="${escapeAttribute(episode.canonicalUrl)}">Page</a>
@@ -1286,8 +1324,16 @@ function startPodcastAdmin(root) {
       sponsorResult?.replaceChildren();
       adPlanResult?.replaceChildren();
       transcript = null;
+      transcriptionState = null;
+      transcriptionRequestId += 1;
       transcriptEditors.clear();
       transcriptCuesRoot?.replaceChildren();
+      transcriptionJobsRoot?.replaceChildren();
+      if (transcriptionSummary) {
+        transcriptionSummary.textContent =
+          "Create an episode before queueing a transcript.";
+      }
+      if (transcriptionQueueButton) transcriptionQueueButton.disabled = true;
       if (transcriptMeta) {
         transcriptMeta.textContent =
           "Create an episode before reviewing a transcript.";
@@ -1706,7 +1752,7 @@ function startPodcastAdmin(root) {
       ) || emptyTranscript(language);
       transcriptDirty = false;
       renderTranscript();
-      await loadClips();
+      await Promise.all([loadClips(), loadTranscriptionJobs()]);
       setStatus(transcriptStatus, "");
     } catch (error) {
       if (requestId !== transcriptRequestId) return;
@@ -1719,6 +1765,161 @@ function startPodcastAdmin(root) {
       clipList?.replaceChildren();
       updateClipAvailability();
       setStatus(transcriptStatus, friendlyError(error), true);
+    }
+  }
+
+  async function loadTranscriptionJobs() {
+    const episodeId = transcriptEpisodeSelect?.value;
+    transcriptionRequestId += 1;
+    const requestId = transcriptionRequestId;
+    if (!episodeId) {
+      transcriptionState = null;
+      transcriptionJobsRoot?.replaceChildren();
+      if (transcriptionSummary) {
+        transcriptionSummary.textContent =
+          "Create an episode before queueing a transcript.";
+      }
+      if (transcriptionQueueButton) transcriptionQueueButton.disabled = true;
+      return false;
+    }
+    setStatus(transcriptionStatus, "Loading transcription jobs…");
+    try {
+      const payload = await client.request(
+        `/v1/admin/episodes/${encodeURIComponent(episodeId)}/transcription-jobs`
+      );
+      if (requestId !== transcriptionRequestId) return;
+      transcriptionState = payload;
+      renderTranscriptionJobs();
+      setStatus(transcriptionStatus, "");
+      return true;
+    } catch (error) {
+      if (requestId !== transcriptionRequestId) return;
+      transcriptionState = null;
+      transcriptionJobsRoot?.replaceChildren();
+      if (transcriptionQueueButton) transcriptionQueueButton.disabled = true;
+      setStatus(transcriptionStatus, friendlyError(error), true);
+      return false;
+    }
+  }
+
+  function renderTranscriptionJobs() {
+    if (!transcriptionJobsRoot) return;
+    const source = transcriptionState?.source;
+    const jobs = Array.isArray(transcriptionState?.jobs)
+      ? transcriptionState.jobs
+      : [];
+    const active = jobs.some(
+      ({ status }) => status === "queued" || status === "running"
+    );
+    if (transcriptionSummary) {
+      transcriptionSummary.textContent = source
+        ? [
+            `${humanizeCode(source.sourceLanguage)} source`,
+            formatBytes(Number(source.objectBytes || 0)),
+            formatClipDuration(Number(source.durationMs || 0)),
+            source.directProcessingEligible
+              ? "direct Workers AI path ready"
+              : "silence-aware chunk processor required",
+            `master ${String(source.workingMasterSha256 || "").slice(0, 12)}…`,
+            source.settingsVersion
+          ].join(" · ")
+        : "Approve a quality-controlled working master before transcription.";
+    }
+    if (transcriptionQueueButton) {
+      transcriptionQueueButton.hidden = !canEditTranscripts;
+      transcriptionQueueButton.disabled =
+        !canEditTranscripts
+        || !source
+        || !source.directProcessingEligible
+        || active;
+    }
+    if (!jobs.length) {
+      const empty = document.createElement("p");
+      empty.className = "podcast-admin__empty";
+      empty.textContent =
+        "No source-language transcription job exists for this master.";
+      transcriptionJobsRoot.replaceChildren(empty);
+      return;
+    }
+    transcriptionJobsRoot.replaceChildren(...jobs.map((job) => {
+      const card = document.createElement("article");
+      card.className = "podcast-admin__card";
+      const heading = document.createElement("div");
+      heading.className = "podcast-admin__transcript-cue-heading";
+      const title = document.createElement("h4");
+      title.textContent =
+        `${humanizeCode(job.status)} · ${humanizeCode(job.language)}`;
+      const pill = document.createElement("span");
+      pill.className = "podcast-admin__pill";
+      pill.textContent = job.result?.timingPrecision
+        ? `${humanizeCode(job.result.timingPrecision)} timing`
+        : "word timing locked";
+      heading.append(title, pill);
+      const evidence = document.createElement("p");
+      evidence.textContent = [
+        job.model,
+        job.settingsVersion,
+        `attempt ${Number(job.attemptCount || 0)}`,
+        formatDate(job.completedAt || job.requestedAt)
+      ].filter(Boolean).join(" · ");
+      card.append(heading, evidence);
+      if (job.failure?.code) {
+        const failure = document.createElement("p");
+        failure.className = "podcast-admin__status is-error";
+        failure.textContent = `${humanizeCode(job.failure.code)}: ${
+          job.failure.message || "No additional detail."
+        }`;
+        card.append(failure);
+      }
+      if (job.result?.transcriptSha256) {
+        const result = document.createElement("p");
+        result.textContent =
+          `Transcript revision ${Number(job.result.transcriptRevision)} · ${
+            String(job.result.transcriptSha256).slice(0, 16)
+          }… · word timing not created`;
+        card.append(result);
+      }
+      return card;
+    }));
+  }
+
+  async function queueTranscription() {
+    const episodeId = transcriptEpisodeSelect?.value;
+    const source = transcriptionState?.source;
+    if (
+      !episodeId
+      || !source
+      || !source.directProcessingEligible
+      || !canEditTranscripts
+    ) return;
+    transcriptionQueueButton.disabled = true;
+    setStatus(
+      transcriptionStatus,
+      "Snapshotting the approved working master and source-language settings…"
+    );
+    try {
+      const payload = await client.request(
+        `/v1/admin/episodes/${encodeURIComponent(episodeId)}/transcription-jobs`,
+        {
+          method: "POST",
+          body: {
+            requestId: operationId("transcription"),
+            expectedWorkingMasterId: source.currentWorkingMasterId,
+            language: source.sourceLanguage
+          }
+        }
+      );
+      const message = payload.idempotent
+        ? "The byte-identical transcription job already exists."
+        : payload.delivery === "queued"
+          ? "Source-language transcription queued."
+          : "Job recorded; scheduled recovery will deliver it.";
+      if (await loadTranscriptionJobs()) {
+        setStatus(transcriptionStatus, message);
+      }
+    } catch (error) {
+      setStatus(transcriptionStatus, friendlyError(error), true);
+      renderTranscriptionJobs();
     }
   }
 
@@ -6235,6 +6436,21 @@ function friendlyError(error) {
   }
   if (error.code === "transcript_approval_conflict") {
     return "This transcript approval changed in another session. Reload and review it.";
+  }
+  if (error.code === "transcription_working_master_required") {
+    return "Approve a quality-controlled working master before transcription.";
+  }
+  if (error.code === "transcription_working_master_changed") {
+    return "The working master changed. Refresh before queueing transcription.";
+  }
+  if (error.code === "transcription_source_language_mismatch") {
+    return "The requested language does not match the episode source language.";
+  }
+  if (error.code === "transcription_request_id_conflict") {
+    return "That transcription request identifier was already used for different inputs.";
+  }
+  if (error.code.startsWith("transcription_")) {
+    return error.message || "The source-language transcription request is invalid.";
   }
   if (error.code === "chapter_revision_conflict") {
     return "These chapters changed in another session. Reload them before saving.";

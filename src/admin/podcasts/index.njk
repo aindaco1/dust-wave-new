@@ -126,6 +126,12 @@ permalink: admin/podcasts/index.html
                   <option value="free_mini">Free mini-episode</option>
                 </select>
               </label>
+              <label>Source language
+                <select name="sourceLanguage" required>
+                  <option value="es">Español</option>
+                  <option value="en">English</option>
+                </select>
+              </label>
               <label>Premium release
                 <input name="premiumAt" type="datetime-local">
               </label>
@@ -316,6 +322,21 @@ permalink: admin/podcasts/index.html
           </div>
           <div class="podcast-admin__callout">
             <p>Cue editing does not invent word timing. Word-linked navigation and word-accurate clip cuts remain unavailable until a matching English/Spanish alignment revision passes the launch quality gate.</p>
+          </div>
+          <div class="podcast-admin__form" data-podcast-transcription-workbench>
+            <div class="podcast-admin__panel-heading podcast-admin__section-heading">
+              <div>
+                <h3>Source-language transcription</h3>
+                <p>Run the approved working master through the pinned Cloudflare Workers AI adapter, then review its segment-timed draft below.</p>
+              </div>
+              <div class="podcast-admin__transcript-actions">
+                <button class="btn btn-outline-light" type="button" data-podcast-transcription-refresh>Refresh jobs</button>
+                <button class="btn btn-danger" type="button" data-podcast-transcription-queue>Queue transcript</button>
+              </div>
+            </div>
+            <p class="podcast-admin__transcript-meta" data-podcast-transcription-summary aria-live="polite">Choose an episode with an approved working master.</p>
+            <p class="podcast-admin__status" data-podcast-transcription-status role="status" aria-live="polite"></p>
+            <div class="podcast-admin__audio-enhancement-results" data-podcast-transcription-jobs></div>
           </div>
           <div class="podcast-admin__form" data-podcast-transcript-workbench>
             <div class="podcast-admin__field-grid">

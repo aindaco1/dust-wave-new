@@ -35,6 +35,7 @@ const episode = {
   status: "draft",
   access: "public",
   mediaStatus: "ready",
+  sourceLanguage: "es",
   audioFilename: "episode-source.wav",
   publicationRevision: 0,
   publicAt: null,
@@ -217,6 +218,32 @@ function responseFor(request) {
     && path === `/v1/admin/episodes/${episode.id}/transcripts`
   ) {
     return json({ durationSeconds: 180, transcripts: [] });
+  }
+  if (
+    request.method === "GET"
+    && path === `/v1/admin/episodes/${episode.id}/transcription-jobs`
+  ) {
+    return json({
+      source: {
+        sourceLanguage: "es",
+        currentWorkingMasterId: "master_mock",
+        workingMasterSha256: sha("a"),
+        objectBytes: 14_400_000,
+        mimeType: "audio/wav",
+        durationMs: 180_000,
+        directProcessingEligible: true,
+        model: "@cf/openai/whisper-large-v3-turbo",
+        settingsRevision: 1,
+        settingsVersion: "whisper-source-v1"
+      },
+      jobs: [],
+      safeguards: {
+        sourceLanguageOnly: true,
+        directSourceByteLimit: 16 * 1024 * 1024,
+        wordTimingCreated: false,
+        alignmentRequiredForWordControls: true
+      }
+    });
   }
   if (
     request.method === "GET"

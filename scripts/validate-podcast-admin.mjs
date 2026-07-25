@@ -63,6 +63,10 @@ assert.match(adminTemplate, /data-podcast-audio-enhancement-results/);
 assert.match(adminTemplate, /An enhancement preview is never a master/);
 assert.match(adminTemplate, /Replacing an approved master makes transcript, chapter, clip, and readiness approvals stale/);
 assert.match(adminTemplate, /data-podcast-transcript-workbench/);
+assert.match(adminTemplate, /data-podcast-transcription-workbench/);
+assert.match(adminTemplate, /data-podcast-transcription-queue/);
+assert.match(adminTemplate, /Source-language transcription/);
+assert.match(adminTemplate, /name="sourceLanguage"/);
 assert.match(adminTemplate, /data-podcast-transcript-cues/);
 assert.match(adminTemplate, /data-podcast-transcript-pages/);
 assert.match(adminTemplate, /Word timing gated/);
@@ -218,6 +222,13 @@ assert.match(
   adminScript,
   /\/v1\/admin\/episodes\/\$\{encodeURIComponent\(episodeId\)\}\/transcripts/
 );
+assert.match(
+  adminScript,
+  /\/v1\/admin\/episodes\/\$\{encodeURIComponent\(episodeId\)\}\/transcription-jobs/
+);
+assert.match(adminScript, /expectedWorkingMasterId/);
+assert.match(adminScript, /directProcessingEligible/);
+assert.match(adminScript, /word timing not created/);
 assert.match(adminScript, /baseRevision: Number\(transcript\.revision/);
 assert.match(adminScript, /expectedRevision: Number\(transcript\.revision\)/);
 assert.match(adminScript, /speakerConfirmed/);
