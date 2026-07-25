@@ -642,6 +642,28 @@
   padding-top: 1.5rem;
 }
 
+.podcast-admin__benchmark {
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+}
+
+.podcast-admin__benchmark-form {
+  align-items: end;
+  margin-top: 1rem;
+}
+
+.podcast-admin__benchmark-list {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  margin-top: 1rem;
+}
+
+.podcast-admin__benchmark-list .podcast-admin__card {
+  overflow-wrap: anywhere;
+}
+
 .podcast-admin__chapter-rows {
   display: grid;
   gap: 1rem;

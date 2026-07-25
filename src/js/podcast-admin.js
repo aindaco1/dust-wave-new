@@ -14,6 +14,7 @@ import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-s
 import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js";
 
 const TRANSCRIPT_CUES_PER_PAGE = 100;
+const MAXIMUM_ALIGNMENT_BENCHMARK_BYTES = 8 * 1024 * 1024;
 const TRANSCRIPTION_CHUNK_WORKFLOW = "process-transcription-chunks.yml";
 const ALIGNMENT_WORKFLOW = "process-alignment.yml";
 const AUDIO_QC_POLICY_FIELDS = [
@@ -123,6 +124,21 @@ function startPodcastAdmin(root) {
   );
   const alignmentJobsRoot = root.querySelector(
     "[data-podcast-alignment-jobs]"
+  );
+  const alignmentBenchmarkForm = root.querySelector(
+    "[data-podcast-benchmark-form]"
+  );
+  const alignmentBenchmarkRefresh = root.querySelector(
+    "[data-podcast-benchmark-refresh]"
+  );
+  const alignmentBenchmarkSummary = root.querySelector(
+    "[data-podcast-benchmark-summary]"
+  );
+  const alignmentBenchmarkStatus = root.querySelector(
+    "[data-podcast-benchmark-status]"
+  );
+  const alignmentBenchmarkList = root.querySelector(
+    "[data-podcast-benchmark-list]"
   );
   const chapterWorkbench = root.querySelector(
     "[data-podcast-chapter-workbench]"
@@ -331,11 +347,14 @@ function startPodcastAdmin(root) {
   let canApproveAudioMasters = false;
   let canRunAudioEnhancements = false;
   let canApproveClipYouTube = false;
+  let canImportAlignmentBenchmarks = false;
   let transcript = null;
   let transcriptionState = null;
   let transcriptionRequestId = 0;
   let alignmentState = null;
   let alignmentRequestId = 0;
+  let alignmentBenchmarkState = null;
+  let alignmentBenchmarkRequestId = 0;
   let transcriptDurationSeconds = null;
   let transcriptRequestId = 0;
   let transcriptDirty = false;
@@ -393,6 +412,7 @@ function startPodcastAdmin(root) {
         loadAudioQc();
         loadAudioMaster();
         loadTranscript();
+        loadAlignmentBenchmarks();
         loadChapters();
         loadProductionReviews();
       }
@@ -477,6 +497,14 @@ function startPodcastAdmin(root) {
   alignmentAdapterSelect?.addEventListener("change", renderAlignmentJobs);
   alignmentQueueButton?.addEventListener("click", queueAlignment);
   alignmentJobsRoot?.addEventListener("click", approveAlignment);
+  alignmentBenchmarkRefresh?.addEventListener(
+    "click",
+    loadAlignmentBenchmarks
+  );
+  alignmentBenchmarkForm?.addEventListener(
+    "submit",
+    importAlignmentBenchmark
+  );
   transcriptAddButton?.addEventListener("click", addTranscriptCue);
   transcriptSaveButton?.addEventListener("click", saveTranscript);
   transcriptApproveButton?.addEventListener("click", approveTranscript);
@@ -639,7 +667,7 @@ function startPodcastAdmin(root) {
       const result = token ? await session.exchange(token) : await session.restore();
       if (token) session.clearFragment();
       showAuthenticated(result.identity);
-      await loadShows();
+      await Promise.all([loadShows(), loadAlignmentBenchmarks()]);
       setStatus(globalStatus, "");
     } catch (error) {
       showLoggedOut();
@@ -717,9 +745,13 @@ function startPodcastAdmin(root) {
     canApproveClipYouTube = (identity?.roles || []).some(({ role }) =>
       role === "super_admin"
     );
+    canImportAlignmentBenchmarks = canApproveClipYouTube;
     campaignForm.hidden = !canManageCampaigns;
     creativeForm.hidden = !canManageCreatives;
     adPlanForm.hidden = !canManageAdPlans;
+    if (alignmentBenchmarkForm) {
+      alignmentBenchmarkForm.hidden = !canImportAlignmentBenchmarks;
+    }
     root.querySelector("[data-podcast-session-summary]").textContent =
       `Authenticated Podcast administrator${roles ? ` — ${roles}` : ""}.`;
   }
@@ -751,11 +783,14 @@ function startPodcastAdmin(root) {
     canApproveAudioMasters = false;
     canRunAudioEnhancements = false;
     canApproveClipYouTube = false;
+    canImportAlignmentBenchmarks = false;
     transcript = null;
     transcriptionState = null;
     transcriptionRequestId += 1;
     alignmentState = null;
     alignmentRequestId += 1;
+    alignmentBenchmarkState = null;
+    alignmentBenchmarkRequestId += 1;
     transcriptDurationSeconds = null;
     transcriptDirty = false;
     transcriptPage = 0;
@@ -767,8 +802,17 @@ function startPodcastAdmin(root) {
     transcriptionJobsRoot?.replaceChildren();
     alignmentSummary?.replaceChildren();
     alignmentJobsRoot?.replaceChildren();
+    alignmentBenchmarkList?.replaceChildren();
+    if (alignmentBenchmarkSummary) {
+      alignmentBenchmarkSummary.textContent = "No benchmark evidence loaded.";
+    }
+    if (alignmentBenchmarkForm) {
+      alignmentBenchmarkForm.hidden = true;
+      alignmentBenchmarkForm.reset();
+    }
     setStatus(transcriptionStatus, "");
     setStatus(alignmentStatus, "");
+    setStatus(alignmentBenchmarkStatus, "");
     if (transcriptPages) transcriptPages.hidden = true;
     setStatus(transcriptStatus, "");
     chapterSet = null;
@@ -1989,6 +2033,195 @@ function startPodcastAdmin(root) {
     } catch (error) {
       setStatus(transcriptionStatus, friendlyError(error), true);
       renderTranscriptionJobs();
+    }
+  }
+
+  async function loadAlignmentBenchmarks() {
+    alignmentBenchmarkRequestId += 1;
+    const requestId = alignmentBenchmarkRequestId;
+    setStatus(
+      alignmentBenchmarkStatus,
+      "Loading private benchmark summaries…"
+    );
+    try {
+      const payload = await client.request(
+        "/v1/admin/alignment-benchmarks"
+      );
+      if (requestId !== alignmentBenchmarkRequestId) return false;
+      alignmentBenchmarkState = payload;
+      renderAlignmentBenchmarks();
+      setStatus(alignmentBenchmarkStatus, "");
+      return true;
+    } catch (error) {
+      if (requestId !== alignmentBenchmarkRequestId) return false;
+      alignmentBenchmarkState = null;
+      alignmentBenchmarkList?.replaceChildren();
+      if (alignmentBenchmarkSummary) {
+        alignmentBenchmarkSummary.textContent =
+          "Benchmark summaries could not be loaded.";
+      }
+      setStatus(
+        alignmentBenchmarkStatus,
+        friendlyError(error),
+        true
+      );
+      return false;
+    }
+  }
+
+  function renderAlignmentBenchmarks() {
+    if (!alignmentBenchmarkList) return;
+    const benchmarks = alignmentBenchmarkState?.benchmarks || [];
+    const latestPassing = benchmarks.find(({ passed }) => passed);
+    const runner = alignmentBenchmarkState?.requiredRunner;
+    if (alignmentBenchmarkSummary) {
+      alignmentBenchmarkSummary.textContent = latestPassing
+        ? [
+            `Latest passing evidence: ${latestPassing.corpusVersion}`,
+            `${latestPassing.adapter?.name || "adapter"} ${
+              latestPassing.adapter?.version || ""
+            }`.trim(),
+            `runner ${String(latestPassing.runner?.revision || "").slice(
+              0,
+              12
+            )}…`,
+            formatDate(latestPassing.completedAt)
+          ].join(" · ")
+        : [
+            "No passing bilingual benchmark is recorded.",
+            runner?.revision
+              ? `Required runner ${String(runner.revision).slice(0, 12)}…`
+              : ""
+          ].filter(Boolean).join(" ");
+    }
+    if (!benchmarks.length) {
+      const empty = document.createElement("p");
+      empty.className = "podcast-admin__empty";
+      empty.textContent =
+        "No closed-schema benchmark evidence has been recorded.";
+      alignmentBenchmarkList.replaceChildren(empty);
+      return;
+    }
+    alignmentBenchmarkList.replaceChildren(
+      ...benchmarks.map((benchmark) => {
+        const card = document.createElement("article");
+        card.className = "podcast-admin__card";
+        const heading = document.createElement("div");
+        heading.className = "podcast-admin__transcript-cue-heading";
+        const title = document.createElement("h5");
+        title.textContent = benchmark.corpusVersion || "Benchmark";
+        const status = document.createElement("span");
+        status.className = "podcast-admin__pill";
+        status.textContent = benchmark.passed ? "Passed" : "Failed";
+        heading.append(title, status);
+
+        const identity = document.createElement("p");
+        identity.textContent = [
+          `${benchmark.adapter?.name || "adapter"} ${
+            benchmark.adapter?.version || ""
+          }`.trim(),
+          `model ${benchmark.adapter?.modelVersion || "unknown"}`,
+          `runner ${String(benchmark.runner?.revision || "").slice(0, 12)}…`
+        ].join(" · ");
+
+        const languageEvidence = document.createElement("p");
+        languageEvidence.textContent = ["en", "es"].map((language) => {
+          const evidence = benchmark.languages?.[language] || {};
+          return `${language.toUpperCase()}: ${
+            Number(evidence.fixtureCount || 0)
+          } fixtures, ${Number(evidence.goldWordCount || 0)} words, ${
+            formatPercent(evidence.alignedWordRatio)
+          } aligned`;
+        }).join(" · ");
+
+        const gates = document.createElement("p");
+        gates.textContent = [
+          `previews ${Number(benchmark.previews?.accepted || 0)}/${
+            Number(benchmark.previews?.total || 0)
+          }`,
+          benchmark.resourceGatePassed
+            ? "resource gate passed"
+            : "resource gate failed",
+          benchmark.idempotencyGatePassed
+            ? "idempotency gate passed"
+            : "idempotency gate failed",
+          benchmark.cleanEnvironmentReproduced
+            ? "clean run reproduced"
+            : "clean run missing"
+        ].join(" · ");
+
+        const evidence = document.createElement("p");
+        evidence.className = "podcast-admin__review-evidence";
+        evidence.textContent = [
+          `input ${String(benchmark.inputSha256 || "").slice(0, 16)}…`,
+          `report ${String(benchmark.reportSha256 || "").slice(0, 16)}…`,
+          formatBytes(benchmark.inputBytes),
+          formatDate(benchmark.completedAt)
+        ].join(" · ");
+        card.append(heading, identity, languageEvidence, gates, evidence);
+        return card;
+      })
+    );
+  }
+
+  async function importAlignmentBenchmark(event) {
+    event.preventDefault();
+    if (!alignmentBenchmarkForm || !canImportAlignmentBenchmarks) return;
+    const file = alignmentBenchmarkForm.elements.evidence?.files?.[0];
+    if (
+      !file
+      || file.size < 1
+      || file.size > MAXIMUM_ALIGNMENT_BENCHMARK_BYTES
+    ) {
+      setStatus(
+        alignmentBenchmarkStatus,
+        "Choose one non-empty benchmark JSON file no larger than 8 MiB.",
+        true
+      );
+      return;
+    }
+    const submit = alignmentBenchmarkForm.querySelector(
+      'button[type="submit"]'
+    );
+    submit.disabled = true;
+    setStatus(
+      alignmentBenchmarkStatus,
+      "Validating and recording exact benchmark evidence…"
+    );
+    try {
+      const evidence = JSON.parse(await file.text());
+      if (
+        !evidence
+        || typeof evidence !== "object"
+        || Array.isArray(evidence)
+      ) {
+        throw new SyntaxError("A JSON object is required");
+      }
+      const payload = await client.request(
+        "/v1/admin/alignment-benchmarks",
+        { method: "POST", body: evidence }
+      );
+      alignmentBenchmarkForm.reset();
+      if (await loadAlignmentBenchmarks()) {
+        setStatus(
+          alignmentBenchmarkStatus,
+          payload.idempotent
+            ? "This exact private benchmark evidence was already recorded."
+            : `Benchmark evidence recorded as ${
+                payload.benchmark?.passed ? "passing" : "failed"
+              }; failed evidence never unlocks alignment approval.`
+        );
+      }
+    } catch (error) {
+      setStatus(
+        alignmentBenchmarkStatus,
+        error instanceof SyntaxError
+          ? "The selected file is not a valid JSON object."
+          : friendlyError(error),
+        true
+      );
+    } finally {
+      submit.disabled = false;
     }
   }
 
@@ -6710,7 +6943,13 @@ function friendlyError(error) {
     return "Only an Admin or Super-admin can override publication blockers.";
   }
   if (error.code === "recent_authentication_required") {
-    return "Request a fresh admin magic link before overriding publication blockers.";
+    return "Request a fresh admin magic link before this sensitive action.";
+  }
+  if (error.code === "alignment_benchmark_submission_conflict") {
+    return "That benchmark submission identifier was already used for different evidence.";
+  }
+  if (error.code === "alignment_benchmark_record_conflict") {
+    return "Benchmark evidence changed during import. Refresh the benchmark list before retrying.";
   }
   if (error.code.startsWith("publication_override_")) {
     return error.message || "The publication override is invalid.";
@@ -6884,6 +7123,15 @@ function publicationGateLabel(value) {
 
 function formatInteger(value) {
   return new Intl.NumberFormat().format(Number(value || 0));
+}
+
+function formatPercent(value) {
+  const ratio = Number(value);
+  if (!Number.isFinite(ratio)) return "0%";
+  return new Intl.NumberFormat(undefined, {
+    style: "percent",
+    maximumFractionDigits: 1
+  }).format(ratio);
 }
 
 function humanizeCode(value) {

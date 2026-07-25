@@ -73,6 +73,9 @@ assert.match(adminTemplate, /Word timing gated/);
 assert.match(adminTemplate, /data-podcast-alignment/);
 assert.match(adminTemplate, /data-podcast-alignment-adapter/);
 assert.match(adminTemplate, /matching bilingual benchmark/);
+assert.match(adminTemplate, /data-podcast-benchmark-form/);
+assert.match(adminTemplate, /data-podcast-benchmark-refresh/);
+assert.match(adminTemplate, /raw file remains private and content-addressed/);
 assert.match(adminTemplate, /data-podcast-chapter-workbench/);
 assert.match(adminTemplate, /data-podcast-chapter-rows/);
 assert.match(adminTemplate, /Podcasting 2\.0 feeds/);
@@ -241,7 +244,11 @@ assert.match(adminScript, /wordControlsEnabled/);
 assert.match(adminScript, /function loadAlignmentJobs/);
 assert.match(adminScript, /function queueAlignment/);
 assert.match(adminScript, /function approveAlignment/);
+assert.match(adminScript, /function loadAlignmentBenchmarks/);
+assert.match(adminScript, /function importAlignmentBenchmark/);
 assert.match(adminScript, /process-alignment\.yml/);
+assert.match(adminScript, /\/v1\/admin\/alignment-benchmarks/);
+assert.match(adminScript, /MAXIMUM_ALIGNMENT_BENCHMARK_BYTES/);
 assert.match(
   adminScript,
   /\/v1\/admin\/episodes\/\$\{encodeURIComponent\(episodeId\)\}\/alignments/
@@ -249,6 +256,7 @@ assert.match(
 assert.match(adminScript, /expectedTranscriptRevision/);
 assert.match(adminScript, /structurallyEligible/);
 assert.match(adminScript, /benchmark\?\.passedRunId/);
+assert.match(adminStyles, /\.podcast-admin__benchmark-list/);
 assert.match(adminScript, /TRANSCRIPT_CUES_PER_PAGE = 100/);
 assert.match(adminScript, /syncVisibleTranscriptCues/);
 assert.match(

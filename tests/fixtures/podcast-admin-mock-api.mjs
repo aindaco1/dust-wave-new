@@ -145,6 +145,71 @@ function responseFor(request) {
   }
   if (
     request.method === "GET"
+    && path === "/v1/admin/alignment-benchmarks"
+  ) {
+    return json({
+      benchmarks: [
+        {
+          id: "alignment_benchmark_mock",
+          corpusVersion: "rights-cleared-bilingual-v1",
+          adapter: {
+            name: "whisperx",
+            version: "3.8.6",
+            model: "default",
+            modelVersion: "default-en-es-v1",
+            settingsVersion: "whisperx-align-v1"
+          },
+          runner: {
+            repository: "aindaco1/dust-wave-alignment-runner",
+            revision: "3c5ab054fdad375901eb186f32d7aed6cdb40413",
+            digest: `sha256:${sha("5")}`
+          },
+          status: "passed",
+          passed: true,
+          reportSha256: sha("6"),
+          inputSha256: sha("7"),
+          inputBytes: 256_000,
+          submissionId: "browser_qa_benchmark",
+          cleanEnvironmentReproduced: true,
+          languages: {
+            en: {
+              passed: true,
+              fixtureCount: 12,
+              goldWordCount: 408,
+              alignedWordRatio: 0.995
+            },
+            es: {
+              passed: true,
+              fixtureCount: 12,
+              goldWordCount: 408,
+              alignedWordRatio: 0.993
+            }
+          },
+          previews: {
+            accepted: 99,
+            total: 100,
+            passed: true
+          },
+          benchmarkIntegrityGatePassed: true,
+          resourceGatePassed: true,
+          idempotencyGatePassed: true,
+          completedAt: "2026-07-25T12:00:00.000Z",
+          createdAt: "2026-07-25T12:00:00.000Z"
+        }
+      ],
+      requiredRunner: {
+        repository: "aindaco1/dust-wave-alignment-runner",
+        revision: "3c5ab054fdad375901eb186f32d7aed6cdb40413"
+      },
+      limits: {
+        maximumInputBytes: 8 * 1024 * 1024,
+        maximumFixtures: 64,
+        maximumTotalWords: 25_000
+      }
+    });
+  }
+  if (
+    request.method === "GET"
     && path === `/v1/admin/shows/${show.id}/episodes`
   ) {
     return json({ episodes: [episode] });

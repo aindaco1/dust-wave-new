@@ -386,6 +386,24 @@ permalink: admin/podcasts/index.html
               <p class="podcast-admin__transcript-meta" data-podcast-alignment-summary aria-live="polite">Approve this transcript revision and a working master before alignment.</p>
               <p class="podcast-admin__status" data-podcast-alignment-status role="status" aria-live="polite"></p>
               <div class="podcast-admin__audio-enhancement-results" data-podcast-alignment-jobs></div>
+              <section class="podcast-admin__benchmark" aria-labelledby="podcast-alignment-benchmark-title">
+                <div class="podcast-admin__panel-heading podcast-admin__section-heading">
+                  <div>
+                    <h4 id="podcast-alignment-benchmark-title">Bilingual benchmark evidence</h4>
+                    <p>Review the current English/Spanish H1 gate without exposing corpus audio or transcript text. Only a recently authenticated Super-admin can import the pinned runner’s closed-schema JSON evidence; the raw file remains private and content-addressed.</p>
+                  </div>
+                  <button class="btn btn-outline-light" type="button" data-podcast-benchmark-refresh>Refresh benchmark</button>
+                </div>
+                <form class="podcast-admin__inline-form podcast-admin__benchmark-form" data-podcast-benchmark-form>
+                  <label>Reviewed benchmark JSON
+                    <input name="evidence" type="file" accept=".json,application/json" required>
+                  </label>
+                  <button class="btn btn-danger" type="submit">Import exact evidence</button>
+                </form>
+                <p class="podcast-admin__transcript-meta" data-podcast-benchmark-summary aria-live="polite">No benchmark evidence loaded.</p>
+                <p class="podcast-admin__status" data-podcast-benchmark-status role="status" aria-live="polite"></p>
+                <div class="podcast-admin__benchmark-list" data-podcast-benchmark-list></div>
+              </section>
             </section>
           </div>
           <div class="podcast-admin__panel-heading podcast-admin__section-heading">
