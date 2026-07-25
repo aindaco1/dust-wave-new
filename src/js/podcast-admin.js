@@ -80,6 +80,18 @@ function startPodcastAdmin(root) {
     "[data-podcast-clip-library-status]"
   );
   const clipLibrary = root.querySelector("[data-podcast-clip-library]");
+  const clipYouTubeForm = root.querySelector(
+    "[data-podcast-clip-youtube-form]"
+  );
+  const clipYouTubeMeta = root.querySelector(
+    "[data-podcast-clip-youtube-meta]"
+  );
+  const clipYouTubeStatus = root.querySelector(
+    "[data-podcast-clip-youtube-status]"
+  );
+  const clipYouTubeApprove = root.querySelector(
+    "[data-podcast-clip-youtube-approve]"
+  );
   const adPlanForm = root.querySelector("[data-podcast-ad-plan-form]");
   const adPlanStatus = root.querySelector("[data-podcast-ad-plan-status]");
   const adPlanResult = root.querySelector("[data-podcast-ad-plan-result]");
@@ -117,6 +129,7 @@ function startPodcastAdmin(root) {
   let canManageAdPlans = false;
   let canEditTranscripts = false;
   let canApproveTranscripts = false;
+  let canApproveClipYouTube = false;
   let transcript = null;
   let transcriptDurationSeconds = null;
   let transcriptRequestId = 0;
@@ -130,6 +143,8 @@ function startPodcastAdmin(root) {
   let clipLibraryCursor = null;
   let clipLibraryLoading = false;
   let clipLibraryRequestId = 0;
+  let selectedClipYouTube = null;
+  let clipYouTubePublicationId = "";
   let latestProcessorManifest = null;
   let turnstileToken = "";
   let turnstileWidgetId;
@@ -161,6 +176,7 @@ function startPodcastAdmin(root) {
   logoutButton?.addEventListener("click", logout);
   showSelect?.addEventListener("change", async () => {
     selectedShowId = showSelect.value;
+    closeClipYouTubeForm();
     clearClipLibraryState();
     fillShowForm();
     await Promise.all([loadEpisodes(), loadCampaigns()]);
@@ -211,15 +227,7 @@ function startPodcastAdmin(root) {
     refreshClipRecipe
   );
   clipList?.addEventListener("click", (event) => {
-    const preview = event.target.closest(
-      "[data-podcast-clip-render-preview]"
-    );
-    if (preview) {
-      toggleClipRenderPreview(preview);
-      return;
-    }
-    const edit = event.target.closest("[data-podcast-clip-edit]");
-    if (edit) selectClipRecipe(edit.dataset.podcastClipEdit);
+    handleClipAction(event, { editable: true });
   });
   clipLibraryFilters?.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -229,17 +237,19 @@ function startPodcastAdmin(root) {
     loadClipLibrary({ reset: true });
   });
   clipLibrary?.addEventListener("click", (event) => {
-    const preview = event.target.closest(
-      "[data-podcast-clip-render-preview]"
-    );
-    if (preview) {
-      toggleClipRenderPreview(preview);
-      return;
-    }
+    if (handleClipAction(event)) return;
     if (event.target.closest("[data-podcast-clip-library-more]")) {
       loadClipLibrary({ reset: false });
     }
   });
+  clipYouTubeForm?.addEventListener("submit", saveClipYouTubeDraft);
+  clipYouTubeApprove?.addEventListener(
+    "click",
+    approveClipYouTubePublication
+  );
+  clipYouTubeForm
+    ?.querySelector("[data-podcast-clip-youtube-close]")
+    ?.addEventListener("click", closeClipYouTubeForm);
   transcriptCuesRoot?.addEventListener("click", (event) => {
     const remove = event.target.closest("[data-podcast-transcript-remove]");
     if (remove) removeTranscriptCue(remove.dataset.podcastTranscriptRemove);
@@ -341,6 +351,9 @@ function startPodcastAdmin(root) {
     canApproveTranscripts = (identity?.roles || []).some(({ role }) =>
       role === "super_admin" || role === "admin"
     );
+    canApproveClipYouTube = (identity?.roles || []).some(({ role }) =>
+      role === "super_admin"
+    );
     campaignForm.hidden = !canManageCampaigns;
     creativeForm.hidden = !canManageCreatives;
     adPlanForm.hidden = !canManageAdPlans;
@@ -364,6 +377,7 @@ function startPodcastAdmin(root) {
     canManageAdPlans = false;
     canEditTranscripts = false;
     canApproveTranscripts = false;
+    canApproveClipYouTube = false;
     transcript = null;
     transcriptDurationSeconds = null;
     transcriptDirty = false;
@@ -383,6 +397,7 @@ function startPodcastAdmin(root) {
     if (clipPreview) clipPreview.textContent = "";
     setStatus(clipStatus, "");
     clearClipLibraryState();
+    closeClipYouTubeForm();
     latestProcessorManifest = null;
     sponsorResult?.replaceChildren();
     campaignList?.replaceChildren();
@@ -1267,6 +1282,11 @@ function startPodcastAdmin(root) {
 
   function clipRenderPresentation(clip, surface) {
     const render = clip.render;
+    const youtubePublication = clip.youtubePublication;
+    const youtubeDetails = youtubePublication
+      ? `<p>YouTube test: ${escapeHtml(humanizeCode(youtubePublication.status))}
+          · ${escapeHtml(humanizeCode(youtubePublication.privacyStatus))}</p>`
+      : "";
     const renderLabel = !render
       ? "not requested"
       : render.clipRevision === clip.revision
@@ -1282,13 +1302,21 @@ function startPodcastAdmin(root) {
     if (!ready) {
       return {
         renderLabel,
-        details: "",
+        details: youtubeDetails,
         actions: "",
         container: ""
       };
     }
     const previewId =
       `${surface}-clip-render-preview-${render.id}`;
+    const youtubeAction = canEditTranscripts
+      ? `<button
+          class="btn btn-outline-light"
+          type="button"
+          data-podcast-clip-youtube-open="${escapeAttribute(clip.id)}">
+          ${youtubePublication ? "Review YouTube test" : "Prepare YouTube test"}
+        </button>`
+      : "";
     return {
       renderLabel,
       details: `
@@ -1296,7 +1324,8 @@ function startPodcastAdmin(root) {
           ${Number(render.width)}×${Number(render.height)}
           · ${formatClipDuration(Number(render.durationMs))}
           · ${formatInteger(render.outputBytes)} bytes
-        </p>`,
+        </p>
+        ${youtubeDetails}`,
       actions: `
         <button
           class="btn btn-outline-light"
@@ -1312,13 +1341,39 @@ function startPodcastAdmin(root) {
           href="${escapeAttribute(downloadUrl)}"
           download>
           Download MP4
-        </a>`,
+        </a>
+        ${youtubeAction}`,
       container: `<div
         id="${escapeAttribute(previewId)}"
         class="podcast-admin__clip-media"
         data-podcast-clip-media
         hidden></div>`
     };
+  }
+
+  function handleClipAction(event, { editable = false } = {}) {
+    const youtube = event.target.closest(
+      "[data-podcast-clip-youtube-open]"
+    );
+    if (youtube) {
+      openClipYouTubeForm(youtube.dataset.podcastClipYoutubeOpen);
+      return true;
+    }
+    const preview = event.target.closest(
+      "[data-podcast-clip-render-preview]"
+    );
+    if (preview) {
+      toggleClipRenderPreview(preview);
+      return true;
+    }
+    const edit = editable
+      ? event.target.closest("[data-podcast-clip-edit]")
+      : null;
+    if (edit) {
+      selectClipRecipe(edit.dataset.podcastClipEdit);
+      return true;
+    }
+    return false;
   }
 
   function toggleClipRenderPreview(button) {
@@ -1372,6 +1427,178 @@ function startPodcastAdmin(root) {
 
   function pauseClipMediaPlayers(container) {
     container?.querySelectorAll("video").forEach((video) => video.pause());
+  }
+
+  function openClipYouTubeForm(clipId) {
+    if (!clipYouTubeForm) return;
+    const clip = [...clipLibraryRows, ...clips].find(
+      (candidate) => candidate.id === clipId
+    );
+    if (
+      !clip
+      || clip.render?.status !== "ready"
+      || clip.render?.clipRevision !== clip.revision
+    ) {
+      setStatus(
+        clipLibraryStatus,
+        "Only the current completed render can prepare a YouTube test.",
+        true
+      );
+      return;
+    }
+    selectedClipYouTube = clip;
+    const publication = clip.youtubePublication;
+    clipYouTubePublicationId =
+      publication?.id || operationId("clip_youtube");
+    const show = shows.find(({ id }) => id === selectedShowId);
+    clipYouTubeForm.elements.title.value = publication?.title
+      || `${String(clip.title || "").slice(0, 92)} #Shorts`;
+    clipYouTubeForm.elements.description.value =
+      publication?.description || "";
+    clipYouTubeForm.elements.privacyStatus.value =
+      publication?.privacyStatus || "unlisted";
+    clipYouTubeForm.elements.confirmChannelUrl.value =
+      publication?.channelUrl || show?.youtubeChannelUrl || "";
+    const immutable = Boolean(publication);
+    for (const field of [
+      "title",
+      "description",
+      "privacyStatus",
+      "confirmChannelUrl"
+    ]) {
+      clipYouTubeForm.elements[field].disabled = immutable;
+    }
+    const save = clipYouTubeForm.querySelector(
+      "[data-podcast-clip-youtube-save]"
+    );
+    if (save) save.hidden = immutable;
+    if (clipYouTubeApprove) {
+      clipYouTubeApprove.hidden = !(
+        canApproveClipYouTube
+        && ["draft", "dry_run"].includes(publication?.status)
+      );
+    }
+    if (clipYouTubeMeta) {
+      clipYouTubeMeta.textContent = [
+        clip.episodeTitle || "Episode",
+        clip.title,
+        `render ${clip.render.id}`,
+        publication
+          ? `${humanizeCode(publication.status)} · ${humanizeCode(publication.privacyStatus)}`
+          : "new immutable draft"
+      ].join(" · ");
+    }
+    setStatus(clipYouTubeStatus, "");
+    clipYouTubeForm.hidden = false;
+    clipYouTubeForm.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest"
+    });
+  }
+
+  async function saveClipYouTubeDraft(event) {
+    event.preventDefault();
+    const clip = selectedClipYouTube;
+    const button = clipYouTubeForm?.querySelector(
+      "[data-podcast-clip-youtube-save]"
+    );
+    if (!clip?.render || !button) return;
+    button.disabled = true;
+    setStatus(
+      clipYouTubeStatus,
+      "Preparing immutable private/unlisted YouTube draft…"
+    );
+    try {
+      const payload = await client.request(
+        `/v1/admin/clip-renders/${encodeURIComponent(clip.render.id)}/youtube`,
+        {
+          method: "POST",
+          body: {
+            publicationId: clipYouTubePublicationId,
+            expectedClipRevision: Number(clip.revision),
+            title: clipYouTubeForm.elements.title.value,
+            description: clipYouTubeForm.elements.description.value,
+            privacyStatus:
+              clipYouTubeForm.elements.privacyStatus.value,
+            confirmChannelUrl:
+              clipYouTubeForm.elements.confirmChannelUrl.value
+          }
+        }
+      );
+      applyClipYouTubePublication(
+        clip.render.id,
+        payload.publication
+      );
+      renderClipList();
+      renderClipLibrary();
+      openClipYouTubeForm(clip.id);
+      setStatus(
+        clipYouTubeStatus,
+        payload.idempotent
+          ? "This immutable YouTube draft already exists."
+          : "Draft prepared. No upload occurred."
+      );
+    } catch (error) {
+      setStatus(clipYouTubeStatus, friendlyError(error), true);
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  async function approveClipYouTubePublication() {
+    const clip = selectedClipYouTube;
+    const publication = clip?.youtubePublication;
+    if (!clip || !publication || !clipYouTubeApprove) return;
+    clipYouTubeApprove.disabled = true;
+    setStatus(
+      clipYouTubeStatus,
+      "Approving the current controlled-test gate…"
+    );
+    try {
+      const payload = await client.request(
+        `/v1/admin/clip-youtube-publications/${encodeURIComponent(publication.id)}/approve`,
+        { method: "POST", body: {} }
+      );
+      applyClipYouTubePublication(
+        publication.renderId || clip.render?.id,
+        payload.publication
+      );
+      renderClipList();
+      renderClipLibrary();
+      openClipYouTubeForm(clip.id);
+      setStatus(
+        clipYouTubeStatus,
+        payload.publication.status === "dry_run"
+          ? "Dry-run approved. No provider upload occurred."
+          : `Controlled private/unlisted upload accepted: ${humanizeCode(payload.publication.status)}.`
+      );
+    } catch (error) {
+      setStatus(clipYouTubeStatus, friendlyError(error), true);
+    } finally {
+      clipYouTubeApprove.disabled = false;
+    }
+  }
+
+  function applyClipYouTubePublication(renderId, publication) {
+    if (!renderId || !publication) return;
+    for (const collection of [clips, clipLibraryRows]) {
+      for (const clip of collection) {
+        if (clip.render?.id === renderId) {
+          clip.youtubePublication = publication;
+        }
+      }
+    }
+    if (selectedClipYouTube?.render?.id === renderId) {
+      selectedClipYouTube.youtubePublication = publication;
+    }
+  }
+
+  function closeClipYouTubeForm() {
+    selectedClipYouTube = null;
+    clipYouTubePublicationId = "";
+    clipYouTubeForm?.reset();
+    if (clipYouTubeForm) clipYouTubeForm.hidden = true;
+    setStatus(clipYouTubeStatus, "");
   }
 
   function adminApiUrl(path) {

@@ -318,6 +318,41 @@ permalink: admin/podcasts/index.html
             <p class="podcast-admin__status" data-podcast-clip-library-status role="status" aria-live="polite"></p>
           </form>
           <div class="podcast-admin__clip-list" data-podcast-clip-library></div>
+          <form class="podcast-admin__form" data-podcast-clip-youtube-form hidden>
+            <div class="podcast-admin__panel-heading">
+              <div>
+                <h3>Controlled YouTube test</h3>
+                <p data-podcast-clip-youtube-meta></p>
+              </div>
+              <p class="podcast-admin__pill">Never public</p>
+            </div>
+            <div class="podcast-admin__callout">
+              <p>Preparing a draft cannot upload. Approval requires a recently authenticated super-admin; dry-run is the default, and a real private/unlisted upload additionally requires the explicit staging controlled-test gate.</p>
+            </div>
+            <div class="podcast-admin__field-grid">
+              <label>Video title
+                <input name="title" maxlength="100" required>
+              </label>
+              <label>Visibility
+                <select name="privacyStatus">
+                  <option value="unlisted">Unlisted</option>
+                  <option value="private">Private</option>
+                </select>
+              </label>
+              <label class="podcast-admin__field-wide">Description
+                <textarea name="description" maxlength="5000" rows="5"></textarea>
+              </label>
+              <label class="podcast-admin__field-wide">Confirm exact channel URL
+                <input name="confirmChannelUrl" type="url" inputmode="url" required>
+              </label>
+            </div>
+            <div class="podcast-admin__clip-actions">
+              <button class="btn btn-outline-light" type="submit" data-podcast-clip-youtube-save>Prepare draft</button>
+              <button class="btn btn-danger" type="button" data-podcast-clip-youtube-approve hidden>Approve controlled test</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-clip-youtube-close>Close</button>
+            </div>
+            <p class="podcast-admin__status" data-podcast-clip-youtube-status role="status" aria-live="polite"></p>
+          </form>
           <div class="podcast-admin__callout">
             <p>Pool-style tagged links, QR codes, embeds, share previews, and Resend announcements remain the next adapter-backed slice.</p>
             <p>No announcement can send until its dry-run audience and revision are reviewed.</p>

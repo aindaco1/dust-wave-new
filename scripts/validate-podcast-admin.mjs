@@ -52,6 +52,10 @@ assert.match(adminTemplate, /authenticated preview and download/);
 assert.match(adminTemplate, /data-podcast-clip-library-filters/);
 assert.match(adminTemplate, /data-podcast-clip-library/);
 assert.match(adminTemplate, /Find completed captioned clips/);
+assert.match(adminTemplate, /data-podcast-clip-youtube-form/);
+assert.match(adminTemplate, /data-podcast-clip-youtube-approve/);
+assert.match(adminTemplate, /Never public/);
+assert.match(adminTemplate, /recently authenticated super-admin/);
 assert.match(adminTemplate, /Private evidence only/);
 assert.match(adminTemplate, /data-tab="marketing"/);
 assert.match(adminTemplate, /data-tab="sponsors"/);
@@ -116,6 +120,11 @@ assert.match(
   adminScript,
   /\/v1\/admin\/shows\/\$\{encodeURIComponent\(selectedShowId\)\}\/clips/
 );
+assert.match(adminScript, /saveClipYouTubeDraft/);
+assert.match(adminScript, /approveClipYouTubePublication/);
+assert.match(adminScript, /clip-youtube-publications/);
+assert.match(adminScript, /privacyStatus/);
+assert.doesNotMatch(adminScript, /privacyStatus:\s*"public"/);
 assert.doesNotMatch(adminScript, /startsAtMs:\s*clipForm/);
 assert.doesNotMatch(adminScript, /endsAtMs:\s*clipForm/);
 assert.doesNotMatch(adminScript, /(?:localStorage|sessionStorage).*(?:clip|caption)/i);

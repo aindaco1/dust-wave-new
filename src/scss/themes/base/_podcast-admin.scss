@@ -77,6 +77,10 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.podcast-admin__field-wide {
+  grid-column: 1 / -1;
+}
+
 .podcast-admin label {
   display: grid;
   font-weight: 600;
