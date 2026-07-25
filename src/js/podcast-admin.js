@@ -14,6 +14,7 @@ import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-s
 import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js";
 
 const TRANSCRIPT_CUES_PER_PAGE = 100;
+const TRANSCRIPTION_CHUNK_WORKFLOW = "process-transcription-chunks.yml";
 const AUDIO_QC_POLICY_FIELDS = [
   "monoIntegratedLufs",
   "stereoIntegratedLufs",
@@ -1819,7 +1820,7 @@ function startPodcastAdmin(root) {
             formatClipDuration(Number(source.durationMs || 0)),
             source.directProcessingEligible
               ? "direct Workers AI path ready"
-              : "silence-aware chunk processor required",
+              : "silence-aware staging chunk path ready",
             `master ${String(source.workingMasterSha256 || "").slice(0, 12)}…`,
             source.settingsVersion
           ].join(" · ")
@@ -1830,7 +1831,6 @@ function startPodcastAdmin(root) {
       transcriptionQueueButton.disabled =
         !canEditTranscripts
         || !source
-        || !source.directProcessingEligible
         || active;
     }
     if (!jobs.length) {
@@ -1879,6 +1879,28 @@ function startPodcastAdmin(root) {
           }… · word timing not created`;
         card.append(result);
       }
+      if (job.chunking) {
+        const chunking = document.createElement("p");
+        chunking.textContent = [
+          `Chunk preparation ${humanizeCode(job.chunking.status)}`,
+          job.chunking.chunkCount
+            ? `${Number(job.chunking.chunkCount)} immutable chunks`
+            : "",
+          job.chunking.processorVersion || ""
+        ].filter(Boolean).join(" · ");
+        card.append(chunking);
+        if (
+          ["queued", "running"].includes(job.chunking.status)
+          && job.chunking.workflow?.filename === TRANSCRIPTION_CHUNK_WORKFLOW
+          && job.chunking.workflow?.input?.run_id
+        ) {
+          const dispatch = document.createElement("p");
+          dispatch.textContent =
+            `Staging processor: ${job.chunking.workflow.filename} · `
+            + `run_id ${job.chunking.workflow.input.run_id}`;
+          card.append(dispatch);
+        }
+      }
       return card;
     }));
   }
@@ -1889,7 +1911,6 @@ function startPodcastAdmin(root) {
     if (
       !episodeId
       || !source
-      || !source.directProcessingEligible
       || !canEditTranscripts
     ) return;
     transcriptionQueueButton.disabled = true;
@@ -1913,6 +1934,8 @@ function startPodcastAdmin(root) {
         ? "The byte-identical transcription job already exists."
         : payload.delivery === "queued"
           ? "Source-language transcription queued."
+          : payload.delivery === "chunk_processor_required"
+            ? "Job recorded; run the displayed staging chunk workflow."
           : "Job recorded; scheduled recovery will deliver it.";
       if (await loadTranscriptionJobs()) {
         setStatus(transcriptionStatus, message);

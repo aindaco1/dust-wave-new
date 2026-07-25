@@ -240,6 +240,7 @@ function responseFor(request) {
       safeguards: {
         sourceLanguageOnly: true,
         directSourceByteLimit: 16 * 1024 * 1024,
+        largeSourceProcessor: "silence_aware_staging_workflow",
         wordTimingCreated: false,
         alignmentRequiredForWordControls: true
       }

@@ -228,6 +228,8 @@ assert.match(
 );
 assert.match(adminScript, /expectedWorkingMasterId/);
 assert.match(adminScript, /directProcessingEligible/);
+assert.match(adminScript, /chunk_processor_required/);
+assert.match(adminScript, /process-transcription-chunks\.yml/);
 assert.match(adminScript, /word timing not created/);
 assert.match(adminScript, /baseRevision: Number\(transcript\.revision/);
 assert.match(adminScript, /expectedRevision: Number\(transcript\.revision\)/);
