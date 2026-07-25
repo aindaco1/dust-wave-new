@@ -1,5 +1,15 @@
 import { AdminApiClient, AdminApiError } from "./dust-wave-admin-shell/api-client.js";
 import { mountRichTextEditor } from "./dust-wave-admin-shell/editor.js";
+import {
+  markdownToEditorHtml
+} from "./dust-wave-admin-shell/editor-codec.js";
+import {
+  buildTaggedMarketingUrl,
+  createMarketingQr,
+  drawQrCanvas,
+  qrSvgMarkup,
+  safeMarketingFilename
+} from "./dust-wave-admin-shell/marketing-assets.js";
 import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js";
 import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js";
 
@@ -92,6 +102,28 @@ function startPodcastAdmin(root) {
   const clipYouTubeApprove = root.querySelector(
     "[data-podcast-clip-youtube-approve]"
   );
+  const marketingLinkForm = root.querySelector(
+    "[data-podcast-marketing-link-form]"
+  );
+  const marketingQr = root.querySelector("[data-podcast-marketing-qr]");
+  const marketingPreviewTitle = root.querySelector(
+    "[data-podcast-marketing-preview-title]"
+  );
+  const marketingPreviewUrl = root.querySelector(
+    "[data-podcast-marketing-preview-url]"
+  );
+  const marketingLinkStatus = root.querySelector(
+    "[data-podcast-marketing-link-status]"
+  );
+  const announcementForm = root.querySelector(
+    "[data-podcast-announcement-form]"
+  );
+  const announcementStatus = root.querySelector(
+    "[data-podcast-announcement-status]"
+  );
+  const announcementReview = root.querySelector(
+    "[data-podcast-announcement-review]"
+  );
   const adPlanForm = root.querySelector("[data-podcast-ad-plan-form]");
   const adPlanStatus = root.querySelector("[data-podcast-ad-plan-status]");
   const adPlanResult = root.querySelector("[data-podcast-ad-plan-result]");
@@ -145,6 +177,8 @@ function startPodcastAdmin(root) {
   let clipLibraryRequestId = 0;
   let selectedClipYouTube = null;
   let clipYouTubePublicationId = "";
+  let marketingTaggedUrl = "";
+  let marketingCurrentQr = null;
   let latestProcessorManifest = null;
   let turnstileToken = "";
   let turnstileWidgetId;
@@ -153,6 +187,16 @@ function startPodcastAdmin(root) {
     root.querySelector("[data-podcast-notes-editor]"),
     { label: "Episode notes" }
   );
+  const announcementEditor = mountRichTextEditor(
+    root.querySelector("[data-podcast-announcement-editor]"),
+    {
+      label: "Podcast announcement content",
+      onChange() {
+        announcementReview?.replaceChildren();
+        setStatus(announcementStatus, "");
+      }
+    }
+  );
   mountAccessibleTabs(root.querySelector("[data-podcast-tabs]"), {
     storageKey: "dustwave-podcast-admin-tab",
     onSelect(tab) {
@@ -160,7 +204,10 @@ function startPodcastAdmin(root) {
       if (tab !== "marketing") pauseClipMediaPlayers(clipLibrary);
       if (tab === "production") loadTranscript();
       if (tab === "distribution") loadDistribution();
-      if (tab === "marketing") loadClipLibrary({ reset: true });
+      if (tab === "marketing") {
+        updateMarketingTools();
+        loadClipLibrary({ reset: true });
+      }
       if (tab === "billing") loadBilling();
       if (tab === "sponsors") loadCampaigns();
       if (tab === "analytics") loadAdReconciliation({ reset: true });
@@ -179,6 +226,7 @@ function startPodcastAdmin(root) {
     closeClipYouTubeForm();
     clearClipLibraryState();
     fillShowForm();
+    updateMarketingTools({ showChanged: true });
     await Promise.all([loadEpisodes(), loadCampaigns()]);
     const marketingPanel = root.querySelector("#podcast-panel-marketing");
     if (marketingPanel && !marketingPanel.hidden) {
@@ -250,6 +298,35 @@ function startPodcastAdmin(root) {
   clipYouTubeForm
     ?.querySelector("[data-podcast-clip-youtube-close]")
     ?.addEventListener("click", closeClipYouTubeForm);
+  marketingLinkForm?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    updateMarketingLink();
+  });
+  marketingLinkForm?.addEventListener("input", updateMarketingLink);
+  root.querySelector("[data-podcast-marketing-copy]")?.addEventListener(
+    "click",
+    copyMarketingLink
+  );
+  root.querySelector("[data-podcast-marketing-share]")?.addEventListener(
+    "click",
+    shareMarketingLink
+  );
+  root.querySelector("[data-podcast-marketing-qr-png]")?.addEventListener(
+    "click",
+    () => downloadMarketingQr("png")
+  );
+  root.querySelector("[data-podcast-marketing-qr-svg]")?.addEventListener(
+    "click",
+    () => downloadMarketingQr("svg")
+  );
+  announcementForm?.addEventListener(
+    "submit",
+    runAnnouncementDryRun
+  );
+  announcementForm?.addEventListener("input", () => {
+    announcementReview?.replaceChildren();
+    setStatus(announcementStatus, "");
+  });
   transcriptCuesRoot?.addEventListener("click", (event) => {
     const remove = event.target.closest("[data-podcast-transcript-remove]");
     if (remove) removeTranscriptCue(remove.dataset.podcastTranscriptRemove);
@@ -421,6 +498,9 @@ function startPodcastAdmin(root) {
       renderShows();
       fillShowSelect();
       fillShowForm();
+      updateMarketingTools({
+        showChanged: selectedShowId !== previousShowId
+      });
       await Promise.all([loadEpisodes(), loadCampaigns()]);
       const marketingPanel = root.querySelector("#podcast-panel-marketing");
       if (marketingPanel && !marketingPanel.hidden) {
@@ -471,6 +551,286 @@ function startPodcastAdmin(root) {
     }
     showForm.elements.premiumEnabled.checked = show.premiumEnabled;
     showForm.elements.freeMiniEpisodeEnabled.checked = show.freeMiniEpisodeEnabled;
+  }
+
+  function updateMarketingTools({ showChanged = false } = {}) {
+    const show = shows.find(({ id }) => id === selectedShowId);
+    if (!show) {
+      marketingTaggedUrl = "";
+      marketingCurrentQr = null;
+      marketingQr?.replaceChildren();
+      announcementReview?.replaceChildren();
+      return;
+    }
+    if (
+      showChanged
+      || marketingLinkForm?.dataset.showId !== show.id
+    ) {
+      marketingLinkForm.dataset.showId = show.id;
+      marketingLinkForm.elements.campaign.value = `${show.slug}-launch`;
+      marketingLinkForm.elements.content.value = "";
+      marketingLinkForm.elements.ref.value = "";
+    }
+    if (
+      showChanged
+      || announcementForm?.dataset.showId !== show.id
+    ) {
+      announcementForm.dataset.showId = show.id;
+      const spanish = show.language === "es";
+      announcementForm.elements.language.value = spanish ? "es" : "en";
+      announcementForm.elements.subject.value = spanish
+        ? `Nuevo episodio de ${show.title}`
+        : `New episode of ${show.title}`;
+      announcementForm.elements.heading.value = show.title;
+      announcementForm.elements.ctaLabel.value = spanish
+        ? "Escuchar episodio"
+        : "Listen to the episode";
+      announcementForm.elements.ctaUrl.value = show.canonicalUrl;
+      announcementEditor.setValue(
+        spanish
+          ? `Ya está disponible un nuevo episodio de **${show.title}**.`
+          : `A new episode of **${show.title}** is now available.`
+      );
+      announcementReview.replaceChildren();
+      setStatus(announcementStatus, "");
+    }
+    updateMarketingLink();
+  }
+
+  function updateMarketingLink() {
+    const show = shows.find(({ id }) => id === selectedShowId);
+    if (!show || !marketingLinkForm) return;
+    try {
+      const canonicalOrigin = new URL(show.canonicalUrl).origin;
+      marketingTaggedUrl = buildTaggedMarketingUrl({
+        canonicalUrl: show.canonicalUrl,
+        source: marketingLinkForm.elements.source.value,
+        medium: marketingLinkForm.elements.medium.value,
+        campaign: marketingLinkForm.elements.campaign.value,
+        content: marketingLinkForm.elements.content.value,
+        ref: marketingLinkForm.elements.ref.value,
+        allowedOrigins: [canonicalOrigin]
+      });
+      marketingLinkForm.elements.taggedUrl.value = marketingTaggedUrl;
+      marketingPreviewTitle.textContent = show.title;
+      marketingPreviewUrl.textContent = marketingTaggedUrl;
+      renderMarketingQr();
+      setStatus(marketingLinkStatus, "");
+    } catch (error) {
+      marketingTaggedUrl = "";
+      marketingCurrentQr = null;
+      marketingLinkForm.elements.taggedUrl.value = "";
+      marketingQr?.replaceChildren();
+      setStatus(
+        marketingLinkStatus,
+        error instanceof Error
+          ? error.message
+          : "Unable to build the tagged link.",
+        true
+      );
+    }
+  }
+
+  function renderMarketingQr() {
+    marketingCurrentQr = null;
+    marketingQr?.replaceChildren();
+    if (!marketingTaggedUrl || !marketingQr) return;
+    try {
+      const qr = createMarketingQr(marketingTaggedUrl);
+      if (!qr) {
+        throw new Error("The shared QR engine is unavailable.");
+      }
+      const canvas = document.createElement("canvas");
+      canvas.setAttribute("role", "img");
+      canvas.setAttribute(
+        "aria-label",
+        `QR code for ${shows.find(({ id }) => id === selectedShowId)?.title || "podcast"}`
+      );
+      drawQrCanvas(qr, canvas, { cellSize: 8, margin: 4 });
+      marketingCurrentQr = qr;
+      marketingQr.append(canvas);
+    } catch (error) {
+      setStatus(
+        marketingLinkStatus,
+        error instanceof Error
+          ? error.message
+          : "Unable to render the QR code.",
+        true
+      );
+    }
+  }
+
+  async function copyMarketingLink() {
+    if (!marketingTaggedUrl) {
+      updateMarketingLink();
+      if (!marketingTaggedUrl) return;
+    }
+    try {
+      await navigator.clipboard.writeText(marketingTaggedUrl);
+      setStatus(marketingLinkStatus, "Tagged link copied.");
+    } catch {
+      const input = marketingLinkForm.elements.taggedUrl;
+      input.focus();
+      input.select();
+      setStatus(
+        marketingLinkStatus,
+        "Clipboard access was unavailable; the link is selected."
+      );
+    }
+  }
+
+  async function shareMarketingLink() {
+    if (!marketingTaggedUrl) {
+      updateMarketingLink();
+      if (!marketingTaggedUrl) return;
+    }
+    const show = shows.find(({ id }) => id === selectedShowId);
+    if (typeof navigator.share !== "function") {
+      await copyMarketingLink();
+      return;
+    }
+    try {
+      await navigator.share({
+        title: show?.title || "Dust Wave Podcast",
+        text: show?.description || "",
+        url: marketingTaggedUrl
+      });
+      setStatus(marketingLinkStatus, "Share sheet opened.");
+    } catch (error) {
+      if (error?.name !== "AbortError") {
+        setStatus(marketingLinkStatus, "Unable to open the share sheet.", true);
+      }
+    }
+  }
+
+  function downloadMarketingQr(format) {
+    if (!marketingCurrentQr || !marketingTaggedUrl) {
+      updateMarketingLink();
+    }
+    if (!marketingCurrentQr) return;
+    const show = shows.find(({ id }) => id === selectedShowId);
+    const base = safeMarketingFilename(
+      `${show?.slug || "podcast"}-${marketingLinkForm.elements.ref.value || "qr"}`,
+      "podcast-qr"
+    );
+    if (format === "svg") {
+      downloadMarketingBlob(
+        `${base}.svg`,
+        new Blob(
+          [qrSvgMarkup(marketingCurrentQr, {
+            cellSize: 8,
+            margin: 4,
+            label: `QR code for ${show?.title || "podcast"}`
+          })],
+          { type: "image/svg+xml;charset=utf-8" }
+        )
+      );
+      setStatus(marketingLinkStatus, "SVG QR downloaded.");
+      return;
+    }
+    const canvas = document.createElement("canvas");
+    drawQrCanvas(marketingCurrentQr, canvas, {
+      cellSize: 12,
+      margin: 4
+    });
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        setStatus(
+          marketingLinkStatus,
+          "The browser could not encode the PNG.",
+          true
+        );
+        return;
+      }
+      downloadMarketingBlob(`${base}.png`, blob);
+      setStatus(marketingLinkStatus, "PNG QR downloaded.");
+    }, "image/png");
+  }
+
+  function downloadMarketingBlob(filename, blob) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1_000);
+  }
+
+  async function runAnnouncementDryRun(event) {
+    event.preventDefault();
+    const show = shows.find(({ id }) => id === selectedShowId);
+    if (!show || !announcementForm) return;
+    const submit = announcementForm.querySelector('button[type="submit"]');
+    submit.disabled = true;
+    announcementReview.replaceChildren();
+    setStatus(
+      announcementStatus,
+      "Reviewing the explicit opt-in audience…"
+    );
+    try {
+      const result = await client.request(
+        `/v1/admin/shows/${encodeURIComponent(show.id)}/marketing/announcements/dry-run`,
+        {
+          method: "POST",
+          body: {
+            language: announcementForm.elements.language.value,
+            subject: announcementForm.elements.subject.value,
+            heading: announcementForm.elements.heading.value,
+            bodyMarkdown: announcementEditor.getMarkdown(),
+            ctaLabel: announcementForm.elements.ctaLabel.value,
+            ctaUrl: announcementForm.elements.ctaUrl.value
+          }
+        }
+      );
+      renderAnnouncementReview(result);
+      setStatus(
+        announcementStatus,
+        `${formatInteger(result.eligibleRecipientCount)} explicitly opted-in active subscriber${
+          Number(result.eligibleRecipientCount) === 1 ? "" : "s"
+        }. No email sent.`
+      );
+    } catch (error) {
+      setStatus(announcementStatus, friendlyError(error), true);
+    } finally {
+      submit.disabled = false;
+    }
+  }
+
+  function renderAnnouncementReview(result) {
+    const card = document.createElement("article");
+    card.className = "podcast-admin__card";
+    const previewBody = document.createElement("div");
+    previewBody.className = "podcast-admin__announcement-body";
+    previewBody.innerHTML = markdownToEditorHtml(
+      result.preview?.bodyMarkdown || ""
+    );
+    card.innerHTML = `
+      <p class="podcast-admin__pill">Review only · Resend blocked</p>
+      <h4>${escapeHtml(result.preview?.subject || "Announcement")}</h4>
+      ${result.preview?.heading
+        ? `<p><strong>${escapeHtml(result.preview.heading)}</strong></p>`
+        : ""}
+      <p>${formatInteger(result.eligibleRecipientCount)} eligible recipient${
+        Number(result.eligibleRecipientCount) === 1 ? "" : "s"
+      } · ${escapeHtml(result.preview?.language || "")}</p>`;
+    card.append(previewBody);
+    if (result.preview?.ctaLabel && result.preview?.ctaUrl) {
+      const cta = document.createElement("p");
+      const link = document.createElement("a");
+      link.className = "btn btn-outline-light";
+      link.href = result.preview.ctaUrl;
+      link.textContent = result.preview.ctaLabel;
+      cta.append(link);
+      card.append(cta);
+    }
+    const evidence = document.createElement("p");
+    evidence.innerHTML = `Review hash: <code>${escapeHtml(
+      result.reviewHash || ""
+    )}</code>`;
+    card.append(evidence);
+    announcementReview.replaceChildren(card);
   }
 
   async function saveShow(event) {

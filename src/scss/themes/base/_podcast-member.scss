@@ -91,6 +91,7 @@
 .podcast-member__inline-form button:focus-visible,
 .podcast-member__feed-controls > button:focus-visible,
 .podcast-member__billing-controls > button:focus-visible,
+.podcast-member__notification-controls :is(button, input, select):focus-visible,
 .podcast-member__subscription a:focus-visible {
   outline: .2rem solid #fff;
   outline-offset: .2rem;
@@ -165,6 +166,40 @@
   border-top: 1px solid rgba(255, 255, 255, .12);
 }
 
+.podcast-member__notification-controls {
+  display: grid;
+  gap: .75rem;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, .12);
+}
+
+.podcast-member__notification-controls h4,
+.podcast-member__notification-controls p,
+.podcast-member__notification-controls label {
+  margin: 0;
+}
+
+.podcast-member__notification-controls select {
+  min-height: 2.75rem;
+  padding: .6rem .75rem;
+  border: 1px solid rgba(255, 255, 255, .3);
+  border-radius: .5rem;
+  background: #fff;
+  color: #181719;
+}
+
+.podcast-member__notification-consent {
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: .65rem;
+}
+
+.podcast-member__notification-consent input {
+  margin-top: .2rem;
+}
+
 .podcast-member__feed-output {
   margin-top: 1rem;
 }
@@ -197,7 +232,8 @@
 
   .podcast-member__inline-form button,
   .podcast-member__feed-controls > button,
-  .podcast-member__billing-controls > button {
+  .podcast-member__billing-controls > button,
+  .podcast-member__notification-controls button {
     width: 100%;
   }
 }

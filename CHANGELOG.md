@@ -26,3 +26,15 @@
 - Reserved `feeds.dustwave.xyz` and `media.dustwave.xyz`, added bilingual Spanish/English show copy, and configured seven-day early access plus one free mini episode for **Ópera en la Selva**.
 - Added the generated Podcast publication contract so one canonical Worker publication can create a News episode page, appear in the show aggregate, and reuse the deployed Digest player.
 - Added an executable Podcast show-data validation gate; no episode or checkout is fabricated before the corresponding runtime records and Stripe prices exist.
+- Advanced the shared boundary to `@dustwave/admin-shell` 0.2.0 and reused its
+  policy-injected tagged-link and accessible PNG/SVG QR primitives in a
+  responsive Podcast Marketing share kit; no campaign state or alternate QR
+  implementation is introduced.
+- Added a Pool/Store-style WYSIWYG announcement review that normalizes
+  English/Spanish content and shows only the explicitly opted-in, currently
+  entitled audience count plus pseudonymous revision hashes. The UI has no send
+  action and the Worker has no announcement delivery route or Resend call.
+- Added explicit, reversible per-show announcement opt-in and English/Spanish
+  preference controls to the Podcast member account. Subscription access does
+  not imply consent, and member responses continue to omit email and provider
+  identifiers.

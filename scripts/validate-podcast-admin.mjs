@@ -56,6 +56,10 @@ assert.match(adminTemplate, /data-podcast-clip-youtube-form/);
 assert.match(adminTemplate, /data-podcast-clip-youtube-approve/);
 assert.match(adminTemplate, /Never public/);
 assert.match(adminTemplate, /recently authenticated super-admin/);
+assert.match(adminTemplate, /data-podcast-marketing-link-form/);
+assert.match(adminTemplate, /data-podcast-marketing-qr/);
+assert.match(adminTemplate, /data-podcast-announcement-editor/);
+assert.match(adminTemplate, /This checkpoint has no send route/);
 assert.match(adminTemplate, /Private evidence only/);
 assert.match(adminTemplate, /data-tab="marketing"/);
 assert.match(adminTemplate, /data-tab="sponsors"/);
@@ -123,6 +127,11 @@ assert.match(
 assert.match(adminScript, /saveClipYouTubeDraft/);
 assert.match(adminScript, /approveClipYouTubePublication/);
 assert.match(adminScript, /clip-youtube-publications/);
+assert.match(adminScript, /buildTaggedMarketingUrl/);
+assert.match(adminScript, /createMarketingQr/);
+assert.match(adminScript, /marketing\/announcements\/dry-run/);
+assert.match(adminScript, /announcementEditor\.getMarkdown/);
+assert.doesNotMatch(adminScript, /\/marketing\/announcements\/send/);
 assert.match(adminScript, /privacyStatus/);
 assert.doesNotMatch(adminScript, /privacyStatus:\s*"public"/);
 assert.doesNotMatch(adminScript, /startsAtMs:\s*clipForm/);
@@ -134,18 +143,25 @@ assert.doesNotMatch(
 );
 assert.match(gulpfile, /copySharedAdminShell/);
 assert.equal(sharedPackage.name, '@dustwave/admin-shell');
-assert.equal(sharedPackage.version, '0.1.0');
+assert.equal(sharedPackage.version, '0.2.0');
 
 const sharedSources = [
   'api-client.js',
   'editor.js',
   'editor-codec.js',
+  'marketing-assets.js',
   'passwordless-session.js',
   'tabs.js'
 ];
 for (const source of sharedSources) {
   await access(path.join(sharedRoot, 'src', source));
 }
+await access(path.join(
+  sharedRoot,
+  'src',
+  'vendor',
+  'qrcode-generator.js'
+));
 for (const source of sharedSources.filter((source) => source !== 'editor-codec.js')) {
   assert.match(
     adminScript,

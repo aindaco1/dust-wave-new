@@ -216,6 +216,7 @@ function startPodcastMember(rootElement) {
     if (subscription.entitled) {
       card.append(privateFeedControls(subscription));
     }
+    card.append(notificationControls(subscription));
     if (subscription.hasStripeBilling) {
       card.append(billingPortalControls(subscription));
     }
@@ -290,6 +291,98 @@ function startPodcastMember(rootElement) {
     });
     controls.append(action, status);
     return controls;
+  }
+
+  function notificationControls(subscription) {
+    const form = document.createElement("form");
+    form.className = "podcast-member__notification-controls";
+
+    const heading = document.createElement("h4");
+    heading.textContent = "Avisos del programa / Show notifications";
+
+    const explanation = document.createElement("p");
+    explanation.className = "podcast-member__fine-print";
+    explanation.textContent =
+      "Recibe anuncios de episodios de este programa. Puedes retirarte cuando quieras. / Receive episode announcements for this show. You can opt out at any time.";
+
+    const consent = document.createElement("label");
+    consent.className = "podcast-member__notification-consent";
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked =
+      subscription.announcementNotificationsEnabled === true;
+    const consentText = document.createElement("span");
+    consentText.textContent =
+      "Sí, quiero recibir avisos / Yes, send me announcements";
+    consent.append(checkbox, consentText);
+
+    const languageLabel = document.createElement("label");
+    languageLabel.textContent = "Idioma / Language";
+    const language = document.createElement("select");
+    language.replaceChildren(
+      new Option("Español", "es"),
+      new Option("English", "en")
+    );
+    language.value = subscription.notificationLanguage === "en"
+      ? "en"
+      : "es";
+    languageLabel.append(language);
+
+    const save = document.createElement("button");
+    save.type = "submit";
+    save.className = "btn btn-outline-light";
+    save.textContent = "Guardar avisos / Save notifications";
+
+    const status = document.createElement("p");
+    status.className =
+      "podcast-member__status podcast-member__fine-print";
+    status.setAttribute("role", "status");
+    status.setAttribute("aria-live", "polite");
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      save.disabled = true;
+      setStatus(
+        status,
+        "Guardando tu elección… / Saving your choice…"
+      );
+      try {
+        const slug = encodeURIComponent(subscription.show?.slug || "");
+        const result = await client.request(
+          `/v1/member/shows/${slug}/notifications`,
+          {
+            method: "PUT",
+            body: {
+              enabled: checkbox.checked,
+              language: language.value
+            }
+          }
+        );
+        subscription.announcementNotificationsEnabled =
+          result.preference?.announcementsEnabled === true;
+        subscription.notificationLanguage =
+          result.preference?.language || language.value;
+        setStatus(
+          status,
+          checkbox.checked
+            ? "Avisos activados. / Notifications enabled."
+            : "Avisos desactivados. / Notifications disabled."
+        );
+      } catch (error) {
+        setStatus(status, friendlyError(error), true);
+      } finally {
+        save.disabled = false;
+      }
+    });
+    form.append(
+      heading,
+      explanation,
+      consent,
+      languageLabel,
+      save,
+      status
+    );
+    return form;
   }
 
   function billingPortalControls(subscription) {
