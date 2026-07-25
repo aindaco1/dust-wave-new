@@ -192,6 +192,13 @@ function startPodcastAdmin(root) {
     refreshClipRecipe
   );
   clipList?.addEventListener("click", (event) => {
+    const preview = event.target.closest(
+      "[data-podcast-clip-render-preview]"
+    );
+    if (preview) {
+      toggleClipRenderPreview(preview);
+      return;
+    }
     const edit = event.target.closest("[data-podcast-clip-edit]");
     if (edit) selectClipRecipe(edit.dataset.podcastClipEdit);
   });
@@ -333,6 +340,7 @@ function startPodcastAdmin(root) {
     selectedClipId = "";
     clipRequestId += 1;
     clipForm?.reset();
+    releaseClipMediaPlayers(clipList);
     clipList?.replaceChildren();
     if (clipPreview) clipPreview.textContent = "";
     setStatus(clipStatus, "");
@@ -1061,6 +1069,7 @@ function startPodcastAdmin(root) {
 
   function renderClipList() {
     if (!clipList) return;
+    releaseClipMediaPlayers(clipList);
     if (!clips.length) {
       clipList.innerHTML =
         '<p class="podcast-admin__empty">No saved clip recipes yet.</p>';
@@ -1075,22 +1084,129 @@ function startPodcastAdmin(root) {
         : render.clipRevision === clip.revision
           ? humanizeCode(render.status)
           : `${humanizeCode(render.status)} for older revision ${Number(render.clipRevision)}`;
+      const readyRender = render
+        && render.clipRevision === clip.revision
+        && render.status === "ready"
+        && render.mediaPath
+        && render.downloadPath;
+      const previewId = readyRender
+        ? `clip-render-preview-${render.id}`
+        : "";
+      const readyDetails = readyRender
+        ? `
+          <p>
+            ${Number(render.width)}×${Number(render.height)}
+            · ${formatClipDuration(Number(render.durationMs))}
+            · ${formatInteger(render.outputBytes)} bytes
+          </p>`
+        : "";
+      const readyActions = readyRender
+        ? `
+          <button
+            class="btn btn-outline-light"
+            type="button"
+            aria-controls="${escapeAttribute(previewId)}"
+            aria-expanded="false"
+            data-podcast-clip-render-preview
+            data-media-path="${escapeAttribute(render.mediaPath)}">
+            Preview render
+          </button>
+          <a
+            class="btn btn-outline-light"
+            href="${escapeAttribute(adminApiUrl(render.downloadPath))}"
+            download>
+            Download MP4
+          </a>`
+        : "";
       row.innerHTML = `
         <div>
           <p class="podcast-admin__pill">${escapeHtml(clip.status)} · revision ${Number(clip.revision)}</p>
           <h3>${escapeHtml(clip.title)}</h3>
           <p>${escapeHtml(clip.aspectRatio)} · ${formatClipDuration(clip.durationMs)} · ${escapeHtml(humanizeCode(clip.boundaryMode))}</p>
           <p>Private render: ${escapeHtml(renderLabel)}</p>
+          ${readyDetails}
         </div>
-        <button
-          class="btn btn-outline-light"
-          type="button"
-          data-podcast-clip-edit="${escapeAttribute(clip.id)}"
-          ${canEditTranscripts ? "" : "disabled"}>
-          Edit recipe
-        </button>`;
+        <div class="podcast-admin__clip-actions">
+          <button
+            class="btn btn-outline-light"
+            type="button"
+            data-podcast-clip-edit="${escapeAttribute(clip.id)}"
+            ${canEditTranscripts ? "" : "disabled"}>
+            Edit recipe
+          </button>
+          ${readyActions}
+        </div>
+        ${readyRender
+          ? `<div
+              id="${escapeAttribute(previewId)}"
+              class="podcast-admin__clip-media"
+              data-podcast-clip-media
+              hidden></div>`
+          : ""}`;
       return row;
     }));
+  }
+
+  function toggleClipRenderPreview(button) {
+    const row = button.closest(".podcast-admin__card");
+    const container = row?.querySelector("[data-podcast-clip-media]");
+    if (!container) return;
+    if (!container.hidden) {
+      releaseClipMediaPlayers(container);
+      container.hidden = true;
+      button.textContent = "Preview render";
+      button.setAttribute("aria-expanded", "false");
+      return;
+    }
+    const mediaUrl = adminApiUrl(button.dataset.mediaPath);
+    if (!mediaUrl) {
+      setStatus(clipStatus, "The private render URL is invalid.", true);
+      return;
+    }
+    const video = document.createElement("video");
+    video.controls = true;
+    video.preload = "metadata";
+    video.playsInline = true;
+    video.crossOrigin = "use-credentials";
+    video.src = mediaUrl;
+    video.setAttribute("aria-label", "Private captioned clip preview");
+    video.addEventListener("error", () => {
+      if (video.dataset.releasing === "1") return;
+      setStatus(
+        clipStatus,
+        "The private render could not be loaded. Refresh your session and verify the render evidence.",
+        true
+      );
+    }, { once: true });
+    container.replaceChildren(video);
+    container.hidden = false;
+    button.textContent = "Hide preview";
+    button.setAttribute("aria-expanded", "true");
+  }
+
+  function releaseClipMediaPlayers(container) {
+    container?.querySelectorAll("video").forEach((video) => {
+      video.dataset.releasing = "1";
+      video.pause();
+      video.removeAttribute("src");
+      video.load();
+    });
+  }
+
+  function adminApiUrl(path) {
+    if (
+      !/^\/v1\/admin\/clip-renders\/[A-Za-z0-9_-]+\/media(?:\?download=1)?$/
+        .test(path || "")
+    ) {
+      return "";
+    }
+    try {
+      const apiBase = new URL(`${apiOrigin.replace(/\/+$/, "")}/`);
+      const url = new URL(path, apiBase);
+      return url.origin === apiBase.origin ? url.toString() : "";
+    } catch {
+      return "";
+    }
   }
 
   function resetClipRecipe() {

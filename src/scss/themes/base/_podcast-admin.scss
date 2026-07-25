@@ -199,6 +199,34 @@
   gap: 1rem;
 }
 
+.podcast-admin__clip-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.podcast-admin__clip-media {
+  background: #050505;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 0.65rem;
+  display: grid;
+  justify-items: center;
+  overflow: hidden;
+  padding: 0.75rem;
+}
+
+.podcast-admin__clip-media[hidden] {
+  display: none;
+}
+
+.podcast-admin__clip-media video {
+  background: #000;
+  block-size: auto;
+  inline-size: min(100%, 36rem);
+  max-block-size: min(70vh, 48rem);
+  object-fit: contain;
+}
+
 .podcast-admin__section-heading {
   margin-top: 3rem;
 }
