@@ -84,6 +84,54 @@ permalink: podcasts/account/index.html
         class="podcast-member__subscriptions"
         data-podcast-member-subscriptions></div>
     </div>
+
+    <section
+      class="podcast-member__panel podcast-member__redemption"
+      data-podcast-pool-redemption
+      aria-labelledby="podcast-pool-redemption-title"
+      hidden>
+      <p class="podcast-member__eyebrow">Beneficio de Pool / Pool benefit</p>
+      <h2 id="podcast-pool-redemption-title">
+        Activa tu acceso de podcast
+        <span class="visually-hidden">/ Redeem podcast access</span>
+      </h2>
+      <p>
+        Si recibiste un código de beneficio de Pool, úsalo con esta misma
+        cuenta. Cada código funciona una sola vez y solo para el correo
+        destinatario.
+      </p>
+      <p lang="en">
+        If you received a Pool benefit code, redeem it with this same account.
+        Each code works once and only for its intended email.
+      </p>
+      <form data-podcast-pool-redemption-form>
+        <label for="podcast-pool-redemption-code">
+          Código de beneficio / Benefit code
+        </label>
+        <div class="podcast-member__inline-form">
+          <input
+            id="podcast-pool-redemption-code"
+            name="code"
+            type="text"
+            autocomplete="off"
+            autocapitalize="characters"
+            spellcheck="false"
+            minlength="42"
+            maxlength="42"
+            pattern="DW-POD-[A-HJ-NP-Z2-9]{8}(?:-[A-HJ-NP-Z2-9]{8}){3}"
+            placeholder="DW-POD-XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX"
+            required>
+          <button class="btn btn-danger" type="submit">
+            Activar / Redeem
+          </button>
+        </div>
+      </form>
+      <p
+        class="podcast-member__status"
+        data-podcast-pool-redemption-status
+        role="status"
+        aria-live="polite"></p>
+    </section>
   </section>
 
   <noscript>

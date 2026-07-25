@@ -60,6 +60,10 @@
   box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, .24);
 }
 
+.podcast-member__redemption {
+  margin-top: 1.5rem;
+}
+
 .podcast-member__panel label {
   display: block;
   margin-bottom: .5rem;
@@ -95,6 +99,7 @@
 .podcast-member__status {
   min-height: 1.5rem;
   margin: 1rem 0;
+  overflow-wrap: anywhere;
 }
 
 .podcast-member__status.is-error {
@@ -115,6 +120,7 @@
 }
 
 .podcast-member__subscription {
+  min-width: 0;
   padding: 1.25rem;
   border: 1px solid rgba(255, 255, 255, .14);
   border-radius: 1rem;
@@ -123,6 +129,7 @@
 
 .podcast-member__subscription h3 {
   margin-top: 0;
+  overflow-wrap: anywhere;
 }
 
 .podcast-member__subscription a {
@@ -166,6 +173,13 @@
   width: 100%;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: .78rem;
+}
+
+.podcast-member__redemption input {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: clamp(.72rem, 2vw, .88rem);
+  letter-spacing: .025em;
+  text-transform: uppercase;
 }
 
 @media (max-width: 47.99rem) {

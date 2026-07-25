@@ -37,10 +37,20 @@ function startPodcastMember(rootElement) {
   const subscriptionList = rootElement.querySelector(
     "[data-podcast-member-subscriptions]"
   );
+  const poolRedemptionPanel = rootElement.querySelector(
+    "[data-podcast-pool-redemption]"
+  );
+  const poolRedemptionForm = rootElement.querySelector(
+    "[data-podcast-pool-redemption-form]"
+  );
+  const poolRedemptionStatus = rootElement.querySelector(
+    "[data-podcast-pool-redemption-status]"
+  );
   let turnstileToken = "";
   let turnstileWidgetId;
 
   loginForm?.addEventListener("submit", startLogin);
+  poolRedemptionForm?.addEventListener("submit", redeemPoolBenefit);
   logoutButton?.addEventListener("click", logout);
   initializeTurnstile();
   restoreOrExchange();
@@ -53,7 +63,7 @@ function startPodcastMember(rootElement) {
       const result = token
         ? await session.exchange(token)
         : await session.restore();
-      showAuthenticated(result.identity);
+      showAuthenticated(result);
       setStatus(globalStatus, "");
     } catch (error) {
       showLoggedOut();
@@ -105,10 +115,12 @@ function startPodcastMember(rootElement) {
     }
   }
 
-  function showAuthenticated(identity) {
+  function showAuthenticated(result) {
+    const identity = result?.identity;
     authPanel.hidden = true;
     app.hidden = false;
     logoutButton.hidden = false;
+    poolRedemptionPanel.hidden = result?.poolRedemptionEnabled !== true;
     const subscriptions = Array.isArray(identity?.subscriptions)
       ? identity.subscriptions
       : [];
@@ -128,8 +140,47 @@ function startPodcastMember(rootElement) {
     authPanel.hidden = false;
     app.hidden = true;
     logoutButton.hidden = true;
+    poolRedemptionPanel.hidden = true;
+    poolRedemptionForm?.reset();
+    setStatus(poolRedemptionStatus, "");
     subscriptionList.replaceChildren();
     sessionSummary.textContent = "";
+  }
+
+  async function redeemPoolBenefit(event) {
+    event.preventDefault();
+    const submit = poolRedemptionForm.querySelector("button[type='submit']");
+    const input = poolRedemptionForm.elements.code;
+    submit.disabled = true;
+    setStatus(
+      poolRedemptionStatus,
+      "Comprobando el código… / Checking the code…"
+    );
+    try {
+      const result = await client.request("/v1/member/redemptions/pool", {
+        method: "POST",
+        body: { code: String(input.value || "").trim().toUpperCase() }
+      });
+      input.value = "";
+      const title = String(
+        result?.redemption?.show?.title || "Dust Wave Podcast"
+      );
+      const success = `Acceso activado para ${title}. / Access activated for ${title}.`;
+      setStatus(poolRedemptionStatus, success);
+      try {
+        showAuthenticated(await session.restore());
+        setStatus(poolRedemptionStatus, success);
+      } catch {
+        setStatus(
+          poolRedemptionStatus,
+          `${success} Actualiza la página para ver el acceso. / Refresh the page to see it.`
+        );
+      }
+    } catch (error) {
+      setStatus(poolRedemptionStatus, friendlyError(error), true);
+    } finally {
+      submit.disabled = false;
+    }
   }
 
   function subscriptionCard(subscription) {
@@ -434,6 +485,15 @@ function friendlyError(error) {
   }
   if (error.code === "premium_entitlement_required") {
     return "La suscripción premium ya no está activa. / The premium subscription is no longer active.";
+  }
+  if (
+    error.code === "redemption_code_not_available"
+    || error.code === "invalid_redemption_code"
+  ) {
+    return "El código no está disponible para esta cuenta. Revisa el código y el correo del destinatario. / The code is not available for this account. Check the code and recipient email.";
+  }
+  if (error.code === "pool_redemption_not_configured") {
+    return "La activación de beneficios no está disponible en este momento. / Benefit redemption is temporarily unavailable.";
   }
   if (error.code === "private_feed_not_configured") {
     return "Los feeds privados todavía no están configurados. / Private feeds are not configured yet.";

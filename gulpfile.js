@@ -117,7 +117,13 @@ gulp.task('purgecss', function purgeCssTask() {
   return src(`${DIR.dist}/css/theme.min.css`)
     .pipe(
       purgecss({
-        content: [`${DIR.dist}/**/*.html`],
+        // Account/admin cards and states are created by the checked-in modules
+        // after authentication, so their selectors must participate in the
+        // production extraction pass as well as static Eleventy output.
+        content: [
+          `${DIR.dist}/**/*.html`,
+          `${DIR.dist}/js/**/*.js`
+        ],
         safelist: ['collapsed', 'collapse', 'active', 'show', 'collapsing']
       })
     )
