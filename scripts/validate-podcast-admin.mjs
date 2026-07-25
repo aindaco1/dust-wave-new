@@ -51,6 +51,8 @@ assert.match(adminTemplate, /exact RSS, News, YouTube, and per-directory states/
 assert.match(adminTemplate, /data-tab="production"/);
 assert.match(adminTemplate, /data-podcast-audio-qc/);
 assert.match(adminTemplate, /data-podcast-audio-qc-queue/);
+assert.match(adminTemplate, /data-podcast-audio-qc-policy-form/);
+assert.match(adminTemplate, /Admin and Super-admin changes apply only to future QC runs/);
 assert.match(adminTemplate, /Measure the immutable source/);
 assert.match(adminTemplate, /never overwrites audio or publishes an episode/);
 assert.match(adminTemplate, /data-podcast-transcript-workbench/);
@@ -150,7 +152,15 @@ assert.match(adminScript, /\/chapters\/approve/);
 assert.match(adminScript, /function checkedHttpsUrl/);
 assert.match(adminScript, /function loadProductionReviews/);
 assert.match(adminScript, /function loadAudioQc/);
+assert.match(adminScript, /function loadAudioQcPolicy/);
+assert.match(adminScript, /function saveAudioQcPolicy/);
 assert.match(adminScript, /function renderAudioQcRun/);
+assert.match(
+  adminScript,
+  /\/v1\/admin\/shows\/\$\{encodeURIComponent\(showId\)\}\/audio-qc-policy/
+);
+assert.match(adminScript, /baseRevision: Number\(audioQcPolicy\.revision\)/);
+assert.match(adminScript, /valueAsNumber/);
 assert.match(
   adminScript,
   /\/v1\/admin\/episodes\/\$\{encodeURIComponent\(episodeId\)\}\/audio-qc/

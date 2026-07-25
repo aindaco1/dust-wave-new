@@ -729,6 +729,14 @@
   overflow-wrap: anywhere;
 }
 
+[data-podcast-audio-qc-policy-summary] {
+  overflow-wrap: anywhere;
+}
+
+.podcast-admin__audio-qc-policy {
+  margin: 1rem 0;
+}
+
 .podcast-admin__readiness-group > h3 {
   margin: 0 0 0.75rem;
 }

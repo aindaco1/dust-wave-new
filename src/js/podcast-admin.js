@@ -14,6 +14,18 @@ import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-s
 import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js";
 
 const TRANSCRIPT_CUES_PER_PAGE = 100;
+const AUDIO_QC_POLICY_FIELDS = [
+  "monoIntegratedLufs",
+  "stereoIntegratedLufs",
+  "integratedLufsTolerance",
+  "maximumTruePeakDbtp",
+  "maximumDcOffset",
+  "maximumChannelImbalanceLu",
+  "maximumLeadingSilenceMs",
+  "maximumTrailingSilenceMs",
+  "maximumInternalSilenceMs",
+  "silenceThresholdDb"
+];
 
 const root = document.querySelector("[data-podcast-admin]");
 if (root) startPodcastAdmin(root);
@@ -129,6 +141,15 @@ function startPodcastAdmin(root) {
     "[data-podcast-audio-qc-results]"
   );
   const audioQcStatus = root.querySelector("[data-podcast-audio-qc-status]");
+  const audioQcPolicyForm = root.querySelector(
+    "[data-podcast-audio-qc-policy-form]"
+  );
+  const audioQcPolicySummary = root.querySelector(
+    "[data-podcast-audio-qc-policy-summary]"
+  );
+  const audioQcPolicyStatus = root.querySelector(
+    "[data-podcast-audio-qc-policy-status]"
+  );
   const clipForm = root.querySelector("[data-podcast-clip-form]");
   const clipPreview = root.querySelector("[data-podcast-clip-preview]");
   const clipStatus = root.querySelector("[data-podcast-clip-status]");
@@ -244,6 +265,7 @@ function startPodcastAdmin(root) {
   let canEditReviews = false;
   let canApproveReviews = false;
   let canRunAudioQc = false;
+  let canManageAudioQcPolicy = false;
   let canApproveClipYouTube = false;
   let transcript = null;
   let transcriptDurationSeconds = null;
@@ -260,6 +282,8 @@ function startPodcastAdmin(root) {
   let readinessRequestId = 0;
   let audioQcState = null;
   let audioQcRequestId = 0;
+  let audioQcPolicy = null;
+  let audioQcPolicyRequestId = 0;
   let clips = [];
   let selectedClipId = "";
   let clipRequestId = 0;
@@ -295,6 +319,7 @@ function startPodcastAdmin(root) {
       if (tab !== "production") pauseClipMediaPlayers(clipList);
       if (tab !== "marketing") pauseClipMediaPlayers(clipLibrary);
       if (tab === "production") {
+        loadAudioQcPolicy();
         loadAudioQc();
         loadTranscript();
         loadChapters();
@@ -398,6 +423,7 @@ function startPodcastAdmin(root) {
   audioQcEpisodeSelect?.addEventListener("change", loadAudioQc);
   audioQcQueue?.addEventListener("click", queueAudioQc);
   audioQcRefresh?.addEventListener("click", loadAudioQc);
+  audioQcPolicyForm?.addEventListener("submit", saveAudioQcPolicy);
   clipForm?.addEventListener("submit", saveClipRecipe);
   clipNewButton?.addEventListener("click", resetClipRecipe);
   clipRenderButton?.addEventListener("click", prepareClipRender);
@@ -583,6 +609,9 @@ function startPodcastAdmin(root) {
     canEditChapters = canManageCreatives;
     canEditReviews = canManageCreatives;
     canRunAudioQc = canManageCreatives;
+    canManageAudioQcPolicy = (identity?.roles || []).some(({ role }) =>
+      role === "super_admin" || role === "admin"
+    );
     canApproveTranscripts = (identity?.roles || []).some(({ role }) =>
       role === "super_admin" || role === "admin"
     );
@@ -621,6 +650,7 @@ function startPodcastAdmin(root) {
     canEditReviews = false;
     canApproveReviews = false;
     canRunAudioQc = false;
+    canManageAudioQcPolicy = false;
     canApproveClipYouTube = false;
     transcript = null;
     transcriptDurationSeconds = null;
@@ -650,9 +680,14 @@ function startPodcastAdmin(root) {
     setStatus(readinessStatus, "");
     audioQcState = null;
     audioQcRequestId += 1;
+    audioQcPolicy = null;
+    audioQcPolicyRequestId += 1;
     audioQcResults?.replaceChildren();
     if (audioQcSummary) audioQcSummary.textContent = "";
     setStatus(audioQcStatus, "");
+    if (audioQcPolicyForm) audioQcPolicyForm.hidden = true;
+    if (audioQcPolicySummary) audioQcPolicySummary.textContent = "";
+    setStatus(audioQcPolicyStatus, "");
     reviewForm?.reset();
     setStatus(reviewStatus, "");
     clips = [];
@@ -1063,6 +1098,7 @@ function startPodcastAdmin(root) {
       const productionPanel = root.querySelector("#podcast-panel-production");
       if (productionPanel && !productionPanel.hidden) {
         await Promise.all([
+          loadAudioQcPolicy(),
           loadAudioQc(),
           loadTranscript(),
           loadChapters(),
@@ -2260,6 +2296,118 @@ function startPodcastAdmin(root) {
       setStatus(chapterStatus, friendlyError(error), true);
     } finally {
       if (chapterSet) renderChapters();
+    }
+  }
+
+  async function loadAudioQcPolicy() {
+    const showId = selectedShowId;
+    const requestId = ++audioQcPolicyRequestId;
+    audioQcPolicy = null;
+    if (audioQcPolicyForm) audioQcPolicyForm.hidden = true;
+    if (!showId) {
+      if (audioQcPolicySummary) {
+        audioQcPolicySummary.textContent =
+          "Choose a show before reviewing its measurement policy.";
+      }
+      setStatus(audioQcPolicyStatus, "");
+      return;
+    }
+    if (audioQcPolicySummary) {
+      audioQcPolicySummary.textContent =
+        "Loading the show measurement policy…";
+    }
+    setStatus(audioQcPolicyStatus, "");
+    try {
+      const payload = await client.request(
+        `/v1/admin/shows/${encodeURIComponent(showId)}/audio-qc-policy`
+      );
+      if (
+        requestId !== audioQcPolicyRequestId
+        || showId !== selectedShowId
+      ) return;
+      audioQcPolicy = payload.policy || null;
+      renderAudioQcPolicy();
+    } catch (error) {
+      if (
+        requestId !== audioQcPolicyRequestId
+        || showId !== selectedShowId
+      ) return;
+      if (audioQcPolicySummary) {
+        audioQcPolicySummary.textContent =
+          "The show measurement policy could not be loaded.";
+      }
+      setStatus(audioQcPolicyStatus, friendlyError(error), true);
+    }
+  }
+
+  function renderAudioQcPolicy() {
+    if (!audioQcPolicy || !audioQcPolicySummary) return;
+    audioQcPolicySummary.textContent = [
+      `Policy revision ${Number(audioQcPolicy.revision || 0)}`,
+      `mono ${Number(audioQcPolicy.monoIntegratedLufs)} LUFS`,
+      `stereo ${Number(audioQcPolicy.stereoIntegratedLufs)} LUFS`,
+      `±${Number(audioQcPolicy.integratedLufsTolerance)} LU`,
+      `peak ≤ ${Number(audioQcPolicy.maximumTruePeakDbtp)} dBTP`,
+      `silence detector ${Number(audioQcPolicy.silenceThresholdDb)} dB`
+    ].join(" · ");
+    if (!audioQcPolicyForm) return;
+    audioQcPolicyForm.hidden = !canManageAudioQcPolicy;
+    if (audioQcPolicyForm.hidden) return;
+    for (const field of AUDIO_QC_POLICY_FIELDS) {
+      audioQcPolicyForm.elements[field].value =
+        String(audioQcPolicy[field]);
+    }
+  }
+
+  async function saveAudioQcPolicy(event) {
+    event.preventDefault();
+    if (
+      !selectedShowId
+      || !canManageAudioQcPolicy
+      || !audioQcPolicy
+      || !audioQcPolicyForm
+    ) return;
+    const showId = selectedShowId;
+    const button = audioQcPolicyForm.querySelector(
+      'button[type="submit"]'
+    );
+    button.disabled = true;
+    setStatus(
+      audioQcPolicyStatus,
+      "Saving thresholds for future QC runs…"
+    );
+    try {
+      const policyValues = Object.fromEntries(
+        AUDIO_QC_POLICY_FIELDS.map((field) => [
+          field,
+          audioQcPolicyForm.elements[field].valueAsNumber
+        ])
+      );
+      const payload = await client.request(
+        `/v1/admin/shows/${encodeURIComponent(showId)}/audio-qc-policy`,
+        {
+          method: "PATCH",
+          body: {
+            baseRevision: Number(audioQcPolicy.revision),
+            ...policyValues
+          }
+        }
+      );
+      if (showId !== selectedShowId) return;
+      audioQcPolicy = payload.policy || null;
+      renderAudioQcPolicy();
+      setStatus(
+        audioQcPolicyStatus,
+        `Policy revision ${Number(audioQcPolicy?.revision || 0)} saved. `
+          + "Existing reports remain immutable."
+      );
+      await loadAudioQc();
+    } catch (error) {
+      if (showId === selectedShowId) {
+        setStatus(audioQcPolicyStatus, friendlyError(error), true);
+      }
+    } finally {
+      button.disabled = false;
     }
   }
 
@@ -5485,6 +5633,9 @@ function friendlyError(error) {
   }
   if (error.code === "audio_qc_run_exists") {
     return "This exact source and policy already have an active or completed QC run.";
+  }
+  if (error.code === "audio_qc_policy_conflict") {
+    return "The show policy changed in another session. Reload it before saving.";
   }
   if (
     error.code === "audio_qc_run_conflict"
