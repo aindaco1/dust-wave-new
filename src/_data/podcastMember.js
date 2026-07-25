@@ -6,5 +6,10 @@ module.exports = {
   turnstileSiteKey:
     process.env.PODCAST_MEMBER_TURNSTILE_SITE_KEY
     || process.env.PODCAST_ADMIN_TURNSTILE_SITE_KEY
+    || "",
+  checkoutTurnstileSiteKey:
+    process.env.PODCAST_CHECKOUT_TURNSTILE_SITE_KEY
+    || process.env.PODCAST_MEMBER_TURNSTILE_SITE_KEY
+    || process.env.PODCAST_ADMIN_TURNSTILE_SITE_KEY
     || ""
 };

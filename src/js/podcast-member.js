@@ -165,6 +165,9 @@ function startPodcastMember(rootElement) {
     if (subscription.entitled) {
       card.append(privateFeedControls(subscription));
     }
+    if (subscription.hasStripeBilling) {
+      card.append(billingPortalControls(subscription));
+    }
     if (subscription.currentPeriodEnd) {
       const period = document.createElement("p");
       period.className = "podcast-member__fine-print";
@@ -231,6 +234,44 @@ function startPodcastMember(rootElement) {
       } catch (error) {
         setStatus(status, friendlyError(error), true);
       } finally {
+        action.disabled = false;
+      }
+    });
+    controls.append(action, status);
+    return controls;
+  }
+
+  function billingPortalControls(subscription) {
+    const controls = document.createElement("div");
+    controls.className = "podcast-member__billing-controls";
+
+    const action = document.createElement("button");
+    action.type = "button";
+    action.className = "btn btn-outline-light";
+    action.textContent = "Administrar pago / Manage billing";
+
+    const status = document.createElement("p");
+    status.className = "podcast-member__status podcast-member__fine-print";
+    status.setAttribute("role", "status");
+    status.setAttribute("aria-live", "polite");
+
+    action.addEventListener("click", async () => {
+      action.disabled = true;
+      setStatus(
+        status,
+        "Abriendo el portal seguro… / Opening secure billing portal…"
+      );
+      try {
+        const slug = encodeURIComponent(subscription.show?.slug || "");
+        const result = await client.request(
+          `/v1/member/shows/${slug}/billing/portal`,
+          { method: "POST" }
+        );
+        globalThis.location.assign(
+          trustedStripeUrl(result?.portal?.url, "billing.stripe.com")
+        );
+      } catch (error) {
+        setStatus(status, friendlyError(error), true);
         action.disabled = false;
       }
     });
@@ -358,6 +399,26 @@ function setStatus(element, message, error = false) {
   element.classList.toggle("is-error", error);
 }
 
+function trustedStripeUrl(value, expectedHost) {
+  try {
+    const url = new URL(String(value || ""));
+    if (
+      url.protocol === "https:"
+      && url.hostname === expectedHost
+      && !url.port
+      && !url.username
+      && !url.password
+    ) {
+      return url.href;
+    }
+  } catch {
+    // Normalize every malformed or unexpected destination to one safe error.
+  }
+  throw new PodcastApiError("unsafe_billing_destination", {
+    code: "unsafe_billing_destination"
+  });
+}
+
 function friendlyError(error) {
   if (!(error instanceof PodcastApiError)) {
     return "No se pudo contactar el servicio. Inténtalo de nuevo. / The service could not be reached. Please retry.";
@@ -383,5 +444,17 @@ function friendlyError(error) {
   ) {
     return "El feed cambió en otra sesión. Recarga la página antes de continuar. / The feed changed in another session. Refresh before continuing.";
   }
-  return error.message || error.code;
+  if (error.code === "stripe_subscription_not_found") {
+    return "No encontramos una suscripción de Stripe para este podcast. / We could not find a Stripe subscription for this podcast.";
+  }
+  if (
+    error.code === "billing_portal_not_configured"
+    || error.code === "billing_portal_unavailable"
+  ) {
+    return "El portal de pagos no está disponible en este momento. / The billing portal is temporarily unavailable.";
+  }
+  if (error.code === "unsafe_billing_destination") {
+    return "La dirección del portal de pagos no pasó la verificación. / The billing portal destination failed verification.";
+  }
+  return "No pudimos continuar de forma segura. Inténtalo de nuevo. / We could not continue securely. Please retry.";
 }

@@ -86,6 +86,7 @@
 .podcast-member__header button:focus-visible,
 .podcast-member__inline-form button:focus-visible,
 .podcast-member__feed-controls > button:focus-visible,
+.podcast-member__billing-controls > button:focus-visible,
 .podcast-member__subscription a:focus-visible {
   outline: .2rem solid #fff;
   outline-offset: .2rem;
@@ -151,6 +152,12 @@
   margin-top: 1.25rem;
 }
 
+.podcast-member__billing-controls {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, .12);
+}
+
 .podcast-member__feed-output {
   margin-top: 1rem;
 }
@@ -175,7 +182,8 @@
   }
 
   .podcast-member__inline-form button,
-  .podcast-member__feed-controls > button {
+  .podcast-member__feed-controls > button,
+  .podcast-member__billing-controls > button {
     width: 100%;
   }
 }

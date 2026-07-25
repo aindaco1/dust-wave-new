@@ -20,10 +20,16 @@ assert.match(script, /\/v1\/member\/auth\/exchange/);
 assert.match(script, /\/v1\/member\/session/);
 assert.match(script, /\/v1\/member\/logout/);
 assert.match(script, /\/v1\/member\/shows\/\$\{slug\}\/feed/);
+assert.match(script, /\/v1\/member\/shows\/\$\{slug\}\/billing\/portal/);
+assert.match(script, /subscription\.hasStripeBilling/);
+assert.match(script, /"billing\.stripe\.com"/);
+assert.match(script, /url\.hostname === expectedHost/);
+assert.match(script, /url\.protocol === "https:"/);
 assert.match(script, /navigator\.clipboard\.writeText/);
 assert.match(script, /readOnly = true/);
 assert.match(script, /session\.clearFragment\(\)/);
 assert.doesNotMatch(script, /localStorage|sessionStorage|innerHTML/);
+assert.doesNotMatch(script, /console\./);
 assert.doesNotMatch(script, /provider_customer|provider_subscription|private_feed_token/);
 
 console.log("Podcast member account validation passed.");

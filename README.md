@@ -35,6 +35,22 @@ Push to `main` branch → GitHub Actions builds and deploys via GitHub Pages art
 
 You can also trigger a manual deploy from the Actions tab → "Build and Deploy" → "Run workflow".
 
+### Podcast UI configuration
+
+The Pages build reads the following GitHub Actions repository variables:
+
+- `PODCAST_ADMIN_API_ORIGIN`
+- `PODCAST_ADMIN_TURNSTILE_SITE_KEY`
+- `PODCAST_MEMBER_API_ORIGIN`
+- `PODCAST_MEMBER_TURNSTILE_SITE_KEY`
+- `PODCAST_CHECKOUT_TURNSTILE_SITE_KEY`
+
+The public premium form remains hidden unless the Podcast API reports
+`checkoutEnabled: true`, returns at least one valid USD price, and the build
+has a Checkout Turnstile site key. Subscriber billing controls appear only
+when the authenticated, non-secret session projection reports a show-scoped
+Stripe billing source.
+
 ## Roadmap
 
 See [ROADMAP.md](ROADMAP.md) for planned product and infrastructure work, including the paid embedded video player plan.

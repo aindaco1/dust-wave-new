@@ -3,11 +3,13 @@ name: Build and Deploy
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:  # Allow manual triggers
 
 # Allow only one concurrent deployment, cancel in-progress runs
 concurrency:
-  group: "pages"
+  group: "pages-${{ github.event_name }}-${{ github.ref }}"
   cancel-in-progress: true
 
 jobs:
@@ -29,10 +31,19 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm install --force
+        run: npm ci
+
+      - name: Validate podcast surfaces
+        run: npm run test:podcasts
 
       - name: Build site
         run: npm run build:ci
+        env:
+          PODCAST_ADMIN_API_ORIGIN: ${{ vars.PODCAST_ADMIN_API_ORIGIN }}
+          PODCAST_ADMIN_TURNSTILE_SITE_KEY: ${{ vars.PODCAST_ADMIN_TURNSTILE_SITE_KEY }}
+          PODCAST_MEMBER_API_ORIGIN: ${{ vars.PODCAST_MEMBER_API_ORIGIN }}
+          PODCAST_MEMBER_TURNSTILE_SITE_KEY: ${{ vars.PODCAST_MEMBER_TURNSTILE_SITE_KEY }}
+          PODCAST_CHECKOUT_TURNSTILE_SITE_KEY: ${{ vars.PODCAST_CHECKOUT_TURNSTILE_SITE_KEY }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
@@ -41,6 +52,7 @@ jobs:
 
   deploy:
     needs: build
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:
       pages: write
@@ -69,7 +81,7 @@ jobs:
   federate:
     needs: deploy
     runs-on: ubuntu-latest
-    if: ${{ vars.BRIDGY_FED_ENABLED == 'true' }}
+    if: ${{ github.event_name != 'pull_request' && vars.BRIDGY_FED_ENABLED == 'true' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
