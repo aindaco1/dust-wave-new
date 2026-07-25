@@ -338,12 +338,99 @@
 }
 
 .podcast-admin__directory-list article {
+  display: grid;
+  gap: 1rem;
+}
+
+.podcast-admin__distribution-summary {
+  margin: 1.5rem 0;
+}
+
+.podcast-admin__distribution-feed {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.podcast-admin__distribution-feed > div {
+  display: grid;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.podcast-admin__distribution-feed input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 0.5rem;
+  background: #101010;
+  color: #fff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.82rem;
+}
+
+.podcast-admin__distribution-feed .podcast-admin__status {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.podcast-admin__directory-heading,
+.podcast-admin__directory-links,
+.podcast-admin__badges {
   display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.podcast-admin__directory-heading {
+  align-items: flex-start;
   justify-content: space-between;
 }
 
-.podcast-admin__directory-list article div {
+.podcast-admin__directory-heading h3,
+.podcast-admin__directory-heading p,
+.podcast-admin__directory-details {
+  margin: 0;
+}
+
+.podcast-admin__directory-heading p,
+.podcast-admin__directory-details {
+  color: #c7c2bb;
+}
+
+.podcast-admin__directory-list .podcast-admin__pill.is-ready {
+  border-color: rgba(117, 226, 153, 0.62);
+  color: #b9f7cd;
+}
+
+.podcast-admin__distribution-form {
   display: grid;
+  grid-template-columns:
+    minmax(10rem, 0.8fr)
+    minmax(14rem, 1.6fr)
+    auto
+    auto;
+  align-items: end;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.podcast-admin__distribution-form label:not(.podcast-admin__checkbox) {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.podcast-admin__distribution-form .podcast-admin__status {
+  grid-column: 1 / -1;
+  margin: 0;
 }
 
 .podcast-admin__episode-actions {
@@ -499,10 +586,16 @@
   }
 
   .podcast-admin__inline-form,
+  .podcast-admin__distribution-feed,
+  .podcast-admin__distribution-form,
   .podcast-admin__field-grid,
   .podcast-admin__field-grid--three,
   .podcast-admin__decision {
     grid-template-columns: 1fr;
+  }
+
+  .podcast-admin__distribution-form .btn {
+    width: 100%;
   }
 
   .podcast-admin__marketing-preview {

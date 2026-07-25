@@ -57,3 +57,10 @@
   upload, or image SaaS. The canonical News page references that card, while
   Podcast Marketing can preview, copy, download, or open only due public
   revisions through the same exact canonical-path gate as the portable player.
+- Made Streamlined Publishing show-scoped and operationally explicit across 11
+  launch directories. The responsive Distribution tab now separates one-time
+  owner setup from RSS ingestion, shows the selected show's exact canonical
+  feed and readiness totals, renders the latest episode observation state,
+  links to provider setup/public listings, and lets only show-scoped
+  Admin/Super-admin roles update enabled/setup/listing state through the
+  CSRF/audit-protected Podcast runtime.

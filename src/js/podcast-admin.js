@@ -171,11 +171,13 @@ function startPodcastAdmin(root) {
   const campaignsAtCap = root.querySelector("[data-podcast-campaigns-at-cap]");
   let shows = [];
   let episodes = [];
+  let adminIdentity = null;
   let campaigns = [];
   let reconciliationRows = [];
   let reconciliationCursor = null;
   let reconciliationLoading = false;
   let reconciliationRequestId = 0;
+  let distributionRequestId = 0;
   let selectedShowId = "";
   let canManageCampaigns = false;
   let canManageCreatives = false;
@@ -240,6 +242,11 @@ function startPodcastAdmin(root) {
     "click",
     () => loadAdReconciliation({ reset: true })
   );
+  distributionRoot?.addEventListener("click", handleDistributionClick);
+  distributionRoot?.addEventListener(
+    "submit",
+    updateDistributionDestination
+  );
   root.querySelector("[data-podcast-login-form]")?.addEventListener("submit", startLogin);
   logoutButton?.addEventListener("click", logout);
   showSelect?.addEventListener("change", async () => {
@@ -256,6 +263,12 @@ function startPodcastAdmin(root) {
     const analyticsPanel = root.querySelector("#podcast-panel-analytics");
     if (analyticsPanel && !analyticsPanel.hidden) {
       await loadAdReconciliation({ reset: true });
+    }
+    const distributionPanel = root.querySelector(
+      "#podcast-panel-distribution"
+    );
+    if (distributionPanel && !distributionPanel.hidden) {
+      await loadDistribution();
     }
   });
   showForm?.addEventListener("submit", saveShow);
@@ -449,6 +462,7 @@ function startPodcastAdmin(root) {
   }
 
   function showAuthenticated(identity) {
+    adminIdentity = identity || null;
     authPanel.hidden = true;
     app.hidden = false;
     logoutButton.hidden = false;
@@ -480,11 +494,13 @@ function startPodcastAdmin(root) {
     logoutButton.hidden = true;
     shows = [];
     episodes = [];
+    adminIdentity = null;
     campaigns = [];
     reconciliationRows = [];
     reconciliationCursor = null;
     reconciliationLoading = false;
     reconciliationRequestId += 1;
+    distributionRequestId += 1;
     canManageCampaigns = false;
     canManageCreatives = false;
     canManageAdPlans = false;
@@ -2688,25 +2704,349 @@ function startPodcastAdmin(root) {
   }
 
   async function loadDistribution(episodeId) {
-    distributionRoot.innerHTML = "<p>Loading distribution state…</p>";
+    if (!distributionRoot || !selectedShowId) return;
+    const requestId = ++distributionRequestId;
+    const requestedShowId = selectedShowId;
+    const loading = document.createElement("p");
+    loading.textContent = "Loading distribution state…";
+    distributionRoot.replaceChildren(loading);
     try {
       const path = episodeId
         ? `/v1/admin/episodes/${encodeURIComponent(episodeId)}/distribution`
-        : "/v1/admin/distribution";
+        : `/v1/admin/distribution?showId=${encodeURIComponent(
+          requestedShowId
+        )}`;
       const payload = await client.request(path);
-      const list = document.createElement("div");
-      list.className = "podcast-admin__directory-list";
-      list.innerHTML = `<p><strong>Canonical feed:</strong> ${escapeHtml(payload.feedUrl)}</p>`;
-      for (const destination of payload.destinations || []) {
-        const row = document.createElement("article");
-        row.innerHTML = `
-          <div><strong>${escapeHtml(destination.name)}</strong><span>${escapeHtml(destination.mode)}</span></div>
-          <div><span>${escapeHtml(destination.status || destination.owner_setup_status || "not started")}</span></div>`;
-        list.append(row);
-      }
-      distributionRoot.replaceChildren(list);
+      if (
+        requestId !== distributionRequestId
+        || requestedShowId !== selectedShowId
+      ) return;
+      renderDistribution(payload);
     } catch (error) {
-      distributionRoot.textContent = friendlyError(error);
+      if (
+        requestId === distributionRequestId
+        && requestedShowId === selectedShowId
+      ) {
+        distributionRoot.textContent = friendlyError(error);
+      }
+    }
+  }
+
+  function renderDistribution(payload) {
+    const destinations = Array.isArray(payload.destinations)
+      ? payload.destinations
+      : [];
+    const summary = payload.summary || {};
+    const fragment = document.createDocumentFragment();
+    const overview = document.createElement("div");
+    overview.className =
+      "podcast-admin__metric-grid podcast-admin__distribution-summary";
+    for (const [value, label] of [
+      [summary.total, "Launch directories"],
+      [summary.setupComplete, "Owner setup complete"],
+      [summary.setupRequired, "Owner setup required"],
+      [summary.observed, "Episode observed"]
+    ]) {
+      const card = document.createElement("article");
+      const strong = document.createElement("strong");
+      strong.textContent = Number.isFinite(Number(value))
+        ? String(Number(value))
+        : "—";
+      const span = document.createElement("span");
+      span.textContent = label;
+      card.append(strong, span);
+      overview.append(card);
+    }
+    fragment.append(overview);
+
+    const feed = document.createElement("div");
+    feed.className = "podcast-admin__distribution-feed";
+    const feedText = document.createElement("div");
+    const feedLabel = document.createElement("strong");
+    feedLabel.textContent = "Canonical RSS feed";
+    const feedUrl = document.createElement("input");
+    feedUrl.type = "url";
+    feedUrl.readOnly = true;
+    feedUrl.setAttribute("aria-readonly", "true");
+    feedUrl.value = String(payload.feedUrl || "");
+    feedUrl.dataset.podcastDistributionFeedUrl = "";
+    feedText.append(feedLabel, feedUrl);
+    const copy = document.createElement("button");
+    copy.className = "btn btn-outline-light";
+    copy.type = "button";
+    copy.dataset.podcastDistributionCopyFeed = String(payload.feedUrl || "");
+    copy.textContent = "Copy feed URL";
+    const copyStatus = document.createElement("p");
+    copyStatus.className = "podcast-admin__status";
+    copyStatus.dataset.podcastDistributionCopyStatus = "";
+    copyStatus.setAttribute("role", "status");
+    copyStatus.setAttribute("aria-live", "polite");
+    feed.append(feedText, copy, copyStatus);
+    fragment.append(feed);
+
+    const list = document.createElement("div");
+    list.className = "podcast-admin__directory-list";
+    for (const destination of destinations) {
+      list.append(
+        distributionDestinationCard(destination, {
+          episodeId: payload.episodeId || ""
+        })
+      );
+    }
+    if (!destinations.length) {
+      const empty = document.createElement("p");
+      empty.className = "podcast-admin__empty";
+      empty.textContent = "No distribution destinations are configured.";
+      list.append(empty);
+    }
+    fragment.append(list);
+    distributionRoot.replaceChildren(fragment);
+  }
+
+  function distributionDestinationCard(destination, { episodeId }) {
+    const card = document.createElement("article");
+    card.dataset.destinationId = String(destination.id || "");
+
+    const heading = document.createElement("div");
+    heading.className = "podcast-admin__directory-heading";
+    const titleGroup = document.createElement("div");
+    const title = document.createElement("h3");
+    title.textContent = String(destination.name || "Directory");
+    const semantics = document.createElement("p");
+    semantics.textContent = destination.mode === "direct_api"
+      ? "Direct provider adapter"
+      : "RSS-following directory";
+    titleGroup.append(title, semantics);
+    const badges = document.createElement("div");
+    badges.className = "podcast-admin__badges";
+    badges.append(
+      distributionBadge(
+        destination.enabled ? "Enabled" : "Disabled",
+        destination.enabled ? "is-ready" : ""
+      ),
+      distributionBadge(
+        distributionStatusLabel(destination.ownerSetupStatus)
+      )
+    );
+    if (destination.publicationStatus) {
+      badges.append(
+        distributionBadge(
+          distributionStatusLabel(destination.publicationStatus),
+          destination.publicationStatus === "observed" ? "is-ready" : ""
+        )
+      );
+    }
+    heading.append(titleGroup, badges);
+    card.append(heading);
+
+    const details = document.createElement("p");
+    details.className = "podcast-admin__directory-details";
+    details.textContent = destination.publicationRevision
+      ? `Latest episode revision ${Number(
+        destination.publicationRevision
+      )}${destination.lastObservedAt
+        ? ` · observed ${formatDate(destination.lastObservedAt)}`
+        : ""}.`
+      : "Directory setup state applies to this show.";
+    card.append(details);
+
+    const links = document.createElement("div");
+    links.className = "podcast-admin__directory-links";
+    const setupLink = safeDistributionLink(
+      destination.submissionUrl,
+      "Open owner setup"
+    );
+    const listingLink = safeDistributionLink(
+      destination.listingUrl,
+      "Open public listing"
+    );
+    if (setupLink) links.append(setupLink);
+    if (listingLink) links.append(listingLink);
+    if (links.childElementCount) card.append(links);
+
+    for (const message of [
+      destination.setupError,
+      destination.publicationError
+    ].filter(Boolean)) {
+      const error = document.createElement("p");
+      error.className = "podcast-admin__status is-error";
+      error.textContent = String(message);
+      card.append(error);
+    }
+
+    if (canManageSelectedShowDistribution()) {
+      const form = document.createElement("form");
+      form.className = "podcast-admin__distribution-form";
+      form.dataset.podcastDistributionForm = "";
+      form.dataset.destinationId = String(destination.id || "");
+      form.dataset.episodeId = episodeId;
+
+      const statusLabel = document.createElement("label");
+      statusLabel.textContent = "Owner setup";
+      const status = document.createElement("select");
+      status.name = "ownerSetupStatus";
+      for (const [value, label] of [
+        ["not_started", "Not started"],
+        ["pending", "In progress"],
+        ["verified", "Setup complete"],
+        ["not_required", "Not required"]
+      ]) {
+        status.append(
+          new Option(
+            label,
+            value,
+            false,
+            value === destination.ownerSetupStatus
+          )
+        );
+      }
+      statusLabel.append(status);
+
+      const listingLabel = document.createElement("label");
+      listingLabel.textContent = "Public listing URL (optional)";
+      const listing = document.createElement("input");
+      listing.name = "listingUrl";
+      listing.type = "url";
+      listing.inputMode = "url";
+      listing.maxLength = 2048;
+      listing.placeholder = "https://";
+      listing.value = String(destination.listingUrl || "");
+      listingLabel.append(listing);
+
+      const enabledLabel = document.createElement("label");
+      enabledLabel.className = "podcast-admin__checkbox";
+      const enabled = document.createElement("input");
+      enabled.name = "enabled";
+      enabled.type = "checkbox";
+      enabled.checked = Boolean(destination.enabled);
+      enabledLabel.append(enabled, document.createTextNode(" Enabled"));
+
+      const save = document.createElement("button");
+      save.className = "btn btn-outline-light";
+      save.type = "submit";
+      save.textContent = "Save setup";
+      const formStatus = document.createElement("p");
+      formStatus.className = "podcast-admin__status";
+      formStatus.dataset.podcastDistributionStatus = "";
+      formStatus.setAttribute("role", "status");
+      formStatus.setAttribute("aria-live", "polite");
+      form.append(
+        statusLabel,
+        listingLabel,
+        enabledLabel,
+        save,
+        formStatus
+      );
+      card.append(form);
+    }
+    return card;
+  }
+
+  function distributionBadge(label, className = "") {
+    const badge = document.createElement("span");
+    badge.className = `podcast-admin__pill ${className}`.trim();
+    badge.textContent = label;
+    return badge;
+  }
+
+  function distributionStatusLabel(value) {
+    return {
+      not_started: "Setup not started",
+      pending: "Setup in progress",
+      verified: "Owner setup complete",
+      not_required: "Setup not required",
+      setup_required: "Setup required",
+      waiting_for_feed: "Waiting for RSS ingestion",
+      queued: "Queued",
+      processing: "Processing",
+      observed: "Observed in directory",
+      failed: "Needs attention",
+      disabled: "Disabled"
+    }[String(value || "")] || "Unknown";
+  }
+
+  function safeDistributionLink(value, label) {
+    try {
+      const url = new URL(String(value || ""));
+      if (
+        url.protocol !== "https:"
+        || url.username
+        || url.password
+        || url.hash
+      ) return null;
+      const link = document.createElement("a");
+      link.className = "btn btn-outline-light";
+      link.href = url.toString();
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = label;
+      return link;
+    } catch {
+      return null;
+    }
+  }
+
+  function canManageSelectedShowDistribution() {
+    return (adminIdentity?.roles || []).some(({ role, showId }) =>
+      (role === "super_admin" || role === "admin")
+      && (role === "super_admin" || !showId || showId === selectedShowId)
+    );
+  }
+
+  async function handleDistributionClick(event) {
+    const button = event.target.closest(
+      "[data-podcast-distribution-copy-feed]"
+    );
+    if (!button) return;
+    const status = distributionRoot.querySelector(
+      "[data-podcast-distribution-copy-status]"
+    );
+    const value = button.dataset.podcastDistributionCopyFeed || "";
+    try {
+      await navigator.clipboard.writeText(value);
+      setStatus(status, "Feed URL copied.");
+    } catch (_error) {
+      const input = distributionRoot.querySelector(
+        "[data-podcast-distribution-feed-url]"
+      );
+      input?.focus();
+      input?.select();
+      setStatus(
+        status,
+        "Copy is unavailable. The feed URL is selected for manual copying.",
+        true
+      );
+    }
+  }
+
+  async function updateDistributionDestination(event) {
+    const form = event.target.closest("[data-podcast-distribution-form]");
+    if (!form) return;
+    event.preventDefault();
+    if (!canManageSelectedShowDistribution()) return;
+    const button = form.querySelector('button[type="submit"]');
+    const status = form.querySelector("[data-podcast-distribution-status]");
+    button.disabled = true;
+    setStatus(status, "Saving owner setup…");
+    try {
+      await client.request(
+        `/v1/admin/shows/${encodeURIComponent(
+          selectedShowId
+        )}/distribution/${encodeURIComponent(form.dataset.destinationId)}`,
+        {
+          method: "PATCH",
+          body: {
+            enabled: form.elements.enabled.checked,
+            ownerSetupStatus: form.elements.ownerSetupStatus.value,
+            listingUrl: form.elements.listingUrl.value
+          }
+        }
+      );
+      setStatus(status, "Directory setup saved.");
+      await loadDistribution(form.dataset.episodeId || undefined);
+    } catch (error) {
+      setStatus(status, friendlyError(error), true);
+      button.disabled = false;
     }
   }
 
