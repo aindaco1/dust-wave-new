@@ -33,6 +33,7 @@ eleventyComputed:
     {% set artworkUrl = show.artwork if show else null %}
     {% set artworkAlt = "Portada de " + (show.title if show else episode.title) %}
     {% set peaksUrl = episode.peaksUrl %}
+    {% set playerLanguage = show.language if show else "es" %}
     {% include "snippets/audio-player.njk" %}
 
     <div class="e-content">

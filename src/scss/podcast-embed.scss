@@ -1,0 +1,71 @@
+@import "themes/base/audio-player";
+
+:root {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-width: 0;
+  min-height: 100%;
+  margin: 0;
+  background: #080808;
+  color: #f6f6f6;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.podcast-embed {
+  width: 100%;
+  padding: clamp(.75rem, 3vw, 1rem);
+}
+
+.podcast-embed__header {
+  display: grid;
+  gap: .2rem;
+  min-width: 0;
+  margin-bottom: .75rem;
+}
+
+.podcast-embed__header p,
+.podcast-embed__header h1 {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.podcast-embed__header p {
+  color: #c7c7c7;
+  font-size: .8rem;
+}
+
+.podcast-embed__header h1 {
+  font-size: clamp(1rem, 4vw, 1.25rem);
+  line-height: 1.2;
+}
+
+.podcast-embed a {
+  color: inherit;
+}
+
+.podcast-embed__episode-link {
+  display: inline-block;
+  margin-top: .75rem;
+  font-size: .82rem;
+}
+
+.podcast-embed :is(button, a):focus-visible {
+  outline: .2rem solid #ffd54d;
+  outline-offset: .2rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wave.wave--skeleton,
+  .audio-card .controls :is(button, .download) {
+    animation: none;
+    transition: none;
+  }
+}

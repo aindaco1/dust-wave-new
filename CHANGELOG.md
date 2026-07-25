@@ -38,3 +38,15 @@
   preference controls to the Podcast member account. Subscription access does
   not imply consent, and member responses continue to omit email and provider
   identifiers.
+- Extracted the existing Digest/podcast waveform player from the monolithic
+  footer into one cached, reusable runtime and one shared Sass partial, pinned
+  and self-hosted WaveSurfer 7.12.11, and stopped player/vendor loading on pages
+  without an audio card.
+- Added one noindex, CSP-constrained portable player page beside every
+  published canonical Podcast News episode. It reuses the exact waveform,
+  seek, speed, artwork, language-aware accessible labels, and download contract
+  and links back to the canonical News page.
+- Added a responsive Pool-inspired portable-player generator to Podcast
+  Marketing. It exposes only due public revisions, enforces the selected
+  show's exact same-origin canonical path, builds escaped lazy iframe markup,
+  provides live preview/copy/open controls, and performs no server write.

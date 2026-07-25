@@ -398,6 +398,47 @@ permalink: admin/podcasts/index.html
             <p class="podcast-admin__status" data-podcast-marketing-link-status role="status" aria-live="polite"></p>
           </form>
 
+          <form class="podcast-admin__form" data-podcast-embed-form>
+            <div class="podcast-admin__panel-heading">
+              <div>
+                <h3>Portable episode player</h3>
+                <p>Generate a Pool-style iframe for a public episode using the same player and download control as its canonical News page.</p>
+              </div>
+              <p class="podcast-admin__pill">No server writes</p>
+            </div>
+            <div class="podcast-admin__callout">
+              <p>Only published, publicly released revisions are eligible. The iframe page is noindex, loads self-hosted assets, and links listeners back to the canonical News page.</p>
+            </div>
+            <div class="podcast-admin__field-grid">
+              <label>Episode
+                <select name="episodeId" data-podcast-embed-episode>
+                  <option value="">No public episodes available</option>
+                </select>
+              </label>
+              <label class="podcast-admin__field-wide">Embed URL
+                <input name="embedUrl" type="url" readonly aria-readonly="true">
+              </label>
+              <label class="podcast-admin__field-wide">Embed code
+                <textarea
+                  name="embedCode"
+                  rows="6"
+                  readonly
+                  spellcheck="false"
+                  aria-readonly="true"
+                  aria-describedby="podcast-embed-help podcast-embed-status"></textarea>
+              </label>
+            </div>
+            <p id="podcast-embed-help" class="podcast-admin__help">Paste the generated iframe into a page where you want the episode player to appear.</p>
+            <div class="podcast-admin__clip-actions">
+              <button class="btn btn-outline-light" type="button" data-podcast-embed-copy disabled>Copy embed code</button>
+              <a class="btn btn-outline-light" href="#" target="_blank" rel="noopener noreferrer" data-podcast-embed-open hidden>Open player page</a>
+            </div>
+            <div class="podcast-admin__embed-preview" data-podcast-embed-preview hidden>
+              <p class="podcast-admin__field-label">Live preview</p>
+            </div>
+            <p id="podcast-embed-status" class="podcast-admin__status" data-podcast-embed-status role="status" aria-live="polite"></p>
+          </form>
+
           <form class="podcast-admin__form" data-podcast-announcement-form>
             <div class="podcast-admin__panel-heading">
               <div>

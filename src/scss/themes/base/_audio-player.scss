@@ -1,0 +1,171 @@
+/* Shared Digest and first-party Podcast player presentation. */
+
+/* =========================================================
+   Podcast Audio Card (compact, dark)
+   ========================================================= */
+
+:root{
+  --audio-bg: #0f0f0f; --audio-fg: #f2f2f2; --audio-subtle: #bdbdbd;
+  --audio-accent: #ffd54d; --audio-border: rgba(255,255,255,.08);
+  --audio-ra: 12px; --audio-h: 200px;
+  --card-py: 10px; --card-px: 12px;                 /* internal padding */
+  --wave-progress: #f2f2f2; --wave-backdrop: rgba(255,255,255,.2); --wave-cursor: #ffd54d;
+  --art-h: calc(var(--audio-h) - (var(--card-py) * 2));
+  --art-w: var(--art-h);
+}
+
+.audio-card{
+  display:flex; align-items:stretch; gap:14px;
+  height:var(--audio-h); padding:var(--card-py) var(--card-px);
+  border:1px solid var(--audio-border); border-radius:var(--audio-ra);
+  background:var(--audio-bg); color:var(--audio-fg);
+  box-shadow:0 6px 16px rgba(0,0,0,.18);
+  font-family:"gambado-sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size:.95rem; overflow:hidden; overscroll-behavior: contain; overflow-anchor: none;
+}
+.audio-card, .audio-card * { scroll-behavior: auto !important; }
+.audio-card * { -webkit-tap-highlight-color: transparent; }
+.audio-card button { touch-action: manipulation; }
+
+.audio-card .art-col{ flex:0 0 var(--art-w); display:flex; align-items:center; justify-content:center; min-height:0; }
+.audio-card .art-col > img{
+  width:var(--art-w); height:var(--art-h); object-fit:cover; border-radius:10px; background:#151515; display:block;
+}
+
+.audio-card > div:not(.art-col){ flex:1 1 auto; min-width:0; min-height:0; display:flex; flex-direction:column; justify-content:flex-start; }
+
+.audio-card .wave{
+  height: calc(var(--audio-h) * 0.65);
+  flex: 0 0 calc(var(--audio-h) * 0.65);
+  margin: 0; overflow-x: hidden; overflow-y: hidden; overscroll-behavior-x: contain; scrollbar-width: none; position: relative;
+}
+.audio-card .wave wave{ display:block; }
+.audio-card .wave .wavesurfer-region, .audio-card .wave .wavesurfer-handle{ display:none; }
+.audio-card audio{ display:none !important; }
+
+/* Controls row */
+.audio-card .controls{
+  flex: 0 0 auto; margin-block: auto; display: flex !important; align-items: center; justify-content: center;
+  gap: 8px; width: 100%; line-height: 0; margin-top: 7px; row-gap: 6px; /* row-gap helps when wrapping */
+}
+
+/* Buttons */
+.audio-card .controls button{
+  -webkit-appearance:none; appearance:none;
+  background:transparent !important; color:var(--audio-fg) !important;
+  border:1px solid var(--audio-border); border-radius:999px;
+  display:grid; place-items:center; margin:0; padding:0; box-sizing:border-box; vertical-align:middle; align-self:center;
+  box-shadow:0 2px 8px rgba(0,0,0,.25);
+  transition: transform .08s ease, box-shadow .12s ease, background .12s ease, border-color .12s ease;
+}
+.audio-card .controls button:hover  { background:rgba(255,255,255,.05); transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,0,0,.28); }
+.audio-card .controls button:active { transform:translateY(0); box-shadow:0 2px 8px rgba(0,0,0,.2) inset; }
+
+.audio-card .controls button:not([data-audio-speed]){ width:36px; height:36px; font-size:0; }
+.audio-card .controls button:not([data-audio-speed]) svg{ width:20px; height:20px; display:block; fill:currentColor; }
+.audio-card .controls button:not([data-audio-speed]) svg rect{ display:none !important; }
+
+.audio-card .controls [data-audio-speed]{
+  height:40px; min-width:40px; padding:0 10px;
+  line-height:1; font-family:"Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size:.68rem; font-weight:600;
+}
+
+/* No-art case */
+.audio-card .art-col > img[src=""], .audio-card .art-col > img:not([src]){ display:none; }
+
+/* Kill stray <p> margins that sometimes appear */
+.audio-card > div:not(.art-col) > p{ margin:0 !important; }
+.audio-card > div:not(.art-col) > p:empty { display: none; }
+
+/* Make the download anchor look/size like the other round controls */
+.audio-card .controls .download {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent !important;
+  color: var(--audio-fg) !important;
+  border: 1px solid var(--audio-border);
+  border-radius: 999px;
+  display: grid; place-items: center;
+  width: 40px; height: 40px;
+  margin: 0; padding: 0; box-sizing: border-box;
+  box-shadow: 0 2px 8px rgba(0,0,0,.25);
+  transition: transform .08s ease, box-shadow .12s ease, background .12s ease, border-color .12s ease;
+}
+.audio-card .controls .download:hover  { background: rgba(255,255,255,.05); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,.28); }
+.audio-card .controls .download:active { transform: translateY(0); box-shadow: 0 2px 8px rgba(0,0,0,.2) inset; }
+.audio-card .controls .download svg { width: 20px; height: 20px; display: block; fill: currentColor; }
+
+/* Wave skeleton / fallback */
+.wave.wave--skeleton{
+  position: relative;
+  background: linear-gradient(90deg, rgba(255,255,255,.08), rgba(255,255,255,.12), rgba(255,255,255,.08));
+  background-size: 240px 100%;
+  animation: waveShimmer 1.2s linear infinite;
+  border-radius: 6px;
+}
+@keyframes waveShimmer { 0% { background-position: -240px 0; } 100% { background-position: 240px 0; } }
+
+.wave--fallback { position: relative; }
+.wave--fallback .fallback-bar{
+  position:absolute; inset:auto 0 0 0; height:3px;
+  background:var(--wave-cursor,#ffd54d); transform-origin:left center; transform:scaleX(0); opacity:.9;
+}
+.wave__overlay{ position:absolute; inset:0; z-index:2; background:transparent; }
+.wave--loading  { overflow-x: hidden; }
+
+.wave--fallback .play-hint {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  display: flex; align-items: center; justify-content: center;
+  width: 64px; height: 64px; border-radius: 50%; cursor: pointer;
+  background: rgba(0, 0, 0, .55); color: #fff; border: 1px solid rgba(255,255,255,.15);
+  box-shadow: 0 2px 8px rgba(0,0,0,.25); z-index: 3;
+}
+.play-hint { transition: opacity .3s ease; }
+.play-hint.hidden { opacity: 0; pointer-events: none; }
+
+.audio-no-snap { scroll-snap-type: none !important; }
+.audio-card .wave::-webkit-scrollbar { display:none; } /* WebKit */
+
+/* Mobile sizes for audio card */
+@media (max-width: 420px){
+  :root{ --audio-h: 148px; --art-size: calc(var(--audio-h) * .46); }
+  .audio-card{ gap: 8px; padding: 8px; }
+  :root{ --card-py: 8px; --card-px: 8px; --art-h: calc(var(--audio-h) - (var(--card-py) * 2)); --art-w: var(--art-h); }
+  .audio-card .wave{ height: calc(var(--audio-h) * .58); flex-basis: calc(var(--audio-h) * .58); }
+  .audio-card .controls{ justify-content: center; margin-top: 12px; }
+  .audio-card .controls button:not([data-audio-speed]){ width: 24px; height: 24px; }
+  .audio-card .controls button:not([data-audio-speed]) svg{ width: 18px; height: 18px; }
+  .audio-card .controls [data-audio-speed]{ height: 24px; min-width: 24px; padding: 0 5px; font-size: .5rem; font-weight: 700; }
+  .audio-card .controls .playpause{ width: 24px; height: 24px; border-radius: 999px; display: grid; place-items: center; padding: 0; }
+  .audio-card .controls .playpause svg{ width: 18px; height: 18px; }
+  .audio-card .controls .download { width: 24px; height: 24px; }
+  .audio-card .controls .download svg{ width: 18px; height: 18px; }
+}
+@media (min-width: 421px) and (max-width: 540px){
+  :root{ --audio-h: 160px; --art-size: calc(var(--audio-h) * .48); }
+  .audio-card{ gap: 10px; padding: 8px; }
+  .audio-card .controls{ gap: 10px; justify-content: center; }
+  .audio-card .controls button:not([data-audio-speed]){ width: 38px; height: 38px; }
+  .audio-card .controls button:not([data-audio-speed]) svg{ width: 19px; height: 19px; }
+  .audio-card .controls .playpause{ width: 38px; height: 38px; }
+  .audio-card .controls .playpause svg{ width: 19px; height: 19px; }
+  .audio-card .controls [data-audio-speed]{ height: 38px; min-width: 38px; padding: 0 9px; font-size: .65rem; font-weight: 700; }
+}
+
+/* Tooltip that follows the cursor on waveform hover */
+.wave .ws-hover {
+  position: absolute;
+  bottom: 85%;          /* place it above the wave */
+  transform: translateX(-50%);
+  background: rgba(0,0,0,.8);
+  color: #fff;
+  font-size: 11px;
+  font-family: Inter;
+  padding: 2px 4px;
+  border-radius: 3px;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 5;
+  display: none;         /* JS toggles on hover */
+}

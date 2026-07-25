@@ -44,6 +44,13 @@ function copyPeaks() {
 function copyJs() {
   return src(`${DIR.src}/js/**/*.*`).pipe(dest(`${DIR.dev}/js`));
 }
+function copyAudioPlayerVendor() {
+  return src(`${DIR.node}/wavesurfer.js/dist/wavesurfer.min.js`)
+    .pipe(dest(`${DIR.dev}/js/vendor`));
+}
+function copyThirdPartyNotices() {
+  return src('THIRD_PARTY_NOTICES.md').pipe(dest(DIR.dev));
+}
 function copySharedAdminShell() {
   return src(
     'shared/dust-wave-platform/packages/admin-shell/src/**/*.js',
@@ -56,7 +63,18 @@ function copyImg() {
 function copyPdf() {
   return src(`${DIR.src}/pdf/**/*.*`, { allowEmpty: true, encoding: false }).pipe(dest(`${DIR.dev}/pdf`));
 }
-gulp.task('dist-assets', parallel(copyPeaks, copyJs, copySharedAdminShell, copyImg, copyPdf)); // keep task name for scripts
+gulp.task(
+  'dist-assets',
+  parallel(
+    copyPeaks,
+    copyJs,
+    copyAudioPlayerVendor,
+    copyThirdPartyNotices,
+    copySharedAdminShell,
+    copyImg,
+    copyPdf
+  )
+); // keep task name for scripts
 
 // Sass → CSS
 // NOTE: Deprecation warnings are silenced because they come from Bootstrap 5's SCSS,
@@ -65,7 +83,7 @@ gulp.task('dist-assets', parallel(copyPeaks, copyJs, copySharedAdminShell, copyI
 // theme files (src/scss/themes/) don't use any deprecated syntax.
 // See: https://sass-lang.com/documentation/breaking-changes/import/
 gulp.task('sass', function sassTask() {
-  return src(`${DIR.src}/scss/theme.scss`)
+  return src(`${DIR.src}/scss/*.scss`)
     .pipe(sass({
       silenceDeprecations: ['legacy-js-api', 'import', 'global-builtin', 'color-functions', 'abs-percent']
     }).on('error', sass.logError))
@@ -144,6 +162,7 @@ gulp.task('copy-assets', function vendorAssets(done) {
   // AOS CSS & JS
   src(`${DIR.node}/aos/dist/**/*.css`).pipe(dest(`${DIR.dev}/scss/assets/aos`));
   src(`${DIR.node}/aos/dist/**/*.js`).pipe(dest(`${DIR.dev}/js`));
+  copyAudioPlayerVendor();
 
   done();
 });

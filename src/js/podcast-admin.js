@@ -115,6 +115,11 @@ function startPodcastAdmin(root) {
   const marketingLinkStatus = root.querySelector(
     "[data-podcast-marketing-link-status]"
   );
+  const embedForm = root.querySelector("[data-podcast-embed-form]");
+  const embedPreview = root.querySelector("[data-podcast-embed-preview]");
+  const embedStatus = root.querySelector("[data-podcast-embed-status]");
+  const embedCopyButton = root.querySelector("[data-podcast-embed-copy]");
+  const embedOpenLink = root.querySelector("[data-podcast-embed-open]");
   const announcementForm = root.querySelector(
     "[data-podcast-announcement-form]"
   );
@@ -319,6 +324,12 @@ function startPodcastAdmin(root) {
     "click",
     () => downloadMarketingQr("svg")
   );
+  embedForm?.addEventListener("submit", (event) => event.preventDefault());
+  embedForm?.elements.episodeId?.addEventListener(
+    "change",
+    updatePodcastEmbed
+  );
+  embedCopyButton?.addEventListener("click", copyPodcastEmbed);
   announcementForm?.addEventListener(
     "submit",
     runAnnouncementDryRun
@@ -1000,6 +1011,150 @@ function startPodcastAdmin(root) {
       setStatus(adPlanStatus, "Create an episode before defining ad markers.");
     } else {
       setStatus(sponsorStatus, "");
+    }
+    fillPodcastEmbedEpisodes();
+  }
+
+  function publicEmbedEpisodes() {
+    const now = Date.now();
+    return episodes.filter((episode) => {
+      const publicAtMs = Date.parse(episode.publicAt || "");
+      return episode.status === "published"
+        && ["public", "early_access", "free_mini"].includes(episode.access)
+        && Number(episode.publicationRevision || 0) > 0
+        && Number.isFinite(publicAtMs)
+        && publicAtMs <= now
+        && typeof episode.canonicalUrl === "string";
+    });
+  }
+
+  function fillPodcastEmbedEpisodes() {
+    if (!embedForm) return;
+    const select = embedForm.elements.episodeId;
+    const eligibleEpisodes = publicEmbedEpisodes();
+    const previousValue = select.value;
+    select.replaceChildren(
+      eligibleEpisodes.length
+        ? new Option("Select a public episode", "")
+        : new Option("No public episodes available", ""),
+      ...eligibleEpisodes.map((episode) =>
+        new Option(
+          `${episode.title} — revision ${Number(episode.publicationRevision)}`,
+          episode.id,
+          false,
+          episode.id === previousValue
+        )
+      )
+    );
+    select.disabled = eligibleEpisodes.length === 0;
+    if (!eligibleEpisodes.some(({ id }) => id === previousValue)) {
+      select.value = eligibleEpisodes[0]?.id || "";
+    }
+    updatePodcastEmbed();
+  }
+
+  function podcastEmbedFrame(embedUrl, title, { preview = false } = {}) {
+    const frame = document.createElement("iframe");
+    frame.src = embedUrl;
+    frame.title = `${title} podcast player`;
+    frame.loading = "lazy";
+    frame.setAttribute("allow", "autoplay");
+    frame.referrerPolicy = "strict-origin-when-cross-origin";
+    if (preview) {
+      frame.className = "podcast-admin__embed-frame";
+    } else {
+      frame.setAttribute("data-dust-wave-podcast-embed", "true");
+      frame.setAttribute("width", "100%");
+      frame.setAttribute("height", "360");
+      frame.setAttribute(
+        "style",
+        "width:100%;height:360px;border:0;border-radius:12px;overflow:hidden"
+      );
+    }
+    return frame;
+  }
+
+  function clearPodcastEmbed(message) {
+    if (!embedForm) return;
+    embedForm.elements.embedUrl.value = "";
+    embedForm.elements.embedCode.value = "";
+    if (embedCopyButton) embedCopyButton.disabled = true;
+    if (embedOpenLink) {
+      embedOpenLink.href = "#";
+      embedOpenLink.hidden = true;
+    }
+    embedPreview?.replaceChildren();
+    if (embedPreview) embedPreview.hidden = true;
+    setStatus(embedStatus, message || "");
+  }
+
+  function updatePodcastEmbed() {
+    if (!embedForm) return;
+    const show = shows.find(({ id }) => id === selectedShowId);
+    const episode = publicEmbedEpisodes().find(
+      ({ id }) => id === embedForm.elements.episodeId.value
+    );
+    if (!show || !episode) {
+      clearPodcastEmbed(
+        episodes.length
+          ? "No publicly released episode revision is available yet."
+          : "Create and publish an episode to generate a player embed."
+      );
+      return;
+    }
+
+    try {
+      const showUrl = new URL(show.canonicalUrl);
+      const canonicalUrl = new URL(episode.canonicalUrl);
+      const expectedPath =
+        `/news/podcasts/${show.slug}/${episode.slug}/`;
+      if (
+        canonicalUrl.origin !== showUrl.origin
+        || canonicalUrl.pathname !== expectedPath
+        || canonicalUrl.search
+        || canonicalUrl.hash
+      ) {
+        throw new Error("The episode canonical URL does not match this show.");
+      }
+      const embedUrl = new URL("embed/", canonicalUrl).toString();
+      const code = podcastEmbedFrame(embedUrl, episode.title).outerHTML;
+      embedForm.elements.embedUrl.value = embedUrl;
+      embedForm.elements.embedCode.value = code;
+      if (embedCopyButton) embedCopyButton.disabled = false;
+      if (embedOpenLink) {
+        embedOpenLink.href = embedUrl;
+        embedOpenLink.hidden = false;
+      }
+      if (embedPreview) {
+        const label = document.createElement("p");
+        label.className = "podcast-admin__field-label";
+        label.textContent = "Live preview";
+        embedPreview.replaceChildren(
+          label,
+          podcastEmbedFrame(embedUrl, episode.title, { preview: true })
+        );
+        embedPreview.hidden = false;
+      }
+      setStatus(embedStatus, "");
+    } catch (error) {
+      clearPodcastEmbed(error.message || "Unable to generate the embed.");
+    }
+  }
+
+  async function copyPodcastEmbed() {
+    const code = embedForm?.elements.embedCode.value || "";
+    if (!code) return;
+    try {
+      await navigator.clipboard.writeText(code);
+      setStatus(embedStatus, "Embed code copied.");
+    } catch (_error) {
+      embedForm.elements.embedCode.focus();
+      embedForm.elements.embedCode.select();
+      setStatus(
+        embedStatus,
+        "Copy is unavailable. The embed code is selected for manual copying.",
+        true
+      );
     }
   }
 

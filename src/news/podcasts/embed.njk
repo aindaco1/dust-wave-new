@@ -1,0 +1,52 @@
+---
+layout: false
+pagination:
+  data: podcastEpisodePublications
+  size: 1
+  alias: episode
+permalink: "news/podcasts/{{ episode.showSlug }}/{{ episode.slug }}/embed/index.html"
+eleventyExcludeFromCollections: true
+sitemap:
+  ignore: true
+---
+{% set show = podcastShows | podcastShowBySlug(episode.showSlug) %}
+<!doctype html>
+<html lang="{{ show.language if show and show.language else 'en' }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="referrer" content="no-referrer">
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src https://media.dustwave.xyz; connect-src 'self' https://media.dustwave.xyz; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>{{ episode.title }} · {{ show.title if show else "Dust Wave Podcasts" }}</title>
+  <link rel="canonical" href="{{ metadata.url }}/news/podcasts/{{ episode.showSlug }}/{{ episode.slug }}/">
+  <link rel="stylesheet" href="/css/podcast-embed{% if environment == 'production' %}.min{% endif %}.css">
+</head>
+<body>
+  <main class="podcast-embed">
+    <header class="podcast-embed__header">
+      <p>{{ show.title if show else "Dust Wave Podcasts" }}</p>
+      <h1>{{ episode.title }}</h1>
+    </header>
+
+    {% set playerId = "embed_" + episode.showSlug + "_" + episode.slug %}
+    {% set title = episode.title %}
+    {% set audioUrl = episode.audioUrl %}
+    {% set downloadUrl = episode.downloadUrl or episode.audioUrl %}
+    {% set artworkUrl = show.artwork if show else null %}
+    {% set artworkAlt = "Portada de " + (show.title if show else episode.title) %}
+    {% set peaksUrl = episode.peaksUrl %}
+    {% set playerLanguage = show.language if show else "es" %}
+    {% include "snippets/audio-player.njk" %}
+
+    <a
+      class="podcast-embed__episode-link"
+      href="/news/podcasts/{{ episode.showSlug }}/{{ episode.slug }}/"
+      target="_blank"
+      rel="noopener noreferrer">{{ "Episode notes on Dust Wave" if show and show.language == "en" else "Notas del episodio en Dust Wave" }}</a>
+  </main>
+  <script src="/js/audio-player.js" defer></script>
+</body>
+</html>

@@ -341,6 +341,7 @@ eleventyComputed:
               {% set artworkUrl = episode.artwork or show.artwork %}
               {% set artworkAlt = "Portada de " + episode.title %}
               {% set peaksUrl = episode.peaksUrl %}
+              {% set playerLanguage = show.language %}
               {% include "snippets/audio-player.njk" %}
               <p><a href="{{ episode.url }}">Notas, transcripción y capítulos del episodio</a></p>
             </article>

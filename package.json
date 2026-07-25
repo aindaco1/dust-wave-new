@@ -18,7 +18,7 @@
     "build-dev": "ELEVENTY_ENV=development eleventy && gulp dist-assets && gulp sass",
     "build-assets": "gulp dist-assets && gulp sass",
     "build:og": "node scripts/render-og-cards.mjs",
-    "test:podcasts": "node scripts/validate-podcast-shows.mjs && node scripts/validate-podcast-episode-template.mjs && node scripts/validate-podcast-admin.mjs && node scripts/validate-podcast-member.mjs && node scripts/validate-podcast-checkout.mjs && node --check src/js/podcast-member.js && node --check src/js/podcast-checkout.js",
+    "test:podcasts": "node scripts/validate-podcast-shows.mjs && node scripts/validate-podcast-episode-template.mjs && node scripts/validate-podcast-player.mjs && node scripts/validate-podcast-admin.mjs && node scripts/validate-podcast-member.mjs && node scripts/validate-podcast-checkout.mjs && node --check src/js/podcast-member.js && node --check src/js/podcast-checkout.js",
     "ping:bridgy": "node scripts/ping-bridgy.mjs",
     "ping:bridgy:all": "node scripts/ping-bridgy.mjs --all",
     "11ty": "ELEVENTY_ENV=development eleventy && gulp inject-css",
@@ -50,7 +50,8 @@
     "gulp-plumber": "^1.2.1",
     "gulp-rename": "^2.0.0",
     "sharp": "^0.35.3",
-    "sitemap": "^8.0.3"
+    "sitemap": "^8.0.3",
+    "wavesurfer.js": "7.12.11"
   },
   "author": "Holger Koenemann",
   "devDependencies": {

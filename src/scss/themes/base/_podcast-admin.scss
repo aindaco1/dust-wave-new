@@ -271,6 +271,33 @@
   inline-size: min(100%, 14rem);
 }
 
+.podcast-admin__help {
+  color: #d9d4cc;
+  font-size: 0.85rem;
+  margin: 0.65rem 0 0;
+}
+
+.podcast-admin [name="embedCode"] {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.78rem;
+  overflow-wrap: anywhere;
+}
+
+.podcast-admin__embed-preview {
+  min-width: 0;
+  margin-top: 1.25rem;
+}
+
+.podcast-admin__embed-frame {
+  display: block;
+  width: 100%;
+  height: 360px;
+  border: 0;
+  border-radius: 0.75rem;
+  background: #080808;
+  overflow: hidden;
+}
+
 .podcast-admin__announcement-review {
   margin-top: 1.25rem;
 }
