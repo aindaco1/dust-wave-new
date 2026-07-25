@@ -183,10 +183,35 @@
 .podcast-admin__episode-list,
 .podcast-admin__campaign-list,
 .podcast-admin__directory-list,
-.podcast-admin__transcript-cues {
+.podcast-admin__transcript-cues,
+.podcast-admin__clip-list {
   display: grid;
   gap: 0.75rem;
   margin-top: 2rem;
+}
+
+.podcast-admin__clip-list {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+}
+
+.podcast-admin__clip-list .podcast-admin__card {
+  display: grid;
+  gap: 1rem;
+}
+
+.podcast-admin__section-heading {
+  margin-top: 3rem;
+}
+
+.podcast-admin__clip-preview {
+  background: #101010;
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 0.65rem;
+  color: #d9d4cc;
+  margin-top: 1.25rem;
+  min-height: 3.25rem;
+  overflow-wrap: anywhere;
+  padding: 1rem;
 }
 
 .podcast-admin__episode,

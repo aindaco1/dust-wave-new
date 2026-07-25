@@ -44,6 +44,11 @@ assert.match(adminTemplate, /data-podcast-transcript-workbench/);
 assert.match(adminTemplate, /data-podcast-transcript-cues/);
 assert.match(adminTemplate, /data-podcast-transcript-pages/);
 assert.match(adminTemplate, /Word timing gated/);
+assert.match(adminTemplate, /data-podcast-clip-form/);
+assert.match(adminTemplate, /data-podcast-clip-preview/);
+assert.match(adminTemplate, /data-podcast-clip-list/);
+assert.match(adminTemplate, /Word-accurate cuts stay locked/);
+assert.match(adminTemplate, /Private evidence only/);
 assert.match(adminTemplate, /data-tab="marketing"/);
 assert.match(adminTemplate, /data-tab="sponsors"/);
 assert.match(adminTemplate, /data-tab="analytics"/);
@@ -80,6 +85,24 @@ assert.match(adminScript, /speakerConfirmed/);
 assert.match(adminScript, /wordControlsEnabled/);
 assert.match(adminScript, /TRANSCRIPT_CUES_PER_PAGE = 100/);
 assert.match(adminScript, /syncVisibleTranscriptCues/);
+assert.match(
+  adminScript,
+  /\/v1\/admin\/episodes\/\$\{encodeURIComponent\(episodeId\)\}\/clips/
+);
+assert.match(
+  adminScript,
+  /\/v1\/admin\/clips\/\$\{encodeURIComponent\(clip\.id\)\}\/render/
+);
+assert.match(adminScript, /baseRevision: Number\(selected\?\.revision/);
+assert.match(adminScript, /startCueId: clipForm\.elements\.startCueId\.value/);
+assert.match(adminScript, /endCueId: clipForm\.elements\.endCueId\.value/);
+assert.match(adminScript, /boundaryMode: "segment"/);
+assert.match(adminScript, /captioned-waveform-v1/);
+assert.match(adminScript, /downloadJson/);
+assert.match(adminScript, /This is not a completed render/);
+assert.doesNotMatch(adminScript, /startsAtMs:\s*clipForm/);
+assert.doesNotMatch(adminScript, /endsAtMs:\s*clipForm/);
+assert.doesNotMatch(adminScript, /(?:localStorage|sessionStorage).*(?:clip|caption)/i);
 assert.doesNotMatch(
   adminScript,
   /(?:localStorage|sessionStorage)\.(?:setItem|getItem)\([^)]*transcript/i

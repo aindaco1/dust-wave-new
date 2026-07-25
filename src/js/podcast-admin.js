@@ -67,6 +67,12 @@ function startPodcastAdmin(root) {
   const transcriptNextButton = root.querySelector(
     "[data-podcast-transcript-next]"
   );
+  const clipForm = root.querySelector("[data-podcast-clip-form]");
+  const clipPreview = root.querySelector("[data-podcast-clip-preview]");
+  const clipStatus = root.querySelector("[data-podcast-clip-status]");
+  const clipList = root.querySelector("[data-podcast-clip-list]");
+  const clipNewButton = root.querySelector("[data-podcast-clip-new]");
+  const clipRenderButton = root.querySelector("[data-podcast-clip-render]");
   const adPlanForm = root.querySelector("[data-podcast-ad-plan-form]");
   const adPlanStatus = root.querySelector("[data-podcast-ad-plan-status]");
   const adPlanResult = root.querySelector("[data-podcast-ad-plan-result]");
@@ -110,6 +116,9 @@ function startPodcastAdmin(root) {
   let transcriptDirty = false;
   let transcriptPage = 0;
   const transcriptEditors = new Map();
+  let clips = [];
+  let selectedClipId = "";
+  let clipRequestId = 0;
   let latestProcessorManifest = null;
   let turnstileToken = "";
   let turnstileWidgetId;
@@ -167,6 +176,25 @@ function startPodcastAdmin(root) {
   transcriptNextButton?.addEventListener("click", () =>
     moveTranscriptPage(1)
   );
+  clipForm?.addEventListener("submit", saveClipRecipe);
+  clipNewButton?.addEventListener("click", resetClipRecipe);
+  clipRenderButton?.addEventListener("click", prepareClipRender);
+  clipForm?.elements.startCueId?.addEventListener(
+    "change",
+    refreshClipRecipe
+  );
+  clipForm?.elements.endCueId?.addEventListener(
+    "change",
+    refreshClipRecipe
+  );
+  clipForm?.elements.aspectRatio?.addEventListener(
+    "change",
+    refreshClipRecipe
+  );
+  clipList?.addEventListener("click", (event) => {
+    const edit = event.target.closest("[data-podcast-clip-edit]");
+    if (edit) selectClipRecipe(edit.dataset.podcastClipEdit);
+  });
   transcriptCuesRoot?.addEventListener("click", (event) => {
     const remove = event.target.closest("[data-podcast-transcript-remove]");
     if (remove) removeTranscriptCue(remove.dataset.podcastTranscriptRemove);
@@ -301,6 +329,13 @@ function startPodcastAdmin(root) {
     transcriptMeta?.replaceChildren();
     if (transcriptPages) transcriptPages.hidden = true;
     setStatus(transcriptStatus, "");
+    clips = [];
+    selectedClipId = "";
+    clipRequestId += 1;
+    clipForm?.reset();
+    clipList?.replaceChildren();
+    if (clipPreview) clipPreview.textContent = "";
+    setStatus(clipStatus, "");
     latestProcessorManifest = null;
     sponsorResult?.replaceChildren();
     campaignList?.replaceChildren();
@@ -585,8 +620,12 @@ function startPodcastAdmin(root) {
     transcriptCuesRoot?.replaceChildren();
     if (!episodeId) {
       transcript = null;
+      clips = [];
+      selectedClipId = "";
       if (transcriptWorkbench) transcriptWorkbench.hidden = true;
       if (transcriptPages) transcriptPages.hidden = true;
+      clipList?.replaceChildren();
+      updateClipAvailability();
       if (transcriptMeta) {
         transcriptMeta.textContent =
           "Create an episode before reviewing a transcript.";
@@ -610,6 +649,7 @@ function startPodcastAdmin(root) {
       ) || emptyTranscript(language);
       transcriptDirty = false;
       renderTranscript();
+      await loadClips();
       setStatus(transcriptStatus, "");
     } catch (error) {
       if (requestId !== transcriptRequestId) return;
@@ -617,6 +657,10 @@ function startPodcastAdmin(root) {
       transcriptEditors.clear();
       transcriptCuesRoot?.replaceChildren();
       if (transcriptPages) transcriptPages.hidden = true;
+      clips = [];
+      selectedClipId = "";
+      clipList?.replaceChildren();
+      updateClipAvailability();
       setStatus(transcriptStatus, friendlyError(error), true);
     }
   }
@@ -716,11 +760,13 @@ function startPodcastAdmin(root) {
         confirmed.disabled = !canEditTranscripts || !speaker.value.trim();
         if (!speaker.value.trim()) confirmed.checked = false;
         transcriptApproveButton.disabled = true;
+        updateClipAvailability();
       });
       for (const control of [start, end, confirmed]) {
         control.addEventListener("input", () => {
           transcriptDirty = true;
           transcriptApproveButton.disabled = true;
+          updateClipAvailability();
         });
       }
       for (const control of [start, end, speaker]) {
@@ -737,6 +783,7 @@ function startPodcastAdmin(root) {
           onChange() {
             transcriptDirty = true;
             transcriptApproveButton.disabled = true;
+            updateClipAvailability();
           }
         }
       );
@@ -758,6 +805,7 @@ function startPodcastAdmin(root) {
       || transcript.status === "approved"
       || transcriptDirty
       || transcript.speakerLabelsConfirmed !== true;
+    updateClipAvailability();
   }
 
   function addTranscriptCue() {
@@ -970,6 +1018,315 @@ function startPodcastAdmin(root) {
         textMarkdown
       };
     });
+  }
+
+  async function loadClips({ preserveStatus = false } = {}) {
+    const episodeId = transcriptEpisodeSelect?.value;
+    clipRequestId += 1;
+    const requestId = clipRequestId;
+    if (!episodeId) {
+      clips = [];
+      selectedClipId = "";
+      clipList?.replaceChildren();
+      updateClipAvailability();
+      return;
+    }
+    try {
+      const payload = await client.request(
+        `/v1/admin/episodes/${encodeURIComponent(episodeId)}/clips`
+      );
+      if (requestId !== clipRequestId) return;
+      clips = payload.clips || [];
+      selectedClipId = clips.some(({ id }) => id === selectedClipId)
+        ? selectedClipId
+        : "";
+      renderClipList();
+      if (selectedClipId) {
+        fillClipRecipe(
+          clips.find(({ id }) => id === selectedClipId)
+        );
+      } else {
+        resetClipRecipe();
+      }
+      if (!preserveStatus) setStatus(clipStatus, "");
+    } catch (error) {
+      if (requestId !== clipRequestId) return;
+      clips = [];
+      selectedClipId = "";
+      clipList?.replaceChildren();
+      updateClipAvailability();
+      setStatus(clipStatus, friendlyError(error), true);
+    }
+  }
+
+  function renderClipList() {
+    if (!clipList) return;
+    if (!clips.length) {
+      clipList.innerHTML =
+        '<p class="podcast-admin__empty">No saved clip recipes yet.</p>';
+      return;
+    }
+    clipList.replaceChildren(...clips.map((clip) => {
+      const row = document.createElement("article");
+      row.className = "podcast-admin__card";
+      const render = clip.render;
+      const renderLabel = !render
+        ? "not requested"
+        : render.clipRevision === clip.revision
+          ? humanizeCode(render.status)
+          : `${humanizeCode(render.status)} for older revision ${Number(render.clipRevision)}`;
+      row.innerHTML = `
+        <div>
+          <p class="podcast-admin__pill">${escapeHtml(clip.status)} · revision ${Number(clip.revision)}</p>
+          <h3>${escapeHtml(clip.title)}</h3>
+          <p>${escapeHtml(clip.aspectRatio)} · ${formatClipDuration(clip.durationMs)} · ${escapeHtml(humanizeCode(clip.boundaryMode))}</p>
+          <p>Private render: ${escapeHtml(renderLabel)}</p>
+        </div>
+        <button
+          class="btn btn-outline-light"
+          type="button"
+          data-podcast-clip-edit="${escapeAttribute(clip.id)}"
+          ${canEditTranscripts ? "" : "disabled"}>
+          Edit recipe
+        </button>`;
+      return row;
+    }));
+  }
+
+  function resetClipRecipe() {
+    selectedClipId = "";
+    clipForm?.reset();
+    if (clipForm) {
+      clipForm.elements.boundaryMode.value = "segment";
+      clipForm.elements.templateId.value = "captioned-waveform-v1";
+    }
+    fillClipCueSelects();
+    refreshClipRecipe();
+  }
+
+  function selectClipRecipe(clipId) {
+    const clip = clips.find(({ id }) => id === clipId);
+    if (!clip) return;
+    selectedClipId = clip.id;
+    fillClipRecipe(clip);
+    clipForm?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  function fillClipRecipe(clip) {
+    if (!clipForm || !clip) return;
+    clipForm.elements.title.value = clip.title || "";
+    clipForm.elements.aspectRatio.value = clip.aspectRatio || "9:16";
+    clipForm.elements.boundaryMode.value = clip.boundaryMode || "segment";
+    clipForm.elements.templateId.value =
+      clip.templateId || "captioned-waveform-v1";
+    fillClipCueSelects({
+      startCueId: clip.selection?.startCueId,
+      endCueId: clip.selection?.endCueId
+    });
+    refreshClipRecipe();
+  }
+
+  function fillClipCueSelects({
+    startCueId = clipForm?.elements.startCueId.value,
+    endCueId = clipForm?.elements.endCueId.value
+  } = {}) {
+    if (!clipForm) return;
+    const cues = transcript?.cues || [];
+    const options = (selectedId) => cues.map((cue, index) =>
+      new Option(
+        `${index + 1} · ${millisecondsToTimestamp(cue.startsAtMs)}–${millisecondsToTimestamp(cue.endsAtMs)} · ${clipCueSummary(cue.textMarkdown)}`,
+        cue.id,
+        false,
+        cue.id === selectedId
+      )
+    );
+    clipForm.elements.startCueId.replaceChildren(...options(startCueId));
+    clipForm.elements.endCueId.replaceChildren(...options(endCueId));
+    if (
+      !cues.some(({ id }) => id === clipForm.elements.startCueId.value)
+      && cues[0]
+    ) {
+      clipForm.elements.startCueId.value = cues[0].id;
+    }
+    if (
+      !cues.some(({ id }) => id === clipForm.elements.endCueId.value)
+      && cues[0]
+    ) {
+      clipForm.elements.endCueId.value = cues[0].id;
+    }
+  }
+
+  function updateClipAvailability() {
+    if (!clipForm) return;
+    const selected = clips.find(({ id }) => id === selectedClipId);
+    const transcriptApproved = transcript
+      && transcript.status === "approved"
+      && Number(transcript.approvedRevision) === Number(transcript.revision)
+      && !transcriptDirty;
+    const canSave = Boolean(canEditTranscripts && transcriptApproved);
+    const selection = selectedClipCueRange();
+    const selectionIsValid = selection
+      && selection.durationMs >= 1_000
+      && selection.durationMs <= 180_000;
+    for (const control of [
+      clipForm.elements.title,
+      clipForm.elements.aspectRatio,
+      clipForm.elements.startCueId,
+      clipForm.elements.endCueId
+    ]) {
+      control.disabled = !canSave;
+    }
+    clipForm.elements.boundaryMode.disabled = true;
+    clipForm.elements.templateId.disabled = true;
+    clipForm.querySelector('button[type="submit"]').disabled =
+      !canSave || !selectionIsValid;
+    if (clipNewButton) clipNewButton.disabled = !canSave;
+    const renderMatchesCurrent = selected
+      && selected.render?.clipRevision === selected.revision;
+    if (clipRenderButton) {
+      clipRenderButton.disabled = !canSave
+        || !selectionIsValid
+        || !selected
+        || Number(selected.revision || 0) < 1
+        || selected.transcriptSha256 !== transcript?.contentSha256
+        || (
+          renderMatchesCurrent
+          && selected.render?.status === "ready"
+        );
+    }
+    if (!transcriptApproved) {
+      if (clipPreview) {
+        clipPreview.textContent = transcriptDirty
+          ? "Save and approve the current transcript edits before creating a clip."
+          : "Approve this transcript revision before creating a clip.";
+      }
+    }
+  }
+
+  function refreshClipRecipe() {
+    updateClipPreview();
+    updateClipAvailability();
+  }
+
+  function selectedClipCueRange() {
+    if (!clipForm) return null;
+    const cues = transcript?.cues || [];
+    const startIndex = cues.findIndex(
+      ({ id }) => id === clipForm.elements.startCueId.value
+    );
+    const endIndex = cues.findIndex(
+      ({ id }) => id === clipForm.elements.endCueId.value
+    );
+    if (startIndex < 0 || endIndex < startIndex) return null;
+    const startsAtMs = Number(cues[startIndex].startsAtMs);
+    const endsAtMs = Number(cues[endIndex].endsAtMs);
+    return {
+      startsAtMs,
+      endsAtMs,
+      durationMs: endsAtMs - startsAtMs
+    };
+  }
+
+  function updateClipPreview() {
+    if (!clipForm || !clipPreview) return;
+    const selection = selectedClipCueRange();
+    if (!selection) {
+      clipPreview.textContent =
+        "Choose an end cue at or after the start cue.";
+      return;
+    }
+    const { startsAtMs, endsAtMs, durationMs } = selection;
+    if (durationMs < 1_000 || durationMs > 180_000) {
+      clipPreview.textContent =
+        "Clip range must be between 1 second and 3 minutes.";
+      return;
+    }
+    const dimensions = clipForm.elements.aspectRatio.value === "9:16"
+      ? "1080×1920"
+      : clipForm.elements.aspectRatio.value === "1:1"
+        ? "1080×1080"
+        : "1920×1080";
+    clipPreview.textContent = [
+      `${millisecondsToTimestamp(startsAtMs)}–${millisecondsToTimestamp(endsAtMs)}`,
+      formatClipDuration(durationMs),
+      dimensions,
+      "high-contrast captions",
+      "8% side/top and 18% bottom safe area"
+    ].join(" · ");
+  }
+
+  async function saveClipRecipe(event) {
+    event.preventDefault();
+    const selected = clips.find(({ id }) => id === selectedClipId);
+    const clipId = selected?.id || operationId("clip");
+    const button = clipForm.querySelector('button[type="submit"]');
+    button.disabled = true;
+    clipRenderButton.disabled = true;
+    setStatus(clipStatus, "Saving immutable clip recipe revision…");
+    try {
+      const payload = await client.request(
+        `/v1/admin/episodes/${encodeURIComponent(transcriptEpisodeSelect.value)}/clips/${encodeURIComponent(clipId)}`,
+        {
+          method: "PUT",
+          body: {
+            mutationId: operationId("clip_mutation"),
+            baseRevision: Number(selected?.revision || 0),
+            title: clipForm.elements.title.value,
+            captionLanguage: transcriptLanguageSelect.value,
+            aspectRatio: clipForm.elements.aspectRatio.value,
+            templateId: "captioned-waveform-v1",
+            boundaryMode: "segment",
+            startCueId: clipForm.elements.startCueId.value,
+            endCueId: clipForm.elements.endCueId.value
+          }
+        }
+      );
+      selectedClipId = payload.clip.id;
+      await loadClips({ preserveStatus: true });
+      setStatus(
+        clipStatus,
+        "Clip recipe saved. Word cuts and public upload remain locked."
+      );
+    } catch (error) {
+      setStatus(clipStatus, friendlyError(error), true);
+      updateClipAvailability();
+    }
+  }
+
+  async function prepareClipRender() {
+    const clip = clips.find(({ id }) => id === selectedClipId);
+    if (!clip) return;
+    clipRenderButton.disabled = true;
+    setStatus(clipStatus, "Preparing checksummed private render manifest…");
+    try {
+      const renderId = clip.render?.clipRevision === clip.revision
+        ? clip.render.id
+        : operationId("clip_render");
+      const payload = await client.request(
+        `/v1/admin/clips/${encodeURIComponent(clip.id)}/render`,
+        {
+          method: "POST",
+          body: {
+            renderId,
+            expectedRevision: Number(clip.revision)
+          }
+        }
+      );
+      downloadJson(
+        `podcast-clip-${clip.id}-revision-${clip.revision}.json`,
+        payload.processorManifest
+      );
+      await loadClips({ preserveStatus: true });
+      setStatus(
+        clipStatus,
+        payload.idempotent
+          ? "Existing private processor manifest downloaded again."
+          : "Private processor manifest created and downloaded. This is not a completed render."
+      );
+    } catch (error) {
+      setStatus(clipStatus, friendlyError(error), true);
+      updateClipAvailability();
+    }
   }
 
   function updateAdPlanFields() {
@@ -1742,6 +2099,30 @@ function millisecondsToSeconds(value) {
   return (Number(value || 0) / 1_000).toFixed(3).replace(/\.?0+$/, "");
 }
 
+function millisecondsToTimestamp(value) {
+  const totalMilliseconds = Math.max(0, Math.round(Number(value || 0)));
+  const minutes = Math.floor(totalMilliseconds / 60_000);
+  const seconds = Math.floor((totalMilliseconds % 60_000) / 1_000);
+  const milliseconds = totalMilliseconds % 1_000;
+  return `${minutes}:${String(seconds).padStart(2, "0")}.${String(milliseconds).padStart(3, "0")}`;
+}
+
+function formatClipDuration(value) {
+  const seconds = Number(value || 0) / 1_000;
+  return `${new Intl.NumberFormat(undefined, {
+    maximumFractionDigits: seconds < 10 ? 1 : 0
+  }).format(seconds)} seconds`;
+}
+
+function clipCueSummary(value) {
+  const summary = String(value || "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/[*_~`[\]()>#+=-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  return summary.length > 72 ? `${summary.slice(0, 69)}…` : summary;
+}
+
 function secondsToMilliseconds(value, label) {
   const seconds = Number(value);
   if (!Number.isFinite(seconds) || seconds < 0) {
@@ -1799,6 +2180,36 @@ function friendlyError(error) {
   }
   if (error.code === "transcript_approval_conflict") {
     return "This transcript approval changed in another session. Reload and review it.";
+  }
+  if (error.code === "clip_approved_transcript_required") {
+    return "Approve this transcript language before creating a clip.";
+  }
+  if (error.code === "clip_revision_conflict") {
+    return "This clip changed in another session. Reload it before saving.";
+  }
+  if (error.code === "clip_mutation_conflict") {
+    return "That clip save identifier was already used for different content.";
+  }
+  if (error.code === "clip_render_exists") {
+    return "A private render already exists for this clip revision. Reload the clip list.";
+  }
+  if (error.code === "clip_transcript_changed") {
+    return "The approved transcript changed. Save a new clip recipe revision.";
+  }
+  if (error.code === "clip_source_changed") {
+    return "The source audio changed. Save a new clip recipe revision.";
+  }
+  if (error.code === "clip_word_alignment_not_ready") {
+    return "Word-accurate cuts require a matching alignment that passed the H1 quality gate.";
+  }
+  if (error.code === "clip_source_audio_not_ready") {
+    return "Attach ready delivery audio before creating a clip.";
+  }
+  if (error.code === "clip_source_audio_must_be_mp3") {
+    return "The initial clip processor requires ready MP3 delivery audio.";
+  }
+  if (error.code === "clip_source_object_mismatch") {
+    return "The private source object no longer matches its reviewed audio record.";
   }
   return error.message || error.code;
 }
