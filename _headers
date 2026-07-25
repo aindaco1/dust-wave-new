@@ -1,0 +1,26 @@
+# Keep Cloudflare Pages deployment and branch-preview hosts out of search.
+# These host-specific rules do not apply to dustwave.xyz.
+https://:project.pages.dev/*
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+https://:version.:project.pages.dev/*
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+# Authenticated shells must not be cached, embedded, or receive unnecessary
+# browser capabilities. Public show, episode, player, and embed routes remain
+# unaffected.
+/admin/*
+  Cache-Control: private, no-store, max-age=0
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), geolocation=(), microphone=(), payment=(), usb=()
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/podcasts/account/*
+  Cache-Control: private, no-store, max-age=0
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), geolocation=(), microphone=(), payment=(), usb=()
+  X-Robots-Tag: noindex, nofollow, noarchive

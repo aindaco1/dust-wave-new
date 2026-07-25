@@ -101,7 +101,7 @@ gulp.task('minify-css', function minifyCssTask() {
 
 // ============ Production tasks ============
 gulp.task('copy-CNAME', function copyCNAME() {
-  return src('./CNAME', { allowEmpty: true }).pipe(dest(`${DIR.dist}/`));
+  return src(['./CNAME', './_headers'], { allowEmpty: true }).pipe(dest(`${DIR.dist}/`));
 });
 
 gulp.task('prod-copy', function prodCopy(done) {

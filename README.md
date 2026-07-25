@@ -45,6 +45,13 @@ The Pages build reads the following GitHub Actions repository variables:
 - `PODCAST_MEMBER_TURNSTILE_SITE_KEY`
 - `PODCAST_CHECKOUT_TURNSTILE_SITE_KEY`
 
+Cloudflare Pages previews consume the checked-in `_headers` file. All
+`pages.dev` deployment hosts are noindex, while `/admin/*` and
+`/podcasts/account/*` additionally use `no-store`, deny framing, suppress
+referrers, and disable browser capabilities those authenticated shells do not
+need. The rules deliberately do not apply anti-framing headers to public
+podcast embeds.
+
 The public premium form remains hidden unless the Podcast API reports
 `checkoutEnabled: true`, returns at least one valid USD price, and the build
 has a Checkout Turnstile site key. Subscriber billing controls appear only
