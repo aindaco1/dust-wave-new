@@ -13,6 +13,8 @@ eleventyComputed:
   description: "{{ i18n[language].podcast.admin.description }}"
 ---
 
+{% set workbench = i18n[language].podcast.admin.workbench %}
+
 <div
   class="podcast-admin__container"
   data-podcast-admin
@@ -67,36 +69,36 @@ eleventyComputed:
         <section id="podcast-panel-overview" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-overview">
           <div class="podcast-admin__panel-heading">
             <div>
-              <h2>Shows</h2>
-              <p>Single-show launch interface; the API and data model support more shows.</p>
+              <h2>{{ workbench.overview.shows }}</h2>
+              <p>{{ workbench.overview.intro }}</p>
             </div>
-            <button class="btn btn-outline-light" type="button" data-podcast-refresh>Refresh</button>
+            <button class="btn btn-outline-light" type="button" data-podcast-refresh>{{ workbench.common.refresh }}</button>
           </div>
           <div class="podcast-admin__cards" data-podcast-show-cards></div>
 
           <form class="podcast-admin__form podcast-admin__form--settings" data-podcast-show-form hidden>
-            <h3>Show settings</h3>
-            <label for="podcast-show-title">Title</label>
+            <h3>{{ workbench.overview.settings }}</h3>
+            <label for="podcast-show-title">{{ workbench.common.title }}</label>
             <input id="podcast-show-title" name="title" required>
-            <label for="podcast-show-description">Descripción (ES)</label>
+            <label for="podcast-show-description">{{ workbench.overview.descriptionSpanish }}</label>
             <textarea id="podcast-show-description" name="description" rows="4"></textarea>
-            <label for="podcast-show-description-en">Description (EN)</label>
+            <label for="podcast-show-description-en">{{ workbench.overview.descriptionEnglish }}</label>
             <textarea id="podcast-show-description-en" name="descriptionEn" rows="4"></textarea>
             <div class="podcast-admin__field-grid">
-              <label>Early access days
+              <label>{{ workbench.overview.earlyAccessDays }}
                 <input name="earlyAccessDays" type="number" min="0" max="365">
               </label>
-              <label>YouTube channel
+              <label>{{ workbench.overview.youtubeChannel }}
                 <input name="youtubeChannelUrl" type="url">
               </label>
             </div>
             <label class="podcast-admin__checkbox">
-              <input name="premiumEnabled" type="checkbox"> Premium enabled
+              <input name="premiumEnabled" type="checkbox"> {{ workbench.overview.premiumEnabled }}
             </label>
             <label class="podcast-admin__checkbox">
-              <input name="freeMiniEpisodeEnabled" type="checkbox"> One free mini-episode enabled
+              <input name="freeMiniEpisodeEnabled" type="checkbox"> {{ workbench.overview.freeMiniEnabled }}
             </label>
-            <button class="btn btn-danger" type="submit">Save show settings</button>
+            <button class="btn btn-danger" type="submit">{{ workbench.overview.save }}</button>
             <p class="podcast-admin__status" data-podcast-show-status role="status" aria-live="polite"></p>
           </form>
         </section>
@@ -104,96 +106,96 @@ eleventyComputed:
         <section id="podcast-panel-episodes" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-episodes" hidden>
           <div class="podcast-admin__panel-heading">
             <div>
-              <h2>Episodes</h2>
-              <p>Create the canonical episode record, attach delivery media, then publish one reviewed revision.</p>
+              <h2>{{ workbench.episodes.heading }}</h2>
+              <p>{{ workbench.episodes.intro }}</p>
             </div>
-            <select data-podcast-show-select aria-label="Show"></select>
+            <select data-podcast-show-select aria-label="{{ workbench.common.show }}"></select>
           </div>
 
           <form class="podcast-admin__form" data-podcast-episode-form>
-            <h3>New episode</h3>
+            <h3>{{ workbench.episodes.new }}</h3>
             <div class="podcast-admin__field-grid">
-              <label>Title
+              <label>{{ workbench.common.title }}
                 <input name="title" required>
               </label>
-              <label>URL slug
+              <label>{{ workbench.episodes.slug }}
                 <input name="slug" pattern="[a-z0-9]+(?:-[a-z0-9]+)*" required>
               </label>
             </div>
-            <label>Summary
+            <label>{{ workbench.episodes.summary }}
               <textarea name="summary" rows="3" required></textarea>
             </label>
-            <label>Episode notes</label>
+            <label>{{ workbench.episodes.notes }}</label>
             <div class="podcast-admin__editor" data-podcast-notes-editor></div>
             <div class="podcast-admin__field-grid podcast-admin__field-grid--three">
-              <label>Access
+              <label>{{ workbench.episodes.access }}
                 <select name="access">
-                  <option value="public">Public</option>
-                  <option value="early_access">Early access</option>
-                  <option value="premium_bonus">Premium bonus</option>
-                  <option value="free_mini">Free mini-episode</option>
+                  <option value="public">{{ workbench.episodes.public }}</option>
+                  <option value="early_access">{{ workbench.episodes.earlyAccess }}</option>
+                  <option value="premium_bonus">{{ workbench.episodes.premiumBonus }}</option>
+                  <option value="free_mini">{{ workbench.episodes.freeMini }}</option>
                 </select>
               </label>
-              <label>Source language
+              <label>{{ workbench.episodes.sourceLanguage }}
                 <select name="sourceLanguage" required>
-                  <option value="es">Español</option>
-                  <option value="en">English</option>
+                  <option value="es">{{ workbench.common.spanish }}</option>
+                  <option value="en">{{ workbench.common.english }}</option>
                 </select>
               </label>
-              <label>Premium release
+              <label>{{ workbench.episodes.premiumRelease }}
                 <input name="premiumAt" type="datetime-local">
               </label>
-              <label>Public release
+              <label>{{ workbench.episodes.publicRelease }}
                 <input name="publicAt" type="datetime-local">
               </label>
             </div>
-            <button class="btn btn-danger" type="submit">Create draft</button>
+            <button class="btn btn-danger" type="submit">{{ workbench.episodes.createDraft }}</button>
             <p class="podcast-admin__status" data-podcast-episode-status role="status" aria-live="polite"></p>
           </form>
 
           <form class="podcast-admin__form" data-podcast-upload-form>
-            <h3>Attach media</h3>
+            <h3>{{ workbench.episodes.attachMedia }}</h3>
             <div class="podcast-admin__field-grid">
-              <label>Episode
+              <label>{{ workbench.common.episode }}
                 <select name="episodeId" required></select>
               </label>
-              <label>Media role
+              <label>{{ workbench.episodes.mediaRole }}
                 <select name="kind">
-                  <option value="delivery_audio">Delivery audio</option>
-                  <option value="source_audio">Source audio</option>
-                  <option value="video_source">Video source</option>
+                  <option value="delivery_audio">{{ workbench.episodes.deliveryAudio }}</option>
+                  <option value="source_audio">{{ workbench.episodes.sourceAudio }}</option>
+                  <option value="video_source">{{ workbench.episodes.videoSource }}</option>
                 </select>
               </label>
             </div>
-            <label>File
+            <label>{{ workbench.episodes.file }}
               <input name="media" type="file" accept="audio/*,video/mp4,video/quicktime,video/webm" required>
             </label>
             <progress data-podcast-upload-progress max="100" value="0" hidden></progress>
-            <button class="btn btn-outline-light" type="submit">Upload media</button>
+            <button class="btn btn-outline-light" type="submit">{{ workbench.episodes.uploadMedia }}</button>
             <p class="podcast-admin__status" data-podcast-upload-status role="status" aria-live="polite"></p>
           </form>
 
           <form class="podcast-admin__form" data-podcast-ad-plan-form hidden>
-            <h3>Dynamic-ad markers and program segments</h3>
-            <p>Submit producer marker intent, process one normalized MP3 into frame-safe program segments, then review the evidence before approval. Approval does not enable request-time ads.</p>
+            <h3>{{ workbench.episodes.adPlanHeading }}</h3>
+            <p>{{ workbench.episodes.adPlanIntro }}</p>
             <div class="podcast-admin__field-grid">
-              <label>Episode
+              <label>{{ workbench.common.episode }}
                 <select name="episodeId" required></select>
               </label>
               <label class="podcast-admin__checkbox">
-                <input name="preRoll" type="checkbox"> Pre-roll
+                <input name="preRoll" type="checkbox"> {{ workbench.common.preRoll }}
               </label>
               <label class="podcast-admin__checkbox">
-                <input name="midRoll" type="checkbox"> Mid-roll
+                <input name="midRoll" type="checkbox"> {{ workbench.common.midRoll }}
               </label>
-              <label>Mid-roll time (seconds)
+              <label>{{ workbench.episodes.midRollTime }}
                 <input name="midRollSeconds" type="number" min="1" step="1" disabled>
               </label>
               <label class="podcast-admin__checkbox">
-                <input name="postRoll" type="checkbox"> Post-roll
+                <input name="postRoll" type="checkbox"> {{ workbench.common.postRoll }}
               </label>
             </div>
-            <button class="btn btn-outline-light" type="submit">Submit frame-safe plan</button>
+            <button class="btn btn-outline-light" type="submit">{{ workbench.episodes.submitAdPlan }}</button>
             <p class="podcast-admin__status" data-podcast-ad-plan-status role="status" aria-live="polite"></p>
           </form>
           <div data-podcast-ad-plan-result aria-live="polite"></div>
@@ -204,118 +206,118 @@ eleventyComputed:
         <section id="podcast-panel-production" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-production" hidden>
           <div class="podcast-admin__panel-heading">
             <div>
-              <h2>Source audio quality</h2>
-              <p>Measure the immutable source before enhancement or delivery rendering. Reports compare mono/stereo loudness, true peak, clipping, offset, channel balance, and silence against the show policy.</p>
+              <h2>{{ workbench.production.audioQcHeading }}</h2>
+              <p>{{ workbench.production.audioQcIntro }}</p>
             </div>
-            <p class="podcast-admin__pill">Measured · non-destructive</p>
+            <p class="podcast-admin__pill">{{ workbench.production.measuredPill }}</p>
           </div>
           <div class="podcast-admin__callout">
-            <p>Queueing snapshots the completed private source, show policy, R2 ETag, and processor manifest. The owner-controlled staging workflow fully decodes the source and returns signed evidence; it never overwrites audio or publishes an episode.</p>
-            <p data-podcast-audio-qc-policy-summary aria-live="polite">Loading the show measurement policy…</p>
+            <p>{{ workbench.production.audioQcCallout }}</p>
+            <p data-podcast-audio-qc-policy-summary aria-live="polite">{{ workbench.production.policyLoading }}</p>
           </div>
           <form class="podcast-admin__form podcast-admin__audio-qc-policy" data-podcast-audio-qc-policy-form hidden>
-            <h3>Show measurement policy</h3>
-            <p>Admin and Super-admin changes apply only to future QC runs. Existing reports keep their snapshotted policy revision.</p>
+            <h3>{{ workbench.production.policyHeading }}</h3>
+            <p>{{ workbench.production.policyIntro }}</p>
             <div class="podcast-admin__field-grid">
-              <label>Mono target (LUFS)
+              <label>{{ workbench.production.monoTarget }}
                 <input name="monoIntegratedLufs" type="number" min="-40" max="-5" step="0.1" required>
               </label>
-              <label>Stereo target (LUFS)
+              <label>{{ workbench.production.stereoTarget }}
                 <input name="stereoIntegratedLufs" type="number" min="-40" max="-5" step="0.1" required>
               </label>
-              <label>Loudness tolerance (LU)
+              <label>{{ workbench.production.loudnessTolerance }}
                 <input name="integratedLufsTolerance" type="number" min="0.1" max="10" step="0.1" required>
               </label>
-              <label>Maximum true peak (dBTP)
+              <label>{{ workbench.production.maximumTruePeak }}
                 <input name="maximumTruePeakDbtp" type="number" min="-12" max="0" step="0.1" required>
               </label>
-              <label>Maximum DC offset
+              <label>{{ workbench.production.maximumDcOffset }}
                 <input name="maximumDcOffset" type="number" min="0" max="0.25" step="0.001" required>
               </label>
-              <label>Maximum channel imbalance (LU)
+              <label>{{ workbench.production.maximumChannelImbalance }}
                 <input name="maximumChannelImbalanceLu" type="number" min="0" max="24" step="0.1" required>
               </label>
-              <label>Maximum leading silence (ms)
+              <label>{{ workbench.production.maximumLeadingSilence }}
                 <input name="maximumLeadingSilenceMs" type="number" min="0" max="60000" step="1" required>
               </label>
-              <label>Maximum trailing silence (ms)
+              <label>{{ workbench.production.maximumTrailingSilence }}
                 <input name="maximumTrailingSilenceMs" type="number" min="0" max="60000" step="1" required>
               </label>
-              <label>Maximum internal silence (ms)
+              <label>{{ workbench.production.maximumInternalSilence }}
                 <input name="maximumInternalSilenceMs" type="number" min="0" max="120000" step="1" required>
               </label>
-              <label>Silence detector threshold (dB)
+              <label>{{ workbench.production.silenceThreshold }}
                 <input name="silenceThresholdDb" type="number" min="-100" max="-10" step="0.1" required>
               </label>
             </div>
-            <button class="btn btn-outline-light" type="submit">Save future-run policy</button>
+            <button class="btn btn-outline-light" type="submit">{{ workbench.production.savePolicy }}</button>
             <p class="podcast-admin__status" data-podcast-audio-qc-policy-status role="status" aria-live="polite"></p>
           </form>
-          <section class="podcast-admin__audio-qc" data-podcast-audio-qc aria-label="Source audio quality">
+          <section class="podcast-admin__audio-qc" data-podcast-audio-qc aria-label="{{ workbench.production.audioQcHeading }}">
             <div class="podcast-admin__field-grid">
-              <label>Episode
+              <label>{{ workbench.common.episode }}
                 <select data-podcast-audio-qc-episode required></select>
               </label>
             </div>
             <div class="podcast-admin__transcript-actions">
-              <button class="btn btn-danger" type="button" data-podcast-audio-qc-queue>Queue measured QC</button>
-              <button class="btn btn-outline-light" type="button" data-podcast-audio-qc-refresh>Refresh report</button>
+              <button class="btn btn-danger" type="button" data-podcast-audio-qc-queue>{{ workbench.production.queueQc }}</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-audio-qc-refresh>{{ workbench.production.refreshReport }}</button>
             </div>
-            <p class="podcast-admin__transcript-meta" data-podcast-audio-qc-summary aria-live="polite">Choose an episode with completed source audio.</p>
+            <p class="podcast-admin__transcript-meta" data-podcast-audio-qc-summary aria-live="polite">{{ workbench.production.chooseSourceAudio }}</p>
             <div class="podcast-admin__audio-qc-results" data-podcast-audio-qc-results></div>
             <p class="podcast-admin__status" data-podcast-audio-qc-status role="status" aria-live="polite"></p>
           </section>
           <div class="podcast-admin__panel-heading podcast-admin__section-heading">
             <div>
-              <h2>Working master and A/B preview</h2>
-              <p>Approve one byte-exact, zero-blocker source as the episode’s working master. Compare private enhancement presets without changing source or delivery audio.</p>
+              <h2>{{ workbench.production.workingMasterHeading }}</h2>
+              <p>{{ workbench.production.workingMasterIntro }}</p>
             </div>
-            <p class="podcast-admin__pill">Explicit · reversible</p>
+            <p class="podcast-admin__pill">{{ workbench.production.explicitPill }}</p>
           </div>
           <div class="podcast-admin__callout">
-            <p>An enhancement preview is never a master. A processed master will require a full-length render and a new quality-control pass. Replacing an approved master makes transcript, chapter, clip, and readiness approvals stale.</p>
+            <p>{{ workbench.production.masterCallout }}</p>
           </div>
-          <section class="podcast-admin__audio-master" data-podcast-audio-master aria-label="Working audio master">
+          <section class="podcast-admin__audio-master" data-podcast-audio-master aria-label="{{ workbench.production.workingMasterLabel }}">
             <div class="podcast-admin__field-grid">
-              <label>Episode
+              <label>{{ workbench.common.episode }}
                 <select data-podcast-audio-master-episode required></select>
               </label>
             </div>
             <div class="podcast-admin__transcript-actions">
-              <button class="btn btn-outline-light" type="button" data-podcast-audio-master-refresh>Refresh master state</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-audio-master-refresh>{{ workbench.production.refreshMaster }}</button>
             </div>
-            <p class="podcast-admin__transcript-meta" data-podcast-audio-master-summary aria-live="polite">Choose an episode with a successful source-audio QC run.</p>
+            <p class="podcast-admin__transcript-meta" data-podcast-audio-master-summary aria-live="polite">{{ workbench.production.chooseQc }}</p>
             <div class="podcast-admin__audio-master-current" data-podcast-audio-master-current></div>
 
             <form class="podcast-admin__form podcast-admin__audio-master-approval" data-podcast-audio-master-approval hidden>
-              <h3>Approve exact source</h3>
-              <p>Super-admin only. The current source object, SHA-256, policy revision, and QC report are recorded as immutable evidence.</p>
-              <label>Approval reason
+              <h3>{{ workbench.production.approveSourceHeading }}</h3>
+              <p>{{ workbench.production.approveSourceIntro }}</p>
+              <label>{{ workbench.production.approvalReason }}
                 <textarea name="approvalReason" rows="3" maxlength="500" required></textarea>
               </label>
               <label class="podcast-admin__checkbox">
                 <input name="acknowledgeExactSource" type="checkbox" required>
-                I reviewed the current zero-blocker QC evidence and approve these exact source bytes.
+                {{ workbench.production.exactSourceAck }}
               </label>
-              <button class="btn btn-danger" type="submit">Approve working master</button>
+              <button class="btn btn-danger" type="submit">{{ workbench.production.approveMaster }}</button>
               <p class="podcast-admin__status" data-podcast-audio-master-approval-status role="status" aria-live="polite"></p>
             </form>
 
             <form class="podcast-admin__form podcast-admin__audio-enhancement-form" data-podcast-audio-enhancement-form hidden>
-              <h3>Private enhancement comparison</h3>
-              <p>Producer and above. Both previews use the same MP3 profile and remain private; queueing never approves or publishes audio.</p>
+              <h3>{{ workbench.production.enhancementHeading }}</h3>
+              <p>{{ workbench.production.enhancementIntro }}</p>
               <div class="podcast-admin__field-grid podcast-admin__field-grid--three">
-                <label>Preset
+                <label>{{ workbench.production.preset }}
                   <select name="presetId" required></select>
                 </label>
-                <label>Start (seconds)
+                <label>{{ workbench.production.startSeconds }}
                   <input name="previewStartSeconds" type="number" min="0" step="0.1" value="0" required>
                 </label>
-                <label>Length (seconds)
+                <label>{{ workbench.production.lengthSeconds }}
                   <input name="previewDurationSeconds" type="number" min="5" max="90" step="1" value="45" required>
                 </label>
               </div>
-              <button class="btn btn-outline-light" type="submit">Queue private A/B preview</button>
+              <button class="btn btn-outline-light" type="submit">{{ workbench.production.queuePreview }}</button>
               <p class="podcast-admin__status" data-podcast-audio-enhancement-status role="status" aria-live="polite"></p>
             </form>
 
@@ -323,92 +325,92 @@ eleventyComputed:
           </section>
           <div class="podcast-admin__panel-heading podcast-admin__section-heading">
             <div>
-              <h2>Transcript review</h2>
-              <p>Edit bilingual timed cues with the shared Pool/Store editor, confirm public speaker labels, and approve a versioned revision.</p>
+              <h2>{{ workbench.production.transcriptHeading }}</h2>
+              <p>{{ workbench.production.transcriptIntro }}</p>
             </div>
-            <p class="podcast-admin__pill">Word timing gated</p>
+            <p class="podcast-admin__pill">{{ workbench.production.wordTimingPill }}</p>
           </div>
           <div class="podcast-admin__callout">
-            <p>Cue editing does not invent word timing. Word-linked navigation and word-accurate clip cuts remain unavailable until a matching English/Spanish alignment revision passes the launch quality gate.</p>
+            <p>{{ workbench.production.transcriptCallout }}</p>
           </div>
           <div class="podcast-admin__form" data-podcast-transcription-workbench>
             <div class="podcast-admin__panel-heading podcast-admin__section-heading">
               <div>
-                <h3>Source-language transcription</h3>
-                <p>Run the approved working master through the pinned Cloudflare Workers AI adapter. Large sources first use the checksummed, silence-aware staging chunk workflow; then every segment-timed draft returns to the same editor below.</p>
+                <h3>{{ workbench.production.transcriptionHeading }}</h3>
+                <p>{{ workbench.production.transcriptionIntro }}</p>
               </div>
               <div class="podcast-admin__transcript-actions">
-                <button class="btn btn-outline-light" type="button" data-podcast-transcription-refresh>Refresh jobs</button>
-                <button class="btn btn-danger" type="button" data-podcast-transcription-queue>Queue transcript</button>
+                <button class="btn btn-outline-light" type="button" data-podcast-transcription-refresh>{{ workbench.production.refreshJobs }}</button>
+                <button class="btn btn-danger" type="button" data-podcast-transcription-queue>{{ workbench.production.queueTranscript }}</button>
               </div>
             </div>
-            <p class="podcast-admin__transcript-meta" data-podcast-transcription-summary aria-live="polite">Choose an episode with an approved working master.</p>
+            <p class="podcast-admin__transcript-meta" data-podcast-transcription-summary aria-live="polite">{{ workbench.production.chooseMaster }}</p>
             <p class="podcast-admin__status" data-podcast-transcription-status role="status" aria-live="polite"></p>
             <div class="podcast-admin__audio-enhancement-results" data-podcast-transcription-jobs></div>
           </div>
           <div class="podcast-admin__form" data-podcast-transcript-workbench>
             <div class="podcast-admin__field-grid">
-              <label>Episode
+              <label>{{ workbench.common.episode }}
                 <select data-podcast-transcript-episode required></select>
               </label>
-              <label>Transcript language
+              <label>{{ workbench.production.transcriptLanguage }}
                 <select data-podcast-transcript-language>
-                  <option value="es">Español</option>
-                  <option value="en">English</option>
+                  <option value="es">{{ workbench.common.spanish }}</option>
+                  <option value="en">{{ workbench.common.english }}</option>
                 </select>
               </label>
             </div>
             <div class="podcast-admin__transcript-meta" data-podcast-transcript-meta aria-live="polite"></div>
             <div class="podcast-admin__transcript-cues" data-podcast-transcript-cues></div>
-            <nav class="podcast-admin__transcript-pages" data-podcast-transcript-pages aria-label="Transcript cue pages" hidden>
-              <button class="btn btn-outline-light" type="button" data-podcast-transcript-previous>Previous cues</button>
+            <nav class="podcast-admin__transcript-pages" data-podcast-transcript-pages aria-label="{{ workbench.production.cuePages }}" hidden>
+              <button class="btn btn-outline-light" type="button" data-podcast-transcript-previous>{{ workbench.production.previousCues }}</button>
               <span data-podcast-transcript-page aria-live="polite"></span>
-              <button class="btn btn-outline-light" type="button" data-podcast-transcript-next>Next cues</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-transcript-next>{{ workbench.production.nextCues }}</button>
             </nav>
             <div class="podcast-admin__transcript-actions">
-              <button class="btn btn-outline-light" type="button" data-podcast-transcript-add>Add cue</button>
-              <button class="btn btn-danger" type="button" data-podcast-transcript-save>Save review draft</button>
-              <button class="btn btn-outline-light" type="button" data-podcast-transcript-approve>Approve revision</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-transcript-add>{{ workbench.production.addCue }}</button>
+              <button class="btn btn-danger" type="button" data-podcast-transcript-save>{{ workbench.production.saveReviewDraft }}</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-transcript-approve>{{ workbench.production.approveRevision }}</button>
             </div>
             <p class="podcast-admin__status" data-podcast-transcript-status role="status" aria-live="polite"></p>
-            <section class="podcast-admin__alignment" data-podcast-alignment aria-label="English and Spanish word alignment">
+            <section class="podcast-admin__alignment" data-podcast-alignment aria-label="{{ workbench.production.alignmentAria }}">
               <div class="podcast-admin__panel-heading podcast-admin__section-heading">
                 <div>
-                  <h3>English/Spanish word alignment</h3>
-                  <p>Bind the approved transcript and working-master bytes to one pinned, normalized alignment run. Results remain private and require human review plus a matching bilingual benchmark before word controls unlock.</p>
+                  <h3>{{ workbench.production.alignmentHeading }}</h3>
+                  <p>{{ workbench.production.alignmentIntro }}</p>
                 </div>
-                <p class="podcast-admin__pill">H1 quality gate</p>
+                <p class="podcast-admin__pill">{{ workbench.production.h1Pill }}</p>
               </div>
               <div class="podcast-admin__field-grid">
-                <label>Alignment adapter
+                <label>{{ workbench.production.alignmentAdapter }}
                   <select data-podcast-alignment-adapter>
                     <option value="whisperx">WhisperX 3.8.6</option>
-                    <option value="stable-ts">stable-ts 2.19.1 fallback</option>
+                    <option value="stable-ts">{{ workbench.production.stableFallback }}</option>
                   </select>
                 </label>
               </div>
               <div class="podcast-admin__transcript-actions">
-                <button class="btn btn-outline-light" type="button" data-podcast-alignment-refresh>Refresh alignments</button>
-                <button class="btn btn-danger" type="button" data-podcast-alignment-queue>Queue exact alignment</button>
+                <button class="btn btn-outline-light" type="button" data-podcast-alignment-refresh>{{ workbench.production.refreshAlignments }}</button>
+                <button class="btn btn-danger" type="button" data-podcast-alignment-queue>{{ workbench.production.queueAlignment }}</button>
               </div>
-              <p class="podcast-admin__transcript-meta" data-podcast-alignment-summary aria-live="polite">Approve this transcript revision and a working master before alignment.</p>
+              <p class="podcast-admin__transcript-meta" data-podcast-alignment-summary aria-live="polite">{{ workbench.production.alignmentPrerequisite }}</p>
               <p class="podcast-admin__status" data-podcast-alignment-status role="status" aria-live="polite"></p>
               <div class="podcast-admin__audio-enhancement-results" data-podcast-alignment-jobs></div>
               <section class="podcast-admin__benchmark" aria-labelledby="podcast-alignment-benchmark-title">
                 <div class="podcast-admin__panel-heading podcast-admin__section-heading">
                   <div>
-                    <h4 id="podcast-alignment-benchmark-title">Bilingual benchmark evidence</h4>
-                    <p>Review the current English/Spanish H1 gate without exposing corpus audio or transcript text. Only a recently authenticated Super-admin can import the pinned runner’s closed-schema JSON evidence; the raw file remains private and content-addressed.</p>
+                    <h4 id="podcast-alignment-benchmark-title">{{ workbench.production.benchmarkHeading }}</h4>
+                    <p>{{ workbench.production.benchmarkIntro }}</p>
                   </div>
-                  <button class="btn btn-outline-light" type="button" data-podcast-benchmark-refresh>Refresh benchmark</button>
+                  <button class="btn btn-outline-light" type="button" data-podcast-benchmark-refresh>{{ workbench.production.refreshBenchmark }}</button>
                 </div>
                 <form class="podcast-admin__inline-form podcast-admin__benchmark-form" data-podcast-benchmark-form>
-                  <label>Reviewed benchmark JSON
+                  <label>{{ workbench.production.reviewedBenchmarkJson }}
                     <input name="evidence" type="file" accept=".json,application/json" required>
                   </label>
-                  <button class="btn btn-danger" type="submit">Import exact evidence</button>
+                  <button class="btn btn-danger" type="submit">{{ workbench.production.importEvidence }}</button>
                 </form>
-                <p class="podcast-admin__transcript-meta" data-podcast-benchmark-summary aria-live="polite">No benchmark evidence loaded.</p>
+                <p class="podcast-admin__transcript-meta" data-podcast-benchmark-summary aria-live="polite">{{ workbench.production.noBenchmark }}</p>
                 <p class="podcast-admin__status" data-podcast-benchmark-status role="status" aria-live="polite"></p>
                 <div class="podcast-admin__benchmark-list" data-podcast-benchmark-list></div>
               </section>
@@ -416,132 +418,132 @@ eleventyComputed:
           </div>
           <div class="podcast-admin__panel-heading podcast-admin__section-heading">
             <div>
-              <h2>Chapter review</h2>
-              <p>Build a bilingual-capable table of contents for the existing player and Podcasting 2.0 feeds, then approve one immutable revision.</p>
+              <h2>{{ workbench.production.chapterHeading }}</h2>
+              <p>{{ workbench.production.chapterIntro }}</p>
             </div>
-            <p class="podcast-admin__pill">Versioned · fail closed</p>
+            <p class="podcast-admin__pill">{{ workbench.production.versionedPill }}</p>
           </div>
           <div class="podcast-admin__callout">
-            <p>The first chapter starts at 00:00. Titles can be Spanish, English, or paired; optional links and artwork must use HTTPS. Apple recommends concise titles and at least three chapters for longer episodes.</p>
+            <p>{{ workbench.production.chapterCallout }}</p>
           </div>
           <div class="podcast-admin__form" data-podcast-chapter-workbench>
             <div class="podcast-admin__field-grid">
-              <label>Episode
+              <label>{{ workbench.common.episode }}
                 <select data-podcast-chapter-episode required></select>
               </label>
             </div>
             <div class="podcast-admin__transcript-meta" data-podcast-chapter-meta aria-live="polite"></div>
             <div class="podcast-admin__chapter-rows" data-podcast-chapter-rows></div>
             <div class="podcast-admin__transcript-actions">
-              <button class="btn btn-outline-light" type="button" data-podcast-chapter-add>Add chapter</button>
-              <button class="btn btn-danger" type="button" data-podcast-chapter-save>Save review draft</button>
-              <button class="btn btn-outline-light" type="button" data-podcast-chapter-approve>Approve revision</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-chapter-add>{{ workbench.production.addChapter }}</button>
+              <button class="btn btn-danger" type="button" data-podcast-chapter-save>{{ workbench.production.saveReviewDraft }}</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-chapter-approve>{{ workbench.production.approveRevision }}</button>
             </div>
             <p class="podcast-admin__status" data-podcast-chapter-status role="status" aria-live="polite"></p>
           </div>
           <div class="podcast-admin__panel-heading podcast-admin__section-heading">
             <div>
-              <h2>Production review</h2>
-              <p>Attach a plain-text note to an exact audio, transcript, chapter, clip, or ad-plan revision, optionally at a playback instant or range.</p>
+              <h2>{{ workbench.production.reviewHeading }}</h2>
+              <p>{{ workbench.production.reviewIntro }}</p>
             </div>
-            <p class="podcast-admin__pill">Exact revision · audit safe</p>
+            <p class="podcast-admin__pill">{{ workbench.production.exactRevisionPill }}</p>
           </div>
           <div class="podcast-admin__callout">
-            <p>Open blockers and approval state feed the publication gate. Stale target revisions remain in history and cannot silently become current; the readiness panel always shows whether this environment observes or enforces the gate.</p>
+            <p>{{ workbench.production.reviewCallout }}</p>
           </div>
           <form class="podcast-admin__form" data-podcast-review-form>
             <div class="podcast-admin__field-grid">
-              <label>Episode
+              <label>{{ workbench.common.episode }}
                 <select name="episodeId" data-podcast-review-episode required></select>
               </label>
-              <label>Exact current target
+              <label>{{ workbench.production.exactTarget }}
                 <select name="target" data-podcast-review-target required></select>
               </label>
-              <label>Start in seconds (optional)
+              <label>{{ workbench.production.startOptional }}
                 <input name="startsAtSeconds" type="number" min="0" step="0.001">
               </label>
-              <label>End in seconds (optional)
+              <label>{{ workbench.production.endOptional }}
                 <input name="endsAtSeconds" type="number" min="0" step="0.001">
               </label>
             </div>
-            <label>Review note · español / English
+            <label>{{ workbench.production.reviewNote }}
               <textarea name="bodyText" rows="4" maxlength="4000" required></textarea>
             </label>
             <div class="podcast-admin__field-grid">
               <label class="podcast-admin__checkbox">
                 <input name="blocker" type="checkbox">
-                Mark as a release blocker
+                {{ workbench.production.markBlocker }}
               </label>
               <label class="podcast-admin__checkbox">
                 <input name="assignToSelf" type="checkbox">
-                Assign this note to me
+                {{ workbench.production.assignToMe }}
               </label>
             </div>
-            <button class="btn btn-danger" type="submit">Add review note</button>
+            <button class="btn btn-danger" type="submit">{{ workbench.production.addReview }}</button>
             <p class="podcast-admin__status" data-podcast-review-status role="status" aria-live="polite"></p>
           </form>
           <div class="podcast-admin__transcript-meta" data-podcast-review-readiness aria-live="polite"></div>
           <div class="podcast-admin__review-list" data-podcast-review-list></div>
           <div class="podcast-admin__panel-heading podcast-admin__section-heading">
             <div>
-              <h2>Publication readiness</h2>
-              <p>Inspect the immutable snapshot that Publish binds to the legacy checks and the fuller launch dependency graph.</p>
+              <h2>{{ workbench.production.readinessHeading }}</h2>
+              <p>{{ workbench.production.readinessIntro }}</p>
             </div>
-            <button class="btn btn-outline-light" type="button" data-podcast-readiness-refresh>Refresh snapshot</button>
+            <button class="btn btn-outline-light" type="button" data-podcast-readiness-refresh>{{ workbench.production.refreshSnapshot }}</button>
           </div>
           <div class="podcast-admin__callout">
-            <p>Publish refreshes this snapshot immediately before acting. Enforcement blocks stale or incomplete evidence; only a recently authenticated Admin or Super-admin can record a private, audited reason and explicitly override unresolved candidate blockers.</p>
+            <p>{{ workbench.production.readinessCallout }}</p>
           </div>
-          <section class="podcast-admin__readiness" data-podcast-publication-readiness aria-label="Publication readiness snapshot">
-            <p class="podcast-admin__transcript-meta" data-podcast-readiness-summary aria-live="polite">Choose a production-review episode to inspect readiness.</p>
+          <section class="podcast-admin__readiness" data-podcast-publication-readiness aria-label="{{ workbench.production.readinessAria }}">
+            <p class="podcast-admin__transcript-meta" data-podcast-readiness-summary aria-live="polite">{{ workbench.production.chooseReviewEpisode }}</p>
             <div class="podcast-admin__readiness-groups" data-podcast-readiness-groups></div>
             <p class="podcast-admin__status" data-podcast-readiness-status role="status" aria-live="polite"></p>
           </section>
           <div class="podcast-admin__panel-heading podcast-admin__section-heading">
             <div>
-              <h2>Clip factory</h2>
-              <p>Save a captioned audiogram recipe from an approved transcript range, then preview and download completed private renders.</p>
+              <h2>{{ workbench.production.clipsHeading }}</h2>
+              <p>{{ workbench.production.clipsIntro }}</p>
             </div>
-            <p class="podcast-admin__pill">Private evidence only</p>
+            <p class="podcast-admin__pill">{{ workbench.production.privatePill }}</p>
           </div>
           <div class="podcast-admin__callout">
-            <p>Segment-boundary clips are available first. Word-accurate cuts stay locked until the matching transcript alignment passes H1. Preparing a manifest does not publish a clip; completed private renders appear below for authenticated preview and download.</p>
+            <p>{{ workbench.production.clipsCallout }}</p>
           </div>
           <form class="podcast-admin__form" data-podcast-clip-form>
             <div class="podcast-admin__field-grid">
-              <label>Clip title
+              <label>{{ workbench.production.clipTitle }}
                 <input name="title" maxlength="160" required>
               </label>
-              <label>Format
+              <label>{{ workbench.production.format }}
                 <select name="aspectRatio">
-                  <option value="9:16">Vertical · 9:16</option>
-                  <option value="1:1">Square · 1:1</option>
-                  <option value="16:9">Landscape · 16:9</option>
+                  <option value="9:16">{{ workbench.production.vertical }}</option>
+                  <option value="1:1">{{ workbench.production.square }}</option>
+                  <option value="16:9">{{ workbench.production.landscape }}</option>
                 </select>
               </label>
-              <label>Start cue
+              <label>{{ workbench.production.startCue }}
                 <select name="startCueId" required></select>
               </label>
-              <label>End cue
+              <label>{{ workbench.production.endCue }}
                 <select name="endCueId" required></select>
               </label>
-              <label>Boundary precision
+              <label>{{ workbench.production.boundaryPrecision }}
                 <select name="boundaryMode" disabled>
-                  <option value="segment">Approved cue boundaries</option>
-                  <option value="word">Word boundaries · H1 locked</option>
+                  <option value="segment">{{ workbench.production.approvedCueBoundaries }}</option>
+                  <option value="word">{{ workbench.production.wordBoundariesLocked }}</option>
                 </select>
               </label>
-              <label>Template
+              <label>{{ workbench.production.template }}
                 <select name="templateId" disabled>
-                  <option value="captioned-waveform-v1">Captioned waveform v1</option>
+                  <option value="captioned-waveform-v1">{{ workbench.production.captionedWaveform }}</option>
                 </select>
               </label>
             </div>
             <div class="podcast-admin__clip-preview" data-podcast-clip-preview aria-live="polite"></div>
             <div class="podcast-admin__transcript-actions">
-              <button class="btn btn-outline-light" type="button" data-podcast-clip-new>New recipe</button>
-              <button class="btn btn-danger" type="submit">Save clip recipe</button>
-              <button class="btn btn-outline-light" type="button" data-podcast-clip-render>Prepare processor manifest</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-clip-new>{{ workbench.production.newRecipe }}</button>
+              <button class="btn btn-danger" type="submit">{{ workbench.production.saveClipRecipe }}</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-clip-render>{{ workbench.production.prepareManifest }}</button>
             </div>
             <p class="podcast-admin__status" data-podcast-clip-status role="status" aria-live="polite"></p>
           </form>
@@ -551,28 +553,24 @@ eleventyComputed:
         <section id="podcast-panel-distribution" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-distribution" hidden>
           <div class="podcast-admin__panel-heading">
             <div>
-              <h2>Streamlined publishing</h2>
-              <p>With just one click, we send your episodes live to 10+ platforms like Spotify, Apple and other major platforms.</p>
+              <h2>{{ workbench.distribution.heading }}</h2>
+              <p>{{ workbench.distribution.tagline }}</p>
             </div>
-            <p class="podcast-admin__pill">Publicación simplificada</p>
+            <p class="podcast-admin__pill">{{ workbench.distribution.pill }}</p>
           </div>
           <div class="podcast-admin__callout">
-            <p>One reviewed revision updates the canonical feed, News page, and YouTube job, then creates monitored ingestion states for every enabled directory. Each platform still requires one-time owner setup and controls its own RSS refresh timing.</p>
-            <p lang="es">Una revisión aprobada actualiza el feed canónico, la página de Noticias y el trabajo de YouTube, y después crea estados de seguimiento para cada directorio habilitado. Cada plataforma todavía requiere una configuración inicial del propietario y controla cuándo actualiza el RSS.</p>
-            <p>Producer, Admin, and Super-admin roles can explicitly retry a failed immutable root job without creating a new episode revision.</p>
-            <p lang="es">Los roles de Producción, Administración y Superadministración pueden reintentar explícitamente un trabajo raíz inmutable fallido sin crear otra revisión del episodio.</p>
-            <p>Once owner setup is complete, episode-level directory status requires an HTTPS listing or dashboard evidence link; unverified ingestion stays visible.</p>
-            <p lang="es">Después de completar la configuración del propietario, el estado del episodio en cada directorio requiere un enlace HTTPS de evidencia; la ingestión no verificada permanece visible.</p>
-            <p>Track the responsible account label, submission date, receipt/dashboard link, and operational notes here. Never paste a provider password or verification code.</p>
-            <p lang="es">Registra aquí la etiqueta de la cuenta responsable, la fecha de envío, el enlace del recibo o panel y las notas operativas. Nunca pegues una contraseña ni un código de verificación del proveedor.</p>
+            <p>{{ workbench.distribution.canonicalFlow }}</p>
+            <p>{{ workbench.distribution.retryFlow }}</p>
+            <p>{{ workbench.distribution.evidenceFlow }}</p>
+            <p>{{ workbench.distribution.credentialSafety }}</p>
           </div>
           <form class="podcast-admin__distribution-filter" data-podcast-distribution-filter>
-            <label>Release view
+            <label>{{ workbench.distribution.releaseView }}
               <select name="episodeId">
-                <option value="">Show setup and directory readiness</option>
+                <option value="">{{ workbench.distribution.showSetup }}</option>
               </select>
             </label>
-            <p>Choose a published or scheduled episode to inspect its exact RSS, News, YouTube, and per-directory states.</p>
+            <p>{{ workbench.distribution.filterHelp }}</p>
           </form>
           <div data-podcast-distribution aria-live="polite"></div>
         </section>
@@ -580,116 +578,116 @@ eleventyComputed:
         <section id="podcast-panel-marketing" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-marketing" hidden>
           <div class="podcast-admin__panel-heading">
             <div>
-              <h2>Clip library</h2>
-              <p>Find completed captioned clips across the selected show, then preview or download the exact private render.</p>
+              <h2>{{ workbench.marketing.clipLibraryHeading }}</h2>
+              <p>{{ workbench.marketing.clipLibraryIntro }}</p>
             </div>
-            <p class="podcast-admin__pill">Private media</p>
+            <p class="podcast-admin__pill">{{ workbench.marketing.privateMedia }}</p>
           </div>
           <form class="podcast-admin__form" data-podcast-clip-library-filters>
             <div class="podcast-admin__field-grid">
-              <label>Episode
+              <label>{{ workbench.common.episode }}
                 <select name="episodeId">
-                  <option value="">All episodes</option>
+                  <option value="">{{ workbench.marketing.allEpisodes }}</option>
                 </select>
               </label>
-              <label>Format
+              <label>{{ workbench.marketing.format }}
                 <select name="aspectRatio">
-                  <option value="">All formats</option>
-                  <option value="9:16">Vertical · 9:16</option>
-                  <option value="1:1">Square · 1:1</option>
-                  <option value="16:9">Landscape · 16:9</option>
+                  <option value="">{{ workbench.marketing.allFormats }}</option>
+                  <option value="9:16">{{ workbench.marketing.vertical }}</option>
+                  <option value="1:1">{{ workbench.marketing.square }}</option>
+                  <option value="16:9">{{ workbench.marketing.landscape }}</option>
                 </select>
               </label>
-              <label>Render state
+              <label>{{ workbench.marketing.renderState }}
                 <select name="renderStatus">
-                  <option value="ready">Ready</option>
-                  <option value="queued">Queued</option>
-                  <option value="rendering">Rendering</option>
-                  <option value="failed">Failed</option>
-                  <option value="all">All states</option>
+                  <option value="ready">{{ workbench.marketing.ready }}</option>
+                  <option value="queued">{{ workbench.marketing.queued }}</option>
+                  <option value="rendering">{{ workbench.marketing.rendering }}</option>
+                  <option value="failed">{{ workbench.marketing.failed }}</option>
+                  <option value="all">{{ workbench.marketing.allStates }}</option>
                 </select>
               </label>
             </div>
-            <button class="btn btn-outline-light" type="submit">Refresh library</button>
+            <button class="btn btn-outline-light" type="submit">{{ workbench.marketing.refreshLibrary }}</button>
             <p class="podcast-admin__status" data-podcast-clip-library-status role="status" aria-live="polite"></p>
           </form>
           <div class="podcast-admin__clip-list" data-podcast-clip-library></div>
           <form class="podcast-admin__form" data-podcast-clip-youtube-form hidden>
             <div class="podcast-admin__panel-heading">
               <div>
-                <h3>Controlled YouTube test</h3>
+                <h3>{{ workbench.marketing.youtubeHeading }}</h3>
                 <p data-podcast-clip-youtube-meta></p>
               </div>
-              <p class="podcast-admin__pill">Never public</p>
+              <p class="podcast-admin__pill">{{ workbench.marketing.neverPublic }}</p>
             </div>
             <div class="podcast-admin__callout">
-              <p>Preparing a draft cannot upload. Approval requires a recently authenticated super-admin; dry-run is the default, and a real private/unlisted upload additionally requires the explicit staging controlled-test gate.</p>
+              <p>{{ workbench.marketing.youtubeCallout }}</p>
             </div>
             <div class="podcast-admin__field-grid">
-              <label>Video title
+              <label>{{ workbench.marketing.videoTitle }}
                 <input name="title" maxlength="100" required>
               </label>
-              <label>Visibility
+              <label>{{ workbench.marketing.visibility }}
                 <select name="privacyStatus">
-                  <option value="unlisted">Unlisted</option>
-                  <option value="private">Private</option>
+                  <option value="unlisted">{{ workbench.marketing.unlisted }}</option>
+                  <option value="private">{{ workbench.marketing.private }}</option>
                 </select>
               </label>
-              <label class="podcast-admin__field-wide">Description
+              <label class="podcast-admin__field-wide">{{ workbench.marketing.description }}
                 <textarea name="description" maxlength="5000" rows="5"></textarea>
               </label>
-              <label class="podcast-admin__field-wide">Confirm exact channel URL
+              <label class="podcast-admin__field-wide">{{ workbench.marketing.confirmChannel }}
                 <input name="confirmChannelUrl" type="url" inputmode="url" required>
               </label>
             </div>
             <div class="podcast-admin__clip-actions">
-              <button class="btn btn-outline-light" type="submit" data-podcast-clip-youtube-save>Prepare draft</button>
-              <button class="btn btn-danger" type="button" data-podcast-clip-youtube-approve hidden>Approve controlled test</button>
-              <button class="btn btn-outline-light" type="button" data-podcast-clip-youtube-close>Close</button>
+              <button class="btn btn-outline-light" type="submit" data-podcast-clip-youtube-save>{{ workbench.marketing.prepareDraft }}</button>
+              <button class="btn btn-danger" type="button" data-podcast-clip-youtube-approve hidden>{{ workbench.marketing.approveTest }}</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-clip-youtube-close>{{ workbench.marketing.close }}</button>
             </div>
             <p class="podcast-admin__status" data-podcast-clip-youtube-status role="status" aria-live="polite"></p>
           </form>
           <form class="podcast-admin__form" data-podcast-marketing-link-form>
             <div class="podcast-admin__panel-heading">
               <div>
-                <h3>Canonical share kit</h3>
-                <p>Build a Pool-style tagged show link and downloadable QR assets locally in this browser.</p>
+                <h3>{{ workbench.marketing.shareKitHeading }}</h3>
+                <p>{{ workbench.marketing.shareKitIntro }}</p>
               </div>
-              <p class="podcast-admin__pill">No server writes</p>
+              <p class="podcast-admin__pill">{{ workbench.marketing.noServerWrites }}</p>
             </div>
             <div class="podcast-admin__field-grid podcast-admin__field-grid--three">
-              <label>Source
+              <label>{{ workbench.marketing.source }}
                 <input name="source" maxlength="160" value="podcast">
               </label>
-              <label>Medium
+              <label>{{ workbench.marketing.medium }}
                 <input name="medium" maxlength="160" value="owned">
               </label>
-              <label>Campaign
+              <label>{{ workbench.marketing.campaign }}
                 <input name="campaign" maxlength="160">
               </label>
-              <label>Content
+              <label>{{ workbench.marketing.content }}
                 <input name="content" maxlength="160" placeholder="launch-card">
               </label>
-              <label>Referral
+              <label>{{ workbench.marketing.referral }}
                 <input name="ref" maxlength="64" placeholder="partner-name">
               </label>
-              <label class="podcast-admin__field-wide">Tagged canonical URL
+              <label class="podcast-admin__field-wide">{{ workbench.marketing.taggedUrl }}
                 <input name="taggedUrl" type="url" readonly>
               </label>
             </div>
             <div class="podcast-admin__marketing-preview">
               <div data-podcast-marketing-qr aria-live="polite"></div>
               <div>
-                <p class="podcast-admin__pill">Share preview</p>
+                <p class="podcast-admin__pill">{{ workbench.marketing.sharePreview }}</p>
                 <h4 data-podcast-marketing-preview-title></h4>
                 <p data-podcast-marketing-preview-url></p>
               </div>
             </div>
             <div class="podcast-admin__clip-actions">
-              <button class="btn btn-outline-light" type="button" data-podcast-marketing-copy>Copy link</button>
-              <button class="btn btn-outline-light" type="button" data-podcast-marketing-share>Share</button>
-              <button class="btn btn-outline-light" type="button" data-podcast-marketing-qr-png>Download QR PNG</button>
-              <button class="btn btn-outline-light" type="button" data-podcast-marketing-qr-svg>Download QR SVG</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-marketing-copy>{{ workbench.marketing.copyLink }}</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-marketing-share>{{ workbench.marketing.share }}</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-marketing-qr-png>{{ workbench.marketing.downloadQrPng }}</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-marketing-qr-svg>{{ workbench.marketing.downloadQrSvg }}</button>
             </div>
             <p class="podcast-admin__status" data-podcast-marketing-link-status role="status" aria-live="polite"></p>
           </form>
@@ -697,24 +695,24 @@ eleventyComputed:
           <form class="podcast-admin__form" data-podcast-embed-form>
             <div class="podcast-admin__panel-heading">
               <div>
-                <h3>Portable episode player</h3>
-                <p>Generate a Pool-style iframe for a public episode using the same player and download control as its canonical News page.</p>
+                <h3>{{ workbench.marketing.playerHeading }}</h3>
+                <p>{{ workbench.marketing.playerIntro }}</p>
               </div>
-              <p class="podcast-admin__pill">No server writes</p>
+              <p class="podcast-admin__pill">{{ workbench.marketing.noServerWrites }}</p>
             </div>
             <div class="podcast-admin__callout">
-              <p>Only published, publicly released revisions are eligible. The iframe page is noindex, loads self-hosted assets, and links listeners back to the canonical News page.</p>
+              <p>{{ workbench.marketing.playerCallout }}</p>
             </div>
             <div class="podcast-admin__field-grid">
-              <label>Episode
+              <label>{{ workbench.common.episode }}
                 <select name="episodeId" data-podcast-embed-episode>
-                  <option value="">No public episodes available</option>
+                  <option value="">{{ workbench.marketing.noPublicEpisodes }}</option>
                 </select>
               </label>
-              <label class="podcast-admin__field-wide">Embed URL
+              <label class="podcast-admin__field-wide">{{ workbench.marketing.embedUrl }}
                 <input name="embedUrl" type="url" readonly aria-readonly="true">
               </label>
-              <label class="podcast-admin__field-wide">Embed code
+              <label class="podcast-admin__field-wide">{{ workbench.marketing.embedCode }}
                 <textarea
                   name="embedCode"
                   rows="6"
@@ -724,13 +722,13 @@ eleventyComputed:
                   aria-describedby="podcast-embed-help podcast-embed-status"></textarea>
               </label>
             </div>
-            <p id="podcast-embed-help" class="podcast-admin__help">Paste the generated iframe into a page where you want the episode player to appear.</p>
+            <p id="podcast-embed-help" class="podcast-admin__help">{{ workbench.marketing.embedHelp }}</p>
             <div class="podcast-admin__clip-actions">
-              <button class="btn btn-outline-light" type="button" data-podcast-embed-copy disabled>Copy embed code</button>
-              <a class="btn btn-outline-light" href="#" target="_blank" rel="noopener noreferrer" data-podcast-embed-open hidden>Open player page</a>
+              <button class="btn btn-outline-light" type="button" data-podcast-embed-copy disabled>{{ workbench.marketing.copyEmbed }}</button>
+              <a class="btn btn-outline-light" href="#" target="_blank" rel="noopener noreferrer" data-podcast-embed-open hidden>{{ workbench.marketing.openPlayer }}</a>
             </div>
             <div class="podcast-admin__embed-preview" data-podcast-embed-preview hidden>
-              <p class="podcast-admin__field-label">Live preview</p>
+              <p class="podcast-admin__field-label">{{ workbench.marketing.livePreview }}</p>
             </div>
             <p id="podcast-embed-status" class="podcast-admin__status" data-podcast-embed-status role="status" aria-live="polite"></p>
           </form>
@@ -738,29 +736,29 @@ eleventyComputed:
           <form class="podcast-admin__form" data-podcast-share-card-form>
             <div class="podcast-admin__panel-heading">
               <div>
-                <h3>Episode social card</h3>
-                <p>Preview and download the 1200×630 crawler-safe PNG generated from the show artwork and public episode revision.</p>
+                <h3>{{ workbench.marketing.cardHeading }}</h3>
+                <p>{{ workbench.marketing.cardIntro }}</p>
               </div>
-              <p class="podcast-admin__pill">Build-time asset</p>
+              <p class="podcast-admin__pill">{{ workbench.marketing.buildTimeAsset }}</p>
             </div>
             <div class="podcast-admin__callout">
-              <p>The card uses the same public-release gate as the embed and becomes the canonical News page’s Open Graph image. Generation uses the existing static build and shared Pool-characterized SVG primitive—no image SaaS or browser upload.</p>
+              <p>{{ workbench.marketing.cardCallout }}</p>
             </div>
             <div class="podcast-admin__field-grid">
-              <label>Episode
+              <label>{{ workbench.common.episode }}
                 <select name="episodeId" data-podcast-share-card-episode>
-                  <option value="">No public episodes available</option>
+                  <option value="">{{ workbench.marketing.noPublicEpisodes }}</option>
                 </select>
               </label>
-              <label class="podcast-admin__field-wide">Social-card URL
+              <label class="podcast-admin__field-wide">{{ workbench.marketing.socialCardUrl }}
                 <input name="shareCardUrl" type="url" readonly aria-readonly="true">
               </label>
             </div>
             <div class="podcast-admin__share-card-preview" data-podcast-share-card-preview hidden></div>
             <div class="podcast-admin__clip-actions">
-              <button class="btn btn-outline-light" type="button" data-podcast-share-card-copy disabled>Copy image URL</button>
-              <a class="btn btn-outline-light" href="#" download data-podcast-share-card-download hidden>Download PNG</a>
-              <a class="btn btn-outline-light" href="#" target="_blank" rel="noopener noreferrer" data-podcast-share-card-open hidden>Open image</a>
+              <button class="btn btn-outline-light" type="button" data-podcast-share-card-copy disabled>{{ workbench.marketing.copyImageUrl }}</button>
+              <a class="btn btn-outline-light" href="#" download data-podcast-share-card-download hidden>{{ workbench.marketing.downloadPng }}</a>
+              <a class="btn btn-outline-light" href="#" target="_blank" rel="noopener noreferrer" data-podcast-share-card-open hidden>{{ workbench.marketing.openImage }}</a>
             </div>
             <p class="podcast-admin__status" data-podcast-share-card-status role="status" aria-live="polite"></p>
           </form>
@@ -768,39 +766,39 @@ eleventyComputed:
           <form class="podcast-admin__form" data-podcast-announcement-form>
             <div class="podcast-admin__panel-heading">
               <div>
-                <h3>Episode announcement review</h3>
-                <p>Compose with the shared Pool/Store editor and review the exact, consented audience projection.</p>
+                <h3>{{ workbench.marketing.announcementHeading }}</h3>
+                <p>{{ workbench.marketing.announcementIntro }}</p>
               </div>
-              <p class="podcast-admin__pill">Review only</p>
+              <p class="podcast-admin__pill">{{ workbench.marketing.reviewOnly }}</p>
             </div>
             <div class="podcast-admin__callout">
-              <p>This checkpoint has no send route. It cannot call Resend. Eligibility requires an explicit show-level opt-in in the listener account plus an active subscription.</p>
+              <p>{{ workbench.marketing.announcementCallout }}</p>
             </div>
             <div class="podcast-admin__field-grid">
-              <label>Language
+              <label>{{ workbench.marketing.language }}
                 <select name="language">
-                  <option value="es">Español</option>
-                  <option value="en">English</option>
+                  <option value="es">{{ workbench.common.spanish }}</option>
+                  <option value="en">{{ workbench.common.english }}</option>
                 </select>
               </label>
-              <label>Subject
+              <label>{{ workbench.marketing.subject }}
                 <input name="subject" maxlength="160" required>
               </label>
-              <label class="podcast-admin__field-wide">Heading
+              <label class="podcast-admin__field-wide">{{ workbench.marketing.heading }}
                 <input name="heading" maxlength="160">
               </label>
               <div class="podcast-admin__field-wide">
-                <span class="podcast-admin__field-label">Announcement content</span>
+                <span class="podcast-admin__field-label">{{ workbench.marketing.announcementContent }}</span>
                 <div data-podcast-announcement-editor></div>
               </div>
-              <label>CTA label
+              <label>{{ workbench.marketing.ctaLabel }}
                 <input name="ctaLabel" maxlength="80">
               </label>
-              <label>CTA URL
+              <label>{{ workbench.marketing.ctaUrl }}
                 <input name="ctaUrl" type="url" maxlength="2048">
               </label>
             </div>
-            <button class="btn btn-danger" type="submit">Run audience dry-run</button>
+            <button class="btn btn-danger" type="submit">{{ workbench.marketing.audienceDryRun }}</button>
             <p class="podcast-admin__status" data-podcast-announcement-status role="status" aria-live="polite"></p>
             <div class="podcast-admin__announcement-review" data-podcast-announcement-review aria-live="polite"></div>
           </form>
@@ -809,172 +807,172 @@ eleventyComputed:
         <section id="podcast-panel-sponsors" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-sponsors" hidden>
           <div class="podcast-admin__panel-heading">
             <div>
-              <h2>Sponsor decision preview</h2>
-              <p>Evaluate Dust Wave promos and directly sold sponsors against a specific listening context.</p>
+              <h2>{{ workbench.sponsors.heading }}</h2>
+              <p>{{ workbench.sponsors.intro }}</p>
             </div>
-            <p class="podcast-admin__pill">Preview only</p>
+            <p class="podcast-admin__pill">{{ workbench.sponsors.previewOnly }}</p>
           </div>
           <div class="podcast-admin__callout">
-            <p>This tool reads current targeting and media-readiness state. It cannot insert an ad, create an impression, or change the public episode file.</p>
+            <p>{{ workbench.sponsors.callout }}</p>
           </div>
           <form class="podcast-admin__form" data-podcast-campaign-form>
-            <h3>New campaign draft</h3>
-            <p>Campaigns remain unapproved until compatible creative audio is validated. Creating or editing a campaign cannot enable playback.</p>
+            <h3>{{ workbench.sponsors.newCampaign }}</h3>
+            <p>{{ workbench.sponsors.campaignIntro }}</p>
             <div class="podcast-admin__field-grid">
-              <label>Campaign name
+              <label>{{ workbench.sponsors.campaignName }}
                 <input name="name" required>
               </label>
-              <label>Type
+              <label>{{ workbench.sponsors.type }}
                 <select name="campaignType">
-                  <option value="house">Dust Wave promo</option>
-                  <option value="direct">Direct sponsor</option>
+                  <option value="house">{{ workbench.sponsors.house }}</option>
+                  <option value="direct">{{ workbench.sponsors.direct }}</option>
                 </select>
               </label>
-              <label data-direct-sponsor-field hidden>Sponsor name
+              <label data-direct-sponsor-field hidden>{{ workbench.sponsors.sponsorName }}
                 <input name="sponsorName">
               </label>
-              <label data-direct-sponsor-field hidden>Sponsor website
+              <label data-direct-sponsor-field hidden>{{ workbench.sponsors.sponsorWebsite }}
                 <input name="sponsorWebsiteUrl" type="url" inputmode="url">
               </label>
-              <label>Starts
+              <label>{{ workbench.sponsors.starts }}
                 <input name="startsAt" type="datetime-local" required>
               </label>
-              <label>Ends
+              <label>{{ workbench.sponsors.ends }}
                 <input name="endsAt" type="datetime-local">
               </label>
-              <label>Episode target
+              <label>{{ workbench.sponsors.episodeTarget }}
                 <select name="episodeId">
-                  <option value="">All episodes in this show</option>
+                  <option value="">{{ workbench.sponsors.allEpisodes }}</option>
                 </select>
               </label>
-              <label>Position
+              <label>{{ workbench.sponsors.position }}
                 <select name="position">
-                  <option value="">All positions</option>
-                  <option value="pre">Pre-roll</option>
-                  <option value="mid">Mid-roll</option>
-                  <option value="post">Post-roll</option>
+                  <option value="">{{ workbench.sponsors.allPositions }}</option>
+                  <option value="pre">{{ workbench.common.preRoll }}</option>
+                  <option value="mid">{{ workbench.common.midRoll }}</option>
+                  <option value="post">{{ workbench.common.postRoll }}</option>
                 </select>
               </label>
-              <label>Podcast app
+              <label>{{ workbench.sponsors.podcastApp }}
                 <select name="appName">
-                  <option value="">All apps</option>
+                  <option value="">{{ workbench.sponsors.allApps }}</option>
                   <option value="apple_podcasts">Apple Podcasts</option>
                   <option value="spotify">Spotify</option>
                   <option value="pocket_casts">Pocket Casts</option>
                   <option value="overcast">Overcast</option>
                   <option value="podcast_addict">Podcast Addict</option>
-                  <option value="browser">Dust Wave web player</option>
+                  <option value="browser">{{ workbench.sponsors.webPlayer }}</option>
                 </select>
               </label>
-              <label>Device
+              <label>{{ workbench.sponsors.device }}
                 <select name="deviceType">
-                  <option value="">All devices</option>
-                  <option value="mobile">Mobile</option>
-                  <option value="tablet">Tablet</option>
-                  <option value="desktop">Desktop</option>
-                  <option value="smart_speaker">Smart speaker</option>
-                  <option value="unknown">Unknown</option>
+                  <option value="">{{ workbench.sponsors.allDevices }}</option>
+                  <option value="mobile">{{ workbench.sponsors.mobile }}</option>
+                  <option value="tablet">{{ workbench.sponsors.tablet }}</option>
+                  <option value="desktop">{{ workbench.sponsors.desktop }}</option>
+                  <option value="smart_speaker">{{ workbench.sponsors.smartSpeaker }}</option>
+                  <option value="unknown">{{ workbench.sponsors.unknown }}</option>
                 </select>
               </label>
-              <label>Priority
+              <label>{{ workbench.sponsors.priority }}
                 <input name="priority" type="number" min="-1000" max="1000" value="0">
               </label>
-              <label>Pacing
+              <label>{{ workbench.sponsors.pacing }}
                 <select name="pacingStrategy">
-                  <option value="even">Even</option>
-                  <option value="asap">As soon as possible</option>
-                  <option value="manual">Manual</option>
+                  <option value="even">{{ workbench.sponsors.even }}</option>
+                  <option value="asap">{{ workbench.sponsors.asap }}</option>
+                  <option value="manual">{{ workbench.sponsors.manual }}</option>
                 </select>
               </label>
-              <label>Hard impression cap
+              <label>{{ workbench.sponsors.hardCap }}
                 <input name="impressionCap" type="number" min="1">
               </label>
-              <label>Qualified-impression goal
+              <label>{{ workbench.sponsors.qualifiedGoal }}
                 <input name="qualifiedImpressionGoal" type="number" min="1">
               </label>
-              <label data-direct-sponsor-field hidden>Billing model
+              <label data-direct-sponsor-field hidden>{{ workbench.sponsors.billingModel }}
                 <select name="billingModel">
-                  <option value="flat_fee">Flat fee</option>
+                  <option value="flat_fee">{{ workbench.sponsors.flatFee }}</option>
                   <option value="cpm">CPM</option>
                 </select>
               </label>
-              <label data-direct-sponsor-field hidden>Contract amount (USD)
+              <label data-direct-sponsor-field hidden>{{ workbench.sponsors.contractAmount }}
                 <input name="contractAmount" type="number" min="0" step="0.01">
               </label>
-              <label data-direct-sponsor-field hidden>CPM (USD)
+              <label data-direct-sponsor-field hidden>{{ workbench.sponsors.cpm }}
                 <input name="cpm" type="number" min="0" step="0.01">
               </label>
             </div>
-            <button class="btn btn-outline-light" type="submit">Create draft campaign</button>
+            <button class="btn btn-outline-light" type="submit">{{ workbench.sponsors.createCampaign }}</button>
             <p class="podcast-admin__status" data-podcast-campaign-status role="status" aria-live="polite"></p>
           </form>
           <div class="podcast-admin__campaign-list" data-podcast-campaign-list></div>
 
           <form class="podcast-admin__form" data-podcast-creative-form hidden>
-            <h3>Creative audio</h3>
-            <p>Upload one MP3, verify every frame against the launch stream profile, and return the campaign to draft for review.</p>
+            <h3>{{ workbench.sponsors.creativeHeading }}</h3>
+            <p>{{ workbench.sponsors.creativeIntro }}</p>
             <div class="podcast-admin__field-grid">
-              <label>Campaign
+              <label>{{ workbench.sponsors.campaign }}
                 <select name="campaignId" required></select>
               </label>
-              <label>Creative name
+              <label>{{ workbench.sponsors.creativeName }}
                 <input name="name" required>
               </label>
-              <label>Declared duration (seconds)
+              <label>{{ workbench.sponsors.declaredDuration }}
                 <input name="durationSeconds" type="number" min="1" max="600" required>
               </label>
-              <label>Selection weight
+              <label>{{ workbench.sponsors.selectionWeight }}
                 <input name="weight" type="number" min="1" max="1000000" value="1" required>
               </label>
             </div>
-            <label>MP3 file
+            <label>{{ workbench.sponsors.mp3File }}
               <input name="audio" type="file" accept=".mp3,audio/mpeg" required>
             </label>
             <progress data-podcast-creative-progress max="3" value="0" hidden></progress>
-            <button class="btn btn-outline-light" type="submit">Upload and validate creative</button>
+            <button class="btn btn-outline-light" type="submit">{{ workbench.sponsors.uploadCreative }}</button>
             <p class="podcast-admin__status" data-podcast-creative-status role="status" aria-live="polite"></p>
           </form>
 
           <form class="podcast-admin__form" data-podcast-sponsor-preview-form>
             <div class="podcast-admin__field-grid">
-              <label>Episode
+              <label>{{ workbench.common.episode }}
                 <select name="episodeId" required></select>
               </label>
-              <label>Position
+              <label>{{ workbench.sponsors.position }}
                 <select name="position">
-                  <option value="pre">Pre-roll</option>
-                  <option value="mid" selected>Mid-roll</option>
-                  <option value="post">Post-roll</option>
+                  <option value="pre">{{ workbench.common.preRoll }}</option>
+                  <option value="mid" selected>{{ workbench.common.midRoll }}</option>
+                  <option value="post">{{ workbench.common.postRoll }}</option>
                 </select>
               </label>
-              <label>Podcast app
+              <label>{{ workbench.sponsors.podcastApp }}
                 <select name="appName">
                   <option value="apple_podcasts">Apple Podcasts</option>
                   <option value="spotify">Spotify</option>
                   <option value="pocket_casts">Pocket Casts</option>
                   <option value="overcast">Overcast</option>
                   <option value="podcast_addict">Podcast Addict</option>
-                  <option value="browser">Dust Wave web player</option>
-                  <option value="unknown">Unknown</option>
+                  <option value="browser">{{ workbench.sponsors.webPlayer }}</option>
+                  <option value="unknown">{{ workbench.sponsors.unknown }}</option>
                 </select>
               </label>
-              <label>Device
+              <label>{{ workbench.sponsors.device }}
                 <select name="deviceType">
-                  <option value="mobile">Mobile</option>
-                  <option value="tablet">Tablet</option>
-                  <option value="desktop">Desktop</option>
-                  <option value="smart_speaker">Smart speaker</option>
-                  <option value="unknown">Unknown</option>
+                  <option value="mobile">{{ workbench.sponsors.mobile }}</option>
+                  <option value="tablet">{{ workbench.sponsors.tablet }}</option>
+                  <option value="desktop">{{ workbench.sponsors.desktop }}</option>
+                  <option value="smart_speaker">{{ workbench.sponsors.smartSpeaker }}</option>
+                  <option value="unknown">{{ workbench.sponsors.unknown }}</option>
                 </select>
               </label>
-              <label>Stream profile
+              <label>{{ workbench.sponsors.streamProfile }}
                 <input name="streamProfile" value="mp3-44100-stereo-cbr128-frame-v1" required>
               </label>
-              <label>Decision time
+              <label>{{ workbench.sponsors.decisionTime }}
                 <input name="at" type="datetime-local">
               </label>
             </div>
-            <button class="btn btn-danger" type="submit">Preview decision</button>
+            <button class="btn btn-danger" type="submit">{{ workbench.sponsors.previewDecision }}</button>
             <p class="podcast-admin__status" data-podcast-sponsor-status role="status" aria-live="polite"></p>
           </form>
           <div data-podcast-sponsor-preview-result aria-live="polite"></div>
@@ -983,22 +981,22 @@ eleventyComputed:
         <section id="podcast-panel-analytics" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-analytics" hidden>
           <div class="podcast-admin__panel-heading">
             <div>
-              <h2>Analytics</h2>
-              <p>Methodology-versioned first-party evidence for <strong data-podcast-reconciliation-show>this show</strong>.</p>
+              <h2>{{ workbench.analytics.heading }}</h2>
+              <p>{{ workbench.analytics.introBefore }} <strong data-podcast-reconciliation-show>{{ workbench.analytics.thisShow }}</strong>.</p>
             </div>
-            <button class="btn btn-outline-light" type="button" data-podcast-reconciliation-refresh>Refresh</button>
+            <button class="btn btn-outline-light" type="button" data-podcast-reconciliation-refresh>{{ workbench.common.refresh }}</button>
           </div>
           <div class="podcast-admin__metric-grid">
-            <article><strong>—</strong><span>Qualified downloads</span></article>
-            <article><strong>—</strong><span>Engaged plays</span></article>
-            <article><strong>—</strong><span>Premium listeners</span></article>
-            <article><strong data-podcast-qualified-sponsor-deliveries>—</strong><span>Qualified sponsor deliveries</span></article>
-            <article><strong data-podcast-reconciliation-differences>—</strong><span>Counter discrepancies</span></article>
-            <article><strong data-podcast-campaigns-at-cap>—</strong><span>Campaigns at cap</span></article>
+            <article><strong>—</strong><span>{{ workbench.analytics.qualifiedDownloads }}</span></article>
+            <article><strong>—</strong><span>{{ workbench.analytics.engagedPlays }}</span></article>
+            <article><strong>—</strong><span>{{ workbench.analytics.premiumListeners }}</span></article>
+            <article><strong data-podcast-qualified-sponsor-deliveries>—</strong><span>{{ workbench.analytics.qualifiedSponsorDeliveries }}</span></article>
+            <article><strong data-podcast-reconciliation-differences>—</strong><span>{{ workbench.analytics.counterDiscrepancies }}</span></article>
+            <article><strong data-podcast-campaigns-at-cap>—</strong><span>{{ workbench.analytics.campaignsAtCap }}</span></article>
           </div>
           <div class="podcast-admin__callout" data-podcast-reconciliation-methodology>
-            <p>Download, engagement, and premium-listener metrics remain blank—not zero—until their first-party observation methods ship.</p>
-            <p>Qualified sponsor delivery counts only a completed decision slot after a trusted observer confirms delivery of the full snapshotted creative byte threshold.</p>
+            <p>{{ workbench.analytics.methodologyPending }}</p>
+            <p>{{ workbench.analytics.sponsorMethodology }}</p>
           </div>
           <p class="podcast-admin__status" data-podcast-reconciliation-status role="status" aria-live="polite"></p>
           <div data-podcast-reconciliation></div>

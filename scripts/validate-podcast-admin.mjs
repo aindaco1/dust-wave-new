@@ -23,6 +23,44 @@ const adminStyles = await readFile(
   path.join(repositoryRoot, 'src/scss/themes/base/_podcast-admin.scss'),
   'utf8'
 );
+const englishI18n = JSON.parse(
+  await readFile(path.join(repositoryRoot, 'src/_data/i18n/en.json'), 'utf8')
+);
+const spanishI18n = JSON.parse(
+  await readFile(path.join(repositoryRoot, 'src/_data/i18n/es.json'), 'utf8')
+);
+const englishWorkbench = englishI18n.podcast.admin.workbench;
+const spanishWorkbench = spanishI18n.podcast.admin.workbench;
+const englishWorkbenchText = JSON.stringify(englishWorkbench);
+const allowedProductNames = [
+  'Apple Podcasts',
+  'CPM',
+  'Overcast',
+  'Pocket Casts',
+  'Podcast Addict',
+  'Pool',
+  'Spotify',
+  'Stripe',
+  'WhisperX 3.8.6'
+];
+const templateMarkup = adminTemplate.slice(adminTemplate.indexOf('<div'));
+const hardcodedVisibleText = [
+  ...new Set(
+    templateMarkup
+      .replace(/\{\{[\s\S]*?\}\}/g, '\n')
+      .replace(/\{%[\s\S]*?%\}/g, '\n')
+      .replace(/<[^>]*>/gs, '\n')
+      .split('\n')
+      .map((value) => value.trim())
+      .filter((value) => /\p{L}/u.test(value))
+  )
+].sort();
+
+assert.deepEqual(
+  hardcodedVisibleText,
+  allowedProductNames,
+  'Podcast admin visible copy must come from the bilingual i18n dictionaries'
+);
 const gulpfile = await readFile(path.join(repositoryRoot, 'gulpfile.js'), 'utf8');
 const sharedRoot = path.join(
   repositoryRoot,
@@ -54,78 +92,93 @@ assert.match(adminTemplate, /data-tab="subscribers"/);
 assert.match(adminTemplate, /data-podcast-subscribers-filters/);
 assert.match(adminTemplate, /data-podcast-subscribers-export/);
 assert.match(adminTemplate, /data-podcast-subscribers-more/);
-assert.match(adminTemplate, /With just one click, we send your episodes live to 10\+ platforms/);
-assert.match(adminTemplate, /Each platform still requires one-time owner setup/);
-assert.match(adminTemplate, /lang="es"/);
+assert.match(adminTemplate, /workbench\.distribution\.tagline/);
+assert.equal(
+  englishWorkbench.distribution.tagline,
+  'With just one click, we send your episodes live to 10+ platforms like Spotify, Apple and other major platforms.'
+);
+assert.match(
+  spanishWorkbench.distribution.tagline,
+  /más de 10 plataformas/
+);
+assert.match(
+  englishWorkbench.distribution.canonicalFlow,
+  /Each platform still requires one-time owner setup/
+);
+assert.doesNotMatch(adminTemplate, /<p lang="es">/);
+assert.doesNotMatch(adminTemplate, /Publicación simplificada/);
 assert.match(adminTemplate, /data-podcast-distribution-filter/);
-assert.match(adminTemplate, /exact RSS, News, YouTube, and per-directory states/);
+assert.match(
+  englishWorkbench.distribution.filterHelp,
+  /exact RSS, News, YouTube, and per-directory states/
+);
 assert.match(adminTemplate, /data-tab="production"/);
 assert.match(adminTemplate, /data-podcast-audio-qc/);
 assert.match(adminTemplate, /data-podcast-audio-qc-queue/);
 assert.match(adminTemplate, /data-podcast-audio-qc-policy-form/);
-assert.match(adminTemplate, /Admin and Super-admin changes apply only to future QC runs/);
-assert.match(adminTemplate, /Measure the immutable source/);
-assert.match(adminTemplate, /never overwrites audio or publishes an episode/);
+assert.match(englishWorkbenchText, /Admin and Super-admin changes apply only to future QC runs/);
+assert.match(englishWorkbenchText, /Measure the immutable source/);
+assert.match(englishWorkbenchText, /never overwrites audio or publishes an episode/);
 assert.match(adminTemplate, /data-podcast-audio-master/);
 assert.match(adminTemplate, /data-podcast-audio-master-approval/);
 assert.match(adminTemplate, /data-podcast-audio-enhancement-form/);
 assert.match(adminTemplate, /data-podcast-audio-enhancement-results/);
-assert.match(adminTemplate, /An enhancement preview is never a master/);
-assert.match(adminTemplate, /Replacing an approved master makes transcript, chapter, clip, and readiness approvals stale/);
+assert.match(englishWorkbenchText, /An enhancement preview is never a master/);
+assert.match(englishWorkbenchText, /Replacing an approved master makes transcript, chapter, clip, and readiness approvals stale/);
 assert.match(adminTemplate, /data-podcast-transcript-workbench/);
 assert.match(adminTemplate, /data-podcast-transcription-workbench/);
 assert.match(adminTemplate, /data-podcast-transcription-queue/);
-assert.match(adminTemplate, /Source-language transcription/);
+assert.match(englishWorkbenchText, /Source-language transcription/);
 assert.match(adminTemplate, /name="sourceLanguage"/);
 assert.match(adminTemplate, /data-podcast-transcript-cues/);
 assert.match(adminTemplate, /data-podcast-transcript-pages/);
-assert.match(adminTemplate, /Word timing gated/);
+assert.match(englishWorkbenchText, /Word timing gated/);
 assert.match(adminTemplate, /data-podcast-alignment/);
 assert.match(adminTemplate, /data-podcast-alignment-adapter/);
-assert.match(adminTemplate, /matching bilingual benchmark/);
+assert.match(englishWorkbenchText, /matching bilingual benchmark/);
 assert.match(adminTemplate, /data-podcast-benchmark-form/);
 assert.match(adminTemplate, /data-podcast-benchmark-refresh/);
-assert.match(adminTemplate, /raw file remains private and content-addressed/);
+assert.match(englishWorkbenchText, /raw file remains private and content-addressed/);
 assert.match(adminTemplate, /data-podcast-chapter-workbench/);
 assert.match(adminTemplate, /data-podcast-chapter-rows/);
-assert.match(adminTemplate, /Podcasting 2\.0 feeds/);
+assert.match(englishWorkbenchText, /Podcasting 2\.0 feeds/);
 assert.match(adminTemplate, /data-podcast-review-form/);
 assert.match(adminTemplate, /data-podcast-review-list/);
-assert.match(adminTemplate, /feed the publication gate/);
+assert.match(englishWorkbenchText, /feed the publication gate/);
 assert.match(adminTemplate, /data-podcast-publication-readiness/);
 assert.match(adminTemplate, /data-podcast-readiness-refresh/);
-assert.match(adminTemplate, /Publish refreshes this snapshot immediately/);
-assert.match(adminTemplate, /recently authenticated Admin or Super-admin/);
+assert.match(englishWorkbenchText, /Publish refreshes this snapshot immediately/);
+assert.match(englishWorkbenchText, /recently authenticated Admin or Super-admin/);
 assert.match(adminTemplate, /data-podcast-clip-form/);
 assert.match(adminTemplate, /data-podcast-clip-preview/);
 assert.match(adminTemplate, /data-podcast-clip-list/);
-assert.match(adminTemplate, /Word-accurate cuts stay locked/);
-assert.match(adminTemplate, /authenticated preview and download/);
+assert.match(englishWorkbenchText, /Word-accurate cuts stay locked/);
+assert.match(englishWorkbenchText, /authenticated preview and download/);
 assert.match(adminTemplate, /data-podcast-clip-library-filters/);
 assert.match(adminTemplate, /data-podcast-clip-library/);
-assert.match(adminTemplate, /Find completed captioned clips/);
+assert.match(englishWorkbenchText, /Find completed captioned clips/);
 assert.match(adminTemplate, /data-podcast-clip-youtube-form/);
 assert.match(adminTemplate, /data-podcast-clip-youtube-approve/);
-assert.match(adminTemplate, /Never public/);
-assert.match(adminTemplate, /recently authenticated super-admin/);
+assert.match(englishWorkbenchText, /Never public/);
+assert.match(englishWorkbenchText, /recently authenticated super-admin/);
 assert.match(adminTemplate, /data-podcast-marketing-link-form/);
 assert.match(adminTemplate, /data-podcast-marketing-qr/);
 assert.match(adminTemplate, /data-podcast-embed-form/);
 assert.match(adminTemplate, /data-podcast-embed-preview/);
-assert.match(adminTemplate, /Portable episode player/);
-assert.match(adminTemplate, /Only published, publicly released revisions are eligible/);
+assert.match(englishWorkbenchText, /Portable episode player/);
+assert.match(englishWorkbenchText, /Only published, publicly released revisions are eligible/);
 assert.match(adminTemplate, /data-podcast-share-card-form/);
 assert.match(adminTemplate, /data-podcast-share-card-preview/);
-assert.match(adminTemplate, /1200×630 crawler-safe PNG/);
-assert.match(adminTemplate, /no image SaaS or browser upload/);
+assert.match(englishWorkbenchText, /1200×630 crawler-safe PNG/);
+assert.match(englishWorkbenchText, /no image SaaS or browser upload/);
 assert.match(adminTemplate, /data-podcast-announcement-editor/);
-assert.match(adminTemplate, /This checkpoint has no send route/);
-assert.match(adminTemplate, /Private evidence only/);
+assert.match(englishWorkbenchText, /This checkpoint has no send route/);
+assert.match(englishWorkbenchText, /Private evidence only/);
 assert.match(adminTemplate, /data-tab="marketing"/);
 assert.match(adminTemplate, /data-tab="sponsors"/);
 assert.match(adminTemplate, /data-tab="analytics"/);
 assert.match(adminTemplate, /data-podcast-reconciliation/);
-assert.match(adminTemplate, /Qualified sponsor deliveries/);
+assert.match(englishWorkbenchText, /Qualified sponsor deliveries/);
 assert.match(adminTemplate, /data-podcast-sponsor-preview-form/);
 assert.match(adminTemplate, /data-podcast-campaign-form/);
 assert.match(adminTemplate, /data-podcast-campaign-list/);
@@ -190,7 +243,10 @@ assert.match(adminScript, /ownerAccountLabel/);
 assert.match(adminScript, /submissionDate/);
 assert.match(adminScript, /submissionEvidenceUrl/);
 assert.match(adminScript, /setupNotes/);
-assert.match(adminTemplate, /Never paste a provider password or verification code/);
+assert.match(
+  englishWorkbench.distribution.credentialSafety,
+  /Never paste a provider password or verification code/
+);
 assert.match(adminScript, /method: "PATCH"/);
 assert.match(adminScript, /url\.protocol !== "https:"/);
 assert.match(adminScript, /navigator\.clipboard\.writeText\(value\)/);
