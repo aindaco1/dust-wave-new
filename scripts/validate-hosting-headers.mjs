@@ -15,7 +15,11 @@ const requiredPrivateHeaders = [
   /X-Robots-Tag: noindex, nofollow, noarchive/
 ];
 
-for (const route of ["/admin/*", "/podcasts/account/*"]) {
+for (const route of [
+  "/admin/*",
+  "/podcasts/account/*",
+  "/es/podcasts/account/*"
+]) {
   const start = headers.indexOf(`${route}\n`);
   assert.notEqual(start, -1, `missing private header rule for ${route}`);
   const nextRule = headers.indexOf("\n/", start + route.length + 1);

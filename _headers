@@ -24,3 +24,11 @@ https://:version.:project.pages.dev/*
   Referrer-Policy: no-referrer
   Permissions-Policy: camera=(), geolocation=(), microphone=(), payment=(), usb=()
   X-Robots-Tag: noindex, nofollow, noarchive
+
+/es/podcasts/account/*
+  Cache-Control: private, no-store, max-age=0
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), geolocation=(), microphone=(), payment=(), usb=()
+  X-Robots-Tag: noindex, nofollow, noarchive
