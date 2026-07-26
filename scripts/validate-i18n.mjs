@@ -113,11 +113,22 @@ const englishProjects = (await readdir(path.join(sourceRoot, "posts")))
   .filter((file) => file.endsWith(".md"));
 const spanishProjects = (await readdir(path.join(sourceRoot, "es", "project")))
   .filter((file) => file.endsWith(".md"));
+const memberCards = (await readdir(path.join(sourceRoot, "members")))
+  .filter((file) => file.endsWith(".md"));
+const memberDirectoryData = await readJson(
+  path.join(sourceRoot, "members", "members.json")
+);
 assert.equal(englishProjects.length, 36, "expected the 36 established project pages");
 assert.equal(
   spanishProjects.length,
   englishProjects.length,
   "every project needs a Spanish locale sidecar"
+);
+assert.equal(memberCards.length, 34, "expected the 34 established About-page member cards");
+assert.equal(
+  memberDirectoryData.permalink,
+  false,
+  "data-only member cards must not emit empty public pages"
 );
 for (const file of spanishProjects) {
   const source = await readFile(path.join(sourceRoot, "es", "project", file), "utf8");
@@ -162,7 +173,7 @@ assert.doesNotMatch(
 );
 
 console.log(
-  "i18n contract validation passed: one active locale, 36 translated projects, authored-language News."
+  "i18n contract validation passed: one active locale, 36 translated projects, 34 data-only member cards, authored-language News."
 );
 
 async function readJson(file) {
