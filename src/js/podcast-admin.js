@@ -727,7 +727,10 @@ function startPodcastAdmin(root) {
   restoreOrExchange();
 
   async function restoreOrExchange() {
-    setStatus(globalStatus, "Checking your session…");
+    setStatus(
+      globalStatus,
+      adminText("checkingSession", "Checking your session…")
+    );
     try {
       const token = session.tokenFromFragment();
       const result = token ? await session.exchange(token) : await session.restore();
@@ -748,7 +751,10 @@ function startPodcastAdmin(root) {
     const form = event.currentTarget;
     const submit = form.querySelector('button[type="submit"]');
     submit.disabled = true;
-    setStatus(authStatus, "Sending a secure link…");
+    setStatus(
+      authStatus,
+      adminText("sendingLink", "Sending a secure link…")
+    );
     try {
       await session.start({
         email: form.elements.email.value,
@@ -757,7 +763,10 @@ function startPodcastAdmin(root) {
       });
       setStatus(
         authStatus,
-        "If that address is authorized, the sign-in link is on its way. / Si la dirección está autorizada, el enlace está en camino."
+        adminText(
+          "linkSent",
+          "If that address is authorized, the sign-in link is on its way."
+        )
       );
     } catch (error) {
       setStatus(authStatus, friendlyError(error), true);

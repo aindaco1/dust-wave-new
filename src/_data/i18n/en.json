@@ -266,6 +266,9 @@
   "runtime": {
     "admin": {
       "authenticated": "Authenticated Podcast administrator%{roles}.",
+      "checkingSession": "Checking your session…",
+      "sendingLink": "Sending a secure link…",
+      "linkSent": "If that address is authorized, the sign-in link is on its way.",
       "role_super_admin": "super-admin",
       "role_admin": "admin",
       "role_producer": "producer",

@@ -156,6 +156,13 @@ assert.match(adminScript, /maximumBytes: 4 \* 1024 \* 1024/);
 assert.match(adminScript, /allowedContentTypes: \["text\/csv"\]/);
 assert.match(adminScript, /exportUrl\.origin !== baseUrl\.origin/);
 assert.match(adminScript, /function isSuperAdmin/);
+assert.match(adminScript, /adminText\("checkingSession"/);
+assert.match(adminScript, /adminText\("sendingLink"/);
+assert.match(adminScript, /"linkSent"/);
+assert.doesNotMatch(
+  adminScript,
+  /If that address is authorized[\s\S]{0,180}Si la dirección está autorizada/
+);
 assert.match(adminStyles, /\.podcast-admin__billing-readiness/);
 assert.match(adminStyles, /\.podcast-admin__billing-evidence-list/);
 assert.match(adminStyles, /\.podcast-admin__subscriber-list/);
