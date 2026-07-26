@@ -32,6 +32,24 @@ const spanishI18n = JSON.parse(
 const englishWorkbench = englishI18n.podcast.admin.workbench;
 const spanishWorkbench = spanishI18n.podcast.admin.workbench;
 const englishWorkbenchText = JSON.stringify(englishWorkbench);
+const englishRuntime = englishI18n.runtime.admin;
+const spanishRuntime = spanishI18n.runtime.admin;
+const englishRuntimeText = JSON.stringify(englishRuntime);
+const staticRuntimeKeys = [
+  ...adminScript.matchAll(/adminText\(\s*"([^"]+)"/g)
+].map((match) => match[1]);
+for (const key of new Set(staticRuntimeKeys)) {
+  assert.equal(
+    Object.hasOwn(englishRuntime, key),
+    true,
+    `English runtime admin translation is missing: ${key}`
+  );
+  assert.equal(
+    Object.hasOwn(spanishRuntime, key),
+    true,
+    `Spanish runtime admin translation is missing: ${key}`
+  );
+}
 const allowedProductNames = [
   'Apple Podcasts',
   'CPM',
@@ -224,7 +242,10 @@ assert.match(adminScript, /\/v1\/admin\/distribution\?showId=/);
 assert.match(adminScript, /function renderDistribution/);
 assert.match(adminScript, /function renderReleaseChannels/);
 assert.match(adminScript, /function releaseStatusLabel/);
-assert.match(adminScript, /Root jobs are shown separately from directory RSS ingestion/);
+assert.match(
+  englishRuntimeText,
+  /Root jobs are shown separately from directory RSS ingestion/
+);
 assert.match(adminScript, /fillDistributionEpisodes/);
 assert.match(adminScript, /function retryReleaseChannel/);
 assert.match(adminScript, /data-podcast-release-retry/);
@@ -233,9 +254,9 @@ assert.match(adminScript, /function canOperateSelectedShowPublication/);
 assert.match(adminScript, /function directoryObservationForm/);
 assert.match(adminScript, /function updateDirectoryObservation/);
 assert.match(adminScript, /data-podcast-directory-observation-form/);
-assert.match(adminScript, /Save episode evidence/);
+assert.match(englishRuntimeText, /Save episode evidence/);
 assert.match(adminScript, /function canManageSelectedShowDistribution/);
-assert.match(adminScript, /rss-following directory/i);
+assert.match(englishRuntimeText, /RSS-following directory/);
 assert.match(adminScript, /data-podcast-distribution-form/);
 assert.match(adminScript, /ownerSetupStatus/);
 assert.match(adminScript, /listingUrl/);
@@ -250,7 +271,7 @@ assert.match(
 assert.match(adminScript, /method: "PATCH"/);
 assert.match(adminScript, /url\.protocol !== "https:"/);
 assert.match(adminScript, /navigator\.clipboard\.writeText\(value\)/);
-assert.match(adminScript, /trusted sponsor-delivery evidence/i);
+assert.match(englishRuntimeText, /trusted sponsor-delivery evidence/i);
 assert.match(adminScript, /mode: "timed_text"/);
 assert.match(adminScript, /function loadChapters/);
 assert.match(adminScript, /\/chapters\/approve/);
@@ -324,7 +345,7 @@ assert.match(adminScript, /expectedWorkingMasterId/);
 assert.match(adminScript, /directProcessingEligible/);
 assert.match(adminScript, /chunk_processor_required/);
 assert.match(adminScript, /process-transcription-chunks\.yml/);
-assert.match(adminScript, /word timing not created/);
+assert.match(englishRuntimeText, /word timing not created/);
 assert.match(adminScript, /baseRevision: Number\(transcript\.revision/);
 assert.match(adminScript, /expectedRevision: Number\(transcript\.revision\)/);
 assert.match(adminScript, /speakerConfirmed/);
