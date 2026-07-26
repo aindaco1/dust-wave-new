@@ -774,7 +774,7 @@ eleventyComputed:
                 <h3>{{ workbench.marketing.announcementHeading }}</h3>
                 <p>{{ workbench.marketing.announcementIntro }}</p>
               </div>
-              <p class="podcast-admin__pill">{{ workbench.marketing.reviewOnly }}</p>
+              <p class="podcast-admin__pill">{{ workbench.marketing.reviewAndApprove }}</p>
             </div>
             <div class="podcast-admin__callout">
               <p>{{ workbench.marketing.announcementCallout }}</p>
@@ -803,10 +803,24 @@ eleventyComputed:
                 <input name="ctaUrl" type="url" maxlength="2048">
               </label>
             </div>
-            <button class="btn btn-danger" type="submit">{{ workbench.marketing.audienceDryRun }}</button>
+            <div class="podcast-admin__clip-actions">
+              <button class="btn btn-outline-light" type="submit">{{ workbench.marketing.audienceDryRun }}</button>
+              <button class="btn btn-danger" type="button" data-podcast-announcement-approve hidden>{{ workbench.marketing.approveAndQueue }}</button>
+            </div>
             <p class="podcast-admin__status" data-podcast-announcement-status role="status" aria-live="polite"></p>
             <div class="podcast-admin__announcement-review" data-podcast-announcement-review aria-live="polite"></div>
           </form>
+          <section class="podcast-admin__announcement-history" aria-labelledby="podcast-announcement-history-heading">
+            <div class="podcast-admin__panel-heading">
+              <div>
+                <h3 id="podcast-announcement-history-heading">{{ workbench.marketing.historyHeading }}</h3>
+                <p>{{ workbench.marketing.historyIntro }}</p>
+              </div>
+              <button class="btn btn-outline-light" type="button" data-podcast-announcement-history-refresh>{{ workbench.marketing.refreshHistory }}</button>
+            </div>
+            <p class="podcast-admin__status" data-podcast-announcement-history-status role="status" aria-live="polite"></p>
+            <div class="podcast-admin__card-grid" data-podcast-announcement-history></div>
+          </section>
         </section>
 
         <section id="podcast-panel-sponsors" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-sponsors" hidden>

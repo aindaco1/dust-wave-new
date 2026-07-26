@@ -29,6 +29,12 @@ assert.match(script, /\/v1\/member\/shows\/\$\{slug\}\/billing\/portal/);
 assert.match(script, /\/v1\/member\/shows\/\$\{slug\}\/notifications/);
 assert.match(script, /announcementNotificationsEnabled/);
 assert.match(script, /translate\("member\.notificationsEnabled"\)/);
+assert.match(script, /email\.autocomplete = "email"/);
+assert.match(script, /email\.required = checkbox\.checked/);
+assert.match(
+  script,
+  /email: checkbox\.checked \? email\.value : undefined/
+);
 assert.match(script, /\/v1\/member\/redemptions\/pool/);
 assert.match(script, /result\?\.poolRedemptionEnabled !== true/);
 assert.match(buildPipeline, /`\$\{DIR\.dist\}\/js\/\*\*\/\*\.js`/);

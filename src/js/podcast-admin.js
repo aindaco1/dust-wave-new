@@ -317,6 +317,18 @@ function startPodcastAdmin(root) {
   const announcementReview = root.querySelector(
     "[data-podcast-announcement-review]"
   );
+  const announcementApprove = root.querySelector(
+    "[data-podcast-announcement-approve]"
+  );
+  const announcementHistory = root.querySelector(
+    "[data-podcast-announcement-history]"
+  );
+  const announcementHistoryStatus = root.querySelector(
+    "[data-podcast-announcement-history-status]"
+  );
+  const announcementHistoryRefresh = root.querySelector(
+    "[data-podcast-announcement-history-refresh]"
+  );
   const adPlanForm = root.querySelector("[data-podcast-ad-plan-form]");
   const adPlanStatus = root.querySelector("[data-podcast-ad-plan-status]");
   const adPlanResult = root.querySelector("[data-podcast-ad-plan-result]");
@@ -430,6 +442,8 @@ function startPodcastAdmin(root) {
   let clipYouTubePublicationId = "";
   let marketingTaggedUrl = "";
   let marketingCurrentQr = null;
+  let latestAnnouncementReview = null;
+  let announcementHistoryRequestId = 0;
   let latestProcessorManifest = null;
   let turnstileToken = "";
   let turnstileWidgetId;
@@ -445,8 +459,7 @@ function startPodcastAdmin(root) {
         "editorAnnouncementContent"
       ),
       onChange() {
-        announcementReview?.replaceChildren();
-        setStatus(announcementStatus, "");
+        invalidateAnnouncementReview();
       }
     }
   );
@@ -468,6 +481,7 @@ function startPodcastAdmin(root) {
       if (tab === "marketing") {
         updateMarketingTools();
         loadClipLibrary({ reset: true });
+        loadAnnouncementHistory();
       }
       if (tab === "subscribers") loadSubscribers({ reset: true });
       if (tab === "billing") loadBilling();
@@ -526,7 +540,10 @@ function startPodcastAdmin(root) {
     await Promise.all([loadEpisodes(), loadCampaigns()]);
     const marketingPanel = root.querySelector("#podcast-panel-marketing");
     if (marketingPanel && !marketingPanel.hidden) {
-      await loadClipLibrary({ reset: true });
+      await Promise.all([
+        loadClipLibrary({ reset: true }),
+        loadAnnouncementHistory()
+      ]);
     }
     const analyticsPanel = root.querySelector("#podcast-panel-analytics");
     if (analyticsPanel && !analyticsPanel.hidden) {
@@ -702,9 +719,13 @@ function startPodcastAdmin(root) {
     runAnnouncementDryRun
   );
   announcementForm?.addEventListener("input", () => {
-    announcementReview?.replaceChildren();
-    setStatus(announcementStatus, "");
+    invalidateAnnouncementReview();
   });
+  announcementApprove?.addEventListener("click", approveAnnouncement);
+  announcementHistoryRefresh?.addEventListener(
+    "click",
+    loadAnnouncementHistory
+  );
   transcriptCuesRoot?.addEventListener("click", (event) => {
     const remove = event.target.closest("[data-podcast-transcript-remove]");
     if (remove) removeTranscriptCue(remove.dataset.podcastTranscriptRemove);
@@ -879,6 +900,12 @@ function startPodcastAdmin(root) {
     canRunAudioEnhancements = false;
     canApproveClipYouTube = false;
     canImportAlignmentBenchmarks = false;
+    latestAnnouncementReview = null;
+    announcementHistoryRequestId += 1;
+    announcementReview?.replaceChildren();
+    announcementHistory?.replaceChildren();
+    if (announcementApprove) announcementApprove.hidden = true;
+    setStatus(announcementHistoryStatus, "");
     transcript = null;
     transcriptionState = null;
     transcriptionRequestId += 1;
@@ -988,8 +1015,11 @@ function startPodcastAdmin(root) {
       });
       await Promise.all([loadEpisodes(), loadCampaigns()]);
       const marketingPanel = root.querySelector("#podcast-panel-marketing");
-      if (marketingPanel && !marketingPanel.hidden) {
-        await loadClipLibrary({ reset: true });
+    if (marketingPanel && !marketingPanel.hidden) {
+      await Promise.all([
+        loadClipLibrary({ reset: true }),
+        loadAnnouncementHistory()
+      ]);
       }
       const analyticsPanel = root.querySelector("#podcast-panel-analytics");
       if (analyticsPanel && !analyticsPanel.hidden) {
@@ -1083,6 +1113,8 @@ function startPodcastAdmin(root) {
           : `A new episode of **${show.title}** is now available.`
       );
       announcementReview.replaceChildren();
+      latestAnnouncementReview = null;
+      if (announcementApprove) announcementApprove.hidden = true;
       setStatus(announcementStatus, "");
     }
     updateMarketingLink();
@@ -1292,16 +1324,10 @@ function startPodcastAdmin(root) {
         `/v1/admin/shows/${encodeURIComponent(show.id)}/marketing/announcements/dry-run`,
         {
           method: "POST",
-          body: {
-            language: announcementForm.elements.language.value,
-            subject: announcementForm.elements.subject.value,
-            heading: announcementForm.elements.heading.value,
-            bodyMarkdown: announcementEditor.getMarkdown(),
-            ctaLabel: announcementForm.elements.ctaLabel.value,
-            ctaUrl: announcementForm.elements.ctaUrl.value
-          }
+          body: announcementPayload()
         }
       );
+      latestAnnouncementReview = result;
       renderAnnouncementReview(result);
       setStatus(
         announcementStatus,
@@ -1331,7 +1357,9 @@ function startPodcastAdmin(root) {
       result.preview?.bodyMarkdown || ""
     );
     card.innerHTML = `
-      <p class="podcast-admin__pill">${escapeHtml(adminText("reviewOnlyResendBlocked"))}</p>
+      <p class="podcast-admin__pill">${escapeHtml(
+        announcementReviewLabel(result)
+      )}</p>
       <h4>${escapeHtml(result.preview?.subject || adminText("announcementFallback"))}</h4>
       ${result.preview?.heading
         ? `<p><strong>${escapeHtml(result.preview.heading)}</strong></p>`
@@ -1365,6 +1393,212 @@ function startPodcastAdmin(root) {
     );
     card.append(evidence);
     announcementReview.replaceChildren(card);
+    if (announcementApprove) {
+      announcementApprove.hidden = !(
+        result.sendEnabled === true
+        && Number(result.eligibleRecipientCount) > 0
+        && canApproveSelectedShowAnnouncement()
+      );
+    }
+  }
+
+  function announcementPayload() {
+    return {
+      language: announcementForm.elements.language.value,
+      subject: announcementForm.elements.subject.value,
+      heading: announcementForm.elements.heading.value,
+      bodyMarkdown: announcementEditor.getMarkdown(),
+      ctaLabel: announcementForm.elements.ctaLabel.value,
+      ctaUrl: announcementForm.elements.ctaUrl.value
+    };
+  }
+
+  function invalidateAnnouncementReview() {
+    latestAnnouncementReview = null;
+    announcementReview?.replaceChildren();
+    if (announcementApprove) announcementApprove.hidden = true;
+    setStatus(announcementStatus, "");
+  }
+
+  function announcementReviewLabel(result) {
+    if (result.deliveryMode === "live") {
+      return adminText("announcementLiveReady");
+    }
+    if (result.deliveryMode === "dry_run") {
+      return adminText("announcementDryRunReady");
+    }
+    return adminText("announcementDeliveryDisabled");
+  }
+
+  async function approveAnnouncement() {
+    const show = shows.find(({ id }) => id === selectedShowId);
+    const review = latestAnnouncementReview;
+    if (
+      !show
+      || !review?.reviewHash
+      || !canApproveSelectedShowAnnouncement()
+      || announcementApprove?.disabled
+    ) return;
+    if (
+      review.deliveryMode === "live"
+      && !globalThis.confirm(adminText("confirmLiveAnnouncement", {
+        count: formatInteger(review.eligibleRecipientCount)
+      }))
+    ) return;
+    announcementApprove.disabled = true;
+    setStatus(
+      announcementStatus,
+      adminText("approvingAnnouncement")
+    );
+    try {
+      const result = await client.request(
+        `/v1/admin/shows/${encodeURIComponent(show.id)}/marketing/announcements/approve`,
+        {
+          method: "POST",
+          body: {
+            ...announcementPayload(),
+            reviewHash: review.reviewHash
+          }
+        }
+      );
+      latestAnnouncementReview = null;
+      announcementApprove.hidden = true;
+      renderApprovedAnnouncement(result.announcement);
+      setStatus(
+        announcementStatus,
+        result.announcement?.deliveryMode === "dry_run"
+          ? adminText("announcementDryRunQueued")
+          : adminText("announcementQueued", {
+              count: formatInteger(
+                result.announcement?.eligibleRecipientCount
+              )
+            })
+      );
+      await loadAnnouncementHistory();
+    } catch (error) {
+      setStatus(announcementStatus, friendlyError(error), true);
+    } finally {
+      announcementApprove.disabled = false;
+    }
+  }
+
+  function renderApprovedAnnouncement(announcement) {
+    const card = document.createElement("article");
+    card.className = "podcast-admin__card";
+    const heading = document.createElement("h4");
+    heading.textContent = announcement?.subject
+      || adminText("announcementFallback");
+    const evidence = document.createElement("p");
+    evidence.textContent = adminText("announcementApprovalEvidence", {
+      revision: Number(announcement?.revision || 0),
+      status: announcementStatusLabel(announcement?.status)
+    });
+    card.append(
+      distributionBadge(
+        announcement?.deliveryMode === "dry_run"
+          ? adminText("dryRunMode")
+          : adminText("liveMode")
+      ),
+      heading,
+      evidence
+    );
+    announcementReview.replaceChildren(card);
+  }
+
+  async function loadAnnouncementHistory() {
+    const showId = selectedShowId;
+    announcementHistoryRequestId += 1;
+    const requestId = announcementHistoryRequestId;
+    announcementHistory?.replaceChildren();
+    if (!showId) {
+      setStatus(announcementHistoryStatus, "");
+      return;
+    }
+    setStatus(
+      announcementHistoryStatus,
+      adminText("loadingAnnouncementHistory")
+    );
+    try {
+      const result = await client.request(
+        `/v1/admin/shows/${encodeURIComponent(showId)}/marketing/announcements?limit=20`
+      );
+      if (
+        requestId !== announcementHistoryRequestId
+        || showId !== selectedShowId
+      ) return;
+      renderAnnouncementHistory(result.announcements || []);
+      setStatus(announcementHistoryStatus, "");
+    } catch (error) {
+      if (requestId !== announcementHistoryRequestId) return;
+      setStatus(
+        announcementHistoryStatus,
+        friendlyError(error),
+        true
+      );
+    }
+  }
+
+  function renderAnnouncementHistory(announcements) {
+    if (!announcementHistory) return;
+    if (announcements.length < 1) {
+      const empty = document.createElement("p");
+      empty.textContent = adminText("noAnnouncementHistory");
+      announcementHistory.replaceChildren(empty);
+      return;
+    }
+    announcementHistory.replaceChildren(...announcements.map(
+      (announcement) => {
+        const card = document.createElement("article");
+        card.className = "podcast-admin__card";
+        const heading = document.createElement("h4");
+        heading.textContent = announcement.subject
+          || adminText("announcementFallback");
+        const summary = document.createElement("p");
+        summary.textContent = adminText("announcementHistorySummary", {
+          revision: Number(announcement.revision || 0),
+          language: announcement.language || "—",
+          count: formatInteger(announcement.eligibleRecipientCount),
+          status: announcementStatusLabel(announcement.status)
+        });
+        const counts = announcement.deliveryCounts || {};
+        const evidence = document.createElement("p");
+        evidence.className = "podcast-admin__help";
+        evidence.textContent = adminText("announcementDeliveryCounts", {
+          pending: formatInteger(counts.pending),
+          accepted: formatInteger(counts.accepted),
+          delivered: formatInteger(counts.delivered),
+          dryRun: formatInteger(counts.dryRun),
+          suppressed: formatInteger(counts.suppressed),
+          failed: formatInteger(counts.failed)
+        });
+        const date = document.createElement("p");
+        date.className = "podcast-admin__help";
+        date.textContent = formatBillingDate(announcement.approvedAt);
+        card.append(
+          distributionBadge(
+            announcement.deliveryMode === "dry_run"
+              ? adminText("dryRunMode")
+              : adminText("liveMode")
+          ),
+          heading,
+          summary,
+          evidence,
+          date
+        );
+        return card;
+      }
+    ));
+  }
+
+  function announcementStatusLabel(value) {
+    return adminText(`announcementStatus_${String(value || "unknown")}`);
+  }
+
+  function canApproveSelectedShowAnnouncement() {
+    return (adminIdentity?.roles || []).some(({ role, showId }) =>
+      (role === "super_admin" || role === "admin")
+      && (role === "super_admin" || !showId || showId === selectedShowId)
+    );
   }
 
   async function saveShow(event) {

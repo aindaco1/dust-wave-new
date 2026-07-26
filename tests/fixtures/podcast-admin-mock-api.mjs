@@ -43,6 +43,32 @@ const episode = {
     "https://dustwave.xyz/news/podcasts/opera-en-la-selva/episodio-de-prueba/"
 };
 
+const announcement = {
+  id: "announcement_browser_fixture",
+  showId: show.id,
+  revision: 1,
+  language: "es",
+  subject: "Nuevo episodio de Ópera en la Selva",
+  heading: show.title,
+  announcementRevision: sha("1"),
+  audienceRevision: sha("2"),
+  reviewHash: sha("3"),
+  eligibleRecipientCount: 3,
+  deliveryMode: "dry_run",
+  status: "completed",
+  approvedAt: "2026-07-26T12:00:00.000Z",
+  completedAt: "2026-07-26T12:01:00.000Z",
+  createdAt: "2026-07-26T12:00:00.000Z",
+  deliveryCounts: {
+    pending: 0,
+    accepted: 0,
+    delivered: 0,
+    dryRun: 3,
+    suppressed: 0,
+    failed: 0
+  }
+};
+
 const audioMasterPayload = {
   state: {
     revision: 1,
@@ -130,6 +156,50 @@ function json(response, status = 200) {
 function responseFor(request) {
   const url = new URL(request.url, `http://${request.headers.host}`);
   const path = url.pathname;
+  if (request.method === "GET" && path === "/v1/member/session") {
+    return json({
+      identity: {
+        id: "listener_browser_qa",
+        subscriptions: [{
+          id: "subscription_browser_qa",
+          provider: "stripe",
+          status: "active",
+          currentPeriodEnd: "2026-08-26T00:00:00.000Z",
+          show: {
+            id: show.id,
+            slug: show.slug,
+            title: show.title
+          },
+          billingPeriod: "month",
+          entitled: true,
+          hasPrivateFeed: true,
+          hasStripeBilling: true,
+          announcementNotificationsEnabled: false,
+          notificationLanguage: "es"
+        }]
+      },
+      csrfToken: "browser-qa-member-csrf",
+      poolRedemptionEnabled: false
+    });
+  }
+  if (
+    request.method === "PUT"
+    && path === `/v1/member/shows/${show.slug}/notifications`
+  ) {
+    return json({
+      show: {
+        id: show.id,
+        slug: show.slug,
+        title: show.title
+      },
+      preference: {
+        announcementsEnabled: true,
+        language: "es",
+        consentSource: "member_account",
+        destinationProtected: true
+      }
+    });
+  }
   if (request.method === "GET" && path === "/v1/admin/session") {
     return json({
       identity: {
@@ -306,6 +376,54 @@ function responseFor(request) {
     && path === `/v1/admin/shows/${show.id}/episodes`
   ) {
     return json({ episodes: [episode] });
+  }
+  if (
+    request.method === "GET"
+    && path
+      === `/v1/admin/shows/${show.id}/marketing/announcements`
+  ) {
+    return json({
+      deliveryMode: "dry_run",
+      announcements: [announcement]
+    });
+  }
+  if (
+    request.method === "POST"
+    && path
+      === `/v1/admin/shows/${show.id}/marketing/announcements/dry-run`
+  ) {
+    return json({
+      dryRun: true,
+      reviewOnly: true,
+      approvalRequired: true,
+      sendEnabled: true,
+      deliveryMode: "dry_run",
+      deliveryProvider: "resend",
+      consentPolicy: "explicit_show_opt_in",
+      eligibleRecipientCount: 3,
+      announcementRevision: sha("1"),
+      audienceRevision: sha("2"),
+      reviewHash: sha("3"),
+      preview: {
+        language: "es",
+        subject: "Nuevo episodio de Ópera en la Selva",
+        heading: show.title,
+        bodyMarkdown: "Ya está disponible un nuevo episodio.",
+        ctaLabel: "Escuchar episodio",
+        ctaUrl: show.canonicalUrl
+      }
+    });
+  }
+  if (
+    request.method === "POST"
+    && path
+      === `/v1/admin/shows/${show.id}/marketing/announcements/approve`
+  ) {
+    return json({
+      announcement,
+      idempotent: false,
+      queueAccepted: true
+    }, 202);
   }
   if (
     request.method === "GET"

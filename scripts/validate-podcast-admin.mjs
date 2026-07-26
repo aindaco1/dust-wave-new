@@ -190,7 +190,10 @@ assert.match(adminTemplate, /data-podcast-share-card-preview/);
 assert.match(englishWorkbenchText, /1200×630 crawler-safe PNG/);
 assert.match(englishWorkbenchText, /no image SaaS or browser upload/);
 assert.match(adminTemplate, /data-podcast-announcement-editor/);
-assert.match(englishWorkbenchText, /This checkpoint has no send route/);
+assert.match(englishWorkbenchText, /Review never sends/);
+assert.match(englishWorkbenchText, /staging records a dry-run/);
+assert.match(adminTemplate, /data-podcast-announcement-approve/);
+assert.match(adminTemplate, /data-podcast-announcement-history/);
 assert.match(englishWorkbenchText, /Private evidence only/);
 assert.match(adminTemplate, /data-tab="marketing"/);
 assert.match(adminTemplate, /data-tab="sponsors"/);
@@ -453,8 +456,22 @@ assert.match(adminScript, /safeMarketingFilename/);
 assert.match(adminScript, /image\.width = 1200/);
 assert.match(adminScript, /image\.height = 630/);
 assert.match(adminScript, /marketing\/announcements\/dry-run/);
+assert.match(adminScript, /marketing\/announcements\/approve/);
+assert.match(
+  adminScript,
+  /marketing\/announcements\?limit=20/
+);
+assert.match(adminScript, /function approveAnnouncement/);
+assert.match(adminScript, /function loadAnnouncementHistory/);
+assert.match(adminScript, /function canApproveSelectedShowAnnouncement/);
+assert.match(adminScript, /review\.deliveryMode === "live"/);
+assert.match(adminScript, /globalThis\.confirm/);
 assert.match(adminScript, /announcementEditor\.getMarkdown/);
 assert.doesNotMatch(adminScript, /\/marketing\/announcements\/send/);
+assert.doesNotMatch(
+  adminScript,
+  /announcement\.(?:email|listenerId|destinationHash)/
+);
 assert.match(adminScript, /privacyStatus/);
 assert.doesNotMatch(adminScript, /privacyStatus:\s*"public"/);
 assert.doesNotMatch(adminScript, /startsAtMs:\s*clipForm/);

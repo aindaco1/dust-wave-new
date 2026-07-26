@@ -335,6 +335,21 @@ function startPodcastMember(rootElement) {
       : "es";
     languageLabel.append(language);
 
+    const emailLabel = document.createElement("label");
+    emailLabel.className = "podcast-member__notification-email";
+    emailLabel.append(translate("member.notificationEmail"));
+    const email = document.createElement("input");
+    email.type = "email";
+    email.name = "notificationEmail";
+    email.autocomplete = "email";
+    email.inputMode = "email";
+    email.maxLength = 254;
+    emailLabel.append(email);
+
+    const emailHelp = document.createElement("p");
+    emailHelp.className = "podcast-member__fine-print";
+    emailHelp.textContent = translate("member.notificationEmailHelp");
+
     const save = document.createElement("button");
     save.type = "submit";
     save.className = "btn btn-outline-light";
@@ -345,6 +360,15 @@ function startPodcastMember(rootElement) {
       "podcast-member__status podcast-member__fine-print";
     status.setAttribute("role", "status");
     status.setAttribute("aria-live", "polite");
+
+    const updateEmailField = () => {
+      emailLabel.hidden = !checkbox.checked;
+      emailHelp.hidden = !checkbox.checked;
+      email.disabled = !checkbox.checked;
+      email.required = checkbox.checked;
+    };
+    checkbox.addEventListener("change", updateEmailField);
+    updateEmailField();
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
@@ -361,7 +385,8 @@ function startPodcastMember(rootElement) {
             method: "PUT",
             body: {
               enabled: checkbox.checked,
-              language: language.value
+              language: language.value,
+              email: checkbox.checked ? email.value : undefined
             }
           }
         );
@@ -369,6 +394,7 @@ function startPodcastMember(rootElement) {
           result.preference?.announcementsEnabled === true;
         subscription.notificationLanguage =
           result.preference?.language || language.value;
+        email.value = "";
         setStatus(
           status,
           checkbox.checked
@@ -386,6 +412,8 @@ function startPodcastMember(rootElement) {
       explanation,
       consent,
       languageLabel,
+      emailLabel,
+      emailHelp,
       save,
       status
     );
