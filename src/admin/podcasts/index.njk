@@ -59,6 +59,7 @@ eleventyComputed:
         <button id="podcast-tab-marketing" type="button" role="tab" data-tab="marketing" aria-controls="podcast-panel-marketing">{{ i18n | t(language, "podcast.admin.tabs.marketing") }}</button>
         <button id="podcast-tab-sponsors" type="button" role="tab" data-tab="sponsors" aria-controls="podcast-panel-sponsors">{{ i18n | t(language, "podcast.admin.tabs.sponsors") }}</button>
         <button id="podcast-tab-analytics" type="button" role="tab" data-tab="analytics" aria-controls="podcast-panel-analytics">{{ i18n | t(language, "podcast.admin.tabs.analytics") }}</button>
+        <button id="podcast-tab-subscribers" type="button" role="tab" data-tab="subscribers" aria-controls="podcast-panel-subscribers">{{ i18n | t(language, "podcast.admin.tabs.subscribers") }}</button>
         <button id="podcast-tab-billing" type="button" role="tab" data-tab="billing" aria-controls="podcast-panel-billing">{{ i18n | t(language, "podcast.admin.tabs.premium") }}</button>
       </div>
 
@@ -1001,6 +1002,46 @@ eleventyComputed:
           </div>
           <p class="podcast-admin__status" data-podcast-reconciliation-status role="status" aria-live="polite"></p>
           <div data-podcast-reconciliation></div>
+        </section>
+
+        <section id="podcast-panel-subscribers" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-subscribers" hidden>
+          <div class="podcast-admin__panel-heading">
+            <div>
+              <h2>{{ i18n | t(language, "podcast.admin.subscribers.heading") }}</h2>
+              <p>{{ i18n | t(language, "podcast.admin.subscribers.intro") }}</p>
+            </div>
+            <div class="podcast-admin__billing-actions">
+              <button class="btn btn-outline-light" type="button" data-podcast-subscribers-refresh>{{ i18n | t(language, "podcast.admin.subscribers.refresh") }}</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-subscribers-export>{{ i18n | t(language, "podcast.admin.subscribers.export") }}</button>
+            </div>
+          </div>
+          <form class="podcast-admin__distribution-filter" data-podcast-subscribers-filters>
+            <label>{{ i18n | t(language, "podcast.admin.subscribers.status") }}
+              <select name="status">
+                <option value="all">{{ i18n | t(language, "podcast.admin.subscribers.allStatuses") }}</option>
+                <option value="active">{{ i18n | t(language, "podcast.admin.subscribers.active") }}</option>
+                <option value="past_due">{{ i18n | t(language, "podcast.admin.subscribers.pastDue") }}</option>
+                <option value="paused">{{ i18n | t(language, "podcast.admin.subscribers.paused") }}</option>
+                <option value="pending">{{ i18n | t(language, "podcast.admin.subscribers.pending") }}</option>
+                <option value="canceled">{{ i18n | t(language, "podcast.admin.subscribers.canceled") }}</option>
+                <option value="expired">{{ i18n | t(language, "podcast.admin.subscribers.expired") }}</option>
+              </select>
+            </label>
+            <label>{{ i18n | t(language, "podcast.admin.subscribers.source") }}
+              <select name="provider">
+                <option value="all">{{ i18n | t(language, "podcast.admin.subscribers.allSources") }}</option>
+                <option value="stripe">Stripe</option>
+                <option value="pool">Pool</option>
+                <option value="manual">{{ i18n | t(language, "podcast.admin.subscribers.manual") }}</option>
+              </select>
+            </label>
+          </form>
+          <div class="podcast-admin__callout">
+            <p>{{ i18n | t(language, "podcast.admin.subscribers.privacy") }}</p>
+          </div>
+          <p class="podcast-admin__status" data-podcast-subscribers-status role="status" aria-live="polite"></p>
+          <div data-podcast-subscribers></div>
+          <button class="btn btn-outline-light podcast-admin__load-more" type="button" data-podcast-subscribers-more hidden>{{ i18n | t(language, "podcast.admin.subscribers.more") }}</button>
         </section>
 
         <section id="podcast-panel-billing" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-billing" hidden>

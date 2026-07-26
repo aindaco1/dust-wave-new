@@ -145,6 +145,99 @@ function responseFor(request) {
   }
   if (
     request.method === "GET"
+    && path === "/v1/admin/subscribers"
+  ) {
+    if (url.searchParams.get("format") === "csv") {
+      return {
+        status: 200,
+        contentType: "text/csv; charset=utf-8",
+        headers: {
+          "content-disposition": 'attachment; filename="podcast-subscribers.csv"',
+          "access-control-expose-headers": "content-disposition"
+        },
+        body: [
+          '"subscriptionId","listenerId","showId","showTitle","status"',
+          '"subscription_mock","listener_mock","show_opera_en_la_selva","Ópera en la Selva","active"'
+        ].join("\r\n")
+      };
+    }
+    return json({
+      subscribers: [{
+        subscriptionId: "subscription_mock",
+        listenerId: "listener_mock",
+        showId: show.id,
+        showTitle: show.title,
+        priceId: "price_opera_monthly_usd",
+        billingPeriod: "month",
+        status: "active",
+        currentPeriodEnd: "2026-08-26T00:00:00.000Z",
+        hasPrivateFeed: true,
+        announcementsEnabled: true,
+        notificationLanguage: "es",
+        sources: [{
+          provider: "stripe",
+          status: "active",
+          currentPeriodEnd: "2026-08-26T00:00:00.000Z",
+          providerCustomerId: "cus_browser_fixture",
+          providerSubscriptionId: "sub_browser_fixture"
+        }],
+        createdAt: "2026-07-25T00:00:00.000Z",
+        updatedAt: "2026-07-26T00:00:00.000Z"
+      }],
+      summary: {
+        total: 1,
+        active: 1,
+        pastDue: 0,
+        paused: 0,
+        ended: 0,
+        pending: 0,
+        providers: [{ provider: "stripe", total: 1, active: 1 }]
+      },
+      pagination: { limit: 50, nextCursor: null }
+    });
+  }
+  if (
+    request.method === "GET"
+    && path === "/v1/admin/billing/readiness"
+  ) {
+    return json({
+      mode: "test",
+      configured: {
+        apiKey: true,
+        webhookSecret: true
+      },
+      checkoutEnabled: false,
+      taxCollectionEnabled: false,
+      failedWebhookEvents: 0,
+      invoiceTaxEvidence: { total: 0, matched: 0, attention: 0 },
+      taxChangePreviews: { total: 0, unchanged: 0, attention: 0 }
+    });
+  }
+  if (
+    request.method === "GET"
+    && path === "/v1/admin/billing/tax-evidence"
+  ) {
+    if (url.searchParams.get("format") === "csv") {
+      return {
+        status: 200,
+        contentType: "text/csv; charset=utf-8",
+        headers: {
+          "content-disposition":
+            'attachment; filename="podcast-subscription-tax-evidence.csv"',
+          "access-control-expose-headers": "content-disposition"
+        },
+        body: '"eventId","providerInvoiceId"\r\n'
+      };
+    }
+    return json({
+      evidence: [],
+      count: 0,
+      limit: 100,
+      truncated: false
+    });
+  }
+  if (
+    request.method === "GET"
     && path === "/v1/admin/alignment-benchmarks"
   ) {
     return json({
@@ -447,6 +540,9 @@ const server = createServer((request, response) => {
     return;
   }
   const result = responseFor(request);
+  for (const [name, value] of Object.entries(result.headers || {})) {
+    response.setHeader(name, value);
+  }
   response.setHeader("content-type", result.contentType);
   response.writeHead(result.status);
   response.end(request.method === "HEAD" ? undefined : result.body);

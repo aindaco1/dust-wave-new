@@ -138,6 +138,17 @@
   gap: 0.25rem;
   margin: 2rem 0 0;
   overflow-x: auto;
+  scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
+  scrollbar-width: thin;
+}
+
+.podcast-admin__tab-list::-webkit-scrollbar {
+  height: 0.35rem;
+}
+
+.podcast-admin__tab-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 999px;
 }
 
 .podcast-admin__tab-list [role="tab"] {
@@ -1028,7 +1039,8 @@
   margin-top: 1rem;
 }
 
-.podcast-admin__billing-evidence-card {
+.podcast-admin__billing-evidence-card,
+.podcast-admin__subscriber-card {
   background: #1c1c1c;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 0.75rem;
@@ -1036,7 +1048,8 @@
   padding: 1.25rem;
 }
 
-.podcast-admin__billing-evidence-card header {
+.podcast-admin__billing-evidence-card header,
+.podcast-admin__subscriber-card header {
   align-items: start;
   display: flex;
   gap: 1rem;
@@ -1046,6 +1059,55 @@
 .podcast-admin__billing-evidence-card h4 {
   font-size: 1rem;
   overflow-wrap: anywhere;
+}
+
+.podcast-admin__subscriber-list {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 28rem), 1fr));
+  margin-top: 1rem;
+}
+
+.podcast-admin__subscriber-card h3,
+.podcast-admin__subscriber-card code {
+  overflow-wrap: anywhere;
+}
+
+.podcast-admin__subscriber-card dl {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.podcast-admin__subscriber-card dl > div {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: minmax(8rem, 0.8fr) minmax(0, 1.2fr);
+}
+
+.podcast-admin__subscriber-card dd {
+  margin: 0;
+}
+
+.podcast-admin__subscriber-sources {
+  display: grid;
+  gap: 0.75rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.podcast-admin__subscriber-sources li {
+  background: #101010;
+  border-radius: 0.45rem;
+  display: grid;
+  gap: 0.35rem;
+  overflow-wrap: anywhere;
+  padding: 0.75rem;
+}
+
+.podcast-admin__load-more {
+  margin-top: 1rem;
 }
 
 .podcast-admin__footer {
@@ -1136,7 +1198,12 @@
   }
 
   .podcast-admin__billing-readiness dl > div,
-  .podcast-admin__billing-evidence-card dl > div {
+  .podcast-admin__billing-evidence-card dl > div,
+  .podcast-admin__subscriber-card dl > div {
     grid-template-columns: 1fr;
+  }
+
+  .podcast-admin__load-more {
+    width: 100%;
   }
 }

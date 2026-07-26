@@ -1,5 +1,6 @@
 import { AdminApiClient, AdminApiError } from "./dust-wave-admin-shell/api-client.js";
 import {
+  AdminDownloadError,
   requestCredentialedBlob,
   triggerBlobDownload
 } from "./dust-wave-admin-shell/credentialed-download.js";
@@ -318,6 +319,22 @@ function startPodcastAdmin(root) {
   const billingStatus = root.querySelector("[data-podcast-billing-status]");
   const billingRefresh = root.querySelector("[data-podcast-billing-refresh]");
   const billingExport = root.querySelector("[data-podcast-billing-export]");
+  const subscribersRoot = root.querySelector("[data-podcast-subscribers]");
+  const subscribersStatus = root.querySelector(
+    "[data-podcast-subscribers-status]"
+  );
+  const subscribersFilters = root.querySelector(
+    "[data-podcast-subscribers-filters]"
+  );
+  const subscribersRefresh = root.querySelector(
+    "[data-podcast-subscribers-refresh]"
+  );
+  const subscribersExport = root.querySelector(
+    "[data-podcast-subscribers-export]"
+  );
+  const subscribersMore = root.querySelector(
+    "[data-podcast-subscribers-more]"
+  );
   const sponsorForm = root.querySelector("[data-podcast-sponsor-preview-form]");
   const sponsorStatus = root.querySelector("[data-podcast-sponsor-status]");
   const sponsorResult = root.querySelector("[data-podcast-sponsor-preview-result]");
@@ -347,6 +364,11 @@ function startPodcastAdmin(root) {
   let reconciliationRequestId = 0;
   let distributionRequestId = 0;
   let billingRequestId = 0;
+  let subscriberRows = [];
+  let subscriberSummary = null;
+  let subscriberCursor = null;
+  let subscriberLoading = false;
+  let subscriberRequestId = 0;
   let selectedShowId = "";
   let canManageCampaigns = false;
   let canManageCreatives = false;
@@ -436,6 +458,7 @@ function startPodcastAdmin(root) {
         updateMarketingTools();
         loadClipLibrary({ reset: true });
       }
+      if (tab === "subscribers") loadSubscribers({ reset: true });
       if (tab === "billing") loadBilling();
       if (tab === "sponsors") loadCampaigns();
       if (tab === "analytics") loadAdReconciliation({ reset: true });
@@ -445,6 +468,22 @@ function startPodcastAdmin(root) {
   root.querySelector("[data-podcast-refresh]")?.addEventListener("click", loadShows);
   billingRefresh?.addEventListener("click", loadBilling);
   billingExport?.addEventListener("click", exportBillingEvidence);
+  subscribersRefresh?.addEventListener(
+    "click",
+    () => loadSubscribers({ reset: true })
+  );
+  subscribersExport?.addEventListener("click", exportSubscribers);
+  subscribersMore?.addEventListener(
+    "click",
+    () => loadSubscribers({ reset: false })
+  );
+  subscribersFilters?.addEventListener(
+    "change",
+    () => loadSubscribers({ reset: true })
+  );
+  subscribersFilters?.addEventListener("submit", (event) => {
+    event.preventDefault();
+  });
   root.querySelector("[data-podcast-reconciliation-refresh]")?.addEventListener(
     "click",
     () => loadAdReconciliation({ reset: true })
@@ -491,6 +530,12 @@ function startPodcastAdmin(root) {
     const billingPanel = root.querySelector("#podcast-panel-billing");
     if (billingPanel && !billingPanel.hidden) {
       await loadBilling();
+    }
+    const subscribersPanel = root.querySelector(
+      "#podcast-panel-subscribers"
+    );
+    if (subscribersPanel && !subscribersPanel.hidden) {
+      await loadSubscribers({ reset: true });
     }
   });
   showForm?.addEventListener("submit", saveShow);
@@ -739,7 +784,11 @@ function startPodcastAdmin(root) {
     authPanel.hidden = true;
     app.hidden = false;
     logoutButton.hidden = false;
-    const roles = (identity?.roles || []).map(({ role }) => role.replace("_", " ")).join(", ");
+    const roles = (identity?.roles || [])
+      .map(({ role }) =>
+        adminText(`role_${role}`, role.replaceAll("_", " "))
+      )
+      .join(", ");
     canManageCampaigns = (identity?.roles || []).some(({ role }) =>
       role === "super_admin" || role === "admin"
     );
@@ -795,6 +844,11 @@ function startPodcastAdmin(root) {
     reconciliationRequestId += 1;
     distributionRequestId += 1;
     billingRequestId += 1;
+    subscriberRows = [];
+    subscriberSummary = null;
+    subscriberCursor = null;
+    subscriberLoading = false;
+    subscriberRequestId += 1;
     canManageCampaigns = false;
     canManageCreatives = false;
     canManageAdPlans = false;
@@ -6586,6 +6640,270 @@ function startPodcastAdmin(root) {
     sponsorResult.replaceChildren(card);
   }
 
+  async function loadSubscribers({ reset = false } = {}) {
+    if (!subscribersRoot || subscriberLoading) return;
+    if (!isSuperAdmin()) {
+      subscribersExport?.setAttribute("disabled", "");
+      if (subscribersMore) subscribersMore.hidden = true;
+      subscribersRoot.innerHTML = `
+        <div class="podcast-admin__callout">
+          <p>${escapeHtml(adminText(
+            "superAdminOnly",
+            "Billing and tax evidence is available to super-admins only."
+          ))}</p>
+        </div>`;
+      setStatus(subscribersStatus, "");
+      return;
+    }
+    if (!reset && !subscriberCursor) return;
+    if (reset) {
+      subscriberRows = [];
+      subscriberSummary = null;
+      subscriberCursor = null;
+      subscribersRoot.replaceChildren();
+    }
+    const requestId = ++subscriberRequestId;
+    const requestedShowId = selectedShowId;
+    const requestedCursor = reset ? null : subscriberCursor;
+    subscriberLoading = true;
+    subscribersRefresh?.setAttribute("disabled", "");
+    subscribersExport?.setAttribute("disabled", "");
+    subscribersMore?.setAttribute("disabled", "");
+    setStatus(
+      subscribersStatus,
+      adminText("loadingSubscribers", "Loading subscribers…")
+    );
+    try {
+      const params = subscriberQueryParams({
+        limit: "50",
+        cursor: requestedCursor
+      });
+      const payload = await client.request(
+        `/v1/admin/subscribers?${params}`
+      );
+      if (
+        requestId !== subscriberRequestId
+        || requestedShowId !== selectedShowId
+      ) return;
+      const incoming = Array.isArray(payload.subscribers)
+        ? payload.subscribers
+        : [];
+      subscriberRows = reset
+        ? incoming
+        : [...subscriberRows, ...incoming];
+      subscriberSummary = payload.summary || subscriberSummary;
+      subscriberCursor = payload.pagination?.nextCursor || null;
+      renderSubscribers();
+      setStatus(
+        subscribersStatus,
+        adminText(
+          "subscriberCount",
+          `${subscriberRows.length} subscriber records loaded.`,
+          { count: subscriberRows.length }
+        )
+      );
+    } catch (error) {
+      if (requestId !== subscriberRequestId) return;
+      setStatus(subscribersStatus, friendlyError(error), true);
+    } finally {
+      if (requestId === subscriberRequestId) {
+        subscriberLoading = false;
+        subscribersRefresh?.removeAttribute("disabled");
+        subscribersMore?.removeAttribute("disabled");
+        if (isSuperAdmin()) subscribersExport?.removeAttribute("disabled");
+      }
+    }
+  }
+
+  function subscriberQueryParams({
+    format = "json",
+    limit,
+    cursor = null
+  } = {}) {
+    const params = new URLSearchParams({ format });
+    if (limit) params.set("limit", limit);
+    if (selectedShowId) params.set("showId", selectedShowId);
+    const status = subscribersFilters?.elements?.status?.value || "all";
+    const provider = subscribersFilters?.elements?.provider?.value || "all";
+    if (status !== "all") params.set("status", status);
+    if (provider !== "all") params.set("provider", provider);
+    if (cursor) params.set("cursor", cursor);
+    return params;
+  }
+
+  function renderSubscribers() {
+    if (!subscribersRoot) return;
+    const summary = subscriberSummary || {};
+    const metric = (label, value, className = "") => `
+      <article class="${escapeHtml(className)}">
+        <strong>${Number(value || 0)}</strong>
+        <span>${escapeHtml(label)}</span>
+      </article>`;
+    const providerMetrics = Array.isArray(summary.providers)
+      ? summary.providers.map((provider) =>
+        metric(
+          `${subscriberProviderLabel(provider.provider)} · ${adminText(
+            "active",
+            "Active"
+          )}`,
+          provider.active
+        )
+      ).join("")
+      : "";
+    const records = subscriberRows.length
+      ? subscriberRows.map(renderSubscriberRecord).join("")
+      : `<div class="podcast-admin__callout"><p>${escapeHtml(adminText(
+        "noSubscribers",
+        "No subscribers match these filters."
+      ))}</p></div>`;
+    subscribersRoot.innerHTML = `
+      <div class="podcast-admin__metric-grid">
+        ${metric(adminText("subscriber", "Subscriber"), summary.total)}
+        ${metric(adminText("active", "Active"), summary.active, "is-ready")}
+        ${metric(
+          adminText("past_due", "Past due"),
+          summary.pastDue,
+          Number(summary.pastDue || 0) ? "is-attention" : ""
+        )}
+        ${metric(adminText("paused", "Paused"), summary.paused)}
+        ${metric(adminText("pending", "Pending"), summary.pending)}
+        ${metric(adminText("ended", "Ended"), summary.ended)}
+        ${providerMetrics}
+      </div>
+      <div class="podcast-admin__subscriber-list">${records}</div>`;
+    if (subscribersMore) subscribersMore.hidden = !subscriberCursor;
+  }
+
+  function renderSubscriberRecord(record) {
+    const status = String(record.status || "unknown");
+    const statusClass = status === "active"
+      ? "is-ready"
+      : ["past_due", "paused"].includes(status)
+        ? "is-attention"
+        : "";
+    const sources = Array.isArray(record.sources) && record.sources.length
+      ? record.sources.map(renderSubscriberSource).join("")
+      : `<li>${escapeHtml(adminText("notAvailable", "Not available"))}</li>`;
+    const value = (label, content) => `
+      <div>
+        <dt>${escapeHtml(label)}</dt>
+        <dd>${escapeHtml(content)}</dd>
+      </div>`;
+    return `
+      <article class="podcast-admin__subscriber-card">
+        <header>
+          <div>
+            <p class="podcast-admin__eyebrow">${escapeHtml(record.showTitle || record.showId || adminText("notAvailable", "Not available"))}</p>
+            <h3>${escapeHtml(record.listenerId || adminText("notAvailable", "Not available"))}</h3>
+          </div>
+          <span class="podcast-admin__pill ${statusClass}">${escapeHtml(subscriberStatusLabel(status))}</span>
+        </header>
+        <dl>
+          ${value(
+            adminText("billingPeriod", "Billing period"),
+            record.billingPeriod
+              ? adminText(record.billingPeriod, humanizeCode(record.billingPeriod))
+              : adminText("notAvailable", "Not available")
+          )}
+          ${value(
+            adminText("periodEnd", "Current period ends"),
+            formatBillingDate(record.currentPeriodEnd)
+          )}
+          ${value(
+            adminText("privateFeed", "Private feed"),
+            record.hasPrivateFeed
+              ? adminText("yes", "Yes")
+              : adminText("no", "No")
+          )}
+          ${value(
+            adminText("announcements", "Announcements"),
+            record.announcementsEnabled
+              ? `${adminText("yes", "Yes")} · ${String(record.notificationLanguage || "").toUpperCase()}`
+              : adminText("no", "No")
+          )}
+        </dl>
+        <h4>${escapeHtml(adminText("sources", "Entitlement sources"))}</h4>
+        <ul class="podcast-admin__subscriber-sources">${sources}</ul>
+      </article>`;
+  }
+
+  function renderSubscriberSource(source) {
+    const status = String(source.status || "unknown");
+    const providerCustomer = source.providerCustomerId
+      ? `<span><strong>${escapeHtml(adminText("providerCustomer", "Provider customer"))}:</strong> <code>${escapeHtml(source.providerCustomerId)}</code></span>`
+      : "";
+    const providerSubscription = source.providerSubscriptionId
+      ? `<span><strong>${escapeHtml(adminText("providerSubscription", "Provider subscription"))}:</strong> <code>${escapeHtml(source.providerSubscriptionId)}</code></span>`
+      : "";
+    return `
+      <li>
+        <span><strong>${escapeHtml(subscriberProviderLabel(source.provider))}</strong> · ${escapeHtml(subscriberStatusLabel(status))}</span>
+        ${providerCustomer}
+        ${providerSubscription}
+      </li>`;
+  }
+
+  function subscriberProviderLabel(provider) {
+    const value = String(provider || "");
+    if (value === "stripe") return "Stripe";
+    if (value === "pool") return "Pool";
+    if (value === "manual") {
+      return document.documentElement.lang === "es" ? "Manual" : "Manual";
+    }
+    return humanizeCode(value || "unknown");
+  }
+
+  function subscriberStatusLabel(status) {
+    return adminText(status, humanizeCode(status));
+  }
+
+  async function exportSubscribers() {
+    if (!isSuperAdmin() || subscribersExport?.disabled) return;
+    subscribersExport.disabled = true;
+    setStatus(
+      subscribersStatus,
+      adminText(
+        "loadingSubscriberExport",
+        "Preparing a protected subscriber CSV…"
+      )
+    );
+    try {
+      const params = subscriberQueryParams({
+        format: "csv",
+        limit: "500"
+      });
+      const baseUrl = new URL(`${apiOrigin.replace(/\/+$/, "")}/`);
+      const exportUrl = new URL(
+        `/v1/admin/subscribers?${params}`,
+        baseUrl
+      );
+      if (exportUrl.origin !== baseUrl.origin) {
+        throw new Error("unsafe_subscriber_export_origin");
+      }
+      const result = await requestCredentialedBlob(exportUrl, {
+        fetchImpl: window.fetch,
+        maximumBytes: 4 * 1024 * 1024,
+        allowedContentTypes: ["text/csv"]
+      });
+      const filename = triggerBlobDownload(
+        result,
+        "podcast-subscribers.csv"
+      );
+      setStatus(
+        subscribersStatus,
+        adminText(
+          "subscriberExportReady",
+          `Downloaded ${filename}.`,
+          { filename }
+        )
+      );
+    } catch (error) {
+      setStatus(subscribersStatus, friendlyError(error), true);
+    } finally {
+      subscribersExport.disabled = false;
+    }
+  }
+
   async function loadBilling() {
     if (!billingRoot) return;
     if (!isSuperAdmin()) {
@@ -7206,8 +7524,29 @@ function checkedHttpsUrl(value, label) {
 }
 
 function friendlyError(error) {
+  if (error instanceof AdminDownloadError) {
+    if (error.code === "download_too_large") {
+      return adminText(
+        "downloadTooLarge",
+        "The protected export exceeded its safe size limit."
+      );
+    }
+    if (error.code === "download_content_type_invalid") {
+      return adminText(
+        "downloadTypeInvalid",
+        "The export response was not a CSV and was rejected."
+      );
+    }
+    return adminText(
+      "downloadFailed",
+      "The protected export could not be downloaded."
+    );
+  }
   if (!(error instanceof AdminApiError)) {
-    return "The Podcast service could not be reached. Please retry.";
+    return adminText(
+      "serviceUnavailable",
+      "The Podcast service could not be reached. Please retry."
+    );
   }
   if (error.code === "admin_auth_not_configured") return "Staging login providers are not configured yet.";
   if (error.code === "invalid_csrf_token") return "Your secure session changed. Refresh and retry.";
