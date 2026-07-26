@@ -32,8 +32,11 @@ const sharedPackage = JSON.parse(
   await readFile(path.join(sharedRoot, 'package.json'), 'utf8')
 );
 
-assert.match(adminTemplate, /permalink: admin\/podcasts\/index\.html/);
+assert.match(adminTemplate, /translationKey: podcastAdmin/);
+assert.match(adminTemplate, /i18nRuntime: true/);
+assert.match(adminTemplate, /permalink: "\{\{ i18n\.config\.pages\.podcastAdmin\[language\] \}\}"/);
 assert.match(adminLayout, /noindex,nofollow,noarchive/);
+assert.match(adminLayout, /snippets\/language-switcher\.njk/);
 assert.match(adminLayout, /type="module" src="\/js\/podcast-admin\.js"/);
 assert.match(adminLayout, /src="\/js\/audio-player\.js" defer/);
 assert.match(adminConfig, /https:\/\/feeds\.dustwave\.xyz/);
@@ -44,6 +47,9 @@ assert.match(adminTemplate, /data-podcast-upload-form/);
 assert.match(adminTemplate, /data-podcast-ad-plan-form/);
 assert.match(adminTemplate, /data-podcast-ad-plan-result/);
 assert.match(adminTemplate, /data-podcast-distribution/);
+assert.match(adminTemplate, /data-podcast-billing-refresh/);
+assert.match(adminTemplate, /data-podcast-billing-export/);
+assert.match(adminTemplate, /data-podcast-billing-status/);
 assert.match(adminTemplate, /With just one click, we send your episodes live to 10\+ platforms/);
 assert.match(adminTemplate, /Each platform still requires one-time owner setup/);
 assert.match(adminTemplate, /lang="es"/);
@@ -135,6 +141,15 @@ assert.match(adminScript, /\/v1\/admin\/ads\/creatives/);
 assert.match(adminScript, /validated\.validationStatus !== "ready"/);
 assert.match(adminScript, /payload\.previewOnly/);
 assert.match(adminScript, /\/v1\/admin\/ads\/reconciliation/);
+assert.match(adminScript, /\/v1\/admin\/billing\/readiness/);
+assert.match(adminScript, /\/v1\/admin\/billing\/tax-evidence/);
+assert.match(adminScript, /requestCredentialedBlob/);
+assert.match(adminScript, /maximumBytes: 4 \* 1024 \* 1024/);
+assert.match(adminScript, /allowedContentTypes: \["text\/csv"\]/);
+assert.match(adminScript, /exportUrl\.origin !== baseUrl\.origin/);
+assert.match(adminScript, /function isSuperAdmin/);
+assert.match(adminStyles, /\.podcast-admin__billing-readiness/);
+assert.match(adminStyles, /\.podcast-admin__billing-evidence-list/);
 assert.match(adminScript, /\/v1\/admin\/distribution\?showId=/);
 assert.match(adminScript, /function renderDistribution/);
 assert.match(adminScript, /function renderReleaseChannels/);
@@ -319,10 +334,11 @@ assert.doesNotMatch(
 );
 assert.match(gulpfile, /copySharedAdminShell/);
 assert.equal(sharedPackage.name, '@dustwave/admin-shell');
-assert.equal(sharedPackage.version, '0.2.0');
+assert.equal(sharedPackage.version, '0.3.0');
 
 const sharedSources = [
   'api-client.js',
+  'credentialed-download.js',
   'editor.js',
   'editor-codec.js',
   'marketing-assets.js',

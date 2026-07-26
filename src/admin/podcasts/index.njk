@@ -1,10 +1,16 @@
 ---
 layout: layouts/podcast-admin.njk
-title: Podcast Admin — Dust Wave
-description: Private Dust Wave Podcast publishing workbench.
-language: en
 disableLegacyMediaPreconnects: true
-permalink: admin/podcasts/index.html
+i18nRuntime: true
+translationKey: podcastAdmin
+pagination:
+  data: i18n.config.supportedLangs
+  size: 1
+  alias: language
+permalink: "{{ i18n.config.pages.podcastAdmin[language] }}"
+eleventyComputed:
+  title: "{{ i18n[language].podcast.admin.title }}"
+  description: "{{ i18n[language].podcast.admin.description }}"
 ---
 
 <div
@@ -12,27 +18,27 @@ permalink: admin/podcasts/index.html
   data-podcast-admin
   data-api-origin="{{ podcastAdmin.apiOrigin }}"
   data-turnstile-site-key="{{ podcastAdmin.turnstileSiteKey }}">
-  <a class="visually-hidden-focusable" href="#podcast-admin-content">Skip to Podcast admin content</a>
+  <a class="visually-hidden-focusable" href="#podcast-admin-content">{{ i18n | t(language, "podcast.admin.skip") }}</a>
 
   <header class="podcast-admin__header">
     <div>
-      <p class="podcast-admin__eyebrow">Dust Wave Admin</p>
-      <h1>Podcasts</h1>
-      <p>Multi-show publishing, media, distribution, premium, and launch readiness.</p>
+      <p class="podcast-admin__eyebrow">{{ i18n | t(language, "podcast.admin.eyebrow") }}</p>
+      <h1>{{ i18n | t(language, "podcast.admin.heading") }}</h1>
+      <p>{{ i18n | t(language, "podcast.admin.intro") }}</p>
     </div>
-    <button class="btn btn-outline-light" type="button" data-podcast-logout hidden>Log out</button>
+    <button class="btn btn-outline-light" type="button" data-podcast-logout hidden>{{ i18n | t(language, "podcast.admin.logOut") }}</button>
   </header>
 
   <p class="podcast-admin__status" data-podcast-global-status role="status" aria-live="polite"></p>
 
   <section class="podcast-admin__auth" data-podcast-auth aria-labelledby="podcast-login-title">
-    <h2 id="podcast-login-title">Sign in</h2>
-    <p>We’ll email a private, single-use link. / Te enviaremos un enlace privado de un solo uso.</p>
+    <h2 id="podcast-login-title">{{ i18n | t(language, "podcast.admin.signIn") }}</h2>
+    <p>{{ i18n | t(language, "podcast.admin.signInBody") }}</p>
     <form data-podcast-login-form>
-      <label for="podcast-admin-email">Email</label>
+      <label for="podcast-admin-email">{{ i18n | t(language, "podcast.admin.email") }}</label>
       <div class="podcast-admin__inline-form">
         <input id="podcast-admin-email" name="email" type="email" autocomplete="email" required>
-        <button class="btn btn-danger" type="submit">Send link</button>
+        <button class="btn btn-danger" type="submit">{{ i18n | t(language, "podcast.admin.sendLink") }}</button>
       </div>
       {% if podcastAdmin.turnstileSiteKey %}
       <div id="podcast-turnstile" class="podcast-admin__turnstile"></div>
@@ -45,15 +51,15 @@ permalink: admin/podcasts/index.html
     <p class="podcast-admin__session" data-podcast-session-summary></p>
 
     <div class="podcast-admin__tabs" data-podcast-tabs>
-      <div class="podcast-admin__tab-list" role="tablist" aria-label="Podcast administration">
-        <button id="podcast-tab-overview" type="button" role="tab" data-tab="overview" aria-controls="podcast-panel-overview">Overview</button>
-        <button id="podcast-tab-episodes" type="button" role="tab" data-tab="episodes" aria-controls="podcast-panel-episodes">Episodes</button>
-        <button id="podcast-tab-production" type="button" role="tab" data-tab="production" aria-controls="podcast-panel-production">Production</button>
-        <button id="podcast-tab-distribution" type="button" role="tab" data-tab="distribution" aria-controls="podcast-panel-distribution">Distribution</button>
-        <button id="podcast-tab-marketing" type="button" role="tab" data-tab="marketing" aria-controls="podcast-panel-marketing">Marketing</button>
-        <button id="podcast-tab-sponsors" type="button" role="tab" data-tab="sponsors" aria-controls="podcast-panel-sponsors">Sponsors</button>
-        <button id="podcast-tab-analytics" type="button" role="tab" data-tab="analytics" aria-controls="podcast-panel-analytics">Analytics</button>
-        <button id="podcast-tab-billing" type="button" role="tab" data-tab="billing" aria-controls="podcast-panel-billing">Premium</button>
+      <div class="podcast-admin__tab-list" role="tablist" aria-label="{{ i18n | t(language, 'podcast.admin.tabs.label') }}">
+        <button id="podcast-tab-overview" type="button" role="tab" data-tab="overview" aria-controls="podcast-panel-overview">{{ i18n | t(language, "podcast.admin.tabs.overview") }}</button>
+        <button id="podcast-tab-episodes" type="button" role="tab" data-tab="episodes" aria-controls="podcast-panel-episodes">{{ i18n | t(language, "podcast.admin.tabs.episodes") }}</button>
+        <button id="podcast-tab-production" type="button" role="tab" data-tab="production" aria-controls="podcast-panel-production">{{ i18n | t(language, "podcast.admin.tabs.production") }}</button>
+        <button id="podcast-tab-distribution" type="button" role="tab" data-tab="distribution" aria-controls="podcast-panel-distribution">{{ i18n | t(language, "podcast.admin.tabs.distribution") }}</button>
+        <button id="podcast-tab-marketing" type="button" role="tab" data-tab="marketing" aria-controls="podcast-panel-marketing">{{ i18n | t(language, "podcast.admin.tabs.marketing") }}</button>
+        <button id="podcast-tab-sponsors" type="button" role="tab" data-tab="sponsors" aria-controls="podcast-panel-sponsors">{{ i18n | t(language, "podcast.admin.tabs.sponsors") }}</button>
+        <button id="podcast-tab-analytics" type="button" role="tab" data-tab="analytics" aria-controls="podcast-panel-analytics">{{ i18n | t(language, "podcast.admin.tabs.analytics") }}</button>
+        <button id="podcast-tab-billing" type="button" role="tab" data-tab="billing" aria-controls="podcast-panel-billing">{{ i18n | t(language, "podcast.admin.tabs.premium") }}</button>
       </div>
 
       <div id="podcast-admin-content">
@@ -998,7 +1004,17 @@ permalink: admin/podcasts/index.html
         </section>
 
         <section id="podcast-panel-billing" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-billing" hidden>
-          <h2>Premium readiness</h2>
+          <div class="podcast-admin__panel-heading">
+            <div>
+              <h2>{{ i18n | t(language, "podcast.admin.billing.heading") }}</h2>
+              <p>{{ i18n | t(language, "podcast.admin.billing.intro") }}</p>
+            </div>
+            <div class="podcast-admin__billing-actions">
+              <button class="btn btn-outline-light" type="button" data-podcast-billing-refresh>{{ i18n | t(language, "podcast.admin.billing.refresh") }}</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-billing-export>{{ i18n | t(language, "podcast.admin.billing.export") }}</button>
+            </div>
+          </div>
+          <p class="podcast-admin__status" data-podcast-billing-status role="status" aria-live="polite"></p>
           <div data-podcast-billing></div>
         </section>
       </div>

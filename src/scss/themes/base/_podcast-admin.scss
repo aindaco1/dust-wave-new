@@ -962,6 +962,102 @@
   width: 100%;
 }
 
+.podcast-admin__billing-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.podcast-admin__billing-readiness {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(15rem, 0.7fr) minmax(0, 1.3fr);
+}
+
+.podcast-admin__billing-readiness .podcast-admin__card {
+  margin: 0;
+}
+
+.podcast-admin__billing-readiness dl,
+.podcast-admin__billing-evidence-card dl {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1rem 0 0;
+}
+
+.podcast-admin__billing-readiness dl > div,
+.podcast-admin__billing-evidence-card dl > div {
+  align-items: start;
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: minmax(8rem, 0.8fr) minmax(0, 1.2fr);
+}
+
+.podcast-admin__billing-readiness dd,
+.podcast-admin__billing-evidence-card dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.podcast-admin__billing-metrics {
+  min-width: 0;
+}
+
+.podcast-admin__billing-metrics h3:not(:first-child) {
+  margin-top: 1.5rem;
+}
+
+.podcast-admin__metric-grid article.is-ready,
+.podcast-admin__pill.is-ready {
+  border-color: rgba(105, 211, 152, 0.65);
+}
+
+.podcast-admin__metric-grid article.is-attention,
+.podcast-admin__pill.is-attention {
+  border-color: #ff9aa2;
+}
+
+.podcast-admin__billing-evidence {
+  margin-top: 2.5rem;
+}
+
+.podcast-admin__billing-evidence-list {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 28rem), 1fr));
+  margin-top: 1rem;
+}
+
+.podcast-admin__billing-evidence-card {
+  background: #1c1c1c;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 0.75rem;
+  min-width: 0;
+  padding: 1.25rem;
+}
+
+.podcast-admin__billing-evidence-card header {
+  align-items: start;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.podcast-admin__billing-evidence-card h4 {
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+
+.podcast-admin__footer {
+  display: flex;
+  justify-content: center;
+  padding: 0 1rem 2.5rem;
+}
+
+.podcast-admin__footer .site-footer__lang-switcher {
+  margin: 0;
+}
+
 @media (max-width: 760px) {
   .podcast-admin__header,
   .podcast-admin__panel-heading,
@@ -1003,6 +1099,7 @@
   }
 
   .podcast-admin__inline-form,
+  .podcast-admin__billing-readiness,
   .podcast-admin__distribution-filter,
   .podcast-admin__distribution-feed,
   .podcast-admin__distribution-form,
@@ -1031,5 +1128,15 @@
 
   .podcast-admin__tab-list {
     padding-bottom: 0.5rem;
+  }
+
+  .podcast-admin__billing-actions,
+  .podcast-admin__billing-actions .btn {
+    width: 100%;
+  }
+
+  .podcast-admin__billing-readiness dl > div,
+  .podcast-admin__billing-evidence-card dl > div {
+    grid-template-columns: 1fr;
   }
 }

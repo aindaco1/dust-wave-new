@@ -13,6 +13,9 @@
     <main id="main-content" class="podcast-admin" tabindex="-1">
       {{ content | safe }}
     </main>
+    <footer class="podcast-admin__footer">
+      {% include "snippets/language-switcher.njk" %}
+    </footer>
     {% if podcastAdmin.turnstileSiteKey %}
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
     {% endif %}

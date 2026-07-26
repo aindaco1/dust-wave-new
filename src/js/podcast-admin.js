@@ -1,4 +1,8 @@
 import { AdminApiClient, AdminApiError } from "./dust-wave-admin-shell/api-client.js";
+import {
+  requestCredentialedBlob,
+  triggerBlobDownload
+} from "./dust-wave-admin-shell/credentialed-download.js";
 import { mountRichTextEditor } from "./dust-wave-admin-shell/editor.js";
 import {
   markdownToEditorHtml
@@ -32,6 +36,13 @@ const AUDIO_QC_POLICY_FIELDS = [
 
 const root = document.querySelector("[data-podcast-admin]");
 if (root) startPodcastAdmin(root);
+
+function adminText(key, fallback, variables = {}) {
+  const translated = window.DustWaveI18n?.t(`admin.${key}`, variables);
+  return translated && !translated.startsWith("[missing:")
+    ? translated
+    : fallback;
+}
 
 function startPodcastAdmin(root) {
   const apiOrigin = root.dataset.apiOrigin;
@@ -304,6 +315,9 @@ function startPodcastAdmin(root) {
     "[data-podcast-distribution-filter]"
   );
   const billingRoot = root.querySelector("[data-podcast-billing]");
+  const billingStatus = root.querySelector("[data-podcast-billing-status]");
+  const billingRefresh = root.querySelector("[data-podcast-billing-refresh]");
+  const billingExport = root.querySelector("[data-podcast-billing-export]");
   const sponsorForm = root.querySelector("[data-podcast-sponsor-preview-form]");
   const sponsorStatus = root.querySelector("[data-podcast-sponsor-status]");
   const sponsorResult = root.querySelector("[data-podcast-sponsor-preview-result]");
@@ -332,6 +346,7 @@ function startPodcastAdmin(root) {
   let reconciliationLoading = false;
   let reconciliationRequestId = 0;
   let distributionRequestId = 0;
+  let billingRequestId = 0;
   let selectedShowId = "";
   let canManageCampaigns = false;
   let canManageCreatives = false;
@@ -428,6 +443,8 @@ function startPodcastAdmin(root) {
   });
 
   root.querySelector("[data-podcast-refresh]")?.addEventListener("click", loadShows);
+  billingRefresh?.addEventListener("click", loadBilling);
+  billingExport?.addEventListener("click", exportBillingEvidence);
   root.querySelector("[data-podcast-reconciliation-refresh]")?.addEventListener(
     "click",
     () => loadAdReconciliation({ reset: true })
@@ -470,6 +487,10 @@ function startPodcastAdmin(root) {
     );
     if (distributionPanel && !distributionPanel.hidden) {
       await loadDistribution();
+    }
+    const billingPanel = root.querySelector("#podcast-panel-billing");
+    if (billingPanel && !billingPanel.hidden) {
+      await loadBilling();
     }
   });
   showForm?.addEventListener("submit", saveShow);
@@ -753,7 +774,11 @@ function startPodcastAdmin(root) {
       alignmentBenchmarkForm.hidden = !canImportAlignmentBenchmarks;
     }
     root.querySelector("[data-podcast-session-summary]").textContent =
-      `Authenticated Podcast administrator${roles ? ` — ${roles}` : ""}.`;
+      adminText(
+        "authenticated",
+        `Authenticated Podcast administrator${roles ? ` — ${roles}` : ""}.`,
+        { roles: roles ? ` — ${roles}` : "" }
+      );
   }
 
   function showLoggedOut() {
@@ -769,6 +794,7 @@ function startPodcastAdmin(root) {
     reconciliationLoading = false;
     reconciliationRequestId += 1;
     distributionRequestId += 1;
+    billingRequestId += 1;
     canManageCampaigns = false;
     canManageCreatives = false;
     canManageAdPlans = false;
@@ -6561,19 +6587,300 @@ function startPodcastAdmin(root) {
   }
 
   async function loadBilling() {
-    billingRoot.innerHTML = "<p>Loading premium readiness…</p>";
-    try {
-      const payload = await client.request("/v1/admin/billing/readiness");
+    if (!billingRoot) return;
+    if (!isSuperAdmin()) {
+      billingExport?.setAttribute("disabled", "");
       billingRoot.innerHTML = `
         <div class="podcast-admin__callout">
-          <p><strong>Mode:</strong> ${escapeHtml(payload.mode)}</p>
-          <p><strong>Checkout:</strong> ${payload.checkoutEnabled ? "enabled" : "disabled"}</p>
-          <p><strong>Approved tax:</strong> ${payload.taxCollectionEnabled ? "configured" : "not approved"}</p>
-          <p><strong>Stripe API:</strong> ${payload.configured?.apiKey ? "configured" : "missing"} · <strong>Webhook:</strong> ${payload.configured?.webhookSecret ? "configured" : "missing"}</p>
-          <p><strong>Failed webhook events:</strong> ${Number(payload.failedWebhookEvents || 0)}</p>
+          <p>${escapeHtml(adminText(
+            "superAdminOnly",
+            "Billing and tax evidence is available to super-admins only."
+          ))}</p>
         </div>`;
+      setStatus(billingStatus, "");
+      return;
+    }
+    const requestId = ++billingRequestId;
+    const requestedShowId = selectedShowId;
+    billingRefresh?.setAttribute("disabled", "");
+    billingExport?.setAttribute("disabled", "");
+    setStatus(
+      billingStatus,
+      adminText("loadingBilling", "Loading premium billing evidence…")
+    );
+    try {
+      const evidencePath = new URLSearchParams({ limit: "100" });
+      if (requestedShowId) evidencePath.set("showId", requestedShowId);
+      const [readiness, evidence] = await Promise.all([
+        client.request("/v1/admin/billing/readiness"),
+        client.request(`/v1/admin/billing/tax-evidence?${evidencePath}`)
+      ]);
+      if (
+        requestId !== billingRequestId
+        || requestedShowId !== selectedShowId
+      ) return;
+      renderBilling(readiness, evidence);
+      setStatus(billingStatus, "");
     } catch (error) {
-      billingRoot.textContent = friendlyError(error);
+      if (requestId !== billingRequestId) return;
+      billingRoot.replaceChildren();
+      setStatus(
+        billingStatus,
+        error instanceof AdminApiError && error.status === 403
+          ? adminText(
+            "superAdminOnly",
+            "Billing and tax evidence is available to super-admins only."
+          )
+          : friendlyError(error)
+            || adminText(
+              "billingLoadFailed",
+              "Billing evidence could not be loaded."
+            ),
+        true
+      );
+    } finally {
+      if (requestId === billingRequestId) {
+        billingRefresh?.removeAttribute("disabled");
+        if (isSuperAdmin()) billingExport?.removeAttribute("disabled");
+      }
+    }
+  }
+
+  function renderBilling(readiness, result) {
+    const invoiceEvidence = readiness.invoiceTaxEvidence || {};
+    const taxChangePreviews = readiness.taxChangePreviews || {};
+    const records = Array.isArray(result.evidence) ? result.evidence : [];
+    const readinessMetric = (label, value, className = "") => `
+      <article class="${escapeHtml(className)}">
+        <strong>${escapeHtml(String(value))}</strong>
+        <span>${escapeHtml(label)}</span>
+      </article>`;
+    const configurationItem = (label, value, ready) => `
+      <div>
+        <dt>${escapeHtml(label)}</dt>
+        <dd><span class="podcast-admin__pill ${ready ? "is-ready" : "is-attention"}">${escapeHtml(value)}</span></dd>
+      </div>`;
+    const evidenceMarkup = records.length
+      ? records.map(renderBillingEvidenceRecord).join("")
+      : `<div class="podcast-admin__callout"><p>${escapeHtml(adminText(
+        "noEvidence",
+        "No recurring-invoice tax evidence has been recorded for this show yet."
+      ))}</p></div>`;
+    billingRoot.innerHTML = `
+      <div class="podcast-admin__billing-readiness">
+        <section class="podcast-admin__card" aria-label="${escapeHtml(adminText("checkout", "Checkout"))}">
+          <h3>${escapeHtml(adminText("checkout", "Checkout"))}</h3>
+          <dl>
+            ${configurationItem(
+              adminText("mode", "Provider mode"),
+              readiness.mode === "live"
+                ? adminText("liveMode", "Live")
+                : adminText("testMode", "Test"),
+              readiness.mode === "live"
+            )}
+            ${configurationItem(
+              adminText("checkout", "Checkout"),
+              readiness.checkoutEnabled
+                ? adminText("enabled", "Enabled")
+                : adminText("disabled", "Disabled"),
+              Boolean(readiness.checkoutEnabled)
+            )}
+            ${configurationItem(
+              adminText("tax", "Approved tax"),
+              readiness.taxCollectionEnabled
+                ? adminText("configured", "Configured")
+                : adminText("notApproved", "Not approved"),
+              Boolean(readiness.taxCollectionEnabled)
+            )}
+            ${configurationItem(
+              adminText("stripeApi", "Stripe API"),
+              readiness.configured?.apiKey
+                ? adminText("configured", "Configured")
+                : adminText("missing", "Missing"),
+              Boolean(readiness.configured?.apiKey)
+            )}
+            ${configurationItem(
+              adminText("webhook", "Webhook"),
+              readiness.configured?.webhookSecret
+                ? adminText("configured", "Configured")
+                : adminText("missing", "Missing"),
+              Boolean(readiness.configured?.webhookSecret)
+            )}
+          </dl>
+        </section>
+        <section class="podcast-admin__billing-metrics">
+          <h3>${escapeHtml(adminText("evidence", "Invoice tax evidence"))}</h3>
+          <div class="podcast-admin__metric-grid">
+            ${readinessMetric(
+              adminText("events", "Events"),
+              Number(invoiceEvidence.total || 0)
+            )}
+            ${readinessMetric(
+              adminText("matched", "Matched"),
+              Number(invoiceEvidence.matched || 0),
+              "is-ready"
+            )}
+            ${readinessMetric(
+              adminText("attention", "Needs attention"),
+              Number(invoiceEvidence.attention || 0),
+              Number(invoiceEvidence.attention || 0) ? "is-attention" : ""
+            )}
+            ${readinessMetric(
+              adminText("failedWebhooks", "Failed webhooks"),
+              Number(readiness.failedWebhookEvents || 0),
+              Number(readiness.failedWebhookEvents || 0) ? "is-attention" : ""
+            )}
+          </div>
+          <h3>${escapeHtml(adminText("addressPreviews", "Address-change previews"))}</h3>
+          <div class="podcast-admin__metric-grid">
+            ${readinessMetric(
+              adminText("events", "Events"),
+              Number(taxChangePreviews.total || 0)
+            )}
+            ${readinessMetric(
+              adminText("unchanged", "Unchanged"),
+              Number(taxChangePreviews.unchanged || 0),
+              "is-ready"
+            )}
+            ${readinessMetric(
+              adminText("attention", "Needs attention"),
+              Number(taxChangePreviews.attention || 0),
+              Number(taxChangePreviews.attention || 0) ? "is-attention" : ""
+            )}
+          </div>
+        </section>
+      </div>
+      <section class="podcast-admin__billing-evidence" aria-labelledby="podcast-billing-evidence-title">
+        <div class="podcast-admin__section-heading">
+          <h3 id="podcast-billing-evidence-title">${escapeHtml(adminText("evidence", "Invoice tax evidence"))}</h3>
+          <p>${escapeHtml(adminText(
+            "evidenceIntro",
+            "Stored reconciliation facts contain provider identifiers and calculated amounts, but no listener email or billing address."
+          ))}</p>
+        </div>
+        ${result.truncated ? `<p class="podcast-admin__status">${escapeHtml(adminText(
+          "truncated",
+          `Showing the latest ${records.length} records. Export the CSV for this bounded result set.`,
+          { count: records.length }
+        ))}</p>` : ""}
+        <div class="podcast-admin__billing-evidence-list">${evidenceMarkup}</div>
+      </section>`;
+  }
+
+  function renderBillingEvidenceRecord(record) {
+    const status = String(record.reconciliationStatus || "unknown");
+    const statusClass = status === "matched" ? "is-ready" : "is-attention";
+    const period = [formatBillingDate(record.periodStart), formatBillingDate(record.periodEnd)]
+      .filter((value) => value !== adminText("notAvailable", "Not available"))
+      .join(" – ") || adminText("notAvailable", "Not available");
+    const value = (label, content) => `
+      <div>
+        <dt>${escapeHtml(label)}</dt>
+        <dd>${escapeHtml(content)}</dd>
+      </div>`;
+    return `
+      <article class="podcast-admin__billing-evidence-card">
+        <header>
+          <div>
+            <p class="podcast-admin__eyebrow">${escapeHtml(record.providerMode === "live"
+              ? adminText("liveMode", "Live")
+              : adminText("testMode", "Test"))}</p>
+            <h4>${escapeHtml(record.providerInvoiceId || adminText("notAvailable", "Not available"))}</h4>
+          </div>
+          <span class="podcast-admin__pill ${statusClass}">${escapeHtml(humanizeCode(status))}</span>
+        </header>
+        <dl>
+          ${value(adminText("show", "Show"), record.showTitle || record.showId || adminText("notAvailable", "Not available"))}
+          ${value(adminText("event", "Event"), humanizeCode(record.eventType))}
+          ${value(adminText("invoiceStatus", "Invoice status"), humanizeCode(record.invoiceStatus))}
+          ${value(adminText("billingReason", "Billing reason"), humanizeCode(record.billingReason || "not_available"))}
+          ${value(adminText("period", "Billing period"), period)}
+          ${value(adminText("observedTax", "Observed tax"), formatBillingMoney(record.observedTaxCents, record.currency))}
+          ${value(adminText("expectedTax", "Expected tax"), formatBillingMoney(record.expectedTaxCents, record.currency))}
+          ${value(adminText("total", "Total"), formatBillingMoney(record.totalCents, record.currency))}
+          ${value(adminText("jurisdiction", "Expected jurisdiction"), record.expectedJurisdictionCode || adminText("notAvailable", "Not available"))}
+          ${value(adminText("taxRateIds", "Observed tax rates"), (record.observedTaxRateIds || []).join(", ") || adminText("notAvailable", "Not available"))}
+          ${value(adminText("recorded", "Recorded"), formatBillingDate(record.recordedAt))}
+        </dl>
+      </article>`;
+  }
+
+  function formatBillingMoney(cents, currency) {
+    if (!Number.isSafeInteger(cents)) {
+      return adminText("notAvailable", "Not available");
+    }
+    const normalizedCurrency = /^[A-Z]{3}$/.test(String(currency || ""))
+      ? String(currency)
+      : "USD";
+    try {
+      return new Intl.NumberFormat(document.documentElement.lang || "en", {
+        style: "currency",
+        currency: normalizedCurrency
+      }).format(cents / 100);
+    } catch {
+      return `${normalizedCurrency} ${(cents / 100).toFixed(2)}`;
+    }
+  }
+
+  function formatBillingDate(value) {
+    const date = new Date(String(value || ""));
+    if (Number.isNaN(date.getTime())) {
+      return adminText("notAvailable", "Not available");
+    }
+    return new Intl.DateTimeFormat(document.documentElement.lang || "en", {
+      dateStyle: "medium",
+      timeStyle: "short"
+    }).format(date);
+  }
+
+  function isSuperAdmin() {
+    return (adminIdentity?.roles || []).some(({ role }) =>
+      role === "super_admin"
+    );
+  }
+
+  async function exportBillingEvidence() {
+    if (!isSuperAdmin() || billingExport?.disabled) return;
+    billingExport.disabled = true;
+    setStatus(
+      billingStatus,
+      adminText("loadingExport", "Preparing a protected CSV export…")
+    );
+    try {
+      const params = new URLSearchParams({
+        format: "csv",
+        limit: "500"
+      });
+      if (selectedShowId) params.set("showId", selectedShowId);
+      const baseUrl = new URL(`${apiOrigin.replace(/\/+$/, "")}/`);
+      const exportUrl = new URL(
+        `/v1/admin/billing/tax-evidence?${params}`,
+        baseUrl
+      );
+      if (exportUrl.origin !== baseUrl.origin) {
+        throw new Error("unsafe_billing_export_origin");
+      }
+      const result = await requestCredentialedBlob(exportUrl, {
+        fetchImpl: window.fetch,
+        maximumBytes: 4 * 1024 * 1024,
+        allowedContentTypes: ["text/csv"]
+      });
+      const filename = triggerBlobDownload(
+        result,
+        "podcast-subscription-tax-evidence.csv"
+      );
+      setStatus(
+        billingStatus,
+        adminText(
+          "exportReady",
+          `Downloaded ${filename}.`,
+          { filename }
+        )
+      );
+    } catch (error) {
+      setStatus(billingStatus, friendlyError(error), true);
+    } finally {
+      billingExport.disabled = false;
     }
   }
 

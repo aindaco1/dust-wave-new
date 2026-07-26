@@ -24,6 +24,7 @@ function headerBlockFor(route) {
 
 for (const route of [
   "/admin/*",
+  "/es/admin/*",
   "/podcasts/account/*",
   "/es/podcasts/account/*"
 ]) {

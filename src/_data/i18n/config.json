@@ -64,6 +64,10 @@
     "podcastAccount": {
       "en": "/podcasts/account/",
       "es": "/es/podcasts/account/"
+    },
+    "podcastAdmin": {
+      "en": "/admin/podcasts/",
+      "es": "/es/admin/podcasts/"
     }
   }
 }
