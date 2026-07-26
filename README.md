@@ -229,6 +229,32 @@ npm run build:og
 
 Create a default fallback image at `src/img/og/default.png` (1200×630).
 
+### Podcast Admin performance traces
+
+Capture a Chrome DevTools-compatible JSON trace against the isolated staging
+admin with the repository's dependency-free tracer:
+
+```bash
+npm run perf:podcast-admin:trace
+```
+
+The command launches a temporary, extension-free Chrome profile, records an
+8-second desktop trace, and writes it below `.artifacts/performance/` (ignored
+by Git). It never reuses browser cookies or an authenticated session.
+
+Use `--viewport 390x844` for the mobile breakpoint, or override the safe
+staging default explicitly:
+
+```bash
+npm run perf:podcast-admin:trace -- \
+  --viewport 390x844 \
+  --url https://dust-wave-website-staging.pages.dev/es/admin/podcasts/
+```
+
+Load the resulting JSON from Chrome DevTools **Performance → Load profile**.
+Trace files contain visited URLs and page metadata, so review them before
+sharing. Run `npm run perf:podcast-admin:trace -- --help` for all options.
+
 ### WebP Images
 
 Local development and `npm run build` use the original JPG/PNG image paths and

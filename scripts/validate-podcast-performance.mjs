@@ -8,7 +8,10 @@ const [
   admin,
   member,
   adminLayout,
-  memberLayout
+  memberLayout,
+  tracer,
+  packageJson,
+  gitignore
 ] = await Promise.all([
   readFile(new URL("src/_includes/snippets/head.njk", repositoryRoot), "utf8"),
   readFile(new URL("src/podcasts/show.njk", repositoryRoot), "utf8"),
@@ -21,7 +24,13 @@ const [
   readFile(
     new URL("src/_includes/layouts/podcast-member.njk", repositoryRoot),
     "utf8"
-  )
+  ),
+  readFile(
+    new URL("scripts/trace-podcast-admin-performance.mjs", repositoryRoot),
+    "utf8"
+  ),
+  readFile(new URL("package.json", repositoryRoot), "utf8"),
+  readFile(new URL(".gitignore", repositoryRoot), "utf8")
 ]);
 
 assert.match(
@@ -85,5 +94,41 @@ for (const [relativePath, maximumBytes] of scriptBudgets) {
     `${relativePath} exceeds its ${maximumBytes}-byte unminified budget (${size})`
   );
 }
+
+assert.match(
+  packageJson,
+  /"perf:podcast-admin:trace": "node scripts\/trace-podcast-admin-performance\.mjs"/,
+  "Podcast Admin must expose its repeatable Chrome trace command"
+);
+assert.match(
+  tracer,
+  /https:\/\/dust-wave-website-staging\.pages\.dev\/admin\/podcasts\//,
+  "performance traces must default to isolated staging"
+);
+assert.match(
+  tracer,
+  /mkdtemp\([\s\S]+dust-wave-podcast-trace-/,
+  "performance traces must use a temporary browser profile"
+);
+assert.match(
+  tracer,
+  /--disable-extensions/,
+  "performance traces must not load personal browser extensions"
+);
+assert.match(
+  tracer,
+  /Trace isolation check failed[\s\S]+await rm\(outputPath, \{ force: true \}\)/,
+  "performance traces must fail closed when browser isolation is violated"
+);
+assert.doesNotMatch(
+  tracer,
+  /--no-sandbox/,
+  "performance traces must retain the Chrome sandbox"
+);
+assert.match(
+  gitignore,
+  /^\.artifacts\/$/m,
+  "performance traces must never be committed"
+);
 
 console.log("Podcast performance contract validation passed.");
