@@ -427,12 +427,15 @@ function startPodcastAdmin(root) {
 
   const notesEditor = mountRichTextEditor(
     root.querySelector("[data-podcast-notes-editor]"),
-    { label: "Episode notes" }
+    { label: adminText("editorEpisodeNotes", "Episode notes") }
   );
   const announcementEditor = mountRichTextEditor(
     root.querySelector("[data-podcast-announcement-editor]"),
     {
-      label: "Podcast announcement content",
+      label: adminText(
+        "editorAnnouncementContent",
+        "Podcast announcement content"
+      ),
       onChange() {
         announcementReview?.replaceChildren();
         setStatus(announcementStatus, "");
@@ -893,7 +896,10 @@ function startPodcastAdmin(root) {
     alignmentJobsRoot?.replaceChildren();
     alignmentBenchmarkList?.replaceChildren();
     if (alignmentBenchmarkSummary) {
-      alignmentBenchmarkSummary.textContent = "No benchmark evidence loaded.";
+      alignmentBenchmarkSummary.textContent = adminText(
+        "noBenchmarkLoaded",
+        "No benchmark evidence loaded."
+      );
     }
     if (alignmentBenchmarkForm) {
       alignmentBenchmarkForm.hidden = true;
@@ -963,7 +969,7 @@ function startPodcastAdmin(root) {
   }
 
   async function loadShows() {
-    setStatus(globalStatus, "Loading shows…");
+    setStatus(globalStatus, adminText("loadingShows", "Loading shows…"));
     try {
       const payload = await client.request("/v1/admin/shows");
       shows = payload.shows || [];
@@ -1002,11 +1008,13 @@ function startPodcastAdmin(root) {
         <h3>${escapeHtml(show.title)}</h3>
         <p>${escapeHtml(show.description)}</p>
         <dl>
-          <div><dt>Episodes</dt><dd>${Number(show.episodeCount || 0)}</dd></div>
-          <div><dt>Early access</dt><dd>${show.earlyAccessDays ?? "—"} days</dd></div>
-          <div><dt>Premium</dt><dd>${show.premiumEnabled ? "Configured" : "Off"}</dd></div>
+          <div><dt>${escapeHtml(adminText("episodesLabel", "Episodes"))}</dt><dd>${Number(show.episodeCount || 0)}</dd></div>
+          <div><dt>${escapeHtml(adminText("earlyAccessLabel", "Early access"))}</dt><dd>${show.earlyAccessDays ?? "—"} ${escapeHtml(adminText("daysUnit", "days"))}</dd></div>
+          <div><dt>${escapeHtml(adminText("premiumLabel", "Premium"))}</dt><dd>${escapeHtml(show.premiumEnabled
+            ? adminText("configured", "Configured")
+            : adminText("off", "Off"))}</dd></div>
         </dl>
-        <p><a href="${escapeAttribute(show.canonicalUrl)}">Canonical show page</a></p>`;
+        <p><a href="${escapeAttribute(show.canonicalUrl)}">${escapeHtml(adminText("canonicalShowPage", "Canonical show page"))}</a></p>`;
       return card;
     }));
   }
@@ -1106,7 +1114,7 @@ function startPodcastAdmin(root) {
         marketingLinkStatus,
         error instanceof Error
           ? error.message
-          : "Unable to build the tagged link.",
+          : adminText("taggedLinkFailed", "Unable to build the tagged link."),
         true
       );
     }
@@ -1119,13 +1127,18 @@ function startPodcastAdmin(root) {
     try {
       const qr = createMarketingQr(marketingTaggedUrl);
       if (!qr) {
-        throw new Error("The shared QR engine is unavailable.");
+        throw new Error(
+          adminText("qrUnavailable", "The shared QR engine is unavailable.")
+        );
       }
       const canvas = document.createElement("canvas");
       canvas.setAttribute("role", "img");
       canvas.setAttribute(
         "aria-label",
-        `QR code for ${shows.find(({ id }) => id === selectedShowId)?.title || "podcast"}`
+        adminText("qrCodeFor", "QR code for %{title}", {
+          title: shows.find(({ id }) => id === selectedShowId)?.title
+            || adminText("podcastFallback", "podcast")
+        })
       );
       drawQrCanvas(qr, canvas, { cellSize: 8, margin: 4 });
       marketingCurrentQr = qr;
@@ -1135,7 +1148,7 @@ function startPodcastAdmin(root) {
         marketingLinkStatus,
         error instanceof Error
           ? error.message
-          : "Unable to render the QR code.",
+          : adminText("qrRenderFailed", "Unable to render the QR code."),
         true
       );
     }
@@ -1148,14 +1161,20 @@ function startPodcastAdmin(root) {
     }
     try {
       await navigator.clipboard.writeText(marketingTaggedUrl);
-      setStatus(marketingLinkStatus, "Tagged link copied.");
+      setStatus(
+        marketingLinkStatus,
+        adminText("taggedLinkCopied", "Tagged link copied.")
+      );
     } catch {
       const input = marketingLinkForm.elements.taggedUrl;
       input.focus();
       input.select();
       setStatus(
         marketingLinkStatus,
-        "Clipboard access was unavailable; the link is selected."
+        adminText(
+          "clipboardLinkSelected",
+          "Clipboard access was unavailable; the link is selected."
+        )
       );
     }
   }
@@ -1176,10 +1195,17 @@ function startPodcastAdmin(root) {
         text: show?.description || "",
         url: marketingTaggedUrl
       });
-      setStatus(marketingLinkStatus, "Share sheet opened.");
+      setStatus(
+        marketingLinkStatus,
+        adminText("shareSheetOpened", "Share sheet opened.")
+      );
     } catch (error) {
       if (error?.name !== "AbortError") {
-        setStatus(marketingLinkStatus, "Unable to open the share sheet.", true);
+        setStatus(
+          marketingLinkStatus,
+          adminText("shareSheetFailed", "Unable to open the share sheet."),
+          true
+        );
       }
     }
   }
@@ -1201,12 +1227,17 @@ function startPodcastAdmin(root) {
           [qrSvgMarkup(marketingCurrentQr, {
             cellSize: 8,
             margin: 4,
-            label: `QR code for ${show?.title || "podcast"}`
+            label: adminText("qrCodeFor", "QR code for %{title}", {
+              title: show?.title || adminText("podcastFallback", "podcast")
+            })
           })],
           { type: "image/svg+xml;charset=utf-8" }
         )
       );
-      setStatus(marketingLinkStatus, "SVG QR downloaded.");
+      setStatus(
+        marketingLinkStatus,
+        adminText("svgQrDownloaded", "SVG QR downloaded.")
+      );
       return;
     }
     const canvas = document.createElement("canvas");
@@ -1218,13 +1249,16 @@ function startPodcastAdmin(root) {
       if (!blob) {
         setStatus(
           marketingLinkStatus,
-          "The browser could not encode the PNG.",
+          adminText("pngEncodeFailed", "The browser could not encode the PNG."),
           true
         );
         return;
       }
       downloadMarketingBlob(`${base}.png`, blob);
-      setStatus(marketingLinkStatus, "PNG QR downloaded.");
+      setStatus(
+        marketingLinkStatus,
+        adminText("pngQrDownloaded", "PNG QR downloaded.")
+      );
     }, "image/png");
   }
 
@@ -1248,7 +1282,10 @@ function startPodcastAdmin(root) {
     announcementReview.replaceChildren();
     setStatus(
       announcementStatus,
-      "Reviewing the explicit opt-in audience…"
+      adminText(
+        "reviewingAudience",
+        "Reviewing the explicit opt-in audience…"
+      )
     );
     try {
       const result = await client.request(
@@ -1268,9 +1305,16 @@ function startPodcastAdmin(root) {
       renderAnnouncementReview(result);
       setStatus(
         announcementStatus,
-        `${formatInteger(result.eligibleRecipientCount)} explicitly opted-in active subscriber${
-          Number(result.eligibleRecipientCount) === 1 ? "" : "s"
-        }. No email sent.`
+        adminText(
+          "audienceSummary",
+          "%{count} explicitly opted-in %{subscribers}. No email sent.",
+          {
+            count: formatInteger(result.eligibleRecipientCount),
+            subscribers: Number(result.eligibleRecipientCount) === 1
+              ? adminText("subscriberSingular", "active subscriber")
+              : adminText("subscriberPlural", "active subscribers")
+          }
+        )
       );
     } catch (error) {
       setStatus(announcementStatus, friendlyError(error), true);
@@ -1288,14 +1332,22 @@ function startPodcastAdmin(root) {
       result.preview?.bodyMarkdown || ""
     );
     card.innerHTML = `
-      <p class="podcast-admin__pill">Review only · Resend blocked</p>
-      <h4>${escapeHtml(result.preview?.subject || "Announcement")}</h4>
+      <p class="podcast-admin__pill">${escapeHtml(adminText("reviewOnlyResendBlocked", "Review only · Resend blocked"))}</p>
+      <h4>${escapeHtml(result.preview?.subject || adminText("announcementFallback", "Announcement"))}</h4>
       ${result.preview?.heading
         ? `<p><strong>${escapeHtml(result.preview.heading)}</strong></p>`
         : ""}
-      <p>${formatInteger(result.eligibleRecipientCount)} eligible recipient${
-        Number(result.eligibleRecipientCount) === 1 ? "" : "s"
-      } · ${escapeHtml(result.preview?.language || "")}</p>`;
+      <p>${escapeHtml(adminText(
+        "eligibleSummary",
+        "%{count} %{recipients} · %{language}",
+        {
+          count: formatInteger(result.eligibleRecipientCount),
+          recipients: Number(result.eligibleRecipientCount) === 1
+            ? adminText("eligibleRecipientSingular", "eligible recipient")
+            : adminText("eligibleRecipientPlural", "eligible recipients"),
+          language: result.preview?.language || ""
+        }
+      ))}</p>`;
     card.append(previewBody);
     if (result.preview?.ctaLabel && result.preview?.ctaUrl) {
       const cta = document.createElement("p");
@@ -1307,9 +1359,12 @@ function startPodcastAdmin(root) {
       card.append(cta);
     }
     const evidence = document.createElement("p");
-    evidence.innerHTML = `Review hash: <code>${escapeHtml(
-      result.reviewHash || ""
-    )}</code>`;
+    evidence.append(
+      `${adminText("reviewHash", "Review hash")}: `,
+      Object.assign(document.createElement("code"), {
+        textContent: result.reviewHash || ""
+      })
+    );
     card.append(evidence);
     announcementReview.replaceChildren(card);
   }
@@ -1318,7 +1373,7 @@ function startPodcastAdmin(root) {
     event.preventDefault();
     const button = showForm.querySelector('button[type="submit"]');
     button.disabled = true;
-    setStatus(showStatus, "Saving…");
+    setStatus(showStatus, adminText("saving", "Saving…"));
     try {
       await client.request(`/v1/admin/shows/${encodeURIComponent(selectedShowId)}`, {
         method: "PATCH",
@@ -1332,7 +1387,7 @@ function startPodcastAdmin(root) {
           freeMiniEpisodeEnabled: showForm.elements.freeMiniEpisodeEnabled.checked
         }
       });
-      setStatus(showStatus, "Show settings saved.");
+      setStatus(showStatus, adminText("showSaved", "Show settings saved."));
       await loadShows();
     } catch (error) {
       setStatus(showStatus, friendlyError(error), true);
@@ -1371,7 +1426,10 @@ function startPodcastAdmin(root) {
     event.preventDefault();
     const button = episodeForm.querySelector('button[type="submit"]');
     button.disabled = true;
-    setStatus(episodeStatus, "Creating draft…");
+    setStatus(
+      episodeStatus,
+      adminText("creatingDraft", "Creating draft…")
+    );
     try {
       await client.request(
         `/v1/admin/shows/${encodeURIComponent(selectedShowId)}/episodes`,
@@ -1395,7 +1453,13 @@ function startPodcastAdmin(root) {
         show?.language === "en" ? "en" : "es";
       episodeForm.elements.slug.dataset.edited = "";
       notesEditor.setValue("");
-      setStatus(episodeStatus, "Draft created. Attach delivery audio before publishing.");
+      setStatus(
+        episodeStatus,
+        adminText(
+          "draftCreated",
+          "Draft created. Attach delivery audio before publishing."
+        )
+      );
       await loadShows();
     } catch (error) {
       setStatus(episodeStatus, friendlyError(error), true);
@@ -1406,7 +1470,13 @@ function startPodcastAdmin(root) {
 
   function renderEpisodes() {
     if (!episodes.length) {
-      episodeList.innerHTML = '<p class="podcast-admin__empty">No episode records yet.</p>';
+      const empty = document.createElement("p");
+      empty.className = "podcast-admin__empty";
+      empty.textContent = adminText(
+        "noEpisodeRecords",
+        "No episode records yet."
+      );
+      episodeList.replaceChildren(empty);
       return;
     }
     episodeList.replaceChildren(...episodes.map((episode) => {
@@ -1418,12 +1488,12 @@ function startPodcastAdmin(root) {
           <p class="podcast-admin__pill">${escapeHtml(episode.status)} · ${escapeHtml(episode.access)}</p>
           <h3>${escapeHtml(episode.title)}</h3>
           <p>${escapeHtml(episode.summary)}</p>
-          <p>Media: ${escapeHtml(episode.mediaStatus)}${episode.audioFilename ? ` · ${escapeHtml(episode.audioFilename)}` : ""}</p>
-          <p>Source language: ${escapeHtml(humanizeCode(episode.sourceLanguage || "not set"))} · Revision: ${Number(episode.publicationRevision || 0)} · Public: ${escapeHtml(formatDate(episode.publicAt))}</p>
+          <p>${escapeHtml(adminText("mediaLabel", "Media"))}: ${escapeHtml(episode.mediaStatus)}${episode.audioFilename ? ` · ${escapeHtml(episode.audioFilename)}` : ""}</p>
+          <p>${escapeHtml(adminText("sourceLanguageLabel", "Source language"))}: ${escapeHtml(humanizeCode(episode.sourceLanguage || "not set"))} · ${escapeHtml(adminText("revisionLabel", "Revision"))}: ${Number(episode.publicationRevision || 0)} · ${escapeHtml(adminText("publicLabel", "Public"))}: ${escapeHtml(formatDate(episode.publicAt))}</p>
         </div>
         <div class="podcast-admin__episode-actions">
-          <a class="btn btn-outline-light" href="${escapeAttribute(episode.canonicalUrl)}">Page</a>
-          <button class="btn btn-danger" type="button" data-publish-episode="${escapeAttribute(episode.id)}" ${publishable ? "" : "disabled"}>Publish</button>
+          <a class="btn btn-outline-light" href="${escapeAttribute(episode.canonicalUrl)}">${escapeHtml(adminText("page", "Page"))}</a>
+          <button class="btn btn-danger" type="button" data-publish-episode="${escapeAttribute(episode.id)}" ${publishable ? "" : "disabled"}>${escapeHtml(adminText("publish", "Publish"))}</button>
         </div>`;
       return row;
     }));
@@ -1454,7 +1524,10 @@ function startPodcastAdmin(root) {
     if (campaignEpisodeSelect) {
       const previousValue = campaignEpisodeSelect.value;
       campaignEpisodeSelect.replaceChildren(
-        new Option("All episodes in this show", ""),
+        new Option(
+          adminText("allEpisodesShow", "All episodes in this show"),
+          ""
+        ),
         ...episodes.map((episode) =>
           new Option(
             episode.title,
@@ -1469,7 +1542,7 @@ function startPodcastAdmin(root) {
     if (libraryEpisodeSelect) {
       const previousValue = libraryEpisodeSelect.value;
       libraryEpisodeSelect.replaceChildren(
-        new Option("All episodes", ""),
+        new Option(adminText("allEpisodes", "All episodes"), ""),
         ...episodes.map((episode) =>
           new Option(
             episode.title,
@@ -1498,23 +1571,35 @@ function startPodcastAdmin(root) {
       alignmentJobsRoot?.replaceChildren();
       if (transcriptionSummary) {
         transcriptionSummary.textContent =
-          "Create an episode before queueing a transcript.";
+          adminText(
+            "createBeforeTranscriptQueue",
+            "Create an episode before queueing a transcript."
+          );
       }
       if (transcriptionQueueButton) transcriptionQueueButton.disabled = true;
       if (alignmentSummary) {
         alignmentSummary.textContent =
-          "Create an episode before queueing word alignment.";
+          adminText(
+            "createBeforeAlignment",
+            "Create an episode before queueing word alignment."
+          );
       }
       if (alignmentQueueButton) alignmentQueueButton.disabled = true;
       if (transcriptMeta) {
         transcriptMeta.textContent =
-          "Create an episode before reviewing a transcript.";
+          adminText(
+            "createBeforeTranscriptReview",
+            "Create an episode before reviewing a transcript."
+          );
       }
       chapterSet = null;
       chapterRowsRoot?.replaceChildren();
       if (chapterMeta) {
         chapterMeta.textContent =
-          "Create an episode before reviewing chapters.";
+          adminText(
+            "createBeforeChapters",
+            "Create an episode before reviewing chapters."
+          );
       }
       productionReviews = null;
       reviewTargetSelect?.replaceChildren();
@@ -1525,7 +1610,10 @@ function startPodcastAdmin(root) {
       audioQcResults?.replaceChildren();
       if (audioQcSummary) {
         audioQcSummary.textContent =
-          "Create an episode before measuring source audio.";
+          adminText(
+            "createBeforeQc",
+            "Create an episode before measuring source audio."
+          );
       }
       if (audioQcQueue) audioQcQueue.disabled = true;
       audioMasterState = null;
@@ -1534,20 +1622,41 @@ function startPodcastAdmin(root) {
       audioEnhancementResults?.replaceChildren();
       if (audioMasterSummary) {
         audioMasterSummary.textContent =
-          "Create an episode before approving a working master.";
+          adminText(
+            "createBeforeMaster",
+            "Create an episode before approving a working master."
+          );
       }
       if (audioMasterApprovalForm) audioMasterApprovalForm.hidden = true;
       if (audioEnhancementForm) audioEnhancementForm.hidden = true;
       if (reviewReadiness) {
         reviewReadiness.textContent =
-          "Create an episode before starting production review.";
+          adminText(
+            "createBeforeProductionReview",
+            "Create an episode before starting production review."
+          );
       }
       if (readinessSummary) {
         readinessSummary.textContent =
-          "Create an episode before inspecting publication readiness.";
+          adminText(
+            "createBeforeReadiness",
+            "Create an episode before inspecting publication readiness."
+          );
       }
-      setStatus(sponsorStatus, "Create an episode before previewing sponsor decisions.");
-      setStatus(adPlanStatus, "Create an episode before defining ad markers.");
+      setStatus(
+        sponsorStatus,
+        adminText(
+          "createBeforeSponsorPreview",
+          "Create an episode before previewing sponsor decisions."
+        )
+      );
+      setStatus(
+        adPlanStatus,
+        adminText(
+          "createBeforeAdMarkers",
+          "Create an episode before defining ad markers."
+        )
+      );
     } else {
       setStatus(sponsorStatus, "");
     }
@@ -1560,7 +1669,13 @@ function startPodcastAdmin(root) {
     const select = distributionFilter.elements.episodeId;
     const previousValue = select.value;
     select.replaceChildren(
-      new Option("Show setup and directory readiness", ""),
+      new Option(
+        adminText(
+          "showSetupReadiness",
+          "Show setup and directory readiness"
+        ),
+        ""
+      ),
       ...episodes.map((episode) =>
         new Option(
           `${episode.title} — ${episode.status}`,
@@ -1602,11 +1717,24 @@ function startPodcastAdmin(root) {
     const previousValue = select.value;
     select.replaceChildren(
       eligibleEpisodes.length
-        ? new Option("Select a public episode", "")
-        : new Option("No public episodes available", ""),
+        ? new Option(
+          adminText("selectPublicEpisode", "Select a public episode"),
+          ""
+        )
+        : new Option(
+          adminText("noPublicEpisodes", "No public episodes available"),
+          ""
+        ),
       ...eligibleEpisodes.map((episode) =>
         new Option(
-          `${episode.title} — revision ${Number(episode.publicationRevision)}`,
+          adminText(
+            "publicRevisionOption",
+            "%{title} — revision %{revision}",
+            {
+              title: episode.title,
+              revision: Number(episode.publicationRevision)
+            }
+          ),
           episode.id,
           false,
           episode.id === previousValue
@@ -1625,7 +1753,9 @@ function startPodcastAdmin(root) {
       !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(show.slug)
       || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(episode.slug)
     ) {
-      throw new Error("The public episode slug is invalid.");
+      throw new Error(
+        adminText("invalidPublicSlug", "The public episode slug is invalid.")
+      );
     }
     const showUrl = new URL(show.canonicalUrl);
     const canonicalUrl = new URL(episode.canonicalUrl);
@@ -1637,7 +1767,12 @@ function startPodcastAdmin(root) {
       || canonicalUrl.search
       || canonicalUrl.hash
     ) {
-      throw new Error("The episode canonical URL does not match this show.");
+      throw new Error(
+        adminText(
+          "canonicalMismatch",
+          "The episode canonical URL does not match this show."
+        )
+      );
     }
     return {
       canonicalUrl: canonicalUrl.toString(),
@@ -1652,7 +1787,11 @@ function startPodcastAdmin(root) {
   function podcastEmbedFrame(embedUrl, title, { preview = false } = {}) {
     const frame = document.createElement("iframe");
     frame.src = embedUrl;
-    frame.title = `${title} podcast player`;
+    frame.title = adminText(
+      "playerFrameTitle",
+      "%{title} podcast player",
+      { title }
+    );
     frame.loading = "lazy";
     frame.setAttribute("allow", "autoplay");
     frame.referrerPolicy = "strict-origin-when-cross-origin";
@@ -1693,8 +1832,14 @@ function startPodcastAdmin(root) {
     if (!show || !episode) {
       clearPodcastEmbed(
         episodes.length
-          ? "No publicly released episode revision is available yet."
-          : "Create and publish an episode to generate a player embed."
+          ? adminText(
+            "noReleasedRevision",
+            "No publicly released episode revision is available yet."
+          )
+          : adminText(
+            "createPublishForEmbed",
+            "Create and publish an episode to generate a player embed."
+          )
       );
       return;
     }
@@ -1712,7 +1857,7 @@ function startPodcastAdmin(root) {
       if (embedPreview) {
         const label = document.createElement("p");
         label.className = "podcast-admin__field-label";
-        label.textContent = "Live preview";
+        label.textContent = adminText("livePreview", "Live preview");
         embedPreview.replaceChildren(
           label,
           podcastEmbedFrame(embedUrl, episode.title, { preview: true })
@@ -1721,7 +1866,9 @@ function startPodcastAdmin(root) {
       }
       setStatus(embedStatus, "");
     } catch (error) {
-      clearPodcastEmbed(error.message || "Unable to generate the embed.");
+      clearPodcastEmbed(
+        error.message || adminText("embedFailed", "Unable to generate the embed.")
+      );
     }
   }
 
@@ -1730,13 +1877,16 @@ function startPodcastAdmin(root) {
     if (!code) return;
     try {
       await navigator.clipboard.writeText(code);
-      setStatus(embedStatus, "Embed code copied.");
+      setStatus(embedStatus, adminText("embedCopied", "Embed code copied."));
     } catch (_error) {
       embedForm.elements.embedCode.focus();
       embedForm.elements.embedCode.select();
       setStatus(
         embedStatus,
-        "Copy is unavailable. The embed code is selected for manual copying.",
+        adminText(
+          "embedCopySelected",
+          "Copy is unavailable. The embed code is selected for manual copying."
+        ),
         true
       );
     }
@@ -1771,8 +1921,14 @@ function startPodcastAdmin(root) {
     if (!show || !episode) {
       clearPodcastShareCard(
         episodes.length
-          ? "No publicly released episode revision is available yet."
-          : "Create and publish an episode to generate a social card."
+          ? adminText(
+            "noReleasedRevision",
+            "No publicly released episode revision is available yet."
+          )
+          : adminText(
+            "createPublishForCard",
+            "Create and publish an episode to generate a social card."
+          )
       );
       return;
     }
@@ -1795,7 +1951,11 @@ function startPodcastAdmin(root) {
       if (shareCardPreview) {
         const image = document.createElement("img");
         image.src = shareCardUrl;
-        image.alt = `${episode.title} social card`;
+        image.alt = adminText(
+          "socialCardAlt",
+          "%{title} social card",
+          { title: episode.title }
+        );
         image.width = 1200;
         image.height = 630;
         image.loading = "lazy";
@@ -1803,7 +1963,10 @@ function startPodcastAdmin(root) {
         image.addEventListener("error", () => {
           setStatus(
             shareCardStatus,
-            "The card is not available at this deployment yet. Rebuild the site from the published episode revision.",
+            adminText(
+              "cardUnavailable",
+              "The card is not available at this deployment yet. Rebuild the site from the published episode revision."
+            ),
             true
           );
         }, { once: true });
@@ -1813,7 +1976,10 @@ function startPodcastAdmin(root) {
       setStatus(shareCardStatus, "");
     } catch (error) {
       clearPodcastShareCard(
-        error.message || "Unable to resolve the social-card URL."
+        error.message || adminText(
+          "cardUrlFailed",
+          "Unable to resolve the social-card URL."
+        )
       );
     }
   }
@@ -1823,13 +1989,19 @@ function startPodcastAdmin(root) {
     if (!url) return;
     try {
       await navigator.clipboard.writeText(url);
-      setStatus(shareCardStatus, "Social-card URL copied.");
+      setStatus(
+        shareCardStatus,
+        adminText("cardUrlCopied", "Social-card URL copied.")
+      );
     } catch (_error) {
       shareCardForm.elements.shareCardUrl.focus();
       shareCardForm.elements.shareCardUrl.select();
       setStatus(
         shareCardStatus,
-        "Copy is unavailable. The image URL is selected for manual copying.",
+        adminText(
+          "cardCopySelected",
+          "Copy is unavailable. The image URL is selected for manual copying."
+        ),
         true
       );
     }
@@ -1843,7 +2015,10 @@ function startPodcastAdmin(root) {
     button.disabled = true;
     uploadProgress.hidden = false;
     uploadProgress.value = 0;
-    setStatus(uploadStatus, "Preparing upload…");
+    setStatus(
+      uploadStatus,
+      adminText("preparingUpload", "Preparing upload…")
+    );
     try {
       const created = await client.request("/v1/admin/uploads", {
         method: "POST",
@@ -1860,7 +2035,14 @@ function startPodcastAdmin(root) {
       const partCount = Math.ceil(file.size / partBytes);
       for (let index = 0; index < partCount; index += 1) {
         const part = file.slice(index * partBytes, Math.min(file.size, (index + 1) * partBytes));
-        setStatus(uploadStatus, `Uploading part ${index + 1} of ${partCount}…`);
+        setStatus(
+          uploadStatus,
+          adminText(
+            "uploadingPart",
+            "Uploading part %{part} of %{count}…",
+            { part: index + 1, count: partCount }
+          )
+        );
         await client.request(
           `/v1/admin/uploads/${encodeURIComponent(created.uploadId)}/parts/${index + 1}`,
           {
@@ -1876,7 +2058,10 @@ function startPodcastAdmin(root) {
         { method: "POST", body: {} }
       );
       uploadForm.reset();
-      setStatus(uploadStatus, "Upload completed and verified.");
+      setStatus(
+        uploadStatus,
+        adminText("uploadComplete", "Upload completed and verified.")
+      );
       await loadEpisodes();
     } catch (error) {
       setStatus(uploadStatus, friendlyError(error), true);
@@ -5412,7 +5597,13 @@ function startPodcastAdmin(root) {
 
   async function publishEpisode(episodeId, button) {
     button.disabled = true;
-    setStatus(episodeStatus, "Refreshing exact publication evidence…");
+    setStatus(
+      episodeStatus,
+      adminText(
+        "refreshingPublicationEvidence",
+        "Refreshing exact publication evidence…"
+      )
+    );
     try {
       const readiness = await client.request(
         `/v1/admin/episodes/${encodeURIComponent(episodeId)}/readiness`
@@ -5434,7 +5625,10 @@ function startPodcastAdmin(root) {
       if (mode === "enforce" && !candidate.ready) {
         if (!candidate.overrideAvailable) {
           throw new AdminApiError(
-            "Resolve the publication blockers or ask an Admin to review them.",
+            adminText(
+              "resolvePublicationBlockers",
+              "Resolve the publication blockers or ask an Admin to review them."
+            ),
             {
               status: 409,
               code: "publication_not_ready",
@@ -5447,19 +5641,41 @@ function startPodcastAdmin(root) {
             node.severity === "blocker"
             && !["ready", "not_applicable"].includes(node.status)
           )
-          .map((node) => String(node.label || "Unresolved dependency"));
+          .map((node) => String(
+            node.label
+            || adminText("unresolvedDependency", "Unresolved dependency")
+          ));
         const reason = globalThis.prompt(
           [
-            `${blockerLabels.length} publication blocker${
-              blockerLabels.length === 1 ? "" : "s"
-            } ${blockerLabels.length === 1 ? "remains" : "remain"}:`,
+            adminText(
+              "publicationBlockersRemain",
+              "%{count} publication %{blockers} %{remain}:",
+              {
+                count: blockerLabels.length,
+                blockers: blockerLabels.length === 1
+                  ? adminText("blockerSingular", "blocker")
+                  : adminText("blockerPlural", "blockers"),
+                remain: blockerLabels.length === 1
+                  ? adminText("remainsSingular", "remains")
+                  : adminText("remainPlural", "remain")
+              }
+            ),
             blockerLabels.join("; "),
             "",
-            "Enter the private override reason (500 characters maximum)."
+            adminText(
+              "enterOverrideReason",
+              "Enter the private override reason (500 characters maximum)."
+            )
           ].join("\n")
         );
         if (reason === null) {
-          setStatus(episodeStatus, "Publication override canceled.");
+          setStatus(
+            episodeStatus,
+            adminText(
+              "publicationOverrideCanceled",
+              "Publication override canceled."
+            )
+          );
           return;
         }
         const normalizedReason = reason
@@ -5468,16 +5684,28 @@ function startPodcastAdmin(root) {
           .trim();
         if (!normalizedReason || normalizedReason.length > 500) {
           throw new AdminApiError(
-            "Enter a private override reason between 1 and 500 characters.",
+            adminText(
+              "overrideReasonInvalid",
+              "Enter a private override reason between 1 and 500 characters."
+            ),
             { status: 400, code: "publication_override_reason_invalid" }
           );
         }
         const confirmed = globalThis.confirm(
-          "Publish this exact snapshot with unresolved blockers? "
-          + "Your identity, reason hash, and evidence counts will be audited."
+          adminText(
+            "overrideConfirm",
+            "Publish this exact snapshot with unresolved blockers? "
+              + "Your identity, reason hash, and evidence counts will be audited."
+          )
         );
         if (!confirmed) {
-          setStatus(episodeStatus, "Publication override canceled.");
+          setStatus(
+            episodeStatus,
+            adminText(
+              "publicationOverrideCanceled",
+              "Publication override canceled."
+            )
+          );
           return;
         }
         body.override = {
@@ -5489,10 +5717,19 @@ function startPodcastAdmin(root) {
       setStatus(
         episodeStatus,
         mode === "enforce"
-          ? "Publishing the exact enforced snapshot…"
+          ? adminText(
+              "publishingEnforcedSnapshot",
+              "Publishing the exact enforced snapshot…"
+            )
           : mode === "shadow"
-            ? "Publishing while comparing the shadow snapshot…"
-            : "Publishing with legacy checks…"
+            ? adminText(
+                "publishingShadowSnapshot",
+                "Publishing while comparing the shadow snapshot…"
+              )
+            : adminText(
+                "publishingLegacyChecks",
+                "Publishing with legacy checks…"
+              )
       );
       const result = await client.request(
         `/v1/admin/episodes/${encodeURIComponent(episodeId)}/publish`,
@@ -5502,16 +5739,40 @@ function startPodcastAdmin(root) {
       setStatus(
         episodeStatus,
         result.idempotent
-          ? `Already published as revision ${result.publicationRevision}; no duplicate work was created.`
+          ? adminText(
+              "alreadyPublishedRevision",
+              "Already published as revision %{revision}; no duplicate work was created.",
+              { revision: result.publicationRevision }
+            )
           : [
-              `Revision ${result.publicationRevision} ${result.status}.`,
-              `${result.distributionTargets} directory states created.`,
+              adminText(
+                "revisionStatus",
+                "Revision %{revision} %{status}.",
+                {
+                  revision: result.publicationRevision,
+                  status: humanizeCode(result.status)
+                }
+              ),
+              adminText(
+                "directoryStatesCreated",
+                "%{count} directory states created.",
+                { count: result.distributionTargets }
+              ),
               gate.overridden
-                ? "Candidate blockers were explicitly overridden and audited."
+                ? adminText(
+                    "candidateBlockersOverridden",
+                    "Candidate blockers were explicitly overridden and audited."
+                  )
                 : gate.mode === "shadow"
                   ? gate.snapshotMatched
-                    ? "Shadow snapshot matched."
-                    : "Shadow snapshot mismatch recorded without enforcement."
+                    ? adminText(
+                        "shadowSnapshotMatched",
+                        "Shadow snapshot matched."
+                      )
+                    : adminText(
+                        "shadowSnapshotMismatch",
+                        "Shadow snapshot mismatch recorded without enforcement."
+                      )
                   : ""
             ].filter(Boolean).join(" ")
       );
@@ -5535,7 +5796,10 @@ function startPodcastAdmin(root) {
     const requestId = ++distributionRequestId;
     const requestedShowId = selectedShowId;
     const loading = document.createElement("p");
-    loading.textContent = "Loading distribution state…";
+    loading.textContent = adminText(
+      "loadingDistribution",
+      "Loading distribution state…"
+    );
     distributionRoot.replaceChildren(loading);
     try {
       const path = selectedEpisodeId
@@ -5576,10 +5840,16 @@ function startPodcastAdmin(root) {
     overview.className =
       "podcast-admin__metric-grid podcast-admin__distribution-summary";
     for (const [value, label] of [
-      [summary.total, "Launch directories"],
-      [summary.setupComplete, "Owner setup complete"],
-      [summary.setupRequired, "Owner setup required"],
-      [summary.observed, "Episode observed"]
+      [summary.total, adminText("launchDirectories", "Launch directories")],
+      [
+        summary.setupComplete,
+        adminText("ownerSetupComplete", "Owner setup complete")
+      ],
+      [
+        summary.setupRequired,
+        adminText("ownerSetupRequired", "Owner setup required")
+      ],
+      [summary.observed, adminText("episodeObserved", "Episode observed")]
     ]) {
       const card = document.createElement("article");
       const strong = document.createElement("strong");
@@ -5597,7 +5867,10 @@ function startPodcastAdmin(root) {
     feed.className = "podcast-admin__distribution-feed";
     const feedText = document.createElement("div");
     const feedLabel = document.createElement("strong");
-    feedLabel.textContent = "Canonical RSS feed";
+    feedLabel.textContent = adminText(
+      "canonicalRssFeed",
+      "Canonical RSS feed"
+    );
     const feedUrl = document.createElement("input");
     feedUrl.type = "url";
     feedUrl.readOnly = true;
@@ -5609,7 +5882,7 @@ function startPodcastAdmin(root) {
     copy.className = "btn btn-outline-light";
     copy.type = "button";
     copy.dataset.podcastDistributionCopyFeed = String(payload.feedUrl || "");
-    copy.textContent = "Copy feed URL";
+    copy.textContent = adminText("copyFeedUrl", "Copy feed URL");
     const copyStatus = document.createElement("p");
     copyStatus.className = "podcast-admin__status";
     copyStatus.dataset.podcastDistributionCopyStatus = "";
@@ -5630,7 +5903,10 @@ function startPodcastAdmin(root) {
     if (!destinations.length) {
       const empty = document.createElement("p");
       empty.className = "podcast-admin__empty";
-      empty.textContent = "No distribution destinations are configured.";
+      empty.textContent = adminText(
+        "noDistributionDestinations",
+        "No distribution destinations are configured."
+      );
       list.append(empty);
     }
     fragment.append(list);
@@ -5645,11 +5921,17 @@ function startPodcastAdmin(root) {
     const titleGroup = document.createElement("div");
     const title = document.createElement("h3");
     title.textContent = release.publicationRevision
-      ? `Release revision ${Number(release.publicationRevision)}`
-      : "Release channels";
+      ? adminText(
+          "releaseRevision",
+          "Release revision %{revision}",
+          { revision: Number(release.publicationRevision) }
+        )
+      : adminText("releaseChannels", "Release channels");
     const description = document.createElement("p");
-    description.textContent =
-      "Root jobs are shown separately from directory RSS ingestion.";
+    description.textContent = adminText(
+      "rootJobsDescription",
+      "Root jobs are shown separately from directory RSS ingestion."
+    );
     titleGroup.append(title, description);
     heading.append(
       titleGroup,
@@ -5663,8 +5945,10 @@ function startPodcastAdmin(root) {
     if (!channels.length) {
       const empty = document.createElement("p");
       empty.className = "podcast-admin__empty";
-      empty.textContent =
-        "This episode has not created a publication revision yet.";
+      empty.textContent = adminText(
+        "noPublicationRevision",
+        "This episode has not created a publication revision yet."
+      );
       section.append(empty);
       return section;
     }
@@ -5675,7 +5959,11 @@ function startPodcastAdmin(root) {
       const cardHeading = document.createElement("div");
       cardHeading.className = "podcast-admin__directory-heading";
       const channelTitle = document.createElement("h4");
-      channelTitle.textContent = String(channel.name || channel.id || "Channel");
+      channelTitle.textContent = String(
+        channel.name
+        || channel.id
+        || adminText("channelFallback", "Channel")
+      );
       cardHeading.append(
         channelTitle,
         distributionBadge(
@@ -5688,27 +5976,50 @@ function startPodcastAdmin(root) {
       const timing = document.createElement("p");
       timing.textContent = [
         channel.scheduledAt
-          ? `Scheduled ${formatDate(channel.scheduledAt)}`
+          ? adminText(
+              "scheduledAt",
+              "Scheduled %{date}",
+              { date: formatDate(channel.scheduledAt) }
+            )
           : "",
         channel.completedAt
-          ? `Completed ${formatDate(channel.completedAt)}`
+          ? adminText(
+              "completedAt",
+              "Completed %{date}",
+              { date: formatDate(channel.completedAt) }
+            )
           : "",
-        `Attempts ${Math.max(0, Number(channel.attemptCount) || 0)}`
+        adminText(
+          "attemptsCount",
+          "Attempts %{count}",
+          { count: formatInteger(Math.max(0, Number(channel.attemptCount) || 0)) }
+        )
       ].filter(Boolean).join(" · ");
       card.append(timing);
 
       if (channel.providerEvidence) {
         const evidence = document.createElement("p");
-        evidence.textContent =
-          `Provider evidence: ${String(channel.providerEvidence)}`;
+        evidence.textContent = adminText(
+          "providerEvidence",
+          "Provider evidence: %{evidence}",
+          { evidence: String(channel.providerEvidence) }
+        );
         card.append(evidence);
       }
       if (channel.id === "news" && channel.siteStatus) {
         const site = document.createElement("p");
         site.textContent = [
-          `Site publication ${distributionStatusLabel(channel.siteStatus)}`,
+          adminText(
+            "sitePublication",
+            "Site publication %{status}",
+            { status: distributionStatusLabel(channel.siteStatus) }
+          ),
           channel.siteCommitSha
-            ? `commit ${String(channel.siteCommitSha).slice(0, 12)}`
+            ? adminText(
+                "commitLabel",
+                "commit %{commit}",
+                { commit: String(channel.siteCommitSha).slice(0, 12) }
+              )
             : ""
         ].filter(Boolean).join(" · ");
         card.append(site);
@@ -5736,11 +6047,23 @@ function startPodcastAdmin(root) {
           Number(release.publicationRevision) || 0
         );
         retry.dataset.channelName = String(
-          channel.name || channel.id || "channel"
+          channel.name
+          || channel.id
+          || adminText("channelFallback", "Channel").toLocaleLowerCase(
+            document.documentElement.lang || "en"
+          )
         );
-        retry.textContent = `Retry ${String(
-          channel.name || channel.id || "channel"
-        )}`;
+        retry.textContent = adminText(
+          "retryChannel",
+          "Retry %{channel}",
+          {
+            channel: String(
+              channel.name
+              || channel.id
+              || adminText("channelFallback", "Channel")
+            )
+          }
+        );
         const status = document.createElement("p");
         status.className = "podcast-admin__status";
         status.dataset.podcastReleaseRetryStatus = "";
@@ -5757,11 +6080,17 @@ function startPodcastAdmin(root) {
 
   function releaseStatusLabel(value) {
     return {
-      not_published: "Not published",
-      in_progress: "Release in progress",
-      needs_attention: "Release needs attention",
-      complete: "Root channels complete"
-    }[String(value || "")] || "Unknown release state";
+      not_published: adminText("releaseNotPublished", "Not published"),
+      in_progress: adminText("releaseInProgress", "Release in progress"),
+      needs_attention: adminText(
+        "releaseNeedsAttention",
+        "Release needs attention"
+      ),
+      complete: adminText("releaseComplete", "Root channels complete")
+    }[String(value || "")] || adminText(
+      "unknownReleaseState",
+      "Unknown release state"
+    );
   }
 
   function distributionDestinationCard(destination, { episodeId }) {
@@ -5772,17 +6101,21 @@ function startPodcastAdmin(root) {
     heading.className = "podcast-admin__directory-heading";
     const titleGroup = document.createElement("div");
     const title = document.createElement("h3");
-    title.textContent = String(destination.name || "Directory");
+    title.textContent = String(
+      destination.name || adminText("directoryFallback", "Directory")
+    );
     const semantics = document.createElement("p");
     semantics.textContent = destination.mode === "direct_api"
-      ? "Direct provider adapter"
-      : "RSS-following directory";
+      ? adminText("directProviderAdapter", "Direct provider adapter")
+      : adminText("rssFollowingDirectory", "RSS-following directory");
     titleGroup.append(title, semantics);
     const badges = document.createElement("div");
     badges.className = "podcast-admin__badges";
     badges.append(
       distributionBadge(
-        destination.enabled ? "Enabled" : "Disabled",
+        destination.enabled
+          ? adminText("enabled", "Enabled")
+          : adminText("disabled", "Disabled"),
         destination.enabled ? "is-ready" : ""
       ),
       distributionBadge(
@@ -5803,20 +6136,37 @@ function startPodcastAdmin(root) {
     const details = document.createElement("p");
     details.className = "podcast-admin__directory-details";
     details.textContent = destination.publicationRevision
-      ? `Latest episode revision ${Number(
-        destination.publicationRevision
-      )}${destination.lastObservedAt
-        ? ` · observed ${formatDate(destination.lastObservedAt)}`
-        : ""}.`
-      : "Directory setup state applies to this show.";
+      ? `${adminText(
+          "latestEpisodeRevision",
+          "Latest episode revision %{revision}",
+          { revision: Number(destination.publicationRevision) }
+        )}${destination.lastObservedAt
+          ? ` · ${adminText(
+              "observedAt",
+              "observed %{date}",
+              { date: formatDate(destination.lastObservedAt) }
+            )}`
+          : ""}.`
+      : adminText(
+          "directorySetupApplies",
+          "Directory setup state applies to this show."
+        );
     card.append(details);
 
     const checklist = [
       destination.ownerAccountLabel
-        ? `Owner account: ${String(destination.ownerAccountLabel)}`
+        ? adminText(
+            "ownerAccount",
+            "Owner account: %{account}",
+            { account: String(destination.ownerAccountLabel) }
+          )
         : "",
       destination.submissionDate
-        ? `Submitted: ${String(destination.submissionDate)}`
+        ? adminText(
+            "submittedAt",
+            "Submitted: %{date}",
+            { date: String(destination.submissionDate) }
+          )
         : ""
     ].filter(Boolean);
     if (checklist.length) {
@@ -5836,19 +6186,19 @@ function startPodcastAdmin(root) {
     links.className = "podcast-admin__directory-links";
     const setupLink = safeDistributionLink(
       destination.submissionUrl,
-      "Open owner setup"
+      adminText("openOwnerSetup", "Open owner setup")
     );
     const listingLink = safeDistributionLink(
       destination.listingUrl,
-      "Open public listing"
+      adminText("openPublicListing", "Open public listing")
     );
     const evidenceLink = safeDistributionLink(
       destination.evidenceUrl,
-      "Open episode evidence"
+      adminText("openEpisodeEvidence", "Open episode evidence")
     );
     const submissionEvidenceLink = safeDistributionLink(
       destination.submissionEvidenceUrl,
-      "Open submission evidence"
+      adminText("openSubmissionEvidence", "Open submission evidence")
     );
     if (setupLink) links.append(setupLink);
     if (submissionEvidenceLink) links.append(submissionEvidenceLink);
@@ -5874,14 +6224,17 @@ function startPodcastAdmin(root) {
       form.dataset.episodeId = episodeId;
 
       const statusLabel = document.createElement("label");
-      statusLabel.textContent = "Owner setup";
+      statusLabel.textContent = adminText("ownerSetup", "Owner setup");
       const status = document.createElement("select");
       status.name = "ownerSetupStatus";
       for (const [value, label] of [
-        ["not_started", "Not started"],
-        ["pending", "In progress"],
-        ["verified", "Setup complete"],
-        ["not_required", "Not required"]
+        [
+          "not_started",
+          adminText("setupNotStartedOption", "Not started")
+        ],
+        ["pending", adminText("setupInProgressOption", "In progress")],
+        ["verified", adminText("setupCompleteOption", "Setup complete")],
+        ["not_required", adminText("setupNotRequiredOption", "Not required")]
       ]) {
         status.append(
           new Option(
@@ -5895,18 +6248,27 @@ function startPodcastAdmin(root) {
       statusLabel.append(status);
 
       const accountLabel = document.createElement("label");
-      accountLabel.textContent = "Responsible account label (optional)";
+      accountLabel.textContent = adminText(
+        "responsibleAccountLabel",
+        "Responsible account label (optional)"
+      );
       const account = document.createElement("input");
       account.name = "ownerAccountLabel";
       account.type = "text";
       account.maxLength = 120;
       account.autocomplete = "off";
-      account.placeholder = "Dust Wave operations";
+      account.placeholder = adminText(
+        "operationsPlaceholder",
+        "Dust Wave operations"
+      );
       account.value = String(destination.ownerAccountLabel || "");
       accountLabel.append(account);
 
       const submissionDateLabel = document.createElement("label");
-      submissionDateLabel.textContent = "Submission date (optional)";
+      submissionDateLabel.textContent = adminText(
+        "submissionDateOptional",
+        "Submission date (optional)"
+      );
       const submissionDate = document.createElement("input");
       submissionDate.name = "submissionDate";
       submissionDate.type = "date";
@@ -5914,8 +6276,10 @@ function startPodcastAdmin(root) {
       submissionDateLabel.append(submissionDate);
 
       const submissionEvidenceLabel = document.createElement("label");
-      submissionEvidenceLabel.textContent =
-        "Submission receipt or dashboard URL (optional)";
+      submissionEvidenceLabel.textContent = adminText(
+        "submissionEvidenceOptional",
+        "Submission receipt or dashboard URL (optional)"
+      );
       const submissionEvidence = document.createElement("input");
       submissionEvidence.name = "submissionEvidenceUrl";
       submissionEvidence.type = "url";
@@ -5928,7 +6292,10 @@ function startPodcastAdmin(root) {
       submissionEvidenceLabel.append(submissionEvidence);
 
       const listingLabel = document.createElement("label");
-      listingLabel.textContent = "Public listing URL (optional)";
+      listingLabel.textContent = adminText(
+        "publicListingOptional",
+        "Public listing URL (optional)"
+      );
       const listing = document.createElement("input");
       listing.name = "listingUrl";
       listing.type = "url";
@@ -5940,8 +6307,10 @@ function startPodcastAdmin(root) {
 
       const notesLabel = document.createElement("label");
       notesLabel.className = "podcast-admin__distribution-form-wide";
-      notesLabel.textContent =
-        "Operational notes (never passwords or verification codes)";
+      notesLabel.textContent = adminText(
+        "operationalNotes",
+        "Operational notes (never passwords or verification codes)"
+      );
       const notes = document.createElement("textarea");
       notes.name = "setupNotes";
       notes.rows = 3;
@@ -5955,12 +6324,15 @@ function startPodcastAdmin(root) {
       enabled.name = "enabled";
       enabled.type = "checkbox";
       enabled.checked = Boolean(destination.enabled);
-      enabledLabel.append(enabled, document.createTextNode(" Enabled"));
+      enabledLabel.append(
+        enabled,
+        document.createTextNode(` ${adminText("enabled", "Enabled")}`)
+      );
 
       const save = document.createElement("button");
       save.className = "btn btn-outline-light";
       save.type = "submit";
-      save.textContent = "Save setup";
+      save.textContent = adminText("saveSetup", "Save setup");
       const formStatus = document.createElement("p");
       formStatus.className = "podcast-admin__status";
       formStatus.dataset.podcastDistributionStatus = "";
@@ -6005,18 +6377,21 @@ function startPodcastAdmin(root) {
     );
 
     const stateLabel = document.createElement("label");
-    stateLabel.textContent = "Episode directory state";
+    stateLabel.textContent = adminText(
+      "episodeDirectoryState",
+      "Episode directory state"
+    );
     const state = document.createElement("select");
     state.name = "status";
     state.append(
       new Option(
-        "Observed in directory",
+        adminText("distributionObserved", "Observed in directory"),
         "observed",
         false,
         destination.publicationStatus !== "failed"
       ),
       new Option(
-        "Needs attention",
+        adminText("distributionNeedsAttention", "Needs attention"),
         "failed",
         false,
         destination.publicationStatus === "failed"
@@ -6025,7 +6400,10 @@ function startPodcastAdmin(root) {
     stateLabel.append(state);
 
     const evidenceLabel = document.createElement("label");
-    evidenceLabel.textContent = "HTTPS episode evidence";
+    evidenceLabel.textContent = adminText(
+      "httpsEpisodeEvidence",
+      "HTTPS episode evidence"
+    );
     const evidence = document.createElement("input");
     evidence.name = "evidenceUrl";
     evidence.type = "url";
@@ -6037,7 +6415,7 @@ function startPodcastAdmin(root) {
 
     const errorLabel = document.createElement("label");
     errorLabel.dataset.podcastDirectoryObservationError = "";
-    errorLabel.textContent = "Failure detail";
+    errorLabel.textContent = adminText("failureDetail", "Failure detail");
     const error = document.createElement("textarea");
     error.name = "error";
     error.rows = 2;
@@ -6048,7 +6426,10 @@ function startPodcastAdmin(root) {
     const save = document.createElement("button");
     save.className = "btn btn-outline-light";
     save.type = "submit";
-    save.textContent = "Save episode evidence";
+    save.textContent = adminText(
+      "saveEpisodeEvidence",
+      "Save episode evidence"
+    );
     const formStatus = document.createElement("p");
     formStatus.className = "podcast-admin__status";
     formStatus.dataset.podcastDirectoryObservationStatus = "";
@@ -6088,21 +6469,39 @@ function startPodcastAdmin(root) {
 
   function distributionStatusLabel(value) {
     return {
-      not_started: "Setup not started",
-      pending: "Setup in progress",
-      verified: "Owner setup complete",
-      not_required: "Setup not required",
-      setup_required: "Setup required",
-      waiting_for_feed: "Waiting for RSS ingestion",
-      queued: "Queued",
-      running: "Running",
-      processing: "Processing",
-      succeeded: "Succeeded",
-      observed: "Observed in directory",
-      failed: "Needs attention",
-      canceled: "Canceled",
-      disabled: "Disabled"
-    }[String(value || "")] || "Unknown";
+      not_started: adminText(
+        "distributionSetupNotStarted",
+        "Setup not started"
+      ),
+      pending: adminText(
+        "distributionSetupInProgress",
+        "Setup in progress"
+      ),
+      verified: adminText(
+        "distributionOwnerSetupComplete",
+        "Owner setup complete"
+      ),
+      not_required: adminText(
+        "distributionSetupNotRequired",
+        "Setup not required"
+      ),
+      setup_required: adminText(
+        "distributionSetupRequired",
+        "Setup required"
+      ),
+      waiting_for_feed: adminText(
+        "distributionWaitingForRss",
+        "Waiting for RSS ingestion"
+      ),
+      queued: adminText("distributionQueued", "Queued"),
+      running: adminText("distributionRunning", "Running"),
+      processing: adminText("distributionProcessing", "Processing"),
+      succeeded: adminText("distributionSucceeded", "Succeeded"),
+      observed: adminText("distributionObserved", "Observed in directory"),
+      failed: adminText("distributionNeedsAttention", "Needs attention"),
+      canceled: adminText("distributionCanceled", "Canceled"),
+      disabled: adminText("distributionDisabled", "Disabled")
+    }[String(value || "")] || adminText("distributionUnknown", "Unknown");
   }
 
   function safeDistributionLink(value, label) {
@@ -6156,7 +6555,7 @@ function startPodcastAdmin(root) {
     const value = button.dataset.podcastDistributionCopyFeed || "";
     try {
       await navigator.clipboard.writeText(value);
-      setStatus(status, "Feed URL copied.");
+      setStatus(status, adminText("feedUrlCopied", "Feed URL copied."));
     } catch (_error) {
       const input = distributionRoot.querySelector(
         "[data-podcast-distribution-feed-url]"
@@ -6165,7 +6564,10 @@ function startPodcastAdmin(root) {
       input?.select();
       setStatus(
         status,
-        "Copy is unavailable. The feed URL is selected for manual copying.",
+        adminText(
+          "feedCopySelected",
+          "Copy is unavailable. The feed URL is selected for manual copying."
+        ),
         true
       );
     }
@@ -6178,7 +6580,12 @@ function startPodcastAdmin(root) {
     const publicationRevision = Number(
       button.dataset.publicationRevision || 0
     );
-    const channelName = String(button.dataset.channelName || "channel");
+    const channelName = String(
+      button.dataset.channelName
+      || adminText("channelFallback", "Channel").toLocaleLowerCase(
+        document.documentElement.lang || "en"
+      )
+    );
     if (
       !episodeId
       || !/^[A-Za-z0-9_-]+$/.test(destination)
@@ -6187,14 +6594,25 @@ function startPodcastAdmin(root) {
     ) return;
     if (
       !window.confirm(
-        `Retry ${channelName} for release revision ${publicationRevision}?`
+        adminText(
+          "retryReleaseConfirm",
+          "Retry %{channel} for release revision %{revision}?",
+          { channel: channelName, revision: publicationRevision }
+        )
       )
     ) return;
     const status = button.parentElement?.querySelector(
       "[data-podcast-release-retry-status]"
     );
     button.disabled = true;
-    setStatus(status, `Queueing ${channelName} retry…`);
+    setStatus(
+      status,
+      adminText(
+        "queueingRetry",
+        "Queueing %{channel} retry…",
+        { channel: channelName }
+      )
+    );
     try {
       const result = await client.request(
         `/v1/admin/episodes/${encodeURIComponent(
@@ -6208,12 +6626,24 @@ function startPodcastAdmin(root) {
       setStatus(
         status,
         result.idempotent
-          ? `${channelName} is already queued or running.`
-          : `${channelName} retry queued${
-            result.delivery === "scheduled"
-              ? " for the next scheduler pass"
-              : ""
-          }.`
+          ? adminText(
+              "channelAlreadyQueued",
+              "%{channel} is already queued or running.",
+              { channel: channelName }
+            )
+          : adminText(
+              "channelRetryQueued",
+              "%{channel} retry queued%{schedule}.",
+              {
+                channel: channelName,
+                schedule: result.delivery === "scheduled"
+                  ? adminText(
+                      "nextSchedulerPass",
+                      " for the next scheduler pass"
+                    )
+                  : ""
+              }
+            )
       );
       await loadDistribution(episodeId);
     } catch (error) {
@@ -6230,7 +6660,10 @@ function startPodcastAdmin(root) {
     const button = form.querySelector('button[type="submit"]');
     const status = form.querySelector("[data-podcast-distribution-status]");
     button.disabled = true;
-    setStatus(status, "Saving owner setup…");
+    setStatus(
+      status,
+      adminText("savingOwnerSetup", "Saving owner setup…")
+    );
     try {
       await client.request(
         `/v1/admin/shows/${encodeURIComponent(
@@ -6250,7 +6683,10 @@ function startPodcastAdmin(root) {
           }
         }
       );
-      setStatus(status, "Directory setup saved.");
+      setStatus(
+        status,
+        adminText("directorySetupSaved", "Directory setup saved.")
+      );
       await loadDistribution(form.dataset.episodeId || undefined);
     } catch (error) {
       setStatus(status, friendlyError(error), true);
@@ -6281,7 +6717,10 @@ function startPodcastAdmin(root) {
       "[data-podcast-directory-observation-status]"
     );
     button.disabled = true;
-    setStatus(status, "Saving episode evidence…");
+    setStatus(
+      status,
+      adminText("savingEpisodeEvidence", "Saving episode evidence…")
+    );
     try {
       const result = await client.request(
         `/v1/admin/episodes/${encodeURIComponent(
@@ -6300,8 +6739,14 @@ function startPodcastAdmin(root) {
       setStatus(
         status,
         result.idempotent
-          ? "Directory evidence is already current."
-          : "Directory evidence saved."
+          ? adminText(
+              "directoryEvidenceCurrent",
+              "Directory evidence is already current."
+            )
+          : adminText(
+              "directoryEvidenceSaved",
+              "Directory evidence saved."
+            )
       );
       await loadDistribution(episodeId);
     } catch (error) {
@@ -6338,7 +6783,10 @@ function startPodcastAdmin(root) {
       fillCreativeCampaignSelect();
       return;
     }
-    campaignList.innerHTML = "<p>Loading sponsor campaigns…</p>";
+    campaignList.innerHTML = `<p>${escapeHtml(adminText(
+      "loadingSponsorCampaigns",
+      "Loading sponsor campaigns…"
+    ))}</p>`;
     try {
       const payload = await client.request(
         `/v1/admin/ads/campaigns?showId=${encodeURIComponent(selectedShowId)}`
@@ -6360,7 +6808,10 @@ function startPodcastAdmin(root) {
     const activeCampaigns = campaigns.filter(({ active }) => active);
     select.replaceChildren(...activeCampaigns.map((campaign) =>
       new Option(
-        `${campaign.name} — ${humanizeCode(campaign.approvalStatus)}`,
+        `${campaign.name} — ${localizedCode(
+          "campaignStatus",
+          campaign.approvalStatus
+        )}`,
         campaign.id,
         false,
         campaign.id === previousValue
@@ -6371,7 +6822,10 @@ function startPodcastAdmin(root) {
     if (activeCampaigns.length === 0) {
       setStatus(
         creativeStatus,
-        "Create an active campaign before uploading creative audio."
+        adminText(
+          "createActiveCampaignFirst",
+          "Create an active campaign before uploading creative audio."
+        )
       );
     } else if (creativeProgress.hidden) {
       setStatus(creativeStatus, "");
@@ -6380,8 +6834,12 @@ function startPodcastAdmin(root) {
 
   function renderCampaigns(campaignRows) {
     if (!campaignRows.length) {
-      campaignList.innerHTML =
-        '<p class="podcast-admin__empty">No sponsor or house-promo campaigns yet.</p>';
+      campaignList.innerHTML = `<p class="podcast-admin__empty">${escapeHtml(
+        adminText(
+          "noSponsorCampaigns",
+          "No sponsor or house-promo campaigns yet."
+        )
+      )}</p>`;
       return;
     }
     campaignList.replaceChildren(...campaignRows.map((campaign) => {
@@ -6392,23 +6850,44 @@ function startPodcastAdmin(root) {
         ? blockers.map((blocker) =>
             `<li>${escapeHtml(humanizeCode(blocker))}</li>`
           ).join("")
-        : "<li>Campaign metadata is ready.</li>";
+        : `<li>${escapeHtml(adminText(
+            "campaignMetadataReady",
+            "Campaign metadata is ready."
+          ))}</li>`;
       const canApprove = canManageCampaigns
         && campaign.active
         && campaign.approvalStatus !== "approved";
       const canKill = canManageCampaigns && campaign.active;
       row.innerHTML = `
         <div>
-          <p class="podcast-admin__pill">${escapeHtml(campaign.approvalStatus)} · ${campaign.active ? "active draft row" : "revoked"}</p>
+          <p class="podcast-admin__pill">${escapeHtml(localizedCode(
+            "campaignStatus",
+            campaign.approvalStatus
+          ))} · ${escapeHtml(campaign.active
+            ? adminText("activeDraftRow", "active draft row")
+            : adminText("revoked", "revoked"))}</p>
           <h3>${escapeHtml(campaign.name)}</h3>
-          <p>${escapeHtml(campaign.campaignType)}${campaign.sponsor?.name ? ` · ${escapeHtml(campaign.sponsor.name)}` : ""}</p>
+          <p>${escapeHtml(localizedCode(
+            "campaignType",
+            campaign.campaignType
+          ))}${campaign.sponsor?.name ? ` · ${escapeHtml(campaign.sponsor.name)}` : ""}</p>
           <p>${escapeHtml(formatDate(campaign.startsAt))} → ${escapeHtml(formatDate(campaign.endsAt))}</p>
-          <p>Qualified: ${Number(campaign.qualifiedImpressions || 0)}${campaign.qualifiedImpressionGoal ? ` / ${Number(campaign.qualifiedImpressionGoal)}` : ""} · Ready creatives: ${Number(campaign.readyCreativeCount || 0)}</p>
+          <p>${escapeHtml(adminText(
+            "qualifiedAndCreatives",
+            "Qualified: %{qualified}%{goal} · Ready creatives: %{creatives}",
+            {
+              qualified: formatInteger(campaign.qualifiedImpressions),
+              goal: campaign.qualifiedImpressionGoal
+                ? ` / ${formatInteger(campaign.qualifiedImpressionGoal)}`
+                : "",
+              creatives: formatInteger(campaign.readyCreativeCount)
+            }
+          ))}</p>
           <ul>${blockerItems}</ul>
         </div>
         <div class="podcast-admin__episode-actions">
-          <button class="btn btn-outline-light" type="button" data-approve-campaign="${escapeAttribute(campaign.id)}" ${canApprove ? "" : "disabled"}>Approve</button>
-          <button class="btn btn-danger" type="button" data-kill-campaign="${escapeAttribute(campaign.id)}" ${canKill ? "" : "disabled"}>Kill</button>
+          <button class="btn btn-outline-light" type="button" data-approve-campaign="${escapeAttribute(campaign.id)}" ${canApprove ? "" : "disabled"}>${escapeHtml(adminText("approve", "Approve"))}</button>
+          <button class="btn btn-danger" type="button" data-kill-campaign="${escapeAttribute(campaign.id)}" ${canKill ? "" : "disabled"}>${escapeHtml(adminText("kill", "Kill"))}</button>
         </div>`;
       return row;
     }));
@@ -6419,7 +6898,10 @@ function startPodcastAdmin(root) {
     const button = campaignForm.querySelector('button[type="submit"]');
     const direct = campaignForm.elements.campaignType.value === "direct";
     button.disabled = true;
-    setStatus(campaignStatus, "Creating audited campaign draft…");
+    setStatus(
+      campaignStatus,
+      adminText("creatingCampaignDraft", "Creating audited campaign draft…")
+    );
     try {
       await client.request("/v1/admin/ads/campaigns", {
         method: "POST",
@@ -6457,7 +6939,10 @@ function startPodcastAdmin(root) {
       fillEpisodeSelects();
       setStatus(
         campaignStatus,
-        "Draft created. Validate compatible creative audio before approval."
+        adminText(
+          "campaignDraftCreated",
+          "Draft created. Validate compatible creative audio before approval."
+        )
       );
       await loadCampaigns();
     } catch (error) {
@@ -6472,13 +6957,20 @@ function startPodcastAdmin(root) {
     const file = creativeForm.elements.audio.files[0];
     if (!file) return;
     if (!/\.mp3$/i.test(file.name)) {
-      setStatus(creativeStatus, "Choose an MP3 file.", true);
+      setStatus(
+        creativeStatus,
+        adminText("chooseMp3", "Choose an MP3 file."),
+        true
+      );
       return;
     }
     if (file.size < 1 || file.size > 25 * 1024 * 1024) {
       setStatus(
         creativeStatus,
-        "Creative audio must be between 1 byte and 25 MiB.",
+        adminText(
+          "creativeAudioSize",
+          "Creative audio must be between 1 byte and 25 MiB."
+        ),
         true
       );
       return;
@@ -6488,7 +6980,13 @@ function startPodcastAdmin(root) {
     button.disabled = true;
     creativeProgress.hidden = false;
     creativeProgress.value = 0;
-    setStatus(creativeStatus, "Creating audited creative metadata…");
+    setStatus(
+      creativeStatus,
+      adminText(
+        "creatingCreativeMetadata",
+        "Creating audited creative metadata…"
+      )
+    );
     try {
       const created = await client.request(
         `/v1/admin/ads/campaigns/${encodeURIComponent(campaignId)}/creatives`,
@@ -6510,9 +7008,18 @@ function startPodcastAdmin(root) {
         created.upload?.lengthHeader !== "x-podcast-upload-bytes"
         || created.upload?.maximumBytes < file.size
       ) {
-        throw new Error("The creative upload contract was not accepted.");
+        throw new Error(adminText(
+          "creativeUploadRejected",
+          "The creative upload contract was not accepted."
+        ));
       }
-      setStatus(creativeStatus, "Streaming creative audio to private storage…");
+      setStatus(
+        creativeStatus,
+        adminText(
+          "streamingCreative",
+          "Streaming creative audio to private storage…"
+        )
+      );
       await client.request(created.upload.path, {
         method: created.upload.method,
         body: file,
@@ -6522,21 +7029,37 @@ function startPodcastAdmin(root) {
         }
       });
       creativeProgress.value = 2;
-      setStatus(creativeStatus, "Validating MP3 frames, duration, and digest…");
+      setStatus(
+        creativeStatus,
+        adminText(
+          "validatingCreative",
+          "Validating MP3 frames, duration, and digest…"
+        )
+      );
       const validated = await client.request(
         `/v1/admin/ads/creatives/${encodeURIComponent(created.creativeId)}/validate`,
         { method: "POST", body: {} }
       );
       if (validated.validationStatus !== "ready") {
         throw new Error(
-          "The creative did not return a ready validation state."
+          adminText(
+            "creativeNotReady",
+            "The creative did not return a ready validation state."
+          )
         );
       }
       creativeProgress.value = 3;
       creativeForm.reset();
       setStatus(
         creativeStatus,
-        `Creative validated: ${Number(validated.report?.durationMs || 0)} ms, ${Number(validated.report?.frameCount || 0)} frames. Review and approve the campaign.`
+        adminText(
+          "creativeValidated",
+          "Creative validated: %{duration} ms, %{frames} frames. Review and approve the campaign.",
+          {
+            duration: formatInteger(validated.report?.durationMs),
+            frames: formatInteger(validated.report?.frameCount)
+          }
+        )
       );
       await loadCampaigns();
     } catch (error) {
@@ -6557,7 +7080,10 @@ function startPodcastAdmin(root) {
     if (
       killButton
       && !globalThis.confirm(
-        "Kill this campaign immediately? This campaign row cannot be reactivated."
+        adminText(
+          "killCampaignConfirm",
+          "Kill this campaign immediately? This campaign row cannot be reactivated."
+        )
       )
     ) {
       return;
@@ -6565,7 +7091,9 @@ function startPodcastAdmin(root) {
     button.disabled = true;
     setStatus(
       campaignStatus,
-      approveButton ? "Checking approval gates…" : "Killing campaign…"
+      approveButton
+        ? adminText("checkingApprovalGates", "Checking approval gates…")
+        : adminText("killingCampaign", "Killing campaign…")
     );
     try {
       await client.request(
@@ -6574,7 +7102,9 @@ function startPodcastAdmin(root) {
       );
       setStatus(
         campaignStatus,
-        approveButton ? "Campaign approved." : "Campaign killed."
+        approveButton
+          ? adminText("campaignApproved", "Campaign approved.")
+          : adminText("campaignKilled", "Campaign killed.")
       );
       await loadCampaigns();
     } catch (error) {
@@ -6588,7 +7118,13 @@ function startPodcastAdmin(root) {
     const button = sponsorForm.querySelector('button[type="submit"]');
     button.disabled = true;
     sponsorResult.replaceChildren();
-    setStatus(sponsorStatus, "Evaluating current sponsor inventory…");
+    setStatus(
+      sponsorStatus,
+      adminText(
+        "evaluatingSponsorInventory",
+        "Evaluating current sponsor inventory…"
+      )
+    );
     try {
       const payload = await client.request("/v1/admin/ads/preview", {
         method: "POST",
@@ -6602,10 +7138,19 @@ function startPodcastAdmin(root) {
         }
       });
       if (!payload.previewOnly || payload.persisted) {
-        throw new Error("The sponsor preview safety contract was not returned.");
+        throw new Error(adminText(
+          "previewSafetyRejected",
+          "The sponsor preview safety contract was not returned."
+        ));
       }
       renderSponsorDecision(payload);
-      setStatus(sponsorStatus, "Preview complete. No delivery or counters changed.");
+      setStatus(
+        sponsorStatus,
+        adminText(
+          "previewComplete",
+          "Preview complete. No delivery or counters changed."
+        )
+      );
     } catch (error) {
       setStatus(sponsorStatus, friendlyError(error), true);
     } finally {
@@ -6618,21 +7163,40 @@ function startPodcastAdmin(root) {
     const selection = payload.decision?.selection;
     const decision = selection
       ? `
-        <p class="podcast-admin__pill">Proposed selection</p>
-        <h3>${escapeHtml(selection.campaignType)} campaign</h3>
+        <p class="podcast-admin__pill">${escapeHtml(adminText(
+          "proposedSelection",
+          "Proposed selection"
+        ))}</p>
+        <h3>${escapeHtml(adminText(
+          "campaignTypeHeading",
+          "%{type} campaign",
+          { type: localizedCode("campaignType", selection.campaignType) }
+        ))}</h3>
         <dl>
-          <div><dt>Campaign</dt><dd>${escapeHtml(selection.campaignId)}</dd></div>
-          <div><dt>Creative</dt><dd>${escapeHtml(selection.creativeId)}</dd></div>
-          <div><dt>Rule</dt><dd>${escapeHtml(selection.ruleId || "generic")}</dd></div>
-          <div><dt>Priority</dt><dd>${Number(selection.reason?.priority || 0)}</dd></div>
+          <div><dt>${escapeHtml(adminText("campaign", "Campaign"))}</dt><dd>${escapeHtml(selection.campaignId)}</dd></div>
+          <div><dt>${escapeHtml(adminText("creative", "Creative"))}</dt><dd>${escapeHtml(selection.creativeId)}</dd></div>
+          <div><dt>${escapeHtml(adminText("rule", "Rule"))}</dt><dd>${escapeHtml(selection.ruleId || adminText("generic", "generic"))}</dd></div>
+          <div><dt>${escapeHtml(adminText("priority", "Priority"))}</dt><dd>${formatInteger(selection.reason?.priority)}</dd></div>
         </dl>`
       : `
-        <p class="podcast-admin__pill">Full-file fallback</p>
-        <h3>No eligible inventory</h3>
-        <p>The existing episode file remains the delivery choice.</p>`;
+        <p class="podcast-admin__pill">${escapeHtml(adminText(
+          "fullFileFallback",
+          "Full-file fallback"
+        ))}</p>
+        <h3>${escapeHtml(adminText(
+          "noEligibleInventory",
+          "No eligible inventory"
+        ))}</h3>
+        <p>${escapeHtml(adminText(
+          "existingEpisodeDelivery",
+          "The existing episode file remains the delivery choice."
+        ))}</p>`;
     const blockerItems = blockers.length
       ? blockers.map((blocker) => `<li>${escapeHtml(humanizeCode(blocker))}</li>`).join("")
-      : "<li>No readiness blockers reported.</li>";
+      : `<li>${escapeHtml(adminText(
+          "noReadinessBlockers",
+          "No readiness blockers reported."
+        ))}</li>`;
     const card = document.createElement("article");
     card.className = "podcast-admin__decision";
     card.innerHTML = `
@@ -6640,11 +7204,11 @@ function startPodcastAdmin(root) {
         ${decision}
       </div>
       <div>
-        <h3>Activation blockers</h3>
+        <h3>${escapeHtml(adminText("activationBlockers", "Activation blockers"))}</h3>
         <ul>${blockerItems}</ul>
-        <p><strong>Public delivery:</strong> ${escapeHtml(payload.publicDeliveryMode)}</p>
-        <p><strong>Campaigns evaluated:</strong> ${Number(payload.inventory?.campaignCount || 0)}</p>
-        <p><strong>Inventory revision:</strong> <code>${escapeHtml(String(payload.inventory?.fingerprint || "").slice(0, 12))}</code></p>
+        <p><strong>${escapeHtml(adminText("publicDelivery", "Public delivery"))}:</strong> ${escapeHtml(humanizeCode(payload.publicDeliveryMode))}</p>
+        <p><strong>${escapeHtml(adminText("campaignsEvaluated", "Campaigns evaluated"))}:</strong> ${formatInteger(payload.inventory?.campaignCount)}</p>
+        <p><strong>${escapeHtml(adminText("inventoryRevision", "Inventory revision"))}:</strong> <code>${escapeHtml(String(payload.inventory?.fingerprint || "").slice(0, 12))}</code></p>
       </div>`;
     sponsorResult.replaceChildren(card);
   }
@@ -7230,8 +7794,14 @@ function startPodcastAdmin(root) {
     setStatus(
       reconciliationStatus,
       reset
-        ? "Loading trusted sponsor-delivery evidence…"
-        : "Loading more campaign evidence…"
+        ? adminText(
+            "loadingTrustedEvidence",
+            "Loading trusted sponsor-delivery evidence…"
+          )
+        : adminText(
+            "loadingMoreCampaignEvidence",
+            "Loading more campaign evidence…"
+          )
     );
     const cursor = reset ? null : reconciliationCursor;
     const query = new URLSearchParams({
@@ -7255,8 +7825,14 @@ function startPodcastAdmin(root) {
       setStatus(
         reconciliationStatus,
         payload.summary?.discrepancyCount
-          ? "Counter differences require review before sponsor reporting."
-          : "Durable qualification rows and campaign counters reconcile."
+          ? adminText(
+              "counterDifferences",
+              "Counter differences require review before sponsor reporting."
+            )
+          : adminText(
+              "campaignCountersReconcile",
+              "Durable qualification rows and campaign counters reconcile."
+            )
       );
     } catch (error) {
       if (
@@ -7279,12 +7855,17 @@ function startPodcastAdmin(root) {
     const summary = payload.summary || {};
     const show = shows.find(({ id }) => id === selectedShowId);
     if (reconciliationShow) {
-      reconciliationShow.textContent = show?.title || "this show";
+      reconciliationShow.textContent = show?.title
+        || adminText("thisShow", "this show");
     }
     setReconciliationMetrics(summary);
     if (!reconciliationRows.length) {
-      reconciliationRoot.innerHTML =
-        '<p class="podcast-admin__empty">No sponsor or house-promo campaigns to reconcile yet.</p>';
+      reconciliationRoot.innerHTML = `<p class="podcast-admin__empty">${
+        escapeHtml(adminText(
+          "noCampaignsToReconcile",
+          "No sponsor or house-promo campaigns to reconcile yet."
+        ))
+      }</p>`;
       return;
     }
     const tableRows = reconciliationRows.map((campaign) => {
@@ -7297,9 +7878,15 @@ function startPodcastAdmin(root) {
         <tr>
           <th scope="row">
             <strong>${escapeHtml(campaign.name)}</strong>
-            <span>${escapeHtml(campaign.sponsorName || humanizeCode(campaign.campaignType))}</span>
+            <span>${escapeHtml(campaign.sponsorName || localizedCode(
+              "campaignType",
+              campaign.campaignType
+            ))}</span>
           </th>
-          <td>${escapeHtml(humanizeCode(campaign.approvalStatus))}</td>
+          <td>${escapeHtml(localizedCode(
+            "campaignStatus",
+            campaign.approvalStatus
+          ))}</td>
           <td>${progress}</td>
           <td>${formatInteger(campaign.qualificationRows)}</td>
           <td class="${campaign.reconciled ? "" : "is-error"}">${formatInteger(campaign.difference)}</td>
@@ -7310,25 +7897,33 @@ function startPodcastAdmin(root) {
       <div
         class="podcast-admin__table-scroll"
         role="region"
-        aria-label="Sponsor delivery reconciliation"
+        aria-label="${escapeAttribute(adminText(
+          "sponsorDeliveryReconciliation",
+          "Sponsor delivery reconciliation"
+        ))}"
         tabindex="0">
         <table class="podcast-admin__table">
-          <caption>Trusted download v1 · campaign counters compared with durable qualification rows</caption>
+          <caption>${escapeHtml(adminText(
+            "reconciliationCaption",
+            "Trusted download v1 · campaign counters compared with durable qualification rows"
+          ))}</caption>
           <thead>
             <tr>
-              <th scope="col">Campaign</th>
-              <th scope="col">Status</th>
-              <th scope="col">Progress</th>
-              <th scope="col">Durable rows</th>
-              <th scope="col">Difference</th>
-              <th scope="col">Last qualified</th>
+              <th scope="col">${escapeHtml(adminText("campaign", "Campaign"))}</th>
+              <th scope="col">${escapeHtml(adminText("status", "Status"))}</th>
+              <th scope="col">${escapeHtml(adminText("progress", "Progress"))}</th>
+              <th scope="col">${escapeHtml(adminText("durableRows", "Durable rows"))}</th>
+              <th scope="col">${escapeHtml(adminText("difference", "Difference"))}</th>
+              <th scope="col">${escapeHtml(adminText("lastQualified", "Last qualified"))}</th>
             </tr>
           </thead>
           <tbody>${tableRows}</tbody>
         </table>
       </div>
       ${reconciliationCursor
-        ? '<button class="btn btn-outline-light podcast-admin__more" type="button" data-podcast-reconciliation-more>Load more campaigns</button>'
+        ? `<button class="btn btn-outline-light podcast-admin__more" type="button" data-podcast-reconciliation-more>${escapeHtml(
+            adminText("loadMoreCampaigns", "Load more campaigns")
+          )}</button>`
         : ""}`;
   }
 
@@ -7748,7 +8343,12 @@ function slugify(value) {
 }
 
 function formatDate(value) {
-  return value ? new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(new Date(value)) : "not set";
+  return value
+    ? new Intl.DateTimeFormat(
+        document.documentElement.lang || "en",
+        { dateStyle: "medium", timeStyle: "short" }
+      ).format(new Date(value))
+    : adminText("notSet", "not set");
 }
 
 function formatBytes(value) {
@@ -7777,13 +8377,15 @@ function publicationGateLabel(value) {
 }
 
 function formatInteger(value) {
-  return new Intl.NumberFormat().format(Number(value || 0));
+  return new Intl.NumberFormat(
+    document.documentElement.lang || "en"
+  ).format(Number(value || 0));
 }
 
 function formatPercent(value) {
   const ratio = Number(value);
   if (!Number.isFinite(ratio)) return "0%";
-  return new Intl.NumberFormat(undefined, {
+  return new Intl.NumberFormat(document.documentElement.lang || "en", {
     style: "percent",
     maximumFractionDigits: 1
   }).format(ratio);
@@ -7791,6 +8393,11 @@ function formatPercent(value) {
 
 function humanizeCode(value) {
   return String(value || "").replace(/_/g, " ");
+}
+
+function localizedCode(prefix, value) {
+  const code = String(value || "").trim();
+  return adminText(`${prefix}_${code}`, humanizeCode(code));
 }
 
 function fallbackMime(filename) {
