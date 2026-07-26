@@ -1,10 +1,17 @@
 ---
-title: Sign up for our newsletter!
 layout: layouts/default.njk
 navbar: navbar1
 footer: footer1
 colorModifier: dark
-permalink: newsletter.html
+translationKey: newsletter
+pagination:
+  data: i18n.config.supportedLangs
+  size: 1
+  alias: language
+permalink: "{{ i18n.config.pages.newsletter[language] }}"
+eleventyComputed:
+  title: "{{ i18n[language].pages.newsletter.title }}"
+  description: "{{ i18n[language].pages.newsletter.description }}"
 ---
 <style>
   #popup { display: none !important; }
@@ -19,10 +26,10 @@ permalink: newsletter.html
       <div class="contact-form">
         <form id="newsletter-subscribe-form" class="validate newsletter-form" novalidate>
           <div id="newsletter_signup_scroll">
-            <h5 class="gambado">Keep up with all our shenanigans</h5>
+            <h5 class="gambado">{{ i18n | t(language, "pages.newsletter.heading") }}</h5>
             <div class="mc-field-group">
-              <label for="newsletter-email">Email Address <span class="asterisk">*</span></label>
-              <input type="email" value="" name="email" class="required email" id="newsletter-email" required>
+              <label for="newsletter-email">{{ i18n | t(language, "pages.newsletter.email") }} <span class="asterisk">*</span></label>
+              <input type="email" value="" name="email" class="required email" id="newsletter-email" autocomplete="email" inputmode="email" required>
             </div>
             <div id="newsletter-responses" class="clear foot">
               <div class="response" id="newsletter-error-response" style="display:none"></div>
@@ -30,12 +37,12 @@ permalink: newsletter.html
             </div>
             <div class="optionalParent">
               <div class="clear foot">
-                <input type="submit" value="Subscribe" class="button button--large border-color-white" style="margin-left: 0;">
+                <input type="submit" value="{{ i18n | t(language, 'pages.newsletter.subscribe') }}" class="button button--large border-color-white" style="margin-left: 0;">
               </div>
             </div>
           </div>
         </form>
-        <p style="font-size:small; margin-bottom:0;">We promise not to spam you -- our newsletter contains updates on what we're up to, like new film projects or events and whatnot. It goes out every 2 months or so.</p>
+        <p style="font-size:small; margin-bottom:0;">{{ i18n | t(language, "pages.newsletter.promise") }}</p>
       </div>
     </div>
   </div>
@@ -56,7 +63,7 @@ permalink: newsletter.html
     errorEl.style.display = 'none';
     successEl.style.display = 'none';
     submitBtn.disabled = true;
-    submitBtn.value = 'Subscribing...';
+    submitBtn.value = {{ i18n | t(language, "pages.newsletter.subscribing") | safeJsonLd | safe }};
 
     try {
       const res = await fetch('https://dustwave-newsletter.jogo.workers.dev', {
@@ -67,18 +74,18 @@ permalink: newsletter.html
       const data = await res.json();
 
       if (res.ok && data.success) {
-        successEl.textContent = data.message || 'Thanks for subscribing!';
+        successEl.textContent = data.message || {{ i18n | t(language, "pages.newsletter.success") | safeJsonLd | safe }};
         successEl.style.display = 'block';
         form.querySelector('input[type="email"]').value = '';
       } else {
-        throw new Error(data.error || 'Something went wrong');
+        throw new Error(data.error || {{ i18n | t(language, "pages.newsletter.error") | safeJsonLd | safe }});
       }
     } catch (err) {
       errorEl.textContent = err.message;
       errorEl.style.display = 'block';
     } finally {
       submitBtn.disabled = false;
-      submitBtn.value = 'Subscribe';
+      submitBtn.value = {{ i18n | t(language, "pages.newsletter.subscribe") | safeJsonLd | safe }};
     }
   });
 })();

@@ -13,6 +13,40 @@ const crypto = require("crypto");
 // WebP URLs are emitted only for the GitHub Pages build. Local builds keep
 // source image URLs so development never depends on generated assets.
 const useWebp = process.env.USE_WEBP === "true";
+const DEFAULT_LANGUAGE = "en";
+
+function valueAtPath(source, key) {
+  return String(key || "")
+    .split(".")
+    .filter(Boolean)
+    .reduce((value, part) => value?.[part], source);
+}
+
+function interpolateTranslation(value, variables = {}) {
+  if (typeof value !== "string") return value;
+  return Object.entries(variables || {}).reduce(
+    (result, [key, replacement]) =>
+      result.replaceAll(`%{${key}}`, String(replacement ?? "")),
+    value
+  );
+}
+
+function translate(i18n, language, key, variables = {}) {
+  const requestedLanguage = i18n?.config?.supportedLangs?.includes(language)
+    ? language
+    : i18n?.config?.defaultLang || DEFAULT_LANGUAGE;
+  const fallbackLanguage = i18n?.config?.defaultLang || DEFAULT_LANGUAGE;
+  const translated = valueAtPath(i18n?.[requestedLanguage], key);
+  const fallback = valueAtPath(i18n?.[fallbackLanguage], key);
+  return interpolateTranslation(translated ?? fallback ?? `[missing: ${key}]`, variables);
+}
+
+function localizedUrl(i18n, language, translationKey, fallback = "/") {
+  const requestedLanguage = i18n?.config?.supportedLangs?.includes(language)
+    ? language
+    : i18n?.config?.defaultLang || DEFAULT_LANGUAGE;
+  return i18n?.config?.pages?.[translationKey]?.[requestedLanguage] || fallback;
+}
 
 function resolveImagePath(imgPath) {
   if (!useWebp || !imgPath) return imgPath;
@@ -248,6 +282,12 @@ ${content}
   eleventyConfig.addFilter("readablePodcastDate", (value) => {
     const parsed = DateTime.fromISO(String(value || ''), { setZone: true });
     return parsed.isValid ? parsed.setZone('America/Denver').toFormat('LLLL d, yyyy') : '';
+  });
+  eleventyConfig.addFilter("t", translate);
+  eleventyConfig.addFilter("localizedUrl", localizedUrl);
+  eleventyConfig.addFilter("localizedDate", (dateObj, language = DEFAULT_LANGUAGE, format = "dd LLL yyyy") => {
+    const locale = language === "es" ? "es-US" : "en-US";
+    return DateTime.fromJSDate(dateObj, { zone: "utc" }).setLocale(locale).toFormat(format);
   });
   eleventyConfig.addFilter("safeJsonLd", safeJsonLd);
 

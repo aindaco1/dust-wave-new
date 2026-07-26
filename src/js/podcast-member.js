@@ -6,6 +6,7 @@ import {
   PasswordlessAdminSession as PasswordlessSession
 } from "./dust-wave-admin-shell/passwordless-session.js";
 
+const translate = globalThis.DustWaveI18n?.t || ((key) => key);
 const root = document.querySelector("[data-podcast-member]");
 if (root) startPodcastMember(root);
 
@@ -56,7 +57,7 @@ function startPodcastMember(rootElement) {
   restoreOrExchange();
 
   async function restoreOrExchange() {
-    setStatus(globalStatus, "Comprobando tu sesión… / Checking your session…");
+    setStatus(globalStatus, translate("member.checkingSession"));
     const token = session.tokenFromFragment();
     if (token) session.clearFragment();
     try {
@@ -71,7 +72,7 @@ function startPodcastMember(rootElement) {
         globalStatus,
         error instanceof PodcastApiError && error.status === 401
           ? token
-            ? "El enlace venció o ya fue usado. Solicita uno nuevo. / The link expired or was already used. Request a new one."
+            ? translate("member.expiredLink")
             : ""
           : friendlyError(error),
         Boolean(token) || !(error instanceof PodcastApiError && error.status === 401)
@@ -83,7 +84,7 @@ function startPodcastMember(rootElement) {
     event.preventDefault();
     const submit = loginForm.querySelector("button[type='submit']");
     submit.disabled = true;
-    setStatus(authStatus, "Enviando un enlace seguro… / Sending a secure link…");
+    setStatus(authStatus, translate("member.sendingLink"));
     try {
       await session.start({
         email: loginForm.elements.email.value,
@@ -92,7 +93,7 @@ function startPodcastMember(rootElement) {
       });
       setStatus(
         authStatus,
-        "Si existe una cuenta, el enlace ya va en camino. / If an account exists, the link is on its way."
+        translate("member.linkSent")
       );
     } catch (error) {
       setStatus(authStatus, friendlyError(error), true);
@@ -107,7 +108,7 @@ function startPodcastMember(rootElement) {
     try {
       await session.logout();
       showLoggedOut();
-      setStatus(globalStatus, "Sesión cerrada. / Signed out.");
+      setStatus(globalStatus, translate("member.signedOut"));
     } catch (error) {
       setStatus(globalStatus, friendlyError(error), true);
     } finally {
@@ -125,12 +126,13 @@ function startPodcastMember(rootElement) {
       ? identity.subscriptions
       : [];
     sessionSummary.textContent = subscriptions.length
-      ? `${subscriptions.length} suscripción${
-        subscriptions.length === 1 ? "" : "es"
-      } / ${subscriptions.length} subscription${
-        subscriptions.length === 1 ? "" : "s"
-      }`
-      : "No hay suscripciones vinculadas todavía. / No subscriptions are linked yet.";
+      ? translate(
+        subscriptions.length === 1
+          ? "member.subscriptionCount"
+          : "member.subscriptionCountPlural",
+        { count: subscriptions.length }
+      )
+      : translate("member.noSubscriptions");
     subscriptionList.replaceChildren(
       ...subscriptions.map(subscriptionCard)
     );
@@ -154,7 +156,7 @@ function startPodcastMember(rootElement) {
     submit.disabled = true;
     setStatus(
       poolRedemptionStatus,
-      "Comprobando el código… / Checking the code…"
+      translate("member.checkingCode")
     );
     try {
       const result = await client.request("/v1/member/redemptions/pool", {
@@ -165,7 +167,7 @@ function startPodcastMember(rootElement) {
       const title = String(
         result?.redemption?.show?.title || "Dust Wave Podcast"
       );
-      const success = `Acceso activado para ${title}. / Access activated for ${title}.`;
+      const success = translate("member.accessActivated", { title });
       setStatus(poolRedemptionStatus, success);
       try {
         showAuthenticated(await session.restore());
@@ -173,7 +175,7 @@ function startPodcastMember(rootElement) {
       } catch {
         setStatus(
           poolRedemptionStatus,
-          `${success} Actualiza la página para ver el acceso. / Refresh the page to see it.`
+          translate("member.refreshForAccess", { message: success })
         );
       }
     } catch (error) {
@@ -189,28 +191,35 @@ function startPodcastMember(rootElement) {
 
     const heading = document.createElement("h3");
     const showLink = document.createElement("a");
-    showLink.href = `/podcasts/${encodeURIComponent(subscription.show?.slug || "")}/`;
+    const localePrefix = document.documentElement.lang === "es" ? "/es" : "";
+    showLink.href = `${localePrefix}/podcasts/${encodeURIComponent(
+      subscription.show?.slug || ""
+    )}/`;
     showLink.textContent = subscription.show?.title || "Dust Wave Podcast";
     heading.append(showLink);
 
     const badges = document.createElement("p");
     badges.className = "podcast-member__badges";
     badges.append(
-      badge(subscription.entitled ? "Premium activo / Active" : humanStatus(subscription.status)),
+      badge(
+        subscription.entitled
+          ? translate("member.premiumActive")
+          : humanStatus(subscription.status)
+      ),
       badge(planLabel(subscription.billingPeriod))
     );
 
     const access = document.createElement("p");
     access.textContent = subscription.entitled
-      ? "Acceso sin anuncios, anticipado y a episodios extra habilitado. / Ad-free, early, and bonus access is enabled."
-      : "El acceso premium no está activo. / Premium access is not active.";
+      ? translate("member.accessEnabled")
+      : translate("member.accessInactive");
 
     const feed = document.createElement("p");
     feed.textContent = subscription.hasPrivateFeed
-      ? "Ya existe un feed privado. Por seguridad, Dust Wave no puede volver a mostrar su URL; puedes reemplazarla abajo. / A private feed exists. For security, Dust Wave cannot show its URL again; you can replace it below."
+      ? translate("member.feedExists")
       : subscription.entitled
-        ? "Crea una URL privada para escuchar en tu app de podcasts. Solo se mostrará una vez. / Create a private URL for your podcast app. It will only be shown once."
-        : "Podrás crear un feed privado cuando la suscripción esté activa. / You can create a private feed when the subscription is active.";
+        ? translate("member.feedCreateBody")
+        : translate("member.feedRequiresAccess");
 
     card.append(heading, badges, access, feed);
     if (subscription.entitled) {
@@ -223,9 +232,9 @@ function startPodcastMember(rootElement) {
     if (subscription.currentPeriodEnd) {
       const period = document.createElement("p");
       period.className = "podcast-member__fine-print";
-      period.textContent = `Periodo actual: ${formatDate(
-        subscription.currentPeriodEnd
-      )} / Current period: ${formatDate(subscription.currentPeriodEnd)}`;
+      period.textContent = translate("member.currentPeriod", {
+        date: formatDate(subscription.currentPeriodEnd)
+      });
       card.append(period);
     }
     return card;
@@ -239,8 +248,8 @@ function startPodcastMember(rootElement) {
     action.type = "button";
     action.className = "btn btn-outline-light";
     action.textContent = subscription.hasPrivateFeed
-      ? "Reemplazar URL privada / Replace private URL"
-      : "Crear feed privado / Create private feed";
+      ? translate("member.replaceFeed")
+      : translate("member.createFeed");
 
     const status = document.createElement("p");
     status.className = "podcast-member__status podcast-member__fine-print";
@@ -252,7 +261,7 @@ function startPodcastMember(rootElement) {
       if (
         rotating
         && !globalThis.confirm(
-          "La URL privada anterior dejará de funcionar inmediatamente. ¿Continuar?\n\nThe previous private URL will stop working immediately. Continue?"
+          translate("member.rotateConfirm")
         )
       ) {
         return;
@@ -262,8 +271,8 @@ function startPodcastMember(rootElement) {
       setStatus(
         status,
         rotating
-          ? "Reemplazando la URL… / Replacing URL…"
-          : "Creando el feed… / Creating feed…"
+          ? translate("member.replacingFeed")
+          : translate("member.creatingFeed")
       );
       try {
         const slug = encodeURIComponent(subscription.show?.slug || "");
@@ -274,14 +283,14 @@ function startPodcastMember(rootElement) {
         const url = String(result?.feed?.url || "");
         if (!url) throw new PodcastApiError("private_feed_url_missing");
         subscription.hasPrivateFeed = true;
-        action.textContent = "Reemplazar URL privada / Replace private URL";
+        action.textContent = translate("member.replaceFeed");
         controls.insertBefore(
           privateFeedOutput(url, subscription.show?.slug || ""),
           status
         );
         setStatus(
           status,
-          "Guarda esta URL ahora: no volveremos a mostrarla. / Save this URL now: we will not show it again."
+          translate("member.saveFeed")
         );
       } catch (error) {
         setStatus(status, friendlyError(error), true);
@@ -298,12 +307,11 @@ function startPodcastMember(rootElement) {
     form.className = "podcast-member__notification-controls";
 
     const heading = document.createElement("h4");
-    heading.textContent = "Avisos del programa / Show notifications";
+    heading.textContent = translate("member.notifications");
 
     const explanation = document.createElement("p");
     explanation.className = "podcast-member__fine-print";
-    explanation.textContent =
-      "Recibe anuncios de episodios de este programa. Puedes retirarte cuando quieras. / Receive episode announcements for this show. You can opt out at any time.";
+    explanation.textContent = translate("member.notificationsBody");
 
     const consent = document.createElement("label");
     consent.className = "podcast-member__notification-consent";
@@ -312,12 +320,11 @@ function startPodcastMember(rootElement) {
     checkbox.checked =
       subscription.announcementNotificationsEnabled === true;
     const consentText = document.createElement("span");
-    consentText.textContent =
-      "Sí, quiero recibir avisos / Yes, send me announcements";
+    consentText.textContent = translate("member.notificationsConsent");
     consent.append(checkbox, consentText);
 
     const languageLabel = document.createElement("label");
-    languageLabel.textContent = "Idioma / Language";
+    languageLabel.textContent = translate("member.language");
     const language = document.createElement("select");
     language.replaceChildren(
       new Option("Español", "es"),
@@ -331,7 +338,7 @@ function startPodcastMember(rootElement) {
     const save = document.createElement("button");
     save.type = "submit";
     save.className = "btn btn-outline-light";
-    save.textContent = "Guardar avisos / Save notifications";
+    save.textContent = translate("member.saveNotifications");
 
     const status = document.createElement("p");
     status.className =
@@ -344,7 +351,7 @@ function startPodcastMember(rootElement) {
       save.disabled = true;
       setStatus(
         status,
-        "Guardando tu elección… / Saving your choice…"
+        translate("member.saving")
       );
       try {
         const slug = encodeURIComponent(subscription.show?.slug || "");
@@ -365,8 +372,8 @@ function startPodcastMember(rootElement) {
         setStatus(
           status,
           checkbox.checked
-            ? "Avisos activados. / Notifications enabled."
-            : "Avisos desactivados. / Notifications disabled."
+            ? translate("member.notificationsEnabled")
+            : translate("member.notificationsDisabled")
         );
       } catch (error) {
         setStatus(status, friendlyError(error), true);
@@ -392,7 +399,7 @@ function startPodcastMember(rootElement) {
     const action = document.createElement("button");
     action.type = "button";
     action.className = "btn btn-outline-light";
-    action.textContent = "Administrar pago / Manage billing";
+    action.textContent = translate("member.manageBilling");
 
     const status = document.createElement("p");
     status.className = "podcast-member__status podcast-member__fine-print";
@@ -403,7 +410,7 @@ function startPodcastMember(rootElement) {
       action.disabled = true;
       setStatus(
         status,
-        "Abriendo el portal seguro… / Opening secure billing portal…"
+        translate("member.openingBilling")
       );
       try {
         const slug = encodeURIComponent(subscription.show?.slug || "");
@@ -434,7 +441,7 @@ function startPodcastMember(rootElement) {
     )}`;
     const label = document.createElement("label");
     label.htmlFor = id;
-    label.textContent = "URL privada / Private URL";
+    label.textContent = translate("member.privateUrl");
 
     const row = document.createElement("div");
     row.className = "podcast-member__inline-form";
@@ -448,15 +455,15 @@ function startPodcastMember(rootElement) {
     const copy = document.createElement("button");
     copy.type = "button";
     copy.className = "btn btn-danger";
-    copy.textContent = "Copiar / Copy";
+    copy.textContent = translate("member.copy");
     copy.addEventListener("click", async () => {
       try {
         await navigator.clipboard.writeText(url);
-        copy.textContent = "Copiado / Copied";
+        copy.textContent = translate("member.copied");
       } catch {
         input.focus();
         input.select();
-        copy.textContent = "Seleccionado / Selected";
+        copy.textContent = translate("member.selected");
       }
     });
     row.append(input, copy);
@@ -476,7 +483,7 @@ function startPodcastMember(rootElement) {
         } else {
           setStatus(
             authStatus,
-            "No se pudo cargar la verificación. Recarga la página. / Verification could not load. Refresh the page.",
+            translate("member.verificationUnavailable"),
             true
           );
         }
@@ -487,6 +494,7 @@ function startPodcastMember(rootElement) {
         {
           sitekey: siteKey,
           action: "podcast_listener_login",
+          language: document.documentElement.lang || "en",
           callback: (token) => { turnstileToken = token; },
           "expired-callback": () => { turnstileToken = ""; },
           "error-callback": () => { turnstileToken = ""; }
@@ -511,20 +519,16 @@ function badge(label) {
 }
 
 function planLabel(period) {
-  if (period === "month") return "Mensual / Monthly";
-  if (period === "year") return "Anual / Annual";
-  return "Beneficio / Benefit";
+  if (period === "month") return translate("member.monthly");
+  if (period === "year") return translate("member.annual");
+  return translate("member.benefit");
 }
 
 function humanStatus(status) {
-  const labels = {
-    pending: "Pendiente / Pending",
-    past_due: "Pago pendiente / Past due",
-    paused: "Pausada / Paused",
-    canceled: "Cancelada / Canceled",
-    expired: "Vencida / Expired"
-  };
-  return labels[status] || "Inactiva / Inactive";
+  const label = translate(`member.${status}`);
+  return label.startsWith("[missing:")
+    ? translate("member.inactive")
+    : label;
 }
 
 function formatDate(value) {
@@ -565,49 +569,15 @@ function trustedStripeUrl(value, expectedHost) {
 
 function friendlyError(error) {
   if (!(error instanceof PodcastApiError)) {
-    return "No se pudo contactar el servicio. Inténtalo de nuevo. / The service could not be reached. Please retry.";
+    return translate("member.network");
   }
-  if (error.code === "listener_auth_not_configured") {
-    return "El acceso privado todavía no está configurado. / Private access is not configured yet.";
-  }
-  if (error.code === "invalid_csrf_token") {
-    return "La sesión segura cambió. Recarga la página. / Your secure session changed. Refresh the page.";
-  }
-  if (error.code === "rate_limited") {
-    return "Demasiados intentos. Espera y vuelve a intentar. / Too many attempts. Wait and retry.";
-  }
-  if (error.code === "premium_entitlement_required") {
-    return "La suscripción premium ya no está activa. / The premium subscription is no longer active.";
-  }
-  if (
-    error.code === "redemption_code_not_available"
-    || error.code === "invalid_redemption_code"
-  ) {
-    return "El código no está disponible para esta cuenta. Revisa el código y el correo del destinatario. / The code is not available for this account. Check the code and recipient email.";
-  }
-  if (error.code === "pool_redemption_not_configured") {
-    return "La activación de beneficios no está disponible en este momento. / Benefit redemption is temporarily unavailable.";
-  }
-  if (error.code === "private_feed_not_configured") {
-    return "Los feeds privados todavía no están configurados. / Private feeds are not configured yet.";
-  }
-  if (
-    error.code === "private_feed_conflict"
-    || error.code === "private_feed_already_exists"
-  ) {
-    return "El feed cambió en otra sesión. Recarga la página antes de continuar. / The feed changed in another session. Refresh before continuing.";
-  }
-  if (error.code === "stripe_subscription_not_found") {
-    return "No encontramos una suscripción de Stripe para este podcast. / We could not find a Stripe subscription for this podcast.";
-  }
-  if (
-    error.code === "billing_portal_not_configured"
-    || error.code === "billing_portal_unavailable"
-  ) {
-    return "El portal de pagos no está disponible en este momento. / The billing portal is temporarily unavailable.";
-  }
-  if (error.code === "unsafe_billing_destination") {
-    return "La dirección del portal de pagos no pasó la verificación. / The billing portal destination failed verification.";
-  }
-  return "No pudimos continuar de forma segura. Inténtalo de nuevo. / We could not continue securely. Please retry.";
+  const aliases = {
+    invalid_redemption_code: "redemption_code_not_available",
+    private_feed_already_exists: "private_feed_conflict",
+    billing_portal_unavailable: "billing_portal_not_configured"
+  };
+  const message = translate(`member.${aliases[error.code] || error.code}`);
+  return message.startsWith("[missing:")
+    ? translate("member.unknown")
+    : message;
 }

@@ -4,15 +4,16 @@
 		<span>(ɔ) DUST WAVE</span>
 		</div>
 		<div class="col-4 footer-social">
-		<a href="https://instagram.com/waveofdust" class="link-fancy" target="_blank"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a><span class="footer-sep"> | </span>
-		<a href="https://www.youtube.com/@dustwavecollective/videos" class="link-fancy" target="_blank"><i class="fa-brands fa-youtube" aria-hidden="true"></i></a><span class="footer-sep"> | </span>
-		<a href="https://www.tiktok.com/@waveofdust" class="link-fancy" target="_blank"><i class="fa-brands fa-tiktok" aria-hidden="true"></i></a><span class="footer-sep"> | </span>
-		<a href="https://bsky.app/profile/dustwave.xyz.web.brid.gy" class="link-fancy" title="Follow on Bluesky" target="_blank"><i class="fa-brands fa-bluesky" aria-hidden="true"></i></a><span class="footer-sep"> | </span>
-		<a href="https://fed.brid.gy/r/https://dustwave.xyz/" class="link-fancy" title="Follow on the Fediverse: @dustwave.xyz@dustwave.xyz" target="_blank"><i class="fa-brands fa-mastodon" aria-hidden="true"></i></a>
-		</div>
-		<div class="col-4">
-			<a class="link-fancy" href="/newsletter.html"><span>NEWSLETTER</span></a>
-		</div>
+			<a href="https://instagram.com/waveofdust" class="link-fancy" target="_blank" rel="noopener noreferrer" aria-label="{{ i18n | t(language, 'footer.instagram') }}"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a><span class="footer-sep"> | </span>
+			<a href="https://www.youtube.com/@dustwavecollective/videos" class="link-fancy" target="_blank" rel="noopener noreferrer" aria-label="{{ i18n | t(language, 'footer.youtube') }}"><i class="fa-brands fa-youtube" aria-hidden="true"></i></a><span class="footer-sep"> | </span>
+			<a href="https://www.tiktok.com/@waveofdust" class="link-fancy" target="_blank" rel="noopener noreferrer" aria-label="{{ i18n | t(language, 'footer.tiktok') }}"><i class="fa-brands fa-tiktok" aria-hidden="true"></i></a><span class="footer-sep"> | </span>
+			<a href="https://bsky.app/profile/dustwave.xyz.web.brid.gy" class="link-fancy" aria-label="{{ i18n | t(language, 'footer.bluesky') }}" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-bluesky" aria-hidden="true"></i></a><span class="footer-sep"> | </span>
+			<a href="https://fed.brid.gy/r/https://dustwave.xyz/" class="link-fancy" aria-label="{{ i18n | t(language, 'footer.fediverse') }}" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-mastodon" aria-hidden="true"></i></a>
+			</div>
+			<div class="col-4 site-footer__actions">
+				<a class="link-fancy" href="{{ i18n | localizedUrl(language, 'newsletter', '/newsletter.html') }}"><span>{{ i18n | t(language, "footer.newsletter") }}</span></a>
+				{% include "snippets/language-switcher.njk" %}
+			</div>
 	</div>
 	{% if environment == "production" %}
 	<!-- Newsletter Signup Popup -->
@@ -22,9 +23,9 @@
 				<div id="newsletter_signup">
 					<form id="popup-subscribe-form" class="validate" novalidate>
 						<div id="newsletter_signup_scroll">
-							<h5 class="gambado">Keep up with all our shenanigans</h5>
-							<div class="mc-field-group">
-								<label for="popup-email">Email Address <span class="asterisk">*</span></label>
+								<h5 class="gambado">{{ i18n | t(language, "footer.popupTitle") }}</h5>
+								<div class="mc-field-group">
+									<label for="popup-email">{{ i18n | t(language, "footer.email") }} <span class="asterisk">*</span></label>
 								<input type="email" value="" required aria-required="true" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" name="email" class="required email" id="popup-email">
 							</div>
 							<div id="popup-responses" class="clear foot">
@@ -33,13 +34,13 @@
 							</div>
 							<div class="optionalParent">
 								<div class="clear foot">
-									<input type="submit" value="Subscribe" class="button">
+										<input type="submit" value="{{ i18n | t(language, 'footer.subscribe') }}" class="button">
 								</div>
 							</div>
 						</div>
 					</form>
 				</div>
-				<button id="close-btn" class="close-btn">X</button>
+					<button id="close-btn" class="close-btn" type="button" aria-label="{{ i18n | t(language, 'footer.close') }}">X</button>
 			</div>
 		</div>
 	</div>
@@ -80,7 +81,7 @@
 		errorEl.style.display = 'none';
 		successEl.style.display = 'none';
 		submitBtn.disabled = true;
-		submitBtn.value = 'Subscribing...';
+			submitBtn.value = {{ i18n | t(language, "footer.subscribing") | safeJsonLd | safe }};
 
 		try {
 			const res = await fetch('https://dustwave-newsletter.jogo.workers.dev', {
@@ -91,19 +92,19 @@
 			const data = await res.json();
 
 			if (res.ok && data.success) {
-			successEl.textContent = data.message || 'Thanks for subscribing!';
+				successEl.textContent = data.message || {{ i18n | t(language, "footer.success") | safeJsonLd | safe }};
 			successEl.style.display = 'block';
 			form.querySelector('input[type="email"]').value = '';
 			setTimeout(() => popup.classList.remove('show'), 3000);
 			} else {
-			throw new Error(data.error || 'Something went wrong');
+				throw new Error(data.error || {{ i18n | t(language, "footer.error") | safeJsonLd | safe }});
 			}
 		} catch (err) {
 			errorEl.textContent = err.message;
 			errorEl.style.display = 'block';
 		} finally {
 			submitBtn.disabled = false;
-			submitBtn.value = 'Subscribe';
+				submitBtn.value = {{ i18n | t(language, "footer.subscribe") | safeJsonLd | safe }};
 		}
 		});
 	}

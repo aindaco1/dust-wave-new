@@ -3,21 +3,24 @@ layout: layouts/default.njk
 footer: footer1
 bodyModifier: podcast-show-page
 pagination:
-  data: podcastShows
+  data: podcastShowPages
   size: 1
-  alias: show
-permalink: "podcasts/{{ show.slug }}/index.html"
+  alias: showPage
+permalink: "{{ showPage.path }}"
 disableLegacyMediaPreconnects: true
+i18nRuntime: true
 eleventyComputed:
-  title: "{{ show.title }} — Dust Wave Podcasts"
-  description: "{{ show.description }} {{ show.descriptionEn }}"
-  language: "{{ show.language }}"
-  og_image: "{{ show.socialImage }}"
-  og_alt: "{{ show.title }}"
-  og_image_width: "{{ show.socialImageWidth }}"
-  og_image_height: "{{ show.socialImageHeight }}"
+  title: "{{ showPage.show.title }} — Dust Wave Podcasts"
+  description: "{% if showPage.language == 'es' %}{{ showPage.show.description }}{% else %}{{ showPage.show.descriptionEn }}{% endif %}"
+  language: "{{ showPage.language }}"
+  podcastShowSlug: "{{ showPage.show.slug }}"
+  og_image: "{{ showPage.show.socialImage }}"
+  og_alt: "{{ showPage.show.title }}"
+  og_image_width: "{{ showPage.show.socialImageWidth }}"
+  og_image_height: "{{ showPage.show.socialImageHeight }}"
 ---
 
+{% set show = showPage.show %}
 <article
   class="podcast-show"
   {% if show.premium.enabled %}
@@ -54,7 +57,7 @@ eleventyComputed:
             <img
               class="podcast-show__artwork"
               src="{{ show.artwork }}"
-              alt="Portada de {{ show.title }}"
+              alt="{{ i18n | t(language, 'podcast.artworkAlt', { title: show.title }) }}"
               width="505"
               height="505"
               decoding="async"
@@ -62,15 +65,14 @@ eleventyComputed:
           </picture>
         </div>
         <div class="col-12 col-md-7 col-lg-8">
-          <p class="podcast-show__eyebrow">Un podcast de Dust Wave</p>
+          <p class="podcast-show__eyebrow">{{ i18n | t(language, "podcast.showEyebrow") }}</p>
           <h1>{{ show.title }}</h1>
           <div class="podcast-show__description">
-            <p lang="es">{{ show.description }}</p>
-            <p lang="en">{{ show.descriptionEn }}</p>
+            <p>{{ show.description if language == "es" else show.descriptionEn }}</p>
           </div>
           <div class="podcast-show__actions">
-            <a class="btn btn-light" href="#episodios">Episodios</a>
-            <a class="btn btn-outline-light" href="{{ show.sourceUrl }}" rel="noopener noreferrer">Visita el Substack</a>
+            <a class="btn btn-light" href="#episodes">{{ i18n | t(language, "podcast.episodes") }}</a>
+            <a class="btn btn-outline-light" href="{{ show.sourceUrl }}" rel="noopener noreferrer">{{ i18n | t(language, "podcast.visitSource") }}</a>
           </div>
         </div>
       </div>
@@ -85,11 +87,11 @@ eleventyComputed:
       <div class="row g-4">
         <div class="col-12 col-lg-6">
           <div class="podcast-tier-card">
-            <p class="podcast-tier-card__label">Podcast público</p>
-            <h2 id="podcast-membership-title">{{ show.publicAccess.label }}</h2>
-            <p>Los episodios públicos estarán disponibles aquí y en el feed del podcast.</p>
+            <p class="podcast-tier-card__label">{{ i18n | t(language, "podcast.publicPodcast") }}</p>
+            <h2 id="podcast-membership-title">{{ i18n | t(language, "podcast.free") }}</h2>
+            <p>{{ i18n | t(language, "podcast.publicDescription") }}</p>
             {% if show.freeMiniEpisode.enabled %}
-            <p>Incluye un mini episodio gratuito para conocer el programa.</p>
+            <p>{{ i18n | t(language, "podcast.miniEpisode") }}</p>
             {% endif %}
           </div>
         </div>
@@ -98,39 +100,38 @@ eleventyComputed:
           <div class="podcast-tier-card podcast-tier-card--premium">
             <p class="podcast-tier-card__label">Premium</p>
             <h2>
-              ${{ show.premium.monthlyCents / 100 | round }}/mes
-              <span>o ${{ show.premium.annualCents / 100 | round }}/año</span>
+              ${{ show.premium.monthlyCents / 100 | round }}{{ i18n | t(language, "podcast.perMonth") }}
+              <span>{{ i18n | t(language, "podcast.orPerYear", { amount: show.premium.annualCents / 100 | round }) }}</span>
             </h2>
             <ul>
-              {% for benefit in show.premium.benefits %}
-              <li>{{ benefit }}</li>
-              {% endfor %}
+              <li>{{ i18n | t(language, "podcast.bonusEpisodes") }}</li>
+              <li>{{ i18n | t(language, "podcast.earlyAccess") }}</li>
             </ul>
-            <p>{{ show.earlyAccess.days }} días de acceso anticipado, con ajustes por episodio.</p>
+            <p>{{ i18n | t(language, "podcast.earlyAccessDays", { days: show.earlyAccess.days }) }}</p>
             <p
               class="podcast-checkout__availability"
               data-podcast-checkout-unavailable
               role="status">
-              Premium próximamente / Premium coming soon
+              {{ i18n | t(language, "podcast.premiumComingSoon") }}
             </p>
             <form class="podcast-checkout" data-podcast-checkout-form hidden>
               <fieldset class="podcast-checkout__plans">
-                <legend>Elige tu plan / Choose your plan</legend>
+                <legend>{{ i18n | t(language, "podcast.choosePlan") }}</legend>
                 <label data-podcast-plan="month">
                   <input type="radio" name="billingPeriod" value="month" checked>
                   <span>
-                    <strong>Mensual / Monthly</strong>
+                    <strong>{{ i18n | t(language, "podcast.monthly") }}</strong>
                     <small data-podcast-plan-price="month">
-                      ${{ show.premium.monthlyCents / 100 | round }}/mes
+                      ${{ show.premium.monthlyCents / 100 | round }}{{ i18n | t(language, "podcast.perMonth") }}
                     </small>
                   </span>
                 </label>
                 <label data-podcast-plan="year">
                   <input type="radio" name="billingPeriod" value="year">
                   <span>
-                    <strong>Anual / Annual</strong>
+                    <strong>{{ i18n | t(language, "podcast.annual") }}</strong>
                     <small data-podcast-plan-price="year">
-                      ${{ show.premium.annualCents / 100 | round }}/año
+                      ${{ show.premium.annualCents / 100 | round }}/{{ "año" if language == "es" else "year" }}
                     </small>
                   </span>
                 </label>
@@ -138,7 +139,7 @@ eleventyComputed:
 
               <div class="podcast-checkout__fields">
                 <div class="podcast-checkout__field podcast-checkout__field--wide">
-                  <label for="podcast-checkout-email">Correo / Email</label>
+                  <label for="podcast-checkout-email">{{ i18n | t(language, "podcast.email") }}</label>
                   <input
                     id="podcast-checkout-email"
                     name="email"
@@ -149,25 +150,25 @@ eleventyComputed:
                     required>
                 </div>
                 <div class="podcast-checkout__field">
-                  <label for="podcast-checkout-country">País / Country</label>
+                  <label for="podcast-checkout-country">{{ i18n | t(language, "podcast.country") }}</label>
                   <select
                     id="podcast-checkout-country"
                     name="country"
                     autocomplete="country"
                     required>
-                    <option value="">Selecciona / Select</option>
+                    <option value="">{{ i18n | t(language, "podcast.select") }}</option>
                   </select>
                 </div>
                 <div
                   class="podcast-checkout__field"
                   data-podcast-us-state-field>
-                  <label for="podcast-checkout-state">Estado / State</label>
+                  <label for="podcast-checkout-state">{{ i18n | t(language, "podcast.state") }}</label>
                   <select
                     id="podcast-checkout-state"
                     name="usState"
                     autocomplete="address-level1"
                     required>
-                    <option value="">Selecciona / Select</option>
+                    <option value="">{{ i18n | t(language, "podcast.select") }}</option>
                     <option value="AL">Alabama</option>
                     <option value="AK">Alaska</option>
                     <option value="AZ">Arizona</option>
@@ -226,7 +227,7 @@ eleventyComputed:
                   data-podcast-region-field
                   hidden>
                   <label for="podcast-checkout-region">
-                    Región / State or province
+                    {{ i18n | t(language, "podcast.region") }}
                   </label>
                   <input
                     id="podcast-checkout-region"
@@ -238,7 +239,7 @@ eleventyComputed:
                 </div>
                 <div class="podcast-checkout__field">
                   <label for="podcast-checkout-postal">
-                    Código postal / Postal code
+                    {{ i18n | t(language, "podcast.postalCode") }}
                   </label>
                   <input
                     id="podcast-checkout-postal"
@@ -249,7 +250,7 @@ eleventyComputed:
                     required>
                 </div>
                 <div class="podcast-checkout__field">
-                  <label for="podcast-checkout-city">Ciudad / City</label>
+                  <label for="podcast-checkout-city">{{ i18n | t(language, "podcast.city") }}</label>
                   <input
                     id="podcast-checkout-city"
                     name="city"
@@ -260,7 +261,7 @@ eleventyComputed:
                 </div>
                 <div class="podcast-checkout__field podcast-checkout__field--wide">
                   <label for="podcast-checkout-line1">
-                    Dirección / Address
+                    {{ i18n | t(language, "podcast.address") }}
                   </label>
                   <input
                     id="podcast-checkout-line1"
@@ -272,7 +273,7 @@ eleventyComputed:
                 </div>
                 <div class="podcast-checkout__field podcast-checkout__field--wide">
                   <label for="podcast-checkout-line2">
-                    Apartamento, suite, etc. (opcional) / Address line 2 (optional)
+                    {{ i18n | t(language, "podcast.address2") }}
                   </label>
                   <input
                     id="podcast-checkout-line2"
@@ -289,19 +290,19 @@ eleventyComputed:
                 aria-labelledby="podcast-checkout-total-title"
                 hidden>
                 <h3 id="podcast-checkout-total-title">
-                  Total de hoy / Today’s total
+                  {{ i18n | t(language, "podcast.todayTotal") }}
                 </h3>
                 <dl>
                   <div>
-                    <dt>Suscripción / Subscription</dt>
+                    <dt>{{ i18n | t(language, "podcast.subscription") }}</dt>
                     <dd data-podcast-quote-subtotal></dd>
                   </div>
                   <div>
-                    <dt>Impuesto / Tax</dt>
+                    <dt>{{ i18n | t(language, "podcast.tax") }}</dt>
                     <dd data-podcast-quote-tax></dd>
                   </div>
                   <div class="podcast-checkout__quote-total">
-                    <dt>Total</dt>
+                    <dt>{{ i18n | t(language, "podcast.total") }}</dt>
                     <dd data-podcast-quote-total></dd>
                   </div>
                 </dl>
@@ -316,13 +317,10 @@ eleventyComputed:
                 class="btn btn-danger podcast-checkout__submit"
                 type="submit"
                 data-podcast-checkout-submit>
-                Calcular total / Review total
+                {{ i18n | t(language, "podcast.reviewTotal") }}
               </button>
               <p class="podcast-checkout__fine-print">
-                Revisarás el total antes de ir al pago seguro de Stripe.
-                Cancelación disponible desde tu cuenta. /
-                You’ll review the total before continuing to secure Stripe
-                Checkout. Cancel anytime from your account.
+                {{ i18n | t(language, "podcast.checkoutFinePrint") }}
               </p>
               <p
                 class="podcast-checkout__status"
@@ -331,7 +329,7 @@ eleventyComputed:
                 aria-live="polite"></p>
             </form>
             <p class="mt-3 mb-0">
-              <a href="/podcasts/account/">¿Ya estás suscrito? Abre tu cuenta. / Already subscribed? Open your account.</a>
+              <a href="{{ i18n | localizedUrl(language, 'podcastAccount', '/podcasts/account/') }}">{{ i18n | t(language, "podcast.openAccount") }}</a>
             </p>
           </div>
         </div>
@@ -340,9 +338,9 @@ eleventyComputed:
     </div>
   </section>
 
-  <section class="podcast-show__episodes" id="episodios" aria-labelledby="podcast-episodes-title">
+  <section class="podcast-show__episodes" id="episodes" aria-labelledby="podcast-episodes-title">
     <div class="container">
-      <h2 id="podcast-episodes-title">Episodios</h2>
+      <h2 id="podcast-episodes-title">{{ i18n | t(language, "podcast.episodes") }}</h2>
       {% set publishedEpisodes = podcastEpisodePublications | podcastEpisodesForShow(show.slug) %}
       {% set displayEpisodes = publishedEpisodes if publishedEpisodes.length else show.episodes %}
       {% if displayEpisodes.length %}
@@ -353,13 +351,13 @@ eleventyComputed:
               {% if episode.summary %}<p>{{ episode.summary }}</p>{% endif %}
               {% if episode.pageMode == "premium_teaser" %}
               <p class="podcast-premium-teaser__label">
-                Episodio premium · Premium episode
+                {{ i18n | t(language, "podcast.premiumEpisode") }}
               </p>
               <p>
                 <a
                   class="btn btn-dark podcast-premium-teaser__cta"
                   href="{{ episode.subscribeUrl }}">
-                  Suscríbete para escuchar · Subscribe to listen
+                  {{ i18n | t(language, "podcast.subscribeToListen") }}
                 </a>
               </p>
               {% else %}
@@ -368,20 +366,20 @@ eleventyComputed:
                 {% set audioUrl = episode.audioUrl %}
                 {% set downloadUrl = episode.downloadUrl or episode.audioUrl %}
                 {% set artworkUrl = episode.artwork or show.artwork %}
-                {% set artworkAlt = "Portada de " + episode.title %}
+                {% set artworkAlt = i18n | t(language, "podcast.artworkAlt", { title: episode.title }) %}
                 {% set peaksUrl = episode.peaksUrl %}
                 {% set playerLanguage = show.language %}
                 {% include "snippets/audio-player.njk" %}
-                <p><a href="{{ episode.url }}">Notas, transcripción y capítulos del episodio</a></p>
+                <p><a href="{{ episode.url }}">{{ i18n | t(language, "podcast.episodeDetails") }}</a></p>
               {% endif %}
             </article>
           {% endfor %}
         </div>
       {% else %}
         <div class="podcast-show__empty">
-          <p class="podcast-show__empty-kicker">Muy pronto</p>
-          <h3>Los episodios están en camino.</h3>
-          <p>Esta página ya es el hogar permanente del podcast. Vuelve pronto para escuchar el primer episodio.</p>
+          <p class="podcast-show__empty-kicker">{{ i18n | t(language, "podcast.comingSoon") }}</p>
+          <h3>{{ i18n | t(language, "podcast.episodesComing") }}</h3>
+          <p>{{ i18n | t(language, "podcast.permanentHome") }}</p>
         </div>
       {% endif %}
     </div>
@@ -393,8 +391,8 @@ eleventyComputed:
   "@context": "https://schema.org",
   "@type": "PodcastSeries",
   "name": {{ show.title | safeJsonLd | safe }},
-  "description": {{ (show.description + " " + show.descriptionEn) | safeJsonLd | safe }},
-  "url": {{ (metadata.url + "/podcasts/" + show.slug + "/") | safeJsonLd | safe }},
+  "description": {{ (show.description if language == "es" else show.descriptionEn) | safeJsonLd | safe }},
+  "url": {{ (metadata.url + showPage.path) | safeJsonLd | safe }},
   "image": {{ (metadata.url + show.artwork) | safeJsonLd | safe }},
   "inLanguage": {{ show.language | safeJsonLd | safe }},
   "publisher": {

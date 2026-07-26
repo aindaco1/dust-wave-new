@@ -7,21 +7,11 @@
   );
   if (!roots.length) return;
 
-  const LABELS = {
-    es: {
-      playFrom: "Reproducir desde",
-      related: "Enlace relacionado",
-      unavailable:
-        "Los capítulos aprobados aparecerán aquí. / "
-        + "Approved chapters will appear here."
-    },
-    en: {
-      playFrom: "Play from",
-      related: "Related link",
-      unavailable:
-        "Approved chapters will appear here. / "
-        + "Los capítulos aprobados aparecerán aquí."
-    }
+  const translate = window.DustWaveI18n?.t || ((key) => key);
+  const labels = {
+    playFrom: translate("chapters.playFrom"),
+    related: translate("chapters.related"),
+    unavailable: translate("chapters.unavailable")
   };
   const SAFE_TEXT =
     /^[^\u0000-\u001f\u007f\u202a-\u202e\u2066-\u2069<>]*$/;
@@ -31,8 +21,6 @@
   async function loadChapters(root) {
     const status = root.querySelector("[data-podcast-chapters-status]");
     const content = root.querySelector("[data-podcast-chapters-content]");
-    const language = root.dataset.language === "en" ? "en" : "es";
-    const labels = LABELS[language];
     if (!status || !content) return;
 
     try {

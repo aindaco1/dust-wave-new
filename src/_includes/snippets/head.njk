@@ -1,5 +1,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  {% set pageLanguage = language or metadata.language or i18n.config.defaultLang %}
+  {% if i18nRuntime %}
+  <script id="dust-wave-runtime-i18n" type="application/json">{{ i18n[pageLanguage].runtime | safeJsonLd | safe }}</script>
+  {% endif %}
+  <script src="/js/site-i18n.js" defer></script>
   {% if summary or description %}
     <meta name="description" content="{{ description or summary }}">
   {% else %}

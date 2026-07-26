@@ -15,61 +15,68 @@
               data-share-url="{{ shareUrl }}" 
               data-share-title="{{ shareTitle }}"
               data-share-text="{{ shareTitle }}">
-        <i class="fas fa-share-alt me-1"></i> Share
+        <i class="fas fa-share-alt me-1" aria-hidden="true"></i> {{ i18n | t(language, "share.share") }}
       </button>
       
       {# Mastodon - requires instance selection #}
       <button type="button" class="share-mastodon" 
-              data-share-text="{{ shareText }}" title="Share on Mastodon">
-        <i class="fab fa-mastodon"></i>
+              data-share-text="{{ shareText }}"
+              aria-label="{{ i18n | t(language, 'share.shareOn', { network: 'Mastodon' }) }}">
+        <i class="fab fa-mastodon" aria-hidden="true"></i>
       </button>
 
       {# Bluesky #}
       <a href="https://bsky.app/intent/compose?text={{ shareText | urlencode }}" 
-         target="_blank" rel="noopener" class="share-link" title="Share on Bluesky">
-        <i class="fab fa-bluesky"></i>
+         target="_blank" rel="noopener noreferrer" class="share-link"
+         aria-label="{{ i18n | t(language, 'share.shareOn', { network: 'Bluesky' }) }}">
+        <i class="fab fa-bluesky" aria-hidden="true"></i>
       </a>
 
       {# X (Twitter) #}
       <a href="https://twitter.com/intent/tweet?text={{ shareTitle | urlencode }}&url={{ shareUrl | urlencode }}" 
-         target="_blank" rel="noopener" class="share-link" title="Share on X">
-        <i class="fab fa-x-twitter"></i>
+         target="_blank" rel="noopener noreferrer" class="share-link"
+         aria-label="{{ i18n | t(language, 'share.shareOn', { network: 'X' }) }}">
+        <i class="fab fa-x-twitter" aria-hidden="true"></i>
       </a>
 
       {# Threads #}
       <a href="https://www.threads.net/intent/post?text={{ shareText | urlencode }}" 
-         target="_blank" rel="noopener" class="share-link" title="Share on Threads">
-        <i class="fab fa-threads"></i>
+         target="_blank" rel="noopener noreferrer" class="share-link"
+         aria-label="{{ i18n | t(language, 'share.shareOn', { network: 'Threads' }) }}">
+        <i class="fab fa-threads" aria-hidden="true"></i>
       </a>
 
       {# LinkedIn #}
       <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ shareUrl | urlencode }}" 
-         target="_blank" rel="noopener" class="share-link" title="Share on LinkedIn">
-        <i class="fab fa-linkedin-in"></i>
+         target="_blank" rel="noopener noreferrer" class="share-link"
+         aria-label="{{ i18n | t(language, 'share.shareOn', { network: 'LinkedIn' }) }}">
+        <i class="fab fa-linkedin-in" aria-hidden="true"></i>
       </a>
 
       {# Facebook #}
       <a href="https://www.facebook.com/sharer/sharer.php?u={{ shareUrl | urlencode }}" 
-         target="_blank" rel="noopener" class="share-link" title="Share on Facebook">
-        <i class="fab fa-facebook-f"></i>
+         target="_blank" rel="noopener noreferrer" class="share-link"
+         aria-label="{{ i18n | t(language, 'share.shareOn', { network: 'Facebook' }) }}">
+        <i class="fab fa-facebook-f" aria-hidden="true"></i>
       </a>
 
       {# Reddit #}
       <a href="https://www.reddit.com/submit?url={{ shareUrl | urlencode }}&title={{ shareTitle | urlencode }}" 
-         target="_blank" rel="noopener" class="share-link" title="Share on Reddit">
-        <i class="fab fa-reddit-alien"></i>
+         target="_blank" rel="noopener noreferrer" class="share-link"
+         aria-label="{{ i18n | t(language, 'share.shareOn', { network: 'Reddit' }) }}">
+        <i class="fab fa-reddit-alien" aria-hidden="true"></i>
       </a>
 
       {# Email #}
       <a href="mailto:?subject={{ shareTitle | urlencode }}&body={{ shareText | urlencode }}" 
-         class="share-link" title="Share via Email">
-        <i class="fas fa-envelope"></i>
+         class="share-link" aria-label="{{ i18n | t(language, 'share.shareByEmail') }}">
+        <i class="fas fa-envelope" aria-hidden="true"></i>
       </a>
 
       {# Copy link #}
       <button type="button" class="copy-link" 
-              data-copy-url="{{ shareUrl }}" title="Copy link">
-        <i class="fas fa-link"></i>
+              data-copy-url="{{ shareUrl }}" aria-label="{{ i18n | t(language, 'share.copyLink') }}">
+        <i class="fas fa-link" aria-hidden="true"></i>
       </button>
 
     </div>
@@ -82,23 +89,24 @@
     <div class="modal-content bg-dark text-white">
       <div class="modal-header border-secondary">
         <h5 class="modal-title" id="mastodonModalLabel">
-          <i class="fab fa-mastodon me-2"></i>Share on Mastodon
+          <i class="fab fa-mastodon me-2" aria-hidden="true"></i>{{ i18n | t(language, "share.mastodonTitle") }}
         </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="{{ i18n | t(language, 'share.close') }}"></button>
       </div>
       <div class="modal-body">
-        <label for="mastodonInstance" class="form-label">Enter your Mastodon instance:</label>
+        <label for="mastodonInstance" class="form-label">{{ i18n | t(language, "share.instanceLabel") }}</label>
         <div class="input-group">
           <span class="input-group-text bg-secondary border-secondary text-white">https://</span>
           <input type="text" class="form-control bg-dark text-white border-secondary" 
-                 id="mastodonInstance" placeholder="mastodon.social" 
+                 id="mastodonInstance" placeholder="mastodon.social"
+                 inputmode="url" autocomplete="url"
                  value="">
         </div>
-        <small class="text-muted">e.g., mastodon.social, fosstodon.org, hachyderm.io</small>
+        <small class="text-muted">{{ i18n | t(language, "share.instanceHelp") }}</small>
       </div>
       <div class="modal-footer border-secondary">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary" id="mastodonShareConfirm">Share</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ i18n | t(language, "share.cancel") }}</button>
+        <button type="button" class="btn btn-primary" id="mastodonShareConfirm">{{ i18n | t(language, "share.share") }}</button>
       </div>
     </div>
   </div>
@@ -148,7 +156,24 @@
 
   // Mastodon share with instance selection
   const MASTODON_INSTANCE_KEY = 'dustwave_mastodon_instance';
+  const invalidMastodonInstance = {{ i18n | t(language, "share.invalidInstance") | safeJsonLd | safe }};
   let pendingMastodonText = '';
+
+  function normalizeMastodonInstance(value) {
+    const candidate = value.trim().replace(/^https?:\/\//i, '').replace(/\/+$/, '');
+    if (!/^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?(?::\d{2,5})?$/i.test(candidate)) {
+      return '';
+    }
+    try {
+      const parsed = new URL(`https://${candidate}`);
+      if (parsed.username || parsed.password || parsed.pathname !== '/' || parsed.search || parsed.hash) {
+        return '';
+      }
+      return parsed.host;
+    } catch {
+      return '';
+    }
+  }
 
   document.querySelectorAll('.share-mastodon').forEach(btn => {
     btn.addEventListener('click', function() {
@@ -160,12 +185,16 @@
   });
 
   document.getElementById('mastodonShareConfirm')?.addEventListener('click', function() {
-    const instance = document.getElementById('mastodonInstance').value.trim();
+    const instanceInput = document.getElementById('mastodonInstance');
+    const instance = normalizeMastodonInstance(instanceInput.value);
+    instanceInput.setCustomValidity(instance ? '' : invalidMastodonInstance);
     if (instance) {
       localStorage.setItem(MASTODON_INSTANCE_KEY, instance);
       const shareUrl = `https://${instance}/share?text=${encodeURIComponent(pendingMastodonText)}`;
       window.open(shareUrl, '_blank', 'noopener');
       bootstrap.Modal.getInstance(document.getElementById('mastodonModal')).hide();
+    } else {
+      instanceInput.reportValidity();
     }
   });
 

@@ -1,9 +1,16 @@
 ---
-title: Partners
 layout: layouts/default.njk
 navbar: navbar1
 footer: footer1
-permalink: partners.html
+translationKey: partners
+pagination:
+  data: i18n.config.supportedLangs
+  size: 1
+  alias: language
+permalink: "{{ i18n.config.pages.partners[language] }}"
+eleventyComputed:
+  title: "{{ i18n[language].pages.partners.title }}"
+  description: "{{ i18n[language].pages.partners.description }}"
 ---
 <div class="container">
   <div class="row d-flex justify-content-center">

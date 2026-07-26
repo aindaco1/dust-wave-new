@@ -17,6 +17,14 @@ const source = await readFile(templatePath, 'utf8');
 const body = source.replace(/^---\n[\s\S]*?\n---\n/, '');
 const embedSource = await readFile(embedTemplatePath, 'utf8');
 const embedBody = embedSource.replace(/^---\n[\s\S]*?\n---\n/, '');
+const i18n = {
+  en: JSON.parse(
+    await readFile(path.join(repositoryRoot, 'src/_data/i18n/en.json'), 'utf8')
+  ),
+  es: JSON.parse(
+    await readFile(path.join(repositoryRoot, 'src/_data/i18n/es.json'), 'utf8')
+  )
+};
 assert.match(
   source,
   /og_image: "\/img\/podcasts\/\{\{ episode\.showSlug \}\}\/\{\{ episode\.slug \}\}\/social-card\.png"/
@@ -33,6 +41,17 @@ environment.addFilter('podcastShowBySlug', (shows, showSlug) => {
 });
 environment.addFilter('readablePodcastDate', () => 'July 23, 2026');
 environment.addFilter('safeJsonLd', safeJsonLd);
+environment.addFilter('t', (translations, language, key, variables = {}) => {
+  const value = String(key)
+    .split('.')
+    .reduce((result, part) => result?.[part], translations[language]);
+  assert.equal(typeof value, 'string', `missing ${language} translation: ${key}`);
+  return Object.entries(variables).reduce(
+    (result, [name, replacement]) =>
+      result.replaceAll(`%{${name}}`, String(replacement)),
+    value
+  );
+});
 
 const show = {
   slug: 'opera-en-la-selva',
@@ -63,6 +82,8 @@ const episode = {
 
 const rendered = environment.renderString(body, {
   episode,
+  i18n,
+  language: 'es',
   metadata: { url: 'https://dustwave.xyz' },
   podcastShows: [show]
 });
@@ -71,7 +92,7 @@ assert.match(rendered, /id="wave_opera-en-la-selva_una-charla-sobre-codigo"/);
 assert.match(rendered, /<div class="audio-card" lang="es">/);
 assert.match(rendered, /aria-label="Reproducir Una charla sobre &quot;código&quot;"/);
 assert.match(rendered, /href="https:\/\/media\.dustwave\.xyz\/episodes\/episode_fixture\/audio\?download=1"/);
-assert.match(rendered, /href="\/podcasts\/opera-en-la-selva\/"/);
+assert.match(rendered, /href="\/es\/podcasts\/opera-en-la-selva\/"/);
 assert.match(
   rendered,
   /data-endpoint="https:\/\/feeds\.dustwave\.xyz\/v1\/shows\/opera-en-la-selva\/episodes\/una-charla-sobre-codigo\/transcripts"/
@@ -80,8 +101,9 @@ assert.match(
   rendered,
   /data-player-id="opera-en-la-selva_una-charla-sobre-codigo"/
 );
-assert.match(rendered, /Transcripción \/ Transcript/);
-assert.match(rendered, /Capítulos \/ Chapters/);
+assert.match(rendered, />Transcripción</);
+assert.match(rendered, />Capítulos</);
+assert.doesNotMatch(rendered, /Transcripción \/ Transcript|Capítulos \/ Chapters/);
 assert.match(
   rendered,
   /data-endpoint="https:\/\/feeds\.dustwave\.xyz\/v1\/shows\/opera-en-la-selva\/episodes\/una-charla-sobre-codigo\/chapters\.json"/
@@ -106,6 +128,7 @@ assert.equal(structuredData.associatedMedia.contentUrl, episode.audioUrl);
 const renderedEmbed = environment.renderString(embedBody, {
   episode,
   environment: 'production',
+  i18n,
   metadata: { url: 'https://dustwave.xyz' },
   podcastShows: [show]
 });
@@ -145,6 +168,7 @@ assert.doesNotMatch(renderedEmbed, /unpkg\.com|<script type="application\/ld\+js
 const renderedEnglishEmbed = environment.renderString(embedBody, {
   episode,
   environment: 'production',
+  i18n,
   metadata: { url: 'https://dustwave.xyz' },
   podcastShows: [{ ...show, language: 'en' }]
 });
@@ -165,14 +189,16 @@ const premiumTeaser = {
 };
 const renderedPremiumTeaser = environment.renderString(body, {
   episode: premiumTeaser,
+  i18n,
+  language: 'es',
   metadata: { url: 'https://dustwave.xyz' },
   podcastShows: [show]
 });
-assert.match(renderedPremiumTeaser, /Episodio premium · Premium episode/);
-assert.match(renderedPremiumTeaser, /Solo para suscriptores · Subscribers only/);
+assert.match(renderedPremiumTeaser, /Episodio premium\s*<\/p>/);
+assert.match(renderedPremiumTeaser, />Solo para suscriptores</);
 assert.match(
   renderedPremiumTeaser,
-  /href="\/podcasts\/opera-en-la-selva\/#podcast-membership"/
+  /href="\/es\/podcasts\/opera-en-la-selva\/#podcast-membership"/
 );
 assert.match(renderedPremiumTeaser, /Extra &lt;img src=x onerror=alert\(1\)&gt;/);
 assert.doesNotMatch(renderedPremiumTeaser, /<img src=x|<script>alert\(1\)/);
@@ -188,17 +214,19 @@ const premiumStructuredData = JSON.parse(premiumStructuredDataMatch[1]);
 assert.equal(premiumStructuredData.isAccessibleForFree, false);
 assert.equal(
   premiumStructuredData.offers.url,
-  'https://dustwave.xyz/podcasts/opera-en-la-selva/#podcast-membership'
+  'https://dustwave.xyz/es/podcasts/opera-en-la-selva/#podcast-membership'
 );
 assert.equal('associatedMedia' in premiumStructuredData, false);
 
 const renderedPremiumEmbed = environment.renderString(embedBody, {
   episode: premiumTeaser,
   environment: 'production',
+  i18n,
   metadata: { url: 'https://dustwave.xyz' },
   podcastShows: [show]
 });
-assert.match(renderedPremiumEmbed, /Solo para suscriptores · Subscribers only/);
+assert.match(renderedPremiumEmbed, /Solo para suscriptores/);
+assert.doesNotMatch(renderedPremiumEmbed, /Subscribers only/);
 assert.match(
   renderedPremiumEmbed,
   /href="\/podcasts\/opera-en-la-selva\/#podcast-membership"/

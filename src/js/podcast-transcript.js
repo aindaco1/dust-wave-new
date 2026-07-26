@@ -7,21 +7,11 @@
   );
   if (!roots.length) return;
 
-  const LABELS = {
-    es: {
-      tabs: "Idiomas de la transcripción",
-      playFrom: "Reproducir desde",
-      unavailable:
-        "Las transcripciones aprobadas aparecerán aquí. / "
-        + "Approved transcripts will appear here."
-    },
-    en: {
-      tabs: "Transcript languages",
-      playFrom: "Play from",
-      unavailable:
-        "Approved transcripts will appear here. / "
-        + "Las transcripciones aprobadas aparecerán aquí."
-    }
+  const translate = window.DustWaveI18n?.t || ((key) => key);
+  const labels = {
+    tabs: translate("transcript.tabs"),
+    playFrom: translate("transcript.playFrom"),
+    unavailable: translate("transcript.unavailable")
   };
   const LANGUAGE_NAMES = { es: "Español", en: "English" };
   const SAFE_TEXT = /^[^\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f\u202a-\u202e\u2066-\u2069]*$/;
@@ -31,8 +21,6 @@
   async function loadTranscript(root) {
     const status = root.querySelector("[data-podcast-transcript-status]");
     const content = root.querySelector("[data-podcast-transcript-content]");
-    const primaryLanguage = root.dataset.language === "en" ? "en" : "es";
-    const labels = LABELS[primaryLanguage];
     if (!status || !content) return;
 
     try {

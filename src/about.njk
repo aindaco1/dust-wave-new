@@ -1,10 +1,17 @@
 ---
-title: What We Believe In
 layout: layouts/default.njk
 navbar: navbar1
 footer: footer1
 colorModifier: dark
-permalink: about.html
+translationKey: about
+pagination:
+  data: i18n.config.supportedLangs
+  size: 1
+  alias: language
+permalink: "{{ i18n.config.pages.about[language] }}"
+eleventyComputed:
+  title: "{{ i18n[language].pages.about.title }}"
+  description: "{{ i18n[language].pages.about.description }}"
 ---
 <div class="container">
   <div class="row d-flex justify-content-center">
@@ -14,22 +21,14 @@ permalink: about.html
     <div class="col-10 col-lg-10 col-xl-9 border-bottom border-top py-vh-3">
       <div class="row">
         <ol>
-          <li>A positive, empathetic, supportive, collaborative, free and open creative environment is the best one to help us, both collectively and individually, achieve our artistic goals and ambitions.</li></br>
-          <li>Every project we do will provide value collectively and individually. We credit individuals for their contribution, but we share in the success of our projects collectively.</li></br>
-          <li>Each member of each project is valuable and important, and should be treated as such.</br></br>
-          <li>We support each other. Together, we're stronger and more courageous.</li></br>
-          <li>We strive to communicate frequently and openly. We are open and honest with each other. We are also careful to be critical in a constructive and respectful manner.</li></br>
-          <li>We recognize that organization and intentionality are critical parts of the success of every project. Each person will make the effort to read messages in group chats, respond to requests in a timely manner, and keep the big picture in mind.</li></br>
-          <li>Not everyone needs to (or can) be involved in every project, but everyone needs to offer their support and constructive feedback if asked.</li></br>
-          <li>We strive to operate democratically and in a decentralized way as much as possible.</li></br>
-          <li>We strive to assume the best of each other, have patience with each other, and commit to earning each other's trust.</li></br>
-          <li>If we start a project, we strive to finish the project.</li></br>
-          <li>We strive to grow our individual skills independently and bring that learning back to the collective.</li></br>
-          <li>We are committed to fundraising efforts that will cover the costs of our projects, and eventually compensate each artist for their valuable time.</li></ol>
+          {% for belief in i18n | t(language, "pages.about.beliefs") %}
+          <li>{{ belief }}</li>
+          {% endfor %}
+        </ol>
       </div>
     </div>
     <div class="col-12 text-center py-vh-3">
-      <h1>Members</h1></br>
+      <h1>{{ i18n | t(language, "pages.about.members") }}</h1>
       <div class="member-columns">
         {%- for member in collections.members -%}
         <article class="image_wrapper member-card">
@@ -39,7 +38,7 @@ permalink: about.html
             {%- if member.data.instagram -%}
             &nbsp;
             &nbsp;
-            <h3><a href="https://www.instagram.com/{{ member.data.instagram }}" class="link-fancy" target="_blank" rel="noopener noreferrer" aria-label="{{ member.data.name }} on Instagram"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a></h3>
+            <h3><a href="https://www.instagram.com/{{ member.data.instagram }}" class="link-fancy" target="_blank" rel="noopener noreferrer" aria-label="{{ i18n | t(language, 'pages.about.instagramAria', { name: member.data.name }) }}"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a></h3>
             {%- endif -%}
           </div>
         </article>

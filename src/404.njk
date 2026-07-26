@@ -1,0 +1,22 @@
+---
+layout: layouts/default.njk
+footer: footer1
+translationKey: error404
+eleventyExcludeFromCollections: true
+pagination:
+  data: i18n.config.supportedLangs
+  size: 1
+  alias: language
+permalink: "{{ i18n.config.pages.error404[language] }}"
+eleventyComputed:
+  title: "{{ i18n[language].pages.error404.title }}"
+  description: "{{ i18n[language].pages.error404.message }}"
+---
+<div class="w-100 overflow-hidden position-relative" id="top">
+  {% include "snippets/hero2.njk" %}
+</div>
+
+<div class="container text-center pb-5">
+  <h1>{{ i18n | t(language, "pages.error404.message") }}</h1>
+  <p><a class="link-fancy" href="{{ i18n | localizedUrl(language, 'home', '/') }}">{{ i18n | t(language, "pages.error404.home") }}</a>.</p>
+</div>

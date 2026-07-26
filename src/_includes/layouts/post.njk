@@ -2,21 +2,22 @@
 permalink: "subdir/{{ title | slugify }}/index.html"
 ---
 <!doctype html>
-<html class="h-100" lang="{{ metadata.language }}">
+<html class="h-100" lang="{{ language or metadata.language }}">
   <head>
     {% include 'snippets/head.njk' %}
   </head>
   <body {% if (bodyModifier) %} class="{{ bodyModifier }}" {% endif %} data-bs-spy="scroll" data-bs-target="#navScroll">
+    <a class="skip-link" href="#main-content">{{ i18n | t(language, "nav.skipToContent") }}</a>
     {% include "snippets/navbar1.njk" %}
-    <main class="container py-vh-3">
+    <main id="main-content" class="container py-vh-3">
       {# h-entry microformats wrapper for Fediverse/IndieWeb compatibility #}
       <article class="h-entry">
         <div class="row d-flex justify-content-center text-center">
           <div class="col-12 col-lg-10 col-xl-8">
-            {% if author %}<small class="text-muted p-author">By {{ author }}</small>{% endif %}
+            {% if author %}<small class="text-muted p-author">{{ i18n | t(language, "content.by") }} {{ author }}</small>{% endif %}
             <h1 class="display-huge p-name">{{ title }}</h1>
-            <time class="dt-published visually-hidden" datetime="{{ date | htmlDateString }}">{{ date | readableDate }}</time>
-            <a class="u-url visually-hidden" href="{{ metadata.url }}{{ page.url }}">Permalink</a>
+            <time class="dt-published visually-hidden" datetime="{{ date | htmlDateString }}">{{ date | localizedDate(language) }}</time>
+            <a class="u-url visually-hidden" href="{{ metadata.url }}{{ page.url }}">{{ i18n | t(language, "content.permalink") }}</a>
             {# Plain text content for Bluesky (avoids HTML rendering issues) #}
             {% if syndicate and "fediverse" in syndicate %}<span class="p-bridgy-bluesky-content visually-hidden">{{ summary }}</span>{% endif %}
             <p class="lead pt-2 py-vh-2 p-summary {% if img %}{% else %}border-bottom{% endif %}">{{summary}}{% if syndicate and "fediverse" in syndicate %} <a href="https://fed.brid.gy/r/{{ metadata.url }}{{ page.url }}" title="Federated to the Fediverse" class="text-decoration-none" target="_blank">📡</a>{% endif %}</p>
@@ -47,9 +48,11 @@ permalink: "subdir/{{ title | slugify }}/index.html"
         {% include "snippets/bridgy-opt-in.njk" %}
       </article>
     </main>
+    {% if not (isProject and language == "es") %}
     <div class="container-100 d-flex justify-content-between">
       {% include 'snippets/postprevnext.njk' %}
     </div>
+    {% endif %}
     {% include "snippets/" + footer + ".njk" %}
   </body>
 </html>

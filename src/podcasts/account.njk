@@ -1,10 +1,16 @@
 ---
 layout: layouts/podcast-member.njk
-title: Tu cuenta de podcasts — Dust Wave
-description: Acceso privado a tus suscripciones de Dust Wave Podcasts.
-language: es
 disableLegacyMediaPreconnects: true
-permalink: podcasts/account/index.html
+i18nRuntime: true
+translationKey: podcastAccount
+pagination:
+  data: i18n.config.supportedLangs
+  size: 1
+  alias: language
+permalink: "{{ i18n.config.pages.podcastAccount[language] }}"
+eleventyComputed:
+  title: "{{ i18n[language].podcast.member.title }}"
+  description: "{{ i18n[language].podcast.member.description }}"
 ---
 
 <div
@@ -14,19 +20,16 @@ permalink: podcasts/account/index.html
   data-turnstile-site-key="{{ podcastMember.turnstileSiteKey }}">
   <header class="podcast-member__header">
     <div>
-      <p class="podcast-member__eyebrow">Dust Wave Podcasts</p>
-      <h1>Tu cuenta <span lang="en">/ Your account</span></h1>
-      <p>
-        Administra tu acceso premium, episodios anticipados y feeds privados.
-        <span lang="en">Manage premium access, early episodes, and private feeds.</span>
-      </p>
+      <p class="podcast-member__eyebrow">{{ i18n | t(language, "podcast.brand") }}</p>
+      <h1>{{ i18n | t(language, "podcast.member.heading") }}</h1>
+      <p>{{ i18n | t(language, "podcast.member.intro") }}</p>
     </div>
     <button
       class="btn btn-outline-light"
       type="button"
       data-podcast-member-logout
       hidden>
-      Salir / Sign out
+      {{ i18n | t(language, "podcast.member.signOut") }}
     </button>
   </header>
 
@@ -40,18 +43,11 @@ permalink: podcasts/account/index.html
     class="podcast-member__panel"
     data-podcast-member-auth
     aria-labelledby="podcast-member-login-title">
-    <p class="podcast-member__eyebrow">Acceso privado / Private access</p>
-    <h2 id="podcast-member-login-title">Recibe un enlace seguro</h2>
-    <p>
-      Escribe el correo de tu suscripción. Si encontramos una cuenta, enviaremos
-      un enlace de un solo uso que vence en 15 minutos.
-    </p>
-    <p lang="en">
-      Enter the email used for your subscription. If an account exists, we’ll
-      send a single-use link that expires in 15 minutes.
-    </p>
+    <p class="podcast-member__eyebrow">{{ i18n | t(language, "podcast.member.privateAccess") }}</p>
+    <h2 id="podcast-member-login-title">{{ i18n | t(language, "podcast.member.magicLinkTitle") }}</h2>
+    <p>{{ i18n | t(language, "podcast.member.magicLinkBody") }}</p>
     <form data-podcast-member-login-form>
-      <label for="podcast-member-email">Correo / Email</label>
+      <label for="podcast-member-email">{{ i18n | t(language, "podcast.email") }}</label>
       <div class="podcast-member__inline-form">
         <input
           id="podcast-member-email"
@@ -62,7 +58,7 @@ permalink: podcasts/account/index.html
           maxlength="254"
           required>
         <button class="btn btn-danger" type="submit">
-          Enviar enlace / Send link
+          {{ i18n | t(language, "podcast.member.sendLink") }}
         </button>
       </div>
       {% if podcastMember.turnstileSiteKey %}
@@ -78,8 +74,8 @@ permalink: podcasts/account/index.html
 
   <section class="podcast-member__app" data-podcast-member-app hidden>
     <div class="podcast-member__panel">
-      <p class="podcast-member__eyebrow">Suscripciones / Subscriptions</p>
-      <h2>Tu biblioteca de Dust Wave</h2>
+      <p class="podcast-member__eyebrow">{{ i18n | t(language, "podcast.member.subscriptions") }}</p>
+      <h2>{{ i18n | t(language, "podcast.member.library") }}</h2>
       <p data-podcast-member-session-summary></p>
       <div
         class="podcast-member__subscriptions"
@@ -91,23 +87,12 @@ permalink: podcasts/account/index.html
       data-podcast-pool-redemption
       aria-labelledby="podcast-pool-redemption-title"
       hidden>
-      <p class="podcast-member__eyebrow">Beneficio de Pool / Pool benefit</p>
-      <h2 id="podcast-pool-redemption-title">
-        Activa tu acceso de podcast
-        <span class="visually-hidden">/ Redeem podcast access</span>
-      </h2>
-      <p>
-        Si recibiste un código de beneficio de Pool, úsalo con esta misma
-        cuenta. Cada código funciona una sola vez y solo para el correo
-        destinatario.
-      </p>
-      <p lang="en">
-        If you received a Pool benefit code, redeem it with this same account.
-        Each code works once and only for its intended email.
-      </p>
+      <p class="podcast-member__eyebrow">{{ i18n | t(language, "podcast.member.poolBenefit") }}</p>
+      <h2 id="podcast-pool-redemption-title">{{ i18n | t(language, "podcast.member.redeemTitle") }}</h2>
+      <p>{{ i18n | t(language, "podcast.member.redeemBody") }}</p>
       <form data-podcast-pool-redemption-form>
         <label for="podcast-pool-redemption-code">
-          Código de beneficio / Benefit code
+          {{ i18n | t(language, "podcast.member.benefitCode") }}
         </label>
         <div class="podcast-member__inline-form">
           <input
@@ -123,7 +108,7 @@ permalink: podcasts/account/index.html
             placeholder="DW-POD-XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX"
             required>
           <button class="btn btn-danger" type="submit">
-            Activar / Redeem
+            {{ i18n | t(language, "podcast.member.redeem") }}
           </button>
         </div>
       </form>
@@ -137,9 +122,7 @@ permalink: podcasts/account/index.html
 
   <noscript>
     <p class="podcast-member__panel">
-      Esta cuenta segura necesita JavaScript para intercambiar el enlace sin
-      enviarlo en la URL. / This secure account needs JavaScript to exchange
-      the link without sending it in the URL.
+      {{ i18n | t(language, "podcast.member.noscript") }}
     </p>
   </noscript>
 </div>

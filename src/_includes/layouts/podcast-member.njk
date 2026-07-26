@@ -9,6 +9,7 @@
     {% endif %}
   </head>
   <body class="podcast-member-page">
+    <a class="skip-link" href="#main-content">{{ i18n | t(language, "nav.skipToContent") }}</a>
     {% include "snippets/navbar1.njk" %}
     <main id="main-content" class="podcast-member" tabindex="-1">
       {{ content | safe }}

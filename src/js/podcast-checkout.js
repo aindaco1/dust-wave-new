@@ -3,6 +3,7 @@ import {
   AdminApiError as PodcastApiError
 } from "./dust-wave-admin-shell/api-client.js";
 
+const translate = globalThis.DustWaveI18n?.t || ((key) => key);
 const COUNTRY_CODES = (
   "AD AE AF AG AI AL AM AO AQ AR AS AT AU AW AX AZ BA BB BD BE BF BG BH BI "
   + "BJ BL BM BN BO BQ BR BS BT BV BW BY BZ CA CC CD CF CG CH CI CK CL CM "
@@ -128,7 +129,9 @@ function startPodcastCheckout(rootElement) {
         firstAvailable ||= input;
         amount.textContent = `${
           formatMoney(price.amountCents)
-        } / ${period === "month" ? "mes · month" : "año · year"}`;
+        } / ${translate(
+          period === "month" ? "checkout.monthUnit" : "checkout.yearUnit"
+        )}`;
       }
     }
     const selected = form.querySelector(
@@ -157,9 +160,9 @@ function startPodcastCheckout(rootElement) {
     quoteSignature = "";
     quotePriceId = "";
     quotePanel.hidden = true;
-    submit.textContent = "Calcular total / Review total";
+    submit.textContent = translate("checkout.reviewTotal");
     resetTurnstile();
-    setStatus(status, "Los datos cambiaron; calcula el total otra vez. / Details changed; review the total again.");
+    setStatus(status, translate("checkout.detailsChanged"));
   }
 
   async function handleSubmit(event) {
@@ -169,7 +172,7 @@ function startPodcastCheckout(rootElement) {
     if (!selection) {
       setStatus(
         status,
-        "Este plan no está disponible. / This plan is not available.",
+        translate("checkout.planUnavailable"),
         true
       );
       return;
@@ -190,7 +193,7 @@ function startPodcastCheckout(rootElement) {
   }
 
   async function requestQuote(selection, signature) {
-    setStatus(status, "Calculando el total… / Calculating total…");
+    setStatus(status, translate("checkout.calculating"));
     quotePanel.hidden = true;
     try {
       const payload = await client.request(
@@ -214,10 +217,10 @@ function startPodcastCheckout(rootElement) {
       renderQuote(quote);
       quoteSignature = signature;
       quotePriceId = selection.id;
-      submit.textContent = "Continuar al pago seguro / Continue to secure payment";
+      submit.textContent = translate("checkout.continue");
       setStatus(
         status,
-        "Revisa el total y continúa cuando estés listo. / Review the total and continue when ready."
+        translate("checkout.reviewReady")
       );
       await initializeTurnstile();
     } catch (error) {
@@ -231,12 +234,12 @@ function startPodcastCheckout(rootElement) {
     if (!turnstileToken) {
       setStatus(
         status,
-        "Completa la verificación segura. / Complete the secure verification.",
+        translate("checkout.completeVerification"),
         true
       );
       return;
     }
-    setStatus(status, "Abriendo el pago seguro… / Opening secure checkout…");
+    setStatus(status, translate("checkout.opening"));
     try {
       const payload = await client.request(
         `/v1/shows/${encodeURIComponent(slug)}/checkout`,
@@ -297,7 +300,7 @@ function startPodcastCheckout(rootElement) {
     rootElement.querySelector("[data-podcast-quote-total]").textContent =
       formatMoney(quote.totalCents);
     rootElement.querySelector("[data-podcast-quote-jurisdiction]").textContent =
-      `Jurisdicción fiscal / Tax jurisdiction: ${quote.jurisdictionCode}`;
+      translate("checkout.jurisdiction", { code: quote.jurisdictionCode });
     quotePanel.hidden = false;
   }
 
@@ -311,15 +314,16 @@ function startPodcastCheckout(rootElement) {
         {
           sitekey: siteKey,
           action: "podcast_subscription_checkout",
+          language: document.documentElement.lang || "en",
           callback: (token) => {
             turnstileToken = token;
-            setStatus(status, "Verificación completa. / Verification complete.");
+            setStatus(status, translate("checkout.verificationComplete"));
           },
           "expired-callback": () => {
             turnstileToken = "";
             setStatus(
               status,
-              "La verificación venció; complétala otra vez. / Verification expired; complete it again.",
+              translate("checkout.verificationExpired"),
               true
             );
           },
@@ -327,7 +331,7 @@ function startPodcastCheckout(rootElement) {
             turnstileToken = "";
             setStatus(
               status,
-              "No se pudo completar la verificación. / Verification could not be completed.",
+              translate("checkout.verificationFailed"),
               true
             );
           }
@@ -336,7 +340,7 @@ function startPodcastCheckout(rootElement) {
     } catch {
       setStatus(
         status,
-        "No se pudo cargar la verificación segura. Recarga la página. / Secure verification could not load. Refresh the page.",
+        translate("checkout.verificationUnavailable"),
         true
       );
     }
@@ -352,8 +356,7 @@ function startPodcastCheckout(rootElement) {
   function showCanceledCheckoutStatus() {
     const query = new URLSearchParams(globalThis.location.search);
     if (query.get("checkout") === "canceled") {
-      unavailable.textContent =
-        "El pago fue cancelado; no se realizó ningún cargo. / Checkout was canceled; no charge was made.";
+      unavailable.textContent = translate("checkout.canceled");
     }
   }
 }
@@ -454,36 +457,10 @@ function setStatus(element, message, error = false) {
 
 function friendlyCheckoutError(error) {
   if (!(error instanceof PodcastApiError)) {
-    return "No se pudo contactar el servicio. Inténtalo de nuevo. / The service could not be reached. Please retry.";
+    return translate("checkout.network");
   }
-  const messages = {
-    checkout_not_available:
-      "La suscripción todavía no está disponible. / Subscription checkout is not available yet.",
-    subscription_price_not_found:
-      "Este plan ya no está disponible. / This plan is no longer available.",
-    subscription_price_not_ready:
-      "Este plan todavía no está listo para pagos. / This plan is not ready for checkout yet.",
-    tax_rate_not_approved:
-      "Todavía no podemos calcular impuestos para esta dirección. / Tax is not yet configured for this address.",
-    tax_configuration_mismatch:
-      "La configuración fiscal necesita revisión. / The tax configuration needs review.",
-    tax_configuration_invalid:
-      "No pudimos calcular el impuesto de forma segura. / We could not calculate tax safely.",
-    subscription_already_active:
-      "Ya existe una suscripción activa con este correo. Abre tu cuenta. / An active subscription already exists for this email. Open your account.",
-    checkout_already_started:
-      "Ya hay un pago abierto para este correo. Usa los mismos datos o espera a que venza. / Checkout is already open for this email. Use the same details or wait for it to expire.",
-    invalid_turnstile_token:
-      "La verificación segura falló. Inténtalo otra vez. / Secure verification failed. Try again.",
-    turnstile_verification_failed:
-      "La verificación segura falló. Inténtalo otra vez. / Secure verification failed. Try again.",
-    rate_limited:
-      "Demasiados intentos. Espera y vuelve a intentar. / Too many attempts. Wait and retry.",
-    checkout_provider_unavailable:
-      "El pago seguro no está disponible en este momento. / Secure checkout is temporarily unavailable.",
-    unsafe_checkout_destination:
-      "La dirección del servicio de pago no pasó la verificación. / The checkout destination failed verification."
-  };
-  return messages[error.code]
-    || "No pudimos continuar de forma segura. Inténtalo de nuevo. / We could not continue securely. Please retry.";
+  const message = translate(`checkout.${error.code}`);
+  return message.startsWith("[missing:")
+    ? translate("checkout.unknown")
+    : message;
 }

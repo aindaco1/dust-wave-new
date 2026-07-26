@@ -1,0 +1,69 @@
+{
+  "defaultLang": "en",
+  "supportedLangs": [
+    "en",
+    "es"
+  ],
+  "languageLabels": {
+    "en": "English",
+    "es": "Español"
+  },
+  "pages": {
+    "home": {
+      "en": "/",
+      "es": "/es/"
+    },
+    "projects": {
+      "en": "/projects.html",
+      "es": "/es/projects.html"
+    },
+    "about": {
+      "en": "/about.html",
+      "es": "/es/about.html"
+    },
+    "news": {
+      "en": "/news.html",
+      "es": "/es/news.html"
+    },
+    "partners": {
+      "en": "/partners.html",
+      "es": "/es/partners.html"
+    },
+    "contact": {
+      "en": "/contact.html",
+      "es": "/es/contact.html"
+    },
+    "microcinema": {
+      "en": "/microcinema.html",
+      "es": "/es/microcinema.html"
+    },
+    "newsletter": {
+      "en": "/newsletter.html",
+      "es": "/es/newsletter.html"
+    },
+    "error404": {
+      "en": "/404.html",
+      "es": "/es/404.html"
+    },
+    "ddsDonate": {
+      "en": "/dds-donate.html",
+      "es": "/es/dds-donate.html"
+    },
+    "secret": {
+      "en": "/secret.html",
+      "es": "/es/secret.html"
+    },
+    "slacTerms": {
+      "en": "/slac-terms.html",
+      "es": "/es/slac-terms.html"
+    },
+    "survey": {
+      "en": "/survey.html",
+      "es": "/es/survey.html"
+    },
+    "podcastAccount": {
+      "en": "/podcasts/account/",
+      "es": "/es/podcasts/account/"
+    }
+  }
+}

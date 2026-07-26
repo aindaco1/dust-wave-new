@@ -1,7 +1,11 @@
 {% if title == "DUST WAVE"%}
-<a href="/dds-donate.html" target="_blank">
-	<button id="sticky-button" class="gambado">
-		<i class="fa-solid fa-gift"></i> DONATE TO DUST DON'T SETTLE!
-	</button>
+<a
+	id="sticky-button"
+	class="gambado"
+	href="{{ i18n | localizedUrl(language, 'ddsDonate', '/dds-donate.html') }}"
+	target="_blank"
+	rel="noopener noreferrer">
+	<i class="fa-solid fa-gift" aria-hidden="true"></i>
+	{{ i18n | t(language, "pages.ddsDonate.stickyDonate") }}
 </a>
 {% endif %}

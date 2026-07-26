@@ -4,11 +4,22 @@
   <head>
     {% include 'snippets/head.njk' %}
   </head>
-  <div {% if title == "DUST WAVE" or title == "Projects" %} class="test-background" {% endif %} {% if title == "News" %} class="news-background" {% endif %} {% if title == "Partners" %} class="partners-background" {% endif %}></div>
-  <body {% if (bodyModifier) %} class="{{ bodyModifier }}" {% endif %} {% if title == "DUST WAVE" or title == "Projects" %} class="test" id="glitch-target" {% endif %} {% if title == "News" %} class="news" {% endif %} {% if title == "Partners" %} class="partners" {% endif %} data-bs-spy="scroll"  data-bs-target="#navScroll">
+  <body
+    class="{% if bodyModifier %}{{ bodyModifier }} {% endif %}{% if translationKey == 'home' or translationKey == 'projects' %}test{% elif translationKey == 'news' %}news{% elif translationKey == 'partners' %}partners{% endif %}"
+    {% if translationKey == "home" or translationKey == "projects" %}id="glitch-target"{% endif %}
+    data-bs-spy="scroll"
+    data-bs-target="#navScroll">
+    <a class="skip-link" href="#main-content">{{ i18n | t(language, "nav.skipToContent") }}</a>
+    {% if translationKey == "home" or translationKey == "projects" %}
+    <div class="test-background"></div>
+    {% elif translationKey == "news" %}
+    <div class="news-background"></div>
+    {% elif translationKey == "partners" %}
+    <div class="partners-background"></div>
+    {% endif %}
     {% include 'snippets/sticky.njk' %}
     {% include "snippets/navbar1.njk" %}
-      <main>
+      <main id="main-content">
         {{ content | safe }}
       </main>
     {% include "snippets/" + footer + ".njk" %}

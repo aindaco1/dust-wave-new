@@ -5,7 +5,7 @@
     {% if not isHomepage %}
     <div class="d-lg-none w-100 text-center mb-2">
       <h1 class="display-huge mt-3 mb-3">
-        <a href="/" class="text-white text-decoration-none">DUST WAVE</a>
+        <a href="{{ i18n | localizedUrl(language, 'home', '/') }}" class="text-white text-decoration-none" aria-label="{{ i18n | t(language, 'nav.homeAria') }}">DUST WAVE</a>
       </h1>
     </div>
     {% endif %}
@@ -15,7 +15,7 @@
     </div>
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
-      aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+      aria-controls="navbarContent" aria-expanded="false" aria-label="{{ i18n | t(language, 'nav.toggle') }}">
       <span class="navbar-toggler-icon"></span>
     </button>
 

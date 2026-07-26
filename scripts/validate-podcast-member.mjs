@@ -11,7 +11,8 @@ const [page, layout, script, buildPipeline] = await Promise.all([
   readFile(new URL("../gulpfile.js", import.meta.url), "utf8")
 ]);
 
-assert.match(page, /permalink: podcasts\/account\/index\.html/);
+assert.match(page, /permalink: "\{\{ i18n\.config\.pages\.podcastAccount\[language\] \}\}"/);
+assert.match(page, /data: i18n\.config\.supportedLangs/);
 assert.match(page, /data-podcast-member-login-form/);
 assert.match(page, /data-podcast-pool-redemption-form/);
 assert.match(page, /autocomplete="off"/);
@@ -27,7 +28,7 @@ assert.match(script, /\/v1\/member\/shows\/\$\{slug\}\/feed/);
 assert.match(script, /\/v1\/member\/shows\/\$\{slug\}\/billing\/portal/);
 assert.match(script, /\/v1\/member\/shows\/\$\{slug\}\/notifications/);
 assert.match(script, /announcementNotificationsEnabled/);
-assert.match(script, /Notifications enabled/);
+assert.match(script, /translate\("member\.notificationsEnabled"\)/);
 assert.match(script, /\/v1\/member\/redemptions\/pool/);
 assert.match(script, /result\?\.poolRedemptionEnabled !== true/);
 assert.match(buildPipeline, /`\$\{DIR\.dist\}\/js\/\*\*\/\*\.js`/);
