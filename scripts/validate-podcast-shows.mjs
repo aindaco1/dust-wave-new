@@ -110,6 +110,27 @@ for (const show of shows) {
     assert(asset.startsWith('/img/'), `${show.slug} asset must be site-local: ${asset}`);
     await access(path.join(repositoryRoot, 'src', asset.replace(/^\//, '')));
   }
+  for (const [modernKey, fallbackKey] of [
+    ['artworkWebpSmall', 'artwork'],
+    ['artworkWebp', 'artwork'],
+    ['wordmarkWebpSmall', 'wordmark'],
+    ['wordmarkWebp', 'wordmark'],
+    ['wordmarkWebpLarge', 'wordmark']
+  ]) {
+    assert.match(
+      show[modernKey],
+      /^\/img\/webp\/[a-z0-9/_-]+(?:--w[1-9][0-9]{1,3})?\.webp$/,
+      `${show.slug} ${modernKey} must use the generated WebP boundary`
+    );
+    assert.equal(
+      show[modernKey]
+        .replace('/img/webp/', '/img/')
+        .replace(/--w[1-9][0-9]{1,3}\.webp$/, '.png')
+        .replace(/\.webp$/, '.png'),
+      show[fallbackKey],
+      `${show.slug} ${modernKey} must map to its checked-in PNG fallback`
+    );
+  }
 }
 
 for (const episode of publications) {

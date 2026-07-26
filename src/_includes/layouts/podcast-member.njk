@@ -4,6 +4,9 @@
     {% include "snippets/head.njk" %}
     <meta name="robots" content="noindex,nofollow,noarchive">
     <meta name="referrer" content="no-referrer">
+    {% if podcastMember.turnstileSiteKey %}
+    <link rel="preconnect" href="https://challenges.cloudflare.com" crossorigin>
+    {% endif %}
   </head>
   <body class="podcast-member-page">
     {% include "snippets/navbar1.njk" %}

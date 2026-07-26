@@ -7,6 +7,7 @@ pagination:
   size: 1
   alias: show
 permalink: "podcasts/{{ show.slug }}/index.html"
+disableLegacyMediaPreconnects: true
 eleventyComputed:
   title: "{{ show.title }} — Dust Wave Podcasts"
   description: "{{ show.description }} {{ show.descriptionEn }}"
@@ -28,24 +29,37 @@ eleventyComputed:
   <header class="podcast-show__hero">
     <div class="container">
       <div class="podcast-show__wordmark-wrap">
-        <img
-          class="podcast-show__wordmark"
-          src="{{ show.wordmark }}"
-          alt="{{ show.title }}"
-          width="2708"
-          height="532"
-          decoding="async">
+        <picture>
+          <source
+            srcset="{{ show.wordmarkWebpSmall }} 640w, {{ show.wordmarkWebp }} 1280w, {{ show.wordmarkWebpLarge }} 2560w"
+            sizes="(min-width: 1200px) 1088px, calc(100vw - 24px)"
+            type="image/webp">
+          <img
+            class="podcast-show__wordmark"
+            src="{{ show.wordmark }}"
+            alt="{{ show.title }}"
+            width="2708"
+            height="532"
+            decoding="async">
+        </picture>
       </div>
 
       <div class="row align-items-center gy-4">
         <div class="col-12 col-md-5 col-lg-4">
-          <img
-            class="podcast-show__artwork"
-            src="{{ show.artwork }}"
-            alt="Portada de {{ show.title }}"
-            width="505"
-            height="505"
-            decoding="async">
+          <picture>
+            <source
+              srcset="{{ show.artworkWebpSmall }} 256w, {{ show.artworkWebp }} 505w"
+              sizes="(min-width: 992px) 33vw, (min-width: 768px) 42vw, calc(100vw - 24px)"
+              type="image/webp">
+            <img
+              class="podcast-show__artwork"
+              src="{{ show.artwork }}"
+              alt="Portada de {{ show.title }}"
+              width="505"
+              height="505"
+              decoding="async"
+              fetchpriority="high">
+          </picture>
         </div>
         <div class="col-12 col-md-7 col-lg-8">
           <p class="podcast-show__eyebrow">Un podcast de Dust Wave</p>

@@ -3,6 +3,9 @@
   <head>
     {% include "snippets/head.njk" %}
     <meta name="robots" content="noindex,nofollow,noarchive">
+    {% if podcastAdmin.turnstileSiteKey %}
+    <link rel="preconnect" href="https://challenges.cloudflare.com" crossorigin>
+    {% endif %}
   </head>
   <body class="podcast-admin-page">
     {% include "snippets/navbar1.njk" %}
