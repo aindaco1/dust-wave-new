@@ -842,11 +842,7 @@ function startPodcastAdmin(root) {
       alignmentBenchmarkForm.hidden = !canImportAlignmentBenchmarks;
     }
     root.querySelector("[data-podcast-session-summary]").textContent =
-      adminText(
-        "authenticated",
-        `Authenticated Podcast administrator${roles ? ` — ${roles}` : ""}.`,
-        { roles: roles ? ` — ${roles}` : "" }
-      );
+      adminText("authenticated", { roles: roles ? ` — ${roles}` : "" });
   }
 
   function showLoggedOut() {
@@ -3667,15 +3663,13 @@ function startPodcastAdmin(root) {
     if (audioQcPolicyForm) audioQcPolicyForm.hidden = true;
     if (!showId) {
       if (audioQcPolicySummary) {
-        audioQcPolicySummary.textContent =
-          "Choose a show before reviewing its measurement policy.";
+        audioQcPolicySummary.textContent = adminText("chooseShowForPolicy");
       }
       setStatus(audioQcPolicyStatus, "");
       return;
     }
     if (audioQcPolicySummary) {
-      audioQcPolicySummary.textContent =
-        "Loading the show measurement policy…";
+      audioQcPolicySummary.textContent = adminText("loadingMeasurementPolicy");
     }
     setStatus(audioQcPolicyStatus, "");
     try {
@@ -3694,8 +3688,7 @@ function startPodcastAdmin(root) {
         || showId !== selectedShowId
       ) return;
       if (audioQcPolicySummary) {
-        audioQcPolicySummary.textContent =
-          "The show measurement policy could not be loaded.";
+        audioQcPolicySummary.textContent = adminText("measurementPolicyFailed");
       }
       setStatus(audioQcPolicyStatus, friendlyError(error), true);
     }
@@ -3704,7 +3697,9 @@ function startPodcastAdmin(root) {
   function renderAudioQcPolicy() {
     if (!audioQcPolicy || !audioQcPolicySummary) return;
     audioQcPolicySummary.textContent = [
-      `Policy revision ${Number(audioQcPolicy.revision || 0)}`,
+      adminText("policyRevision", {
+        revision: formatInteger(audioQcPolicy.revision)
+      }),
       `mono ${Number(audioQcPolicy.monoIntegratedLufs)} LUFS`,
       `stereo ${Number(audioQcPolicy.stereoIntegratedLufs)} LUFS`,
       `±${Number(audioQcPolicy.integratedLufsTolerance)} LU`,
@@ -3735,7 +3730,7 @@ function startPodcastAdmin(root) {
     button.disabled = true;
     setStatus(
       audioQcPolicyStatus,
-      "Saving thresholds for future QC runs…"
+      adminText("savingQcThresholds")
     );
     try {
       const policyValues = Object.fromEntries(
@@ -3759,8 +3754,9 @@ function startPodcastAdmin(root) {
       renderAudioQcPolicy();
       setStatus(
         audioQcPolicyStatus,
-        `Policy revision ${Number(audioQcPolicy?.revision || 0)} saved. `
-          + "Existing reports remain immutable."
+        adminText("policyRevisionSaved", {
+          revision: formatInteger(audioQcPolicy?.revision)
+        })
       );
       await Promise.all([loadAudioQc(), loadAudioMaster()]);
     } catch (error) {
@@ -3779,15 +3775,14 @@ function startPodcastAdmin(root) {
     audioQcResults?.replaceChildren();
     if (!episodeId) {
       if (audioQcSummary) {
-        audioQcSummary.textContent =
-          "Create an episode before measuring source audio.";
+        audioQcSummary.textContent = adminText("createBeforeQc");
       }
       if (audioQcQueue) audioQcQueue.disabled = true;
       setStatus(audioQcStatus, "");
       return;
     }
     if (audioQcQueue) audioQcQueue.disabled = true;
-    setStatus(audioQcStatus, "Loading source-audio QC evidence…");
+    setStatus(audioQcStatus, adminText("loadingAudioQc"));
     try {
       const payload = await client.request(
         `/v1/admin/episodes/${encodeURIComponent(episodeId)}/audio-qc`
@@ -3799,8 +3794,7 @@ function startPodcastAdmin(root) {
     } catch (error) {
       if (requestId !== audioQcRequestId) return;
       if (audioQcSummary) {
-        audioQcSummary.textContent =
-          "Source-audio QC evidence could not be loaded.";
+        audioQcSummary.textContent = adminText("audioQcFailed");
       }
       setStatus(audioQcStatus, friendlyError(error), true);
     }
@@ -3820,14 +3814,18 @@ function startPodcastAdmin(root) {
       : [];
     audioQcSummary.textContent = source
       ? [
-          `Source: ${String(source.filename || "private audio")}`,
+          adminText("sourceFile", {
+            filename: String(source.filename || adminText("privateAudio"))
+          }),
           formatBytes(Number(source.objectBytes || 0)),
-          `policy r${Number(policy.revision || 0)}`,
+          adminText("policyShort", {
+            revision: formatInteger(policy.revision)
+          }),
           processor.available
-            ? "signed staging processor ready"
-            : "processor unavailable"
+            ? adminText("signedStagingProcessorReady")
+            : adminText("processorUnavailable")
         ].join(" · ")
-      : "Complete a source-audio upload before queueing measured QC.";
+      : adminText("uploadBeforeQc");
     if (audioQcQueue) {
       audioQcQueue.disabled =
         !canRunAudioQc || !source || !processor.available;
@@ -3835,8 +3833,7 @@ function startPodcastAdmin(root) {
     if (!runs.length) {
       const empty = document.createElement("p");
       empty.className = "podcast-admin__empty";
-      empty.textContent =
-        "No quality report exists for this source and policy yet.";
+      empty.textContent = adminText("noQcReport");
       audioQcResults.replaceChildren(empty);
       return;
     }
@@ -3851,7 +3848,7 @@ function startPodcastAdmin(root) {
     const heading = document.createElement("div");
     heading.className = "podcast-admin__readiness-card-heading";
     const title = document.createElement("h3");
-    title.textContent = `QC run ${String(run.id || "")}`;
+    title.textContent = adminText("qcRun", { id: String(run.id || "") });
     const pill = document.createElement("span");
     pill.className = "podcast-admin__pill";
     pill.textContent = status;
@@ -3859,23 +3856,31 @@ function startPodcastAdmin(root) {
     const summary = document.createElement("p");
     if (status === "succeeded") {
       const values = run.summary || {};
+      const blockerCount = Number(values.blockerCount || 0);
+      const warningCount = Number(values.warningCount || 0);
       summary.textContent = [
-        `${Number(values.blockerCount || 0)} blocker${
-          Number(values.blockerCount || 0) === 1 ? "" : "s"
-        }`,
-        `${Number(values.warningCount || 0)} warning${
-          Number(values.warningCount || 0) === 1 ? "" : "s"
-        }`,
+        adminText("blockersCount", {
+          count: formatInteger(blockerCount),
+          blockers: blockerCount === 1
+            ? adminText("blockerSingular")
+            : adminText("blockerPlural")
+        }),
+        adminText("warningsCount", {
+          count: formatInteger(warningCount),
+          warnings: warningCount === 1
+            ? adminText("warningSingular")
+            : adminText("warningPlural")
+        }),
         `${Number(values.integratedLufs || 0)} LUFS`,
         `${Number(values.truePeakDbtp || 0)} dBTP`,
         formatDurationMilliseconds(Number(values.durationMs || 0))
       ].join(" · ");
     } else if (status === "failed") {
-      summary.textContent =
-        `Processor failed safely: ${humanizeCode(run.failureCode || "processor_failed")}.`;
+      summary.textContent = adminText("processorFailedSafely", {
+        code: humanizeCode(run.failureCode || "processor_failed")
+      });
     } else {
-      summary.textContent =
-        "Queued for the owner-controlled staging workflow; no audio was changed.";
+      summary.textContent = adminText("qcQueuedNoChange");
     }
     article.append(heading, summary);
     if (status === "succeeded") {
@@ -3887,15 +3892,18 @@ function startPodcastAdmin(root) {
       const details = document.createElement("details");
       const detailsSummary = document.createElement("summary");
       detailsSummary.textContent = findings.length
-        ? `Review ${findings.length} measured finding${
-            findings.length === 1 ? "" : "s"
-          }`
-        : "Review clean measured evidence";
+        ? adminText("reviewMeasuredFindings", {
+            count: formatInteger(findings.length),
+            findings: findings.length === 1
+              ? adminText("findingSingular")
+              : adminText("findingPlural")
+          })
+        : adminText("reviewCleanEvidence");
       const list = document.createElement("ul");
       list.className = "podcast-admin__audio-qc-findings";
       if (!findings.length) {
         const item = document.createElement("li");
-        item.textContent = "No policy warning or blocker was measured.";
+        item.textContent = adminText("noQcFindings");
         list.append(item);
       } else {
         for (const finding of findings) {
@@ -3906,7 +3914,10 @@ function startPodcastAdmin(root) {
           const evidence = document.createElement("span");
           evidence.textContent = [
             `${Number(finding.measured)} ${String(finding.unit || "")}`,
-            `limit ${Number(finding.limit)} ${String(finding.unit || "")}`,
+            adminText("limitLabel", {
+              value: Number(finding.limit),
+              unit: String(finding.unit || "")
+            }),
             String(finding.remediation || "")
           ].join(" · ");
           item.append(label, evidence);
@@ -3923,7 +3934,7 @@ function startPodcastAdmin(root) {
     const episodeId = audioQcEpisodeSelect?.value || "";
     if (!episodeId || !canRunAudioQc || !audioQcState?.source) return;
     audioQcQueue.disabled = true;
-    setStatus(audioQcStatus, "Snapshotting private source and QC policy…");
+    setStatus(audioQcStatus, adminText("snapshottingQc"));
     try {
       const runId = `qc_${crypto.randomUUID().replace(/-/g, "")}`;
       const payload = await client.request(
@@ -3936,8 +3947,7 @@ function startPodcastAdmin(root) {
       await Promise.all([loadAudioQc(), loadAudioMaster()]);
       setStatus(
         audioQcStatus,
-        `QC run ${String(payload.run?.id || runId)} is queued. `
-          + "Dispatch the pinned staging audio-QC workflow, then refresh this report."
+        adminText("qcRunQueued", { id: String(payload.run?.id || runId) })
       );
     } catch (error) {
       setStatus(audioQcStatus, friendlyError(error), true);
@@ -3960,8 +3970,7 @@ function startPodcastAdmin(root) {
     audioEnhancementResults?.replaceChildren();
     if (!episodeId) {
       if (audioMasterSummary) {
-        audioMasterSummary.textContent =
-          "Create an episode before approving a working master.";
+        audioMasterSummary.textContent = adminText("createBeforeMaster");
       }
       if (audioMasterApprovalForm) audioMasterApprovalForm.hidden = true;
       if (audioEnhancementForm) audioEnhancementForm.hidden = true;
@@ -3971,8 +3980,7 @@ function startPodcastAdmin(root) {
     }
     if (audioMasterRefresh) audioMasterRefresh.disabled = true;
     if (audioMasterSummary) {
-      audioMasterSummary.textContent =
-        "Loading exact working-master evidence…";
+      audioMasterSummary.textContent = adminText("loadingWorkingMaster");
     }
     try {
       const payload = await client.request(
@@ -3984,8 +3992,7 @@ function startPodcastAdmin(root) {
     } catch (error) {
       if (requestId !== audioMasterRequestId) return;
       if (audioMasterSummary) {
-        audioMasterSummary.textContent =
-          "Working-master evidence could not be loaded.";
+        audioMasterSummary.textContent = adminText("workingMasterFailed");
       }
       if (audioMasterApprovalForm) audioMasterApprovalForm.hidden = true;
       if (audioEnhancementForm) audioEnhancementForm.hidden = true;
@@ -4014,27 +4021,32 @@ function startPodcastAdmin(root) {
     const processor = audioMasterState.processor || {};
     audioMasterSummary.textContent = current
       ? [
-          `Working master r${Number(current.revision || 0)}`,
+          adminText("workingMasterRevision", {
+            revision: formatInteger(current.revision)
+          }),
           humanizeCode(current.originKind || "source_original"),
           formatBytes(Number(current.objectBytes || 0)),
-          `approved ${formatDate(current.approvedAt)}`
+          adminText("approvedAt", { date: formatDate(current.approvedAt) })
         ].join(" · ")
       : eligible
         ? [
-            "No working master approved",
-            `${Number(eligible.warningCount || 0)} QC warning${
-              Number(eligible.warningCount || 0) === 1 ? "" : "s"
-            }`,
+            adminText("noWorkingMaster"),
+            adminText("qcWarnings", {
+              count: formatInteger(eligible.warningCount),
+              warnings: Number(eligible.warningCount || 0) === 1
+                ? adminText("warningSingular")
+                : adminText("warningPlural")
+            }),
             formatBytes(Number(eligible.objectBytes || 0)),
-            `policy r${Number(eligible.policyRevision || 0)}`
+            adminText("policyShort", {
+              revision: formatInteger(eligible.policyRevision)
+            })
           ].join(" · ")
-        : "Run the current source against the current show policy with zero blockers.";
+        : adminText("runQcBeforeMaster");
     audioMasterCurrent.replaceChildren(
       current
         ? renderCurrentAudioMaster(current)
-        : emptyAudioMasterMessage(
-            "No exact source has been approved as the working master."
-          )
+        : emptyAudioMasterMessage(adminText("noExactWorkingMaster"))
     );
     if (audioMasterApprovalForm) {
       audioMasterApprovalForm.hidden =
@@ -4044,8 +4056,8 @@ function startPodcastAdmin(root) {
       );
       if (button) {
         button.textContent = current
-          ? "Replace working master"
-          : "Approve working master";
+          ? adminText("replaceWorkingMaster")
+          : adminText("approveWorkingMaster");
       }
     }
     if (audioEnhancementForm) {
@@ -4060,9 +4072,7 @@ function startPodcastAdmin(root) {
     audioEnhancementResults.replaceChildren(
       ...(previews.length
         ? previews.map(renderAudioEnhancementPreview)
-        : [emptyAudioMasterMessage(
-            "No private enhancement comparisons exist for this episode."
-          )])
+        : [emptyAudioMasterMessage(adminText("noEnhancementComparisons"))])
     );
     window.DWDigestAudio?.mount(audioEnhancementResults);
   }
@@ -4073,11 +4083,12 @@ function startPodcastAdmin(root) {
     const heading = document.createElement("div");
     heading.className = "podcast-admin__readiness-card-heading";
     const title = document.createElement("h3");
-    title.textContent =
-      `Current working master · revision ${Number(master.revision || 0)}`;
+    title.textContent = adminText("currentWorkingMaster", {
+      revision: formatInteger(master.revision)
+    });
     const pill = document.createElement("span");
     pill.className = "podcast-admin__pill";
-    pill.textContent = "approved";
+    pill.textContent = adminText("approvedGeneric");
     heading.append(title, pill);
     const summary = document.createElement("p");
     summary.textContent = [
@@ -4089,17 +4100,17 @@ function startPodcastAdmin(root) {
     evidence.className = "podcast-admin__readiness-evidence";
     appendEvidenceRow(
       evidence,
-      "Source SHA-256",
+      adminText("sourceSha256"),
       String(master.sourceSha256 || "")
     );
     appendEvidenceRow(
       evidence,
-      "QC report SHA-256",
+      adminText("qcReportSha256"),
       String(master.qualityControlReportSha256 || "")
     );
     appendEvidenceRow(
       evidence,
-      "Approval reason",
+      adminText("approvalReason"),
       String(master.approvalReason || "")
     );
     article.append(heading, summary, evidence);
@@ -4110,7 +4121,7 @@ function startPodcastAdmin(root) {
     const term = document.createElement("dt");
     term.textContent = label;
     const description = document.createElement("dd");
-    description.textContent = value || "None";
+    description.textContent = value || adminText("none");
     rootElement.append(term, description);
   }
 
@@ -4173,7 +4184,7 @@ function startPodcastAdmin(root) {
     button.disabled = true;
     setStatus(
       audioMasterApprovalStatus,
-      "Binding exact source and QC evidence to a new master revision…"
+      adminText("bindingWorkingMaster")
     );
     try {
       const payload = await client.request(
@@ -4202,9 +4213,9 @@ function startPodcastAdmin(root) {
       ]);
       setStatus(
         audioMasterApprovalStatus,
-        `Working master revision ${Number(
-          payload.master?.revision || 0
-        )} approved.`
+        adminText("workingMasterApproved", {
+          revision: formatInteger(payload.master?.revision)
+        })
       );
     } catch (error) {
       setStatus(
@@ -4233,7 +4244,7 @@ function startPodcastAdmin(root) {
     button.disabled = true;
     setStatus(
       audioEnhancementStatus,
-      "Snapshotting exact source, QC evidence, and preset…"
+      adminText("snapshottingEnhancement")
     );
     try {
       const jobId = operationId("enhance");
@@ -4264,8 +4275,9 @@ function startPodcastAdmin(root) {
       await loadAudioMaster();
       setStatus(
         audioEnhancementStatus,
-        `Preview ${String(payload.preview?.id || jobId)} is queued. `
-          + "Dispatch the pinned staging enhancement workflow, then refresh."
+        adminText("enhancementPreviewQueued", {
+          id: String(payload.preview?.id || jobId)
+        })
       );
     } catch (error) {
       setStatus(audioEnhancementStatus, friendlyError(error), true);
@@ -4283,8 +4295,9 @@ function startPodcastAdmin(root) {
     const heading = document.createElement("div");
     heading.className = "podcast-admin__readiness-card-heading";
     const title = document.createElement("h3");
-    title.textContent =
-      `A/B preview ${String(preview.id || "")}`;
+    title.textContent = adminText("abPreview", {
+      id: String(preview.id || "")
+    });
     const pill = document.createElement("span");
     pill.className = "podcast-admin__pill";
     pill.textContent = status;
@@ -4293,9 +4306,9 @@ function startPodcastAdmin(root) {
     const summary = document.createElement("p");
     summary.textContent = [
       humanizeCode(recipe.presetId || "preset"),
-      `starts ${formatDurationMilliseconds(
-        Number(recipe.previewStartMs || 0)
-      )}`,
+      adminText("startsAt", {
+        time: formatDurationMilliseconds(Number(recipe.previewStartMs || 0))
+      }),
       formatDurationMilliseconds(Number(recipe.previewDurationMs || 0))
     ].join(" · ");
     article.append(heading, summary);
@@ -4306,12 +4319,12 @@ function startPodcastAdmin(root) {
       comparison.append(
         buildPrivatePodcastPlayer(
           `${String(preview.id)}_original`,
-          "Original excerpt",
+          adminText("originalExcerpt"),
           String(preview.original.mediaUrl || "")
         ),
         buildPrivatePodcastPlayer(
           `${String(preview.id)}_enhanced`,
-          "Enhanced excerpt",
+          adminText("enhancedExcerpt"),
           String(preview.enhanced.mediaUrl || "")
         )
       );
@@ -4319,10 +4332,10 @@ function startPodcastAdmin(root) {
     } else {
       const detail = document.createElement("p");
       detail.textContent = status === "failed"
-        ? `Processor failed safely: ${humanizeCode(
-            preview.failureCode || "processor_failed"
-          )}.`
-        : "Waiting for the owner-controlled staging workflow.";
+        ? adminText("processorFailedSafely", {
+            code: humanizeCode(preview.failureCode || "processor_failed")
+          })
+        : adminText("waitingForStagingWorkflow");
       article.append(detail);
     }
     const warning = document.createElement("p");
@@ -4339,7 +4352,7 @@ function startPodcastAdmin(root) {
     heading.textContent = title;
     const card = document.createElement("div");
     card.className = "audio-card";
-    card.lang = "en";
+    card.lang = document.documentElement.lang || "en";
     card.dataset.audioCredentials = "include";
     const body = document.createElement("div");
     const wave = document.createElement("div");
@@ -4357,11 +4370,15 @@ function startPodcastAdmin(root) {
     const controls = document.createElement("div");
     controls.className = "controls";
     controls.append(
-      playerControl("playpause", `Play ${title}`, "Play"),
-      playerControl("skip-back", "Rewind 10 seconds", "−10"),
-      playerControl("skip-fwd", "Skip forward 30 seconds", "+30")
+      playerControl(
+        "playpause",
+        adminText("playTitle", { title }),
+        adminText("play")
+      ),
+      playerControl("skip-back", adminText("rewindTen"), "−10"),
+      playerControl("skip-fwd", adminText("skipThirty"), "+30")
     );
-    const speed = playerControl("speed", "Change speed", "1x");
+    const speed = playerControl("speed", adminText("changeSpeed"), "1x");
     speed.dataset.audioSpeed = "";
     const download = document.createElement("a");
     const downloadUrl = new URL(mediaUrl);
@@ -4369,8 +4386,11 @@ function startPodcastAdmin(root) {
     download.className = "download";
     download.href = downloadUrl.href;
     download.download = "";
-    download.setAttribute("aria-label", `Download ${title}`);
-    download.textContent = "Download";
+    download.setAttribute(
+      "aria-label",
+      adminText("downloadTitle", { title })
+    );
+    download.textContent = adminText("download");
     controls.append(speed, download);
     body.append(wave, audio, controls);
     card.append(body);
@@ -4389,7 +4409,7 @@ function startPodcastAdmin(root) {
         mediaUrl.pathname
       )
     ) {
-      throw new Error("Invalid private audio-enhancement media URL");
+      throw new Error(adminText("invalidEnhancementUrl"));
     }
     return mediaUrl.href;
   }
@@ -4423,14 +4443,13 @@ function startPodcastAdmin(root) {
     reviewList?.replaceChildren();
     if (!episodeId) {
       if (reviewReadiness) {
-        reviewReadiness.textContent =
-          "Create an episode before starting production review.";
+        reviewReadiness.textContent = adminText("createBeforeProductionReview");
       }
       await loadPublicationReadiness("");
       return;
     }
     const readinessPromise = loadPublicationReadiness(episodeId);
-    setStatus(reviewStatus, "Loading exact-revision review state…");
+    setStatus(reviewStatus, adminText("loadingProductionReview"));
     try {
       const payload = await client.request(
         `/v1/admin/episodes/${encodeURIComponent(episodeId)}/reviews`
@@ -4461,13 +4480,12 @@ function startPodcastAdmin(root) {
     readinessGroups?.replaceChildren();
     if (!episodeId) {
       if (readinessSummary) {
-        readinessSummary.textContent =
-          "Create an episode before inspecting publication readiness.";
+        readinessSummary.textContent = adminText("createBeforeReadiness");
       }
       setStatus(readinessStatus, "");
       return;
     }
-    setStatus(readinessStatus, "Loading read-only dependency snapshot…");
+    setStatus(readinessStatus, adminText("loadingReadiness"));
     try {
       const payload = await client.request(
         `/v1/admin/episodes/${encodeURIComponent(episodeId)}/readiness`
@@ -4479,8 +4497,7 @@ function startPodcastAdmin(root) {
     } catch (error) {
       if (requestId !== readinessRequestId) return;
       if (readinessSummary) {
-        readinessSummary.textContent =
-          "The dependency snapshot could not be loaded.";
+        readinessSummary.textContent = adminText("readinessFailed");
       }
       setStatus(readinessStatus, friendlyError(error), true);
     }
@@ -4495,24 +4512,36 @@ function startPodcastAdmin(root) {
     const legacy = publicationReadiness.legacyGate || {};
     const candidate = publicationReadiness.candidateGate || {};
     const digest = String(publicationReadiness.snapshotDigest || "");
+    const missingChecks = (legacy.missing || []).length;
+    const blockerCount = Number(candidate.blockerCount || 0);
+    const warningCount = Number(candidate.warningCount || 0);
     readinessSummary.textContent = [
       legacy.ready
-        ? "Current Publish checks pass"
-        : `${(legacy.missing || []).length} current Publish check${
-          (legacy.missing || []).length === 1 ? "" : "s"
-        } missing`,
+        ? adminText("publishChecksPass")
+        : adminText("publishChecksMissing", {
+            count: formatInteger(missingChecks),
+            checks: missingChecks === 1
+              ? adminText("checkSingular")
+              : adminText("checkPlural")
+          }),
       candidate.ready
-        ? "launch candidate ready"
-        : `${Number(candidate.blockerCount || 0)} candidate blocker${
-          Number(candidate.blockerCount || 0) === 1 ? "" : "s"
-        }`,
-      `${Number(candidate.warningCount || 0)} warning${
-        Number(candidate.warningCount || 0) === 1 ? "" : "s"
-      }`,
-      `publication revision ${Number(
-        publicationReadiness.publicationRevision || 0
-      )}`,
-      digest ? `snapshot ${digest.slice(0, 12)}` : "",
+        ? adminText("launchCandidateReady")
+        : adminText("candidateBlockers", {
+            count: formatInteger(blockerCount),
+            blockers: blockerCount === 1
+              ? adminText("blockerSingular")
+              : adminText("blockerPlural")
+          }),
+      adminText("warningsCount", {
+        count: formatInteger(warningCount),
+        warnings: warningCount === 1
+          ? adminText("warningSingular")
+          : adminText("warningPlural")
+      }),
+      adminText("publicationRevision", {
+        revision: formatInteger(publicationReadiness.publicationRevision)
+      }),
+      digest ? adminText("snapshotDigest", { digest: digest.slice(0, 12) }) : "",
       publicationGateLabel(publicationReadiness.publicationGateMode)
     ].filter(Boolean).join(" · ");
 
@@ -4533,12 +4562,10 @@ function startPodcastAdmin(root) {
     const section = document.createElement("section");
     section.className = "podcast-admin__readiness-group";
     const heading = document.createElement("h3");
-    heading.textContent = {
-      core: "Core release",
-      editorial: "Editorial evidence",
-      monetization: "Monetization",
-      distribution: "Distribution"
-    }[group] || humanizeCode(group);
+    heading.textContent = adminText(
+      `readinessGroup_${group}`,
+      humanizeCode(group)
+    );
     const list = document.createElement("div");
     list.className = "podcast-admin__readiness-list";
     list.replaceChildren(...nodes.map(renderReadinessNode));
@@ -4555,7 +4582,9 @@ function startPodcastAdmin(root) {
     const heading = document.createElement("div");
     heading.className = "podcast-admin__readiness-card-heading";
     const title = document.createElement("h4");
-    title.textContent = String(readinessNode.label || "Dependency");
+    title.textContent = String(
+      readinessNode.label || adminText("dependencyFallback")
+    );
     const pill = document.createElement("span");
     pill.className = "podcast-admin__pill";
     pill.textContent = `${humanizeCode(status)} · ${humanizeCode(severity)}`;
@@ -4564,7 +4593,7 @@ function startPodcastAdmin(root) {
     summary.textContent = String(readinessNode.summary || "");
     const evidence = document.createElement("details");
     const evidenceSummary = document.createElement("summary");
-    evidenceSummary.textContent = "Evidence";
+    evidenceSummary.textContent = adminText("evidenceLabel");
     const values = document.createElement("dl");
     values.className = "podcast-admin__readiness-evidence";
     for (const [key, value] of Object.entries(readinessNode.evidence || {})) {
@@ -4580,9 +4609,15 @@ function startPodcastAdmin(root) {
   }
 
   function readinessEvidenceValue(value) {
-    if (Array.isArray(value)) return value.length ? value.join(", ") : "None";
-    if (typeof value === "boolean") return value ? "Yes" : "No";
-    if (value === null || value === undefined || value === "") return "None";
+    if (Array.isArray(value)) {
+      return value.length ? value.join(", ") : adminText("none");
+    }
+    if (typeof value === "boolean") {
+      return value ? adminText("yes") : adminText("no");
+    }
+    if (value === null || value === undefined || value === "") {
+      return adminText("none");
+    }
     return String(value);
   }
 
@@ -4592,7 +4627,9 @@ function startPodcastAdmin(root) {
     const targets = productionReviews.targetOptions || [];
     reviewTargetSelect.replaceChildren(...targets.map((target) => {
       const option = new Option(
-        `${target.label} — revision ${Number(target.revision)}`,
+        `${target.label} — ${adminText("transcriptRevision", {
+          revision: formatInteger(target.revision)
+        })}`,
         `${target.type}:${target.id}`,
         false,
         `${target.type}:${target.id}` === previousTarget
@@ -4608,24 +4645,31 @@ function startPodcastAdmin(root) {
     const readiness = productionReviews.readiness || {};
     if (reviewReadiness) {
       reviewReadiness.textContent = targets.length === 0
-        ? "No versioned audio, transcript, chapter, clip, or ad-plan target is ready for review."
+        ? adminText("noReviewTargets")
         : [
-            `${Number(readiness.currentTargetCount || targets.length)} current target${
-              Number(readiness.currentTargetCount || targets.length) === 1
-                ? ""
-                : "s"
-            }`,
-            `${Number(readiness.currentReviewCount || 0)} current review target${
-              Number(readiness.currentReviewCount || 0) === 1 ? "" : "s"
-            }`,
-            `${Number(readiness.approvedCurrentReviewCount || 0)} approved`,
-            `${Number(readiness.unreviewedCurrentTargetCount || 0)} unreviewed`,
-            `${Number(readiness.openBlockerCount || 0)} open blocker${
-              Number(readiness.openBlockerCount || 0) === 1 ? "" : "s"
-            }`,
+            reviewTargetCount(
+              "currentTargets",
+              readiness.currentTargetCount || targets.length
+            ),
+            reviewTargetCount(
+              "currentReviewTargets",
+              readiness.currentReviewCount
+            ),
+            adminText("approvedCount", {
+              count: formatInteger(readiness.approvedCurrentReviewCount)
+            }),
+            adminText("unreviewedCount", {
+              count: formatInteger(readiness.unreviewedCurrentTargetCount)
+            }),
+            adminText("openBlockers", {
+              count: formatInteger(readiness.openBlockerCount),
+              blockers: Number(readiness.openBlockerCount || 0) === 1
+                ? adminText("blockerSingular")
+                : adminText("blockerPlural")
+            }),
             readiness.reviewReady
-              ? "review ready"
-              : "review evidence incomplete",
+              ? adminText("reviewReady")
+              : adminText("reviewIncomplete"),
             publicationGateLabel(
               publicationReadiness?.publicationGateMode
             )
@@ -4636,12 +4680,21 @@ function startPodcastAdmin(root) {
     if (!reviews.length) {
       const empty = document.createElement("p");
       empty.className = "podcast-admin__empty";
-      empty.textContent =
-        "No production review notes yet. Add one against an exact current revision.";
+      empty.textContent = adminText("noReviewNotes");
       reviewList.replaceChildren(empty);
       return;
     }
     reviewList.replaceChildren(...reviews.map(renderProductionReview));
+  }
+
+  function reviewTargetCount(key, value) {
+    const count = Number(value || 0);
+    return adminText(key, {
+      count: formatInteger(count),
+      targets: count === 1
+        ? adminText("targetSingular")
+        : adminText("targetPlural")
+    });
   }
 
   function renderProductionReview(review) {
@@ -4657,21 +4710,27 @@ function startPodcastAdmin(root) {
     const evidence = document.createElement("p");
     evidence.className = "podcast-admin__review-evidence";
     evidence.textContent = [
-      `revision ${Number(review.targetRevision)}`,
-      review.isCurrent ? "current target" : "historical target",
-      `review state ${humanizeCode(review.status)}`,
+      adminText("transcriptRevision", {
+        revision: formatInteger(review.targetRevision)
+      }),
+      review.isCurrent
+        ? adminText("currentTarget")
+        : adminText("historicalTarget"),
+      adminText("reviewStateValue", {
+        state: localizedCode("reviewStatus", review.status)
+      }),
       review.assignedToAdminUserId === adminIdentity?.id
-        ? "assigned to me"
+        ? adminText("assignedToMe")
         : review.assignedToAdminUserId
-          ? "assigned to team member"
-          : "unassigned"
+          ? adminText("assignedToTeam")
+          : adminText("unassigned")
     ].join(" · ");
     titleWrap.append(title, evidence);
 
     const controls = document.createElement("div");
     controls.className = "podcast-admin__review-controls";
     const statusLabel = document.createElement("label");
-    statusLabel.textContent = "Review state";
+    statusLabel.textContent = adminText("reviewState");
     const statusSelect = document.createElement("select");
     statusSelect.dataset.podcastReviewStatus = review.id;
     const statuses = [
@@ -4682,7 +4741,7 @@ function startPodcastAdmin(root) {
     ];
     statusSelect.replaceChildren(...statuses.map((status) =>
       new Option(
-        humanizeCode(status),
+        localizedCode("reviewStatus", status),
         status,
         false,
         status === review.status
@@ -4720,7 +4779,10 @@ function startPodcastAdmin(root) {
       || !review.isCurrent
       || (review.status === "approved" && !canApproveReviews);
     assignInput.dataset.podcastReviewAssign = review.id;
-    assignLabel.append(assignInput, document.createTextNode(" Assigned to me"));
+    assignLabel.append(
+      assignInput,
+      document.createTextNode(` ${adminText("assignedToMeControl")}`)
+    );
     controls.append(statusLabel, assignLabel);
     heading.append(titleWrap, controls);
 
@@ -4744,13 +4806,13 @@ function startPodcastAdmin(root) {
     const range = formatReviewRange(comment.startsAtMs, comment.endsAtMs);
     meta.textContent = [
       range,
-      comment.blocker ? "release blocker" : "review note",
-      humanizeCode(comment.resolutionStatus),
+      comment.blocker ? adminText("releaseBlocker") : adminText("reviewNote"),
+      localizedCode("resolutionStatus", comment.resolutionStatus),
       comment.assignedToAdminUserId === adminIdentity?.id
-        ? "assigned to me"
+        ? adminText("assignedToMe")
         : comment.assignedToAdminUserId
-          ? "assigned to team member"
-          : "unassigned"
+          ? adminText("assignedToTeam")
+          : adminText("unassigned")
     ].filter(Boolean).join(" · ");
     const body = document.createElement("p");
     body.className = "podcast-admin__review-body";
@@ -4765,7 +4827,7 @@ function startPodcastAdmin(root) {
       reuse.dataset.startsAtMs = String(comment.startsAtMs);
       reuse.dataset.endsAtMs =
         comment.endsAtMs === null ? "" : String(comment.endsAtMs);
-      reuse.textContent = "Use this range";
+      reuse.textContent = adminText("useThisRange");
       actions.append(reuse);
     }
     if (canEditReviews) {
@@ -4780,7 +4842,9 @@ function startPodcastAdmin(root) {
       resolution.dataset.assignedTo =
         comment.assignedToAdminUserId || "";
       resolution.textContent =
-        comment.resolutionStatus === "resolved" ? "Reopen" : "Resolve";
+        comment.resolutionStatus === "resolved"
+          ? adminText("reopen")
+          : adminText("resolve");
       actions.append(resolution);
     }
     item.append(meta, body);
@@ -4793,12 +4857,12 @@ function startPodcastAdmin(root) {
     if (!productionReviews || !canEditReviews) return;
     const option = reviewTargetSelect.selectedOptions[0];
     if (!option) {
-      setStatus(reviewStatus, "Choose a current review target.", true);
+      setStatus(reviewStatus, adminText("chooseReviewTarget"), true);
       return;
     }
     const button = reviewForm.querySelector('button[type="submit"]');
     button.disabled = true;
-    setStatus(reviewStatus, "Adding exact-revision review note…");
+    setStatus(reviewStatus, adminText("addingReviewNote"));
     try {
       const payload = await client.request(
         `/v1/admin/episodes/${
@@ -4812,11 +4876,11 @@ function startPodcastAdmin(root) {
             targetId: option.dataset.targetId,
             startsAtMs: optionalReviewMilliseconds(
               reviewForm.elements.startsAtSeconds.value,
-              "Review start"
+              adminText("reviewStart")
             ),
             endsAtMs: optionalReviewMilliseconds(
               reviewForm.elements.endsAtSeconds.value,
-              "Review end"
+              adminText("reviewEnd")
             ),
             bodyText: reviewForm.elements.bodyText.value,
             blocker: reviewForm.elements.blocker.checked,
@@ -4833,7 +4897,7 @@ function startPodcastAdmin(root) {
       reviewForm.elements.endsAtSeconds.value = "";
       reviewForm.elements.blocker.checked = false;
       renderProductionReviews();
-      setStatus(reviewStatus, "Production review note added.");
+      setStatus(reviewStatus, adminText("reviewNoteAdded"));
       await loadPublicationReadiness();
     } catch (error) {
       setStatus(
@@ -4901,7 +4965,7 @@ function startPodcastAdmin(root) {
     { status, assignedToAdminUserId }
   ) {
     if (!canEditReviews) return;
-    setStatus(reviewStatus, "Saving production review state…");
+    setStatus(reviewStatus, adminText("savingReviewState"));
     try {
       const payload = await client.request(
         `/v1/admin/reviews/${encodeURIComponent(review.id)}`,
@@ -4917,7 +4981,7 @@ function startPodcastAdmin(root) {
       );
       productionReviews = payload;
       renderProductionReviews();
-      setStatus(reviewStatus, "Production review state saved.");
+      setStatus(reviewStatus, adminText("reviewStateSaved"));
       await loadPublicationReadiness();
     } catch (error) {
       renderProductionReviews();
@@ -4927,7 +4991,7 @@ function startPodcastAdmin(root) {
 
   async function updateProductionReviewComment(button) {
     button.disabled = true;
-    setStatus(reviewStatus, "Updating review-note state…");
+    setStatus(reviewStatus, adminText("updatingReviewNote"));
     try {
       const payload = await client.request(
         `/v1/admin/review-comments/${
@@ -4945,7 +5009,7 @@ function startPodcastAdmin(root) {
       );
       productionReviews = payload;
       renderProductionReviews();
-      setStatus(reviewStatus, "Review-note state updated.");
+      setStatus(reviewStatus, adminText("reviewNoteUpdated"));
       await loadPublicationReadiness();
     } catch (error) {
       setStatus(reviewStatus, friendlyError(error), true);
@@ -4997,8 +5061,9 @@ function startPodcastAdmin(root) {
     if (!clipList) return;
     releaseClipMediaPlayers(clipList);
     if (!clips.length) {
-      clipList.innerHTML =
-        '<p class="podcast-admin__empty">No saved clip recipes yet.</p>';
+      clipList.innerHTML = `<p class="podcast-admin__empty">${
+        escapeHtml(adminText("noSavedClips"))
+      }</p>`;
       return;
     }
     clipList.replaceChildren(...clips.map((clip) => {
@@ -5007,10 +5072,18 @@ function startPodcastAdmin(root) {
       const media = clipRenderPresentation(clip, "production");
       row.innerHTML = `
         <div>
-          <p class="podcast-admin__pill">${escapeHtml(clip.status)} · revision ${Number(clip.revision)}</p>
+          <p class="podcast-admin__pill">${escapeHtml(adminText(
+            "clipRevisionPill",
+            {
+              status: localizedCode("clipStatus", clip.status),
+              revision: formatInteger(clip.revision)
+            }
+          ))}</p>
           <h3>${escapeHtml(clip.title)}</h3>
           <p>${escapeHtml(clip.aspectRatio)} · ${formatClipDuration(clip.durationMs)} · ${escapeHtml(humanizeCode(clip.boundaryMode))}</p>
-          <p>Private render: ${escapeHtml(media.renderLabel)}</p>
+          <p>${escapeHtml(adminText("privateRender", {
+            status: media.renderLabel
+          }))}</p>
           ${media.details}
         </div>
         <div class="podcast-admin__clip-actions">
@@ -5019,7 +5092,7 @@ function startPodcastAdmin(root) {
             type="button"
             data-podcast-clip-edit="${escapeAttribute(clip.id)}"
             ${canEditTranscripts ? "" : "disabled"}>
-            Edit recipe
+            ${escapeHtml(adminText("editRecipe"))}
           </button>
           ${media.actions}
         </div>
@@ -5032,7 +5105,7 @@ function startPodcastAdmin(root) {
     if (!clipLibrary || !clipLibraryFilters) return;
     if (!selectedShowId) {
       clearClipLibraryState();
-      setStatus(clipLibraryStatus, "Choose a show to view its clip library.");
+      setStatus(clipLibraryStatus, adminText("chooseShowForClips"));
       return;
     }
     if (!reset && (clipLibraryLoading || !clipLibraryCursor)) return;
@@ -5047,7 +5120,7 @@ function startPodcastAdmin(root) {
     clipLibraryLoading = true;
     setStatus(
       clipLibraryStatus,
-      reset ? "Loading private clip library…" : "Loading more clips…"
+      reset ? adminText("loadingClipLibrary") : adminText("loadingMoreClips")
     );
     const params = new URLSearchParams({ limit: "24" });
     for (const field of ["episodeId", "aspectRatio", "renderStatus"]) {
@@ -5068,8 +5141,12 @@ function startPodcastAdmin(root) {
       renderClipLibrary();
       setStatus(
         clipLibraryStatus,
-        `${formatInteger(clipLibraryRows.length)} clip`
-        + `${clipLibraryRows.length === 1 ? "" : "s"} loaded.`
+        adminText("clipsLoaded", {
+          count: formatInteger(clipLibraryRows.length),
+          clips: clipLibraryRows.length === 1
+            ? adminText("clipSingular")
+            : adminText("clipPlural")
+        })
       );
     } catch (error) {
       if (requestId !== clipLibraryRequestId) return;
@@ -5100,8 +5177,9 @@ function startPodcastAdmin(root) {
     if (!clipLibrary) return;
     releaseClipMediaPlayers(clipLibrary);
     if (!clipLibraryRows.length) {
-      clipLibrary.innerHTML =
-        '<p class="podcast-admin__empty">No clips match these filters.</p>';
+      clipLibrary.innerHTML = `<p class="podcast-admin__empty">${
+        escapeHtml(adminText("noClipsMatch"))
+      }</p>`;
       return;
     }
     const cards = clipLibraryRows.map((clip) => {
@@ -5110,10 +5188,10 @@ function startPodcastAdmin(root) {
       const media = clipRenderPresentation(clip, "marketing");
       row.innerHTML = `
         <div>
-          <p class="podcast-admin__pill">${escapeHtml(clip.episodeTitle || "Episode")} · ${escapeHtml(clip.aspectRatio)}</p>
+          <p class="podcast-admin__pill">${escapeHtml(clip.episodeTitle || adminText("episodeFallback"))} · ${escapeHtml(clip.aspectRatio)}</p>
           <h3>${escapeHtml(clip.title)}</h3>
-          <p>${formatClipDuration(clip.durationMs)} · ${escapeHtml(humanizeCode(clip.captionLanguage))} · revision ${Number(clip.revision)}</p>
-          <p>Private render: ${escapeHtml(media.renderLabel)}</p>
+          <p>${formatClipDuration(clip.durationMs)} · ${escapeHtml(humanizeCode(clip.captionLanguage))} · ${escapeHtml(adminText("transcriptRevision", { revision: formatInteger(clip.revision) }))}</p>
+          <p>${escapeHtml(adminText("privateRender", { status: media.renderLabel }))}</p>
           ${media.details}
         </div>
         <div class="podcast-admin__clip-actions">${media.actions}</div>
@@ -5126,7 +5204,7 @@ function startPodcastAdmin(root) {
       more.className = "btn btn-outline-light podcast-admin__more";
       more.type = "button";
       more.dataset.podcastClipLibraryMore = "";
-      more.textContent = "Load more clips";
+      more.textContent = adminText("loadMoreClips");
       clipLibrary.append(more);
     }
   }
@@ -5135,14 +5213,22 @@ function startPodcastAdmin(root) {
     const render = clip.render;
     const youtubePublication = clip.youtubePublication;
     const youtubeDetails = youtubePublication
-      ? `<p>YouTube test: ${escapeHtml(humanizeCode(youtubePublication.status))}
-          · ${escapeHtml(humanizeCode(youtubePublication.privacyStatus))}</p>`
+      ? `<p>${escapeHtml(adminText("youtubeTest", {
+          status: localizedCode("youtubeStatus", youtubePublication.status),
+          privacy: localizedCode(
+            "privacyStatus",
+            youtubePublication.privacyStatus
+          )
+        }))}</p>`
       : "";
     const renderLabel = !render
-      ? "not requested"
+      ? adminText("renderNotRequested")
       : render.clipRevision === clip.revision
-        ? humanizeCode(render.status)
-        : `${humanizeCode(render.status)} for older revision ${Number(render.clipRevision)}`;
+        ? localizedCode("renderStatus", render.status)
+        : adminText("olderRenderRevision", {
+            status: localizedCode("renderStatus", render.status),
+            revision: formatInteger(render.clipRevision)
+          });
     const mediaUrl = adminApiUrl(render?.mediaPath);
     const downloadUrl = adminApiUrl(render?.downloadPath);
     const ready = render
@@ -5165,7 +5251,9 @@ function startPodcastAdmin(root) {
           class="btn btn-outline-light"
           type="button"
           data-podcast-clip-youtube-open="${escapeAttribute(clip.id)}">
-          ${youtubePublication ? "Review YouTube test" : "Prepare YouTube test"}
+          ${escapeHtml(youtubePublication
+            ? adminText("reviewYoutubeTest")
+            : adminText("prepareYoutubeTest"))}
         </button>`
       : "";
     return {
@@ -5185,13 +5273,13 @@ function startPodcastAdmin(root) {
           aria-expanded="false"
           data-podcast-clip-render-preview
           data-media-path="${escapeAttribute(render.mediaPath)}">
-          Preview render
+          ${escapeHtml(adminText("previewRender"))}
         </button>
         <a
           class="btn btn-outline-light"
           href="${escapeAttribute(downloadUrl)}"
           download>
-          Download MP4
+          ${escapeHtml(adminText("downloadMp4"))}
         </a>
         ${youtubeAction}`,
       container: `<div
@@ -5237,13 +5325,13 @@ function startPodcastAdmin(root) {
     if (!container.hidden) {
       releaseClipMediaPlayers(container);
       container.hidden = true;
-      button.textContent = "Preview render";
+      button.textContent = adminText("previewRender");
       button.setAttribute("aria-expanded", "false");
       return;
     }
     const mediaUrl = adminApiUrl(button.dataset.mediaPath);
     if (!mediaUrl) {
-      setStatus(status, "The private render URL is invalid.", true);
+      setStatus(status, adminText("invalidPrivateRenderUrl"), true);
       return;
     }
     const video = document.createElement("video");
@@ -5252,18 +5340,18 @@ function startPodcastAdmin(root) {
     video.playsInline = true;
     video.crossOrigin = "use-credentials";
     video.src = mediaUrl;
-    video.setAttribute("aria-label", "Private captioned clip preview");
+    video.setAttribute("aria-label", adminText("privateClipPreview"));
     video.addEventListener("error", () => {
       if (video.dataset.releasing === "1") return;
       setStatus(
         status,
-        "The private render could not be loaded. Refresh your session and verify the render evidence.",
+        adminText("privateRenderFailed"),
         true
       );
     }, { once: true });
     container.replaceChildren(video);
     container.hidden = false;
-    button.textContent = "Hide preview";
+    button.textContent = adminText("hidePreview");
     button.setAttribute("aria-expanded", "true");
   }
 
@@ -5292,7 +5380,7 @@ function startPodcastAdmin(root) {
     ) {
       setStatus(
         clipLibraryStatus,
-        "Only the current completed render can prepare a YouTube test.",
+        adminText("currentRenderRequired"),
         true
       );
       return;
@@ -5331,12 +5419,14 @@ function startPodcastAdmin(root) {
     }
     if (clipYouTubeMeta) {
       clipYouTubeMeta.textContent = [
-        clip.episodeTitle || "Episode",
+        clip.episodeTitle || adminText("episodeFallback"),
         clip.title,
-        `render ${clip.render.id}`,
+        adminText("renderLabel", { id: clip.render.id }),
         publication
-          ? `${humanizeCode(publication.status)} · ${humanizeCode(publication.privacyStatus)}`
-          : "new immutable draft"
+          ? `${localizedCode("youtubeStatus", publication.status)} · ${
+            localizedCode("privacyStatus", publication.privacyStatus)
+          }`
+          : adminText("newImmutableDraft")
       ].join(" · ");
     }
     setStatus(clipYouTubeStatus, "");
@@ -5357,7 +5447,7 @@ function startPodcastAdmin(root) {
     button.disabled = true;
     setStatus(
       clipYouTubeStatus,
-      "Preparing immutable private/unlisted YouTube draft…"
+      adminText("preparingYoutubeDraft")
     );
     try {
       const payload = await client.request(
@@ -5386,8 +5476,8 @@ function startPodcastAdmin(root) {
       setStatus(
         clipYouTubeStatus,
         payload.idempotent
-          ? "This immutable YouTube draft already exists."
-          : "Draft prepared. No upload occurred."
+          ? adminText("youtubeDraftExists")
+          : adminText("youtubeDraftPrepared")
       );
     } catch (error) {
       setStatus(clipYouTubeStatus, friendlyError(error), true);
@@ -5403,7 +5493,7 @@ function startPodcastAdmin(root) {
     clipYouTubeApprove.disabled = true;
     setStatus(
       clipYouTubeStatus,
-      "Approving the current controlled-test gate…"
+      adminText("approvingYoutubeTest")
     );
     try {
       const payload = await client.request(
@@ -5420,8 +5510,13 @@ function startPodcastAdmin(root) {
       setStatus(
         clipYouTubeStatus,
         payload.publication.status === "dry_run"
-          ? "Dry-run approved. No provider upload occurred."
-          : `Controlled private/unlisted upload accepted: ${humanizeCode(payload.publication.status)}.`
+          ? adminText("youtubeDryRunApproved")
+          : adminText("youtubeUploadAccepted", {
+              status: localizedCode(
+                "youtubeStatus",
+                payload.publication.status
+              )
+            })
       );
     } catch (error) {
       setStatus(clipYouTubeStatus, friendlyError(error), true);
@@ -5572,8 +5667,8 @@ function startPodcastAdmin(root) {
     if (!transcriptApproved) {
       if (clipPreview) {
         clipPreview.textContent = transcriptDirty
-          ? "Save and approve the current transcript edits before creating a clip."
-          : "Approve this transcript revision before creating a clip.";
+          ? adminText("approveTranscriptForClipDirty")
+          : adminText("approveTranscriptForClip");
       }
     }
   }
@@ -5606,14 +5701,12 @@ function startPodcastAdmin(root) {
     if (!clipForm || !clipPreview) return;
     const selection = selectedClipCueRange();
     if (!selection) {
-      clipPreview.textContent =
-        "Choose an end cue at or after the start cue.";
+      clipPreview.textContent = adminText("chooseClipEndCue");
       return;
     }
     const { startsAtMs, endsAtMs, durationMs } = selection;
     if (durationMs < 1_000 || durationMs > 180_000) {
-      clipPreview.textContent =
-        "Clip range must be between 1 second and 3 minutes.";
+      clipPreview.textContent = adminText("clipRangeLimit");
       return;
     }
     const dimensions = clipForm.elements.aspectRatio.value === "9:16"
@@ -5625,8 +5718,8 @@ function startPodcastAdmin(root) {
       `${millisecondsToTimestamp(startsAtMs)}–${millisecondsToTimestamp(endsAtMs)}`,
       formatClipDuration(durationMs),
       dimensions,
-      "high-contrast captions",
-      "8% side/top and 18% bottom safe area"
+      adminText("highContrastCaptions"),
+      adminText("captionSafeArea")
     ].join(" · ");
   }
 
@@ -5637,7 +5730,7 @@ function startPodcastAdmin(root) {
     const button = clipForm.querySelector('button[type="submit"]');
     button.disabled = true;
     clipRenderButton.disabled = true;
-    setStatus(clipStatus, "Saving immutable clip recipe revision…");
+    setStatus(clipStatus, adminText("savingClipRecipe"));
     try {
       const payload = await client.request(
         `/v1/admin/episodes/${encodeURIComponent(transcriptEpisodeSelect.value)}/clips/${encodeURIComponent(clipId)}`,
@@ -5660,7 +5753,7 @@ function startPodcastAdmin(root) {
       await loadClips({ preserveStatus: true });
       setStatus(
         clipStatus,
-        "Clip recipe saved. Word cuts and public upload remain locked."
+        adminText("clipRecipeSaved")
       );
       await refreshReviewEvidenceForEpisode(
         transcriptEpisodeSelect.value
@@ -5675,7 +5768,7 @@ function startPodcastAdmin(root) {
     const clip = clips.find(({ id }) => id === selectedClipId);
     if (!clip) return;
     clipRenderButton.disabled = true;
-    setStatus(clipStatus, "Preparing checksummed private render manifest…");
+    setStatus(clipStatus, adminText("preparingRenderManifest"));
     try {
       const renderId = clip.render?.clipRevision === clip.revision
         ? clip.render.id
@@ -5698,8 +5791,8 @@ function startPodcastAdmin(root) {
       setStatus(
         clipStatus,
         payload.idempotent
-          ? "Existing private processor manifest downloaded again."
-          : "Private processor manifest created and downloaded. This is not a completed render."
+          ? adminText("renderManifestExists")
+          : adminText("renderManifestCreated")
       );
     } catch (error) {
       setStatus(clipStatus, friendlyError(error), true);
@@ -5721,7 +5814,7 @@ function startPodcastAdmin(root) {
       adPlanResult?.replaceChildren();
       return;
     }
-    adPlanResult.innerHTML = "<p>Loading marker and segment state…</p>";
+    adPlanResult.innerHTML = `<p>${escapeHtml(adminText("loadingAdPlan"))}</p>`;
     try {
       const payload = await client.request(
         `/v1/admin/episodes/${encodeURIComponent(episodeId)}/ad-plan`
@@ -5747,19 +5840,39 @@ function startPodcastAdmin(root) {
     card.className = "podcast-admin__decision";
     card.innerHTML = `
       <div>
-        <p class="podcast-admin__pill">${escapeHtml(plan?.status || "no plan")}</p>
-        <h3>${plan ? `Ad plan revision ${Number(plan.revision)}` : "No marker plan yet"}</h3>
-        <p>Delivery source: ${source.ready ? "ready" : "not ready"} · ${Number(source.bytes || 0)} bytes · ${Number(source.durationSeconds || 0)} seconds</p>
-        <p>Processor: ${escapeHtml(plan?.processorVersion || "awaiting evidence")}</p>
-        <p>Proposed segments: ${Number(plan?.segmentCount || 0)} · Active approved markers: ${markers.length} · Active ready segments: ${segments.filter(({ validationStatus }) => validationStatus === "ready").length}</p>
+        <p class="podcast-admin__pill">${escapeHtml(plan?.status
+          ? humanizeCode(plan.status)
+          : adminText("noPlan"))}</p>
+        <h3>${escapeHtml(plan
+          ? adminText("adPlanRevision", {
+              revision: formatInteger(plan.revision)
+            })
+          : adminText("noMarkerPlan"))}</h3>
+        <p>${escapeHtml(adminText("deliverySource", {
+          status: source.ready
+            ? adminText("readyLower")
+            : adminText("notReadyLower"),
+          bytes: formatInteger(source.bytes),
+          duration: formatInteger(source.durationSeconds)
+        }))}</p>
+        <p>${escapeHtml(adminText("processorLabel", {
+          processor: plan?.processorVersion || adminText("awaitingEvidence")
+        }))}</p>
+        <p>${escapeHtml(adminText("adPlanCounts", {
+          segments: formatInteger(plan?.segmentCount),
+          markers: formatInteger(markers.length),
+          ready: formatInteger(segments.filter(
+            ({ validationStatus }) => validationStatus === "ready"
+          ).length)
+        }))}</p>
       </div>
       <div>
-        <h3>Review controls</h3>
-        <p>Approval replaces active marker/segment rows atomically but leaves request-time ads disabled.</p>
+        <h3>${escapeHtml(adminText("reviewControls"))}</h3>
+        <p>${escapeHtml(adminText("adApprovalEffect"))}</p>
         <div class="podcast-admin__episode-actions">
-          <button class="btn btn-outline-light" type="button" data-download-ad-plan ${latestProcessorManifest ? "" : "disabled"}>Download processor manifest</button>
-          <button class="btn btn-outline-light" type="button" data-approve-ad-plan="${escapeAttribute(plan?.id || "")}" ${canApprove ? "" : "disabled"}>Approve evidence</button>
-          <button class="btn btn-danger" type="button" data-reject-ad-plan="${escapeAttribute(plan?.id || "")}" ${canReject ? "" : "disabled"}>Reject</button>
+          <button class="btn btn-outline-light" type="button" data-download-ad-plan ${latestProcessorManifest ? "" : "disabled"}>${escapeHtml(adminText("downloadProcessorManifest"))}</button>
+          <button class="btn btn-outline-light" type="button" data-approve-ad-plan="${escapeAttribute(plan?.id || "")}" ${canApprove ? "" : "disabled"}>${escapeHtml(adminText("approveEvidence"))}</button>
+          <button class="btn btn-danger" type="button" data-reject-ad-plan="${escapeAttribute(plan?.id || "")}" ${canReject ? "" : "disabled"}>${escapeHtml(adminText("reject"))}</button>
         </div>
       </div>`;
     adPlanResult.replaceChildren(card);
@@ -5783,12 +5896,12 @@ function startPodcastAdmin(root) {
       markers.push({ position: "post" });
     }
     if (markers.length === 0) {
-      setStatus(adPlanStatus, "Select at least one ad position.", true);
+      setStatus(adPlanStatus, adminText("selectAdPosition"), true);
       return;
     }
     const button = adPlanForm.querySelector('button[type="submit"]');
     button.disabled = true;
-    setStatus(adPlanStatus, "Submitting immutable marker intent…");
+    setStatus(adPlanStatus, adminText("submittingMarkerIntent"));
     try {
       const created = await client.request(
         `/v1/admin/episodes/${encodeURIComponent(adPlanForm.elements.episodeId.value)}/ad-plan`,
@@ -5803,7 +5916,7 @@ function startPodcastAdmin(root) {
       latestProcessorManifest = created.processorManifest;
       setStatus(
         adPlanStatus,
-        "Plan submitted. Download its manifest for the isolated staging processor; review is required after evidence returns."
+        adminText("adPlanSubmitted")
       );
       await loadAdPlan({ preserveStatus: true });
       await refreshReviewEvidenceForEpisode(
@@ -5824,7 +5937,7 @@ function startPodcastAdmin(root) {
         `podcast-ad-plan-${latestProcessorManifest.planId}.json`,
         latestProcessorManifest
       );
-      setStatus(adPlanStatus, "Processor manifest downloaded.");
+      setStatus(adPlanStatus, adminText("processorManifestDownloaded"));
       return;
     }
     const approveButton = event.target.closest("[data-approve-ad-plan]");
@@ -5835,13 +5948,13 @@ function startPodcastAdmin(root) {
       ? approveButton.dataset.approveAdPlan
       : rejectButton.dataset.rejectAdPlan;
     const reason = rejectButton
-      ? globalThis.prompt("Why is this marker/segment evidence being rejected?")
+      ? globalThis.prompt(adminText("adRejectionReason"))
       : null;
     if (rejectButton && !reason?.trim()) return;
     button.disabled = true;
     setStatus(
       adPlanStatus,
-      approveButton ? "Rechecking R2 evidence…" : "Rejecting plan…"
+      approveButton ? adminText("recheckingR2") : adminText("rejectingPlan")
     );
     try {
       await client.request(
@@ -5854,8 +5967,8 @@ function startPodcastAdmin(root) {
       setStatus(
         adPlanStatus,
         approveButton
-          ? "Marker and program-segment evidence approved. Runtime ads remain disabled."
-          : "Plan rejected."
+          ? adminText("adEvidenceApproved")
+          : adminText("planRejected")
       );
       await loadAdPlan({ preserveStatus: true });
       await refreshReviewEvidenceForEpisode(
@@ -8250,11 +8363,11 @@ function clipCueSummary(value) {
 function secondsToMilliseconds(value, label) {
   const seconds = Number(value);
   if (!Number.isFinite(seconds) || seconds < 0) {
-    throw new Error(`${label} must be a non-negative number.`);
+    throw new Error(adminText("nonNegativeNumber", { label }));
   }
   const milliseconds = Math.round(seconds * 1_000);
   if (!Number.isSafeInteger(milliseconds)) {
-    throw new Error(`${label} is outside the supported range.`);
+    throw new Error(adminText("outsideSupportedRange", { label }));
   }
   return milliseconds;
 }
@@ -8262,19 +8375,19 @@ function secondsToMilliseconds(value, label) {
 function transcriptInputError(error) {
   return error instanceof Error
     ? error.message
-    : "The transcript cue values are invalid.";
+    : adminText("invalidTranscriptValues");
 }
 
 function chapterInputError(error) {
   return error instanceof Error
     ? error.message
-    : "The chapter values are invalid.";
+    : adminText("invalidChapterValues");
 }
 
 function reviewInputError(error) {
   return error instanceof Error
     ? error.message
-    : "The production review values are invalid.";
+    : adminText("invalidReviewValues");
 }
 
 function optionalReviewMilliseconds(value, label) {
@@ -8284,7 +8397,9 @@ function optionalReviewMilliseconds(value, label) {
 }
 
 function formatReviewRange(startsAtMs, endsAtMs) {
-  if (startsAtMs === null || startsAtMs === undefined) return "Untimed";
+  if (startsAtMs === null || startsAtMs === undefined) {
+    return adminText("untimed");
+  }
   const start = millisecondsToTimestamp(Number(startsAtMs));
   return endsAtMs === null || endsAtMs === undefined
     ? start
@@ -8298,10 +8413,10 @@ function checkedHttpsUrl(value, label) {
   try {
     url = new URL(text);
   } catch {
-    throw new Error(`${label} must be a complete HTTPS URL.`);
+    throw new Error(adminText("completeHttpsUrl", { label }));
   }
   if (url.protocol !== "https:" || url.username || url.password) {
-    throw new Error(`${label} must be a complete HTTPS URL.`);
+    throw new Error(adminText("completeHttpsUrl", { label }));
   }
   return url.href;
 }
@@ -8327,166 +8442,29 @@ function friendlyError(error) {
       "serviceUnavailable"
     );
   }
-  if (error.code === "admin_auth_not_configured") return "Staging login providers are not configured yet.";
-  if (error.code === "invalid_csrf_token") return "Your secure session changed. Refresh and retry.";
-  if (error.code === "audio_qc_source_not_ready") {
-    return "Complete a private source-audio upload before queueing QC.";
-  }
-  if (error.code === "audio_qc_source_mismatch") {
-    return "The private source object changed or disappeared. Upload or select the source again.";
-  }
-  if (error.code === "audio_qc_run_exists") {
-    return "This exact source and policy already have an active or completed QC run.";
-  }
-  if (error.code === "audio_qc_policy_conflict") {
-    return "The show policy changed in another session. Reload it before saving.";
-  }
-  if (
-    error.code === "audio_qc_run_conflict"
-    || error.code === "audio_qc_completion_conflict"
-  ) {
-    return "The QC run changed in another session. Refresh its report.";
-  }
-  if (error.code === "episode_not_ready") return `Episode is not ready: ${(error.details?.missing || []).join(", ")}.`;
-  if (error.code === "publication_snapshot_required") {
-    return "Refresh publication readiness before publishing this episode.";
-  }
-  if (
-    error.code === "publication_snapshot_stale"
-    || error.code === "publication_conflict"
-  ) {
-    return "Publication evidence changed before the release committed. Reload and retry.";
-  }
-  if (error.code === "publication_snapshot_busy") {
-    return "Publication evidence is still changing. Wait for current edits to finish, then retry.";
-  }
-  if (error.code === "publication_not_ready") {
-    return error.message
-      || "Resolve the publication blockers or ask an Admin to review an override.";
-  }
-  if (error.code === "publication_override_forbidden") {
-    return "Only an Admin or Super-admin can override publication blockers.";
-  }
-  if (error.code === "recent_authentication_required") {
-    return "Request a fresh admin magic link before this sensitive action.";
-  }
-  if (error.code === "alignment_benchmark_submission_conflict") {
-    return "That benchmark submission identifier was already used for different evidence.";
-  }
-  if (error.code === "alignment_benchmark_record_conflict") {
-    return "Benchmark evidence changed during import. Refresh the benchmark list before retrying.";
-  }
-  if (error.code.startsWith("publication_override_")) {
-    return error.message || "The publication override is invalid.";
-  }
-  if (error.code === "campaign_not_ready") {
-    return `Campaign is not ready: ${(error.details?.blockers || []).map(humanizeCode).join(", ")}.`;
-  }
-  if (error.code === "campaign_revoked") {
-    return "That campaign was killed and cannot be reactivated. Create a new campaign.";
-  }
-  if (error.code === "episode_delivery_audio_not_ready") {
-    return "Attach ready delivery audio before defining ad markers.";
-  }
-  if (error.code === "episode_delivery_audio_must_be_mp3") {
-    return "Dynamic-ad segmentation currently requires MP3 delivery audio.";
-  }
-  if (error.code === "episode_duration_required") {
-    return "Set the reviewed episode duration before defining ad markers.";
-  }
-  if (error.code === "ad_plan_not_ready") {
-    return "Processor evidence must be ready before this plan can be approved.";
-  }
-  if (error.code === "ad_plan_source_changed") {
-    return "The delivery audio changed. Submit and process a new ad plan.";
-  }
-  if (error.code === "transcript_revision_conflict") {
-    return "This transcript changed in another session. Reload it before saving.";
-  }
-  if (error.code === "transcript_mutation_conflict") {
-    return "That transcript save identifier was already used for different content.";
-  }
-  if (error.code === "transcript_speaker_labels_unconfirmed") {
-    return "Confirm every non-empty public speaker label before approval.";
-  }
-  if (error.code === "transcript_approval_conflict") {
-    return "This transcript approval changed in another session. Reload and review it.";
-  }
-  if (error.code === "transcription_working_master_required") {
-    return "Approve a quality-controlled working master before transcription.";
-  }
-  if (error.code === "transcription_working_master_changed") {
-    return "The working master changed. Refresh before queueing transcription.";
-  }
-  if (error.code === "transcription_source_language_mismatch") {
-    return "The requested language does not match the episode source language.";
-  }
-  if (error.code === "transcription_request_id_conflict") {
-    return "That transcription request identifier was already used for different inputs.";
-  }
-  if (error.code.startsWith("transcription_")) {
-    return error.message || "The source-language transcription request is invalid.";
-  }
-  if (error.code === "chapter_revision_conflict") {
-    return "These chapters changed in another session. Reload them before saving.";
-  }
-  if (error.code === "chapter_mutation_conflict") {
-    return "That chapter save identifier was already used for different content.";
-  }
-  if (error.code === "chapter_approval_conflict") {
-    return "This chapter approval changed in another session. Reload and review it.";
-  }
-  if (
-    error.code === "review_revision_conflict"
-    || error.code === "review_comment_revision_conflict"
-  ) {
-    return "This production review changed in another session. Reload it before saving.";
-  }
-  if (
-    error.code === "review_mutation_conflict"
-    || error.code === "review_comment_id_conflict"
-  ) {
-    return "That production review operation identifier was already used for different content.";
-  }
-  if (error.code === "review_target_not_current") {
-    return "That target revision is no longer current. Reload production review.";
-  }
-  if (error.code === "review_approval_forbidden") {
-    return "Admin approval is required to approve or reopen an approved review.";
-  }
-  if (error.code === "review_open_blockers") {
-    return "Resolve every open blocker on this target before approving it.";
-  }
-  if (error.code === "clip_approved_transcript_required") {
-    return "Approve this transcript language before creating a clip.";
-  }
-  if (error.code === "clip_revision_conflict") {
-    return "This clip changed in another session. Reload it before saving.";
-  }
-  if (error.code === "clip_mutation_conflict") {
-    return "That clip save identifier was already used for different content.";
-  }
-  if (error.code === "clip_render_exists") {
-    return "A private render already exists for this clip revision. Reload the clip list.";
-  }
-  if (error.code === "clip_transcript_changed") {
-    return "The approved transcript changed. Save a new clip recipe revision.";
-  }
-  if (error.code === "clip_source_changed") {
-    return "The source audio changed. Save a new clip recipe revision.";
-  }
-  if (error.code === "clip_word_alignment_not_ready") {
-    return "Word-accurate cuts require a matching alignment that passed the H1 quality gate.";
-  }
-  if (error.code === "clip_source_audio_not_ready") {
-    return "Attach ready delivery audio before creating a clip.";
-  }
-  if (error.code === "clip_source_audio_must_be_mp3") {
-    return "The initial clip processor requires ready MP3 delivery audio.";
-  }
-  if (error.code === "clip_source_object_mismatch") {
-    return "The private source object no longer matches its reviewed audio record.";
-  }
+  const groupedCode = {
+    audio_qc_completion_conflict: "audio_qc_run_conflict",
+    publication_conflict: "publication_snapshot_stale",
+    review_comment_revision_conflict: "review_revision_conflict",
+    review_comment_id_conflict: "review_mutation_conflict"
+  }[error.code] || (
+    error.code.startsWith("publication_override_")
+      ? "publication_override_invalid"
+      : error.code.startsWith("transcription_")
+        ? "transcription_invalid"
+        : error.code
+  );
+  const translated = window.DustWaveI18n?.t(
+    `admin.error_${groupedCode}`,
+    {
+      details: (
+        error.code === "campaign_not_ready"
+          ? error.details?.blockers || []
+          : error.details?.missing || []
+      ).map(humanizeCode).join(", ")
+    }
+  );
+  if (translated && !translated.startsWith("[missing:")) return translated;
   return error.message || error.code;
 }
 
@@ -8546,9 +8524,9 @@ function formatDurationMilliseconds(value) {
 }
 
 function publicationGateLabel(value) {
-  if (value === "enforce") return "exact-snapshot gate enforced";
-  if (value === "shadow") return "exact-snapshot gate in shadow";
-  return "legacy Publish checks";
+  if (value === "enforce") return adminText("exactSnapshotEnforced");
+  if (value === "shadow") return adminText("exactSnapshotShadow");
+  return adminText("legacyPublishChecks");
 }
 
 function formatInteger(value) {
