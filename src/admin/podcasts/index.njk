@@ -78,12 +78,15 @@ eleventyComputed:
 
           <form class="podcast-admin__form podcast-admin__form--settings" data-podcast-show-form hidden>
             <h3>{{ workbench.overview.settings }}</h3>
-            <label for="podcast-show-title">{{ workbench.common.title }}</label>
-            <input id="podcast-show-title" name="title" required>
-            <label for="podcast-show-description">{{ workbench.overview.descriptionSpanish }}</label>
-            <textarea id="podcast-show-description" name="description" rows="4"></textarea>
-            <label for="podcast-show-description-en">{{ workbench.overview.descriptionEnglish }}</label>
-            <textarea id="podcast-show-description-en" name="descriptionEn" rows="4"></textarea>
+            <label>{{ workbench.common.title }}
+              <input id="podcast-show-title" name="title" required>
+            </label>
+            <label>{{ workbench.overview.descriptionSpanish }}
+              <textarea id="podcast-show-description" name="description" rows="4"></textarea>
+            </label>
+            <label>{{ workbench.overview.descriptionEnglish }}
+              <textarea id="podcast-show-description-en" name="descriptionEn" rows="4"></textarea>
+            </label>
             <div class="podcast-admin__field-grid">
               <label>{{ workbench.overview.earlyAccessDays }}
                 <input name="earlyAccessDays" type="number" min="0" max="365">
@@ -125,8 +128,10 @@ eleventyComputed:
             <label>{{ workbench.episodes.summary }}
               <textarea name="summary" rows="3" required></textarea>
             </label>
-            <label>{{ workbench.episodes.notes }}</label>
-            <div class="podcast-admin__editor" data-podcast-notes-editor></div>
+            <div class="podcast-admin__field">
+              <span class="podcast-admin__field-label">{{ workbench.episodes.notes }}</span>
+              <div class="podcast-admin__editor" data-podcast-notes-editor></div>
+            </div>
             <div class="podcast-admin__field-grid podcast-admin__field-grid--three">
               <label>{{ workbench.episodes.access }}
                 <select name="access">
@@ -787,7 +792,7 @@ eleventyComputed:
               <label class="podcast-admin__field-wide">{{ workbench.marketing.heading }}
                 <input name="heading" maxlength="160">
               </label>
-              <div class="podcast-admin__field-wide">
+              <div class="podcast-admin__field podcast-admin__field-wide">
                 <span class="podcast-admin__field-label">{{ workbench.marketing.announcementContent }}</span>
                 <div data-podcast-announcement-editor></div>
               </div>

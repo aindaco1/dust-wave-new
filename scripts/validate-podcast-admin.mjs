@@ -238,6 +238,41 @@ assert.match(adminStyles, /\.podcast-admin__billing-readiness/);
 assert.match(adminStyles, /\.podcast-admin__billing-evidence-list/);
 assert.match(adminStyles, /\.podcast-admin__subscriber-list/);
 assert.match(adminStyles, /\.podcast-admin__subscriber-sources/);
+assert.match(
+  adminStyles,
+  /--dw-admin-space-xxs: 0\.25rem;[\s\S]+--dw-admin-space-4xl: 4rem;/,
+  'Podcast Admin must preserve the Pool/Store 8px spacing scale'
+);
+assert.match(
+  adminStyles,
+  /\.podcast-admin__form \{[\s\S]+display: grid;[\s\S]+gap: var\(--dw-admin-space-md\);/,
+  'Podcast Admin forms must use the shared 16px item rhythm'
+);
+assert.match(
+  adminStyles,
+  /\.podcast-admin label \{[\s\S]+gap: var\(--dw-admin-field-gap\);[\s\S]+margin: 0;/,
+  'Podcast Admin labels must not add margins inside already-gapped grids'
+);
+assert.match(
+  adminStyles,
+  /repeat\(auto-fit, minmax\(min\(100%, 16rem\), 1fr\)\)/,
+  'Podcast Admin field grids must collapse responsively without overflow'
+);
+assert.match(
+  adminStyles,
+  /\.podcast-admin__checkbox \{[\s\S]+min-height: var\(--dw-admin-control-min-height\);[\s\S]+padding: var\(--dw-admin-space-xs\) var\(--dw-admin-space-sm\);/,
+  'Podcast Admin checkbox rows must retain Pool/Store touch sizing and spacing'
+);
+assert.match(
+  adminStyles,
+  /\.podcast-admin__status:empty \{[\s\S]+display: none;/,
+  'Empty live regions must not reserve unexplained vertical space'
+);
+assert.match(
+  adminTemplate,
+  /<div class="podcast-admin__field">[\s\S]+workbench\.episodes\.notes[\s\S]+data-podcast-notes-editor/,
+  'Standalone rich-text labels and editors must share one field wrapper'
+);
 assert.match(adminScript, /\/v1\/admin\/distribution\?showId=/);
 assert.match(adminScript, /function renderDistribution/);
 assert.match(adminScript, /function renderReleaseChannels/);
@@ -332,7 +367,10 @@ assert.match(adminScript, /publication_override/);
 assert.match(adminScript, /basePublicationRevision/);
 assert.match(adminScript, /mode === "enforce"/);
 assert.match(adminScript, /mode === "shadow"/);
-assert.match(adminStyles, /\.podcast-admin \.btn[\s\S]*min-height: 2\.75rem/);
+assert.match(
+  adminStyles,
+  /\.podcast-admin \.btn[\s\S]*min-height: var\(--dw-admin-control-min-height\)/
+);
 assert.match(
   adminScript,
   /\/v1\/admin\/episodes\/\$\{encodeURIComponent\(episodeId\)\}\/transcripts/
