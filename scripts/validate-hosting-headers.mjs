@@ -15,18 +15,46 @@ const requiredPrivateHeaders = [
   /X-Robots-Tag: noindex, nofollow, noarchive/
 ];
 
+function headerBlockFor(route) {
+  const start = headers.indexOf(`${route}\n`);
+  assert.notEqual(start, -1, `missing header rule for ${route}`);
+  const nextRule = headers.indexOf("\n/", start + route.length + 1);
+  return headers.slice(start, nextRule === -1 ? undefined : nextRule);
+}
+
 for (const route of [
   "/admin/*",
   "/podcasts/account/*",
   "/es/podcasts/account/*"
 ]) {
-  const start = headers.indexOf(`${route}\n`);
-  assert.notEqual(start, -1, `missing private header rule for ${route}`);
-  const nextRule = headers.indexOf("\n/", start + route.length + 1);
-  const block = headers.slice(start, nextRule === -1 ? undefined : nextRule);
+  const block = headerBlockFor(route);
   for (const expected of requiredPrivateHeaders) {
     assert.match(block, expected, `${route} is missing ${expected}`);
   }
+}
+
+for (const [route, maxAge] of [
+  ["/css/*", 3600],
+  ["/js/*", 3600],
+  ["/img/*", 86400],
+  ["/fonts/*", 86400]
+]) {
+  const block = headerBlockFor(route);
+  assert.match(
+    block,
+    new RegExp(`Cache-Control: public, max-age=${maxAge}, must-revalidate`),
+    `${route} is missing its finite browser-cache policy`
+  );
+  assert.match(
+    block,
+    /X-Content-Type-Options: nosniff/,
+    `${route} is missing MIME-sniffing protection`
+  );
+  assert.doesNotMatch(
+    block,
+    /immutable/,
+    `${route} must not use immutable caching before assets are content-hashed`
+  );
 }
 
 assert.match(headers, /https:\/\/:project\.pages\.dev\/\*/);

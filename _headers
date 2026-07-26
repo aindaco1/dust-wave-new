@@ -6,6 +6,25 @@ https://:project.pages.dev/*
 https://:version.:project.pages.dev/*
   X-Robots-Tag: noindex, nofollow, noarchive
 
+# These assets are not content-hashed yet. Give repeat visits a useful browser
+# cache while keeping deploys reasonably fresh; immutable caching should wait
+# until the build emits fingerprinted filenames.
+/css/*
+  Cache-Control: public, max-age=3600, must-revalidate
+  X-Content-Type-Options: nosniff
+
+/js/*
+  Cache-Control: public, max-age=3600, must-revalidate
+  X-Content-Type-Options: nosniff
+
+/img/*
+  Cache-Control: public, max-age=86400, must-revalidate
+  X-Content-Type-Options: nosniff
+
+/fonts/*
+  Cache-Control: public, max-age=86400, must-revalidate
+  X-Content-Type-Options: nosniff
+
 # Authenticated shells must not be cached, embedded, or receive unnecessary
 # browser capabilities. Public show, episode, player, and embed routes remain
 # unaffected.

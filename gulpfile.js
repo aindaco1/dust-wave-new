@@ -113,7 +113,7 @@ gulp.task('prod-copy', function prodCopy(done) {
 
 // Minify HTML in docs
 gulp.task('minify-html', function minHtml() {
-  return src(`${DIR.dist}/*.html`)
+  return src(`${DIR.dist}/**/*.html`)
     .pipe(htmlmin({ collapseWhitespace: false, removeComments: true }))
     .pipe(dest(`${DIR.dist}`));
 });
