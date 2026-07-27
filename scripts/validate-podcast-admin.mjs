@@ -314,6 +314,16 @@ assert.match(
   'Empty live regions must not reserve unexplained vertical space'
 );
 assert.match(
+  adminScript,
+  /responsiveSelect:\s*\{\s*id: "podcast-admin-mobile-tabs"\s*\}/,
+  'Podcast Admin must use the shared responsive tab-select controller'
+);
+assert.match(
+  adminStyles,
+  /@media \(max-width: 56\.25rem\) \{[\s\S]+\.podcast-admin__tab-list \{[\s\S]+display: none;[\s\S]+\.dw-admin-mobile-tabs \{[\s\S]+display: grid;/,
+  'Long Podcast Admin tabs must become a labeled native select on narrow screens'
+);
+assert.match(
   adminTemplate,
   /<div class="podcast-admin__field">[\s\S]+workbench\.episodes\.notes[\s\S]+data-podcast-notes-editor/,
   'Standalone rich-text labels and editors must share one field wrapper'
@@ -525,7 +535,12 @@ assert.doesNotMatch(
 );
 assert.match(gulpfile, /copySharedAdminShell/);
 assert.equal(sharedPackage.name, '@dustwave/admin-shell');
-assert.equal(sharedPackage.version, '0.3.0');
+assert.equal(sharedPackage.version, '0.5.0');
+assert.match(
+  adminScript,
+  /dust-wave-admin-shell\/editor\.js\?v=0\.5\.0/,
+  'The localized editor module must be cache-busted with its exact shared package version'
+);
 
 const sharedSources = [
   'api-client.js',

@@ -270,6 +270,21 @@
   color: #fff;
 }
 
+.dw-admin-mobile-tabs {
+  display: none;
+  gap: var(--dw-admin-field-gap);
+  margin-top: var(--dw-admin-space-xl);
+}
+
+.dw-admin-mobile-tabs[hidden] {
+  display: none;
+}
+
+.dw-admin-mobile-tabs__label {
+  font-weight: 600;
+  line-height: 1.35;
+}
+
 .podcast-admin__panel {
   border-top: 1px solid rgba(255, 255, 255, 0.16);
   padding: var(--dw-admin-space-2xl) 0;
@@ -1415,6 +1430,16 @@
   margin: 0;
 }
 
+@media (max-width: 56.25rem) {
+  .podcast-admin__tab-list {
+    display: none;
+  }
+
+  .dw-admin-mobile-tabs {
+    display: grid;
+  }
+}
+
 @media (max-width: 760px) {
   .podcast-admin__header,
   .podcast-admin__panel-heading,
@@ -1489,10 +1514,6 @@
 
   .podcast-admin__marketing-preview canvas {
     justify-self: center;
-  }
-
-  .podcast-admin__tab-list {
-    padding-bottom: 0.5rem;
   }
 
   .podcast-admin__billing-actions,

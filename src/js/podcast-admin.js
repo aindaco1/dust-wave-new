@@ -4,7 +4,7 @@ import {
   requestCredentialedBlob,
   triggerBlobDownload
 } from "./dust-wave-admin-shell/credentialed-download.js";
-import { mountRichTextEditor } from "./dust-wave-admin-shell/editor.js";
+import { mountRichTextEditor } from "./dust-wave-admin-shell/editor.js?v=0.5.0";
 import {
   markdownToEditorHtml
 } from "./dust-wave-admin-shell/editor-codec.js";
@@ -58,6 +58,18 @@ function adminText(key, fallbackOrVariables = {}, variables = {}) {
   return translated && !translated.startsWith("[missing:")
     ? translated
     : fallback || `[missing: admin.${key}]`;
+}
+
+function editorLabels(label) {
+  return {
+    formatting: adminText("editorFormatting", { label }),
+    bold: adminText("editorBold"),
+    italic: adminText("editorItalic"),
+    heading: adminText("editorHeading"),
+    list: adminText("editorList"),
+    link: adminText("editorLink"),
+    linkPrompt: adminText("editorLinkPrompt")
+  };
 }
 
 function startPodcastAdmin(root) {
@@ -455,16 +467,20 @@ function startPodcastAdmin(root) {
   let turnstileToken = "";
   let turnstileWidgetId;
 
+  const notesEditorLabel = adminText("editorEpisodeNotes");
   const notesEditor = mountRichTextEditor(
     root.querySelector("[data-podcast-notes-editor]"),
-    { label: adminText("editorEpisodeNotes") }
+    {
+      label: notesEditorLabel,
+      labels: editorLabels(notesEditorLabel)
+    }
   );
+  const announcementEditorLabel = adminText("editorAnnouncementContent");
   const announcementEditor = mountRichTextEditor(
     root.querySelector("[data-podcast-announcement-editor]"),
     {
-      label: adminText(
-        "editorAnnouncementContent"
-      ),
+      label: announcementEditorLabel,
+      labels: editorLabels(announcementEditorLabel),
       onChange() {
         invalidateAnnouncementReview();
       }
@@ -500,6 +516,9 @@ function startPodcastAdmin(root) {
     friendlyError
   });
   mountAccessibleTabs(root.querySelector("[data-podcast-tabs]"), {
+    responsiveSelect: {
+      id: "podcast-admin-mobile-tabs"
+    },
     storageKey: "dustwave-podcast-admin-tab",
     onSelect(tab) {
       if (tab !== "production") pauseClipMediaPlayers(clipList);
@@ -3304,15 +3323,17 @@ function startPodcastAdmin(root) {
       }
       const remove = row.querySelector("[data-podcast-transcript-remove]");
       remove.disabled = !canEditTranscripts || cues.length === 1;
+      const cueLabel = adminText(
+        "cueCaption",
+        { number: formatInteger(index + 1) }
+      );
       const editor = mountRichTextEditor(
         row.querySelector("[data-transcript-editor]"),
         {
           value: cue.textMarkdown || "",
           mode: "timed_text",
-          label: adminText(
-            "cueCaption",
-            { number: formatInteger(index + 1) }
-          ),
+          label: cueLabel,
+          labels: editorLabels(cueLabel),
           onChange() {
             transcriptDirty = true;
             transcriptApproveButton.disabled = true;
