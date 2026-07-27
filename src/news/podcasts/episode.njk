@@ -116,8 +116,8 @@ eleventyComputed:
 </article>
 
 {% if not isPremiumTeaser %}
-<script src="/js/podcast-chapters.js" defer></script>
-<script src="/js/podcast-transcript.js" defer></script>
+<script src="/js/podcast-chapters.js?v={{ assets.version | default('dev') }}" defer></script>
+<script src="/js/podcast-transcript.js?v={{ assets.version | default('dev') }}" defer></script>
 {% endif %}
 <script type="application/ld+json">
 {

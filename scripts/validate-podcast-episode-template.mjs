@@ -115,8 +115,8 @@ assert.match(
   rendered,
   /data-endpoint="https:\/\/feeds\.dustwave\.xyz\/v1\/shows\/opera-en-la-selva\/episodes\/una-charla-sobre-codigo\/chapters\.json"/
 );
-assert.match(rendered, /src="\/js\/podcast-chapters\.js" defer/);
-assert.match(rendered, /src="\/js\/podcast-transcript\.js" defer/);
+assert.match(rendered, /src="\/js\/podcast-chapters\.js\?v=dev" defer/);
+assert.match(rendered, /src="\/js\/podcast-transcript\.js\?v=dev" defer/);
 
 const structuredDataMatch = rendered.match(
   /<script type="application\/ld\+json">\s*([\s\S]*?)\s*<\/script>/
@@ -152,7 +152,7 @@ assert.match(renderedEmbed, /content="noindex,nofollow,noarchive"/);
 assert.match(renderedEmbed, /http-equiv="Content-Security-Policy"/);
 assert.match(renderedEmbed, /default-src 'none'/);
 assert.match(renderedEmbed, /script-src 'self'/);
-assert.match(renderedEmbed, /href="\/css\/podcast-embed\.min\.css"/);
+assert.match(renderedEmbed, /href="\/css\/podcast-embed\.min\.css\?v=dev"/);
 assert.match(
   renderedEmbed,
   /<link rel="canonical" href="https:\/\/dustwave\.xyz\/news\/podcasts\/opera-en-la-selva\/una-charla-sobre-codigo\/">/
@@ -165,7 +165,7 @@ assert.match(
   renderedEmbed,
   /href="https:\/\/media\.dustwave\.xyz\/episodes\/episode_fixture\/audio\?download=1"/
 );
-assert.match(renderedEmbed, /src="\/js\/audio-player\.js" defer/);
+assert.match(renderedEmbed, /src="\/js\/audio-player\.js\?v=dev" defer/);
 assert.match(
   renderedEmbed,
   /href="\/news\/podcasts\/opera-en-la-selva\/una-charla-sobre-codigo\/"/

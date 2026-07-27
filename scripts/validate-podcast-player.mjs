@@ -56,7 +56,7 @@ assert.match(playerScript, /document\.getElementById\(`wave_\$\{playerId\}`\)/);
 assert.doesNotMatch(playerScript, /unpkg\.com|cdn\.jsdelivr\.net/);
 assert.match(
   footer,
-  /\{% if content and '<div class="audio-card' in content %\}\s*<script src="\/js\/audio-player\.js" defer><\/script>\s*\{% endif %\}/
+  /\{% if content and '<div class="audio-card' in content %\}\s*<script src="\/js\/audio-player\.js\?v=\{\{ assets\.version \| default\('dev'\) \}\}" defer><\/script>\s*\{% endif %\}/
 );
 assert.doesNotMatch(footer, /wavesurfer\.js|WAVESURFER_/i);
 assert.match(themeStyles, /@import "themes\/base\/audio-player"/);

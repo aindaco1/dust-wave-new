@@ -23,7 +23,7 @@ sitemap:
     content="default-src 'none'; {% if not isPremiumTeaser %}script-src 'self'; {% endif %}style-src 'self' 'unsafe-inline'; img-src 'self' data:; {% if not isPremiumTeaser %}media-src https://media.dustwave.xyz {{ podcastApi.apiOrigin }}; connect-src 'self' https://media.dustwave.xyz {{ podcastApi.apiOrigin }}; {% endif %}font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
   <title>{{ episode.title }} · {{ show.title if show else "Dust Wave Podcasts" }}</title>
   <link rel="canonical" href="{{ metadata.url }}/news/podcasts/{{ episode.showSlug }}/{{ episode.slug }}/">
-  <link rel="stylesheet" href="/css/podcast-embed{% if environment == 'production' %}.min{% endif %}.css">
+  <link rel="stylesheet" href="/css/podcast-embed{% if environment == 'production' %}.min{% endif %}.css?v={{ assets.version | default('dev') }}">
 </head>
 <body>
   <main class="podcast-embed">
@@ -62,6 +62,6 @@ sitemap:
       target="_blank"
       rel="noopener noreferrer">{{ "Episode notes on Dust Wave" if show and show.language == "en" else "Notas del episodio en Dust Wave" }}</a>
   </main>
-  {% if not isPremiumTeaser %}<script src="/js/audio-player.js" defer></script>{% endif %}
+  {% if not isPremiumTeaser %}<script src="/js/audio-player.js?v={{ assets.version | default('dev') }}" defer></script>{% endif %}
 </body>
 </html>

@@ -770,6 +770,6 @@
 
 	</script>
 {% if content and '<div class="audio-card' in content %}
-<script src="/js/audio-player.js" defer></script>
+<script src="/js/audio-player.js?v={{ assets.version | default('dev') }}" defer></script>
 {% endif %}
 </footer>

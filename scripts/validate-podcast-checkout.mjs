@@ -30,7 +30,7 @@ assert.match(page, /name="city"/);
 assert.match(page, /name="line1"/);
 assert.match(page, /data-podcast-checkout-quote/);
 assert.match(page, /aria-live="polite"/);
-assert.match(page, /src="\/js\/podcast-checkout\.js"/);
+assert.match(page, /src="\/js\/podcast-checkout\.js\?v=\{\{ assets\.version/);
 
 assert.match(script, /\/v1\/shows\/\$\{encodeURIComponent\(slug\)\}/);
 assert.match(script, /\/tax\/quote/);

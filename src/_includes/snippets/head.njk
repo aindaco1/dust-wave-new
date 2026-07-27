@@ -4,7 +4,7 @@
   {% if i18nRuntime %}
   <script id="dust-wave-runtime-i18n" type="application/json">{{ i18n[pageLanguage].runtime | safeJsonLd | safe }}</script>
   {% endif %}
-  <script src="/js/site-i18n.js" defer></script>
+  <script src="/js/site-i18n.js?v={{ assets.version | default('dev') }}" defer></script>
   {% if summary or description %}
     <meta name="description" content="{{ description or summary }}">
   {% else %}
@@ -41,7 +41,7 @@
 
   <title>{{ title or metadata.title }}</title>
   <!-- build:css -->
-  <link rel="stylesheet" href="/css/theme.css">
+  <link rel="stylesheet" href="/css/theme.css?v={{ assets.version | default('dev') }}">
    <!-- endbuild -->
   {% include 'snippets/gif-hover-styles.njk' %}
   <link rel="stylesheet" href="https://use.typekit.net/hoj2yet.css">

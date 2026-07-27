@@ -12,6 +12,7 @@ const rename = require('gulp-rename');
 const purgecss = require('gulp-purgecss');
 const htmlmin = require('gulp-html-minifier-terser');
 const htmlreplace = require('gulp-html-replace');
+const { version: assetVersion } = require('./package.json');
 
 // Load (and gently normalize) config
 const cfg = require('./gulpconfig.json');
@@ -123,7 +124,7 @@ gulp.task('inject-min-css', function injectCss(done) {
   src(`${DIR.dist}/**/*.html`)
     .pipe(
       htmlreplace({
-        css: '/css/theme.min.css'
+        css: `/css/theme.min.css?v=${assetVersion}`
       })
     )
     .pipe(dest(`${DIR.dist}`));

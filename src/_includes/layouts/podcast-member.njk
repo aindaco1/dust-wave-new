@@ -18,6 +18,6 @@
     {% if podcastMember.turnstileSiteKey %}
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
     {% endif %}
-    <script type="module" src="/js/podcast-member.js"></script>
+    <script type="module" src="/js/podcast-member.js?v={{ assets.version | default('dev') }}"></script>
   </body>
 </html>

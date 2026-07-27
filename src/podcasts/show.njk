@@ -403,5 +403,5 @@ eleventyComputed:
 }
 </script>
 {% if show.premium.enabled %}
-<script type="module" src="/js/podcast-checkout.js"></script>
+<script type="module" src="/js/podcast-checkout.js?v={{ assets.version | default('dev') }}"></script>
 {% endif %}
