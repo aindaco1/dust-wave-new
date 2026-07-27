@@ -1020,20 +1020,54 @@ eleventyComputed:
               <h2>{{ workbench.analytics.heading }}</h2>
               <p>{{ workbench.analytics.introBefore }} <strong data-podcast-reconciliation-show>{{ workbench.analytics.thisShow }}</strong>.</p>
             </div>
-            <button class="btn btn-outline-light" type="button" data-podcast-reconciliation-refresh>{{ workbench.common.refresh }}</button>
+            <div class="podcast-admin__analytics-actions">
+              <label>{{ workbench.analytics.range }}
+                <select data-podcast-analytics-range>
+                  <option value="7">{{ workbench.analytics.sevenDays }}</option>
+                  <option value="30" selected>{{ workbench.analytics.thirtyDays }}</option>
+                  <option value="90">{{ workbench.analytics.ninetyDays }}</option>
+                </select>
+              </label>
+              <button class="btn btn-outline-light" type="button" data-podcast-analytics-refresh>{{ workbench.common.refresh }}</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-analytics-export>{{ workbench.analytics.export }}</button>
+            </div>
           </div>
           <div class="podcast-admin__metric-grid">
-            <article><strong>—</strong><span>{{ workbench.analytics.qualifiedDownloads }}</span></article>
-            <article><strong>—</strong><span>{{ workbench.analytics.engagedPlays }}</span></article>
-            <article><strong>—</strong><span>{{ workbench.analytics.premiumListeners }}</span></article>
+            <article><strong data-podcast-qualified-downloads>—</strong><span>{{ workbench.analytics.qualifiedDownloads }}</span></article>
+            <article><strong data-podcast-engaged-plays>—</strong><span>{{ workbench.analytics.engagedPlays }}</span></article>
+            <article><strong data-podcast-premium-listeners>—</strong><span>{{ workbench.analytics.premiumListeners }}</span></article>
             <article><strong data-podcast-qualified-sponsor-deliveries>—</strong><span>{{ workbench.analytics.qualifiedSponsorDeliveries }}</span></article>
             <article><strong data-podcast-reconciliation-differences>—</strong><span>{{ workbench.analytics.counterDiscrepancies }}</span></article>
             <article><strong data-podcast-campaigns-at-cap>—</strong><span>{{ workbench.analytics.campaignsAtCap }}</span></article>
           </div>
-          <div class="podcast-admin__callout" data-podcast-reconciliation-methodology>
-            <p>{{ workbench.analytics.methodologyPending }}</p>
+          <div class="podcast-admin__callout">
+            <p data-podcast-analytics-methodology>{{ workbench.analytics.methodology }}</p>
+            <p>{{ workbench.analytics.privacy }}</p>
             <p>{{ workbench.analytics.sponsorMethodology }}</p>
           </div>
+          <p class="podcast-admin__status" data-podcast-analytics-status role="status" aria-live="polite"></p>
+          <section class="podcast-admin__analytics-section" aria-labelledby="podcast-analytics-trend-heading">
+            <h3 id="podcast-analytics-trend-heading">{{ workbench.analytics.dailyTrend }}</h3>
+            <div data-podcast-analytics-trend></div>
+          </section>
+          <section class="podcast-admin__analytics-section" aria-labelledby="podcast-analytics-episodes-heading">
+            <h3 id="podcast-analytics-episodes-heading">{{ workbench.analytics.topEpisodes }}</h3>
+            <div data-podcast-analytics-episodes></div>
+          </section>
+          <section class="podcast-admin__analytics-section" aria-labelledby="podcast-analytics-breakdowns-heading">
+            <h3 id="podcast-analytics-breakdowns-heading">{{ workbench.analytics.breakdowns }}</h3>
+            <div class="podcast-admin__analytics-breakdowns">
+              <div data-podcast-analytics-apps></div>
+              <div data-podcast-analytics-devices></div>
+              <div data-podcast-analytics-countries></div>
+            </div>
+          </section>
+          <section class="podcast-admin__analytics-section" aria-labelledby="podcast-analytics-sponsors-heading">
+            <div class="podcast-admin__analytics-section-heading">
+              <h3 id="podcast-analytics-sponsors-heading">{{ workbench.analytics.sponsorReconciliation }}</h3>
+              <button class="btn btn-outline-light" type="button" data-podcast-reconciliation-refresh>{{ workbench.analytics.refreshSponsors }}</button>
+            </div>
+          </section>
           <p class="podcast-admin__status" data-podcast-reconciliation-status role="status" aria-live="polite"></p>
           <div data-podcast-reconciliation></div>
         </section>

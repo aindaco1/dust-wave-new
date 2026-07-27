@@ -1,7 +1,8 @@
 {#
   Shared contract for the WaveSurfer player already used by the Digest.
   Required: playerId, title, audioUrl. Optional: downloadUrl, artworkUrl,
-  artworkAlt, peaksUrl, playerLanguage ("es" or "en").
+  artworkAlt, peaksUrl, playerLanguage ("es" or "en"). Podcast episode pages
+  may also pass analyticsEndpoint and analyticsEpisodeId.
 #}
 {% set playerLang = "en" if playerLanguage == "en" else "es" %}
 {% set playLabel = "Play " if playerLang == "en" else "Reproducir " %}
@@ -27,6 +28,7 @@
       id="wave_{{ playerId }}"
       data-audio-id="audio_{{ playerId }}"
       data-audio-src="{{ audioUrl }}"
+      {% if analyticsEndpoint and analyticsEpisodeId %}data-analytics-endpoint="{{ analyticsEndpoint }}" data-analytics-episode-id="{{ analyticsEpisodeId }}"{% endif %}
       {% if peaksUrl %}data-peaks-src="{{ peaksUrl }}"{% endif %}></div>
     <audio id="audio_{{ playerId }}" preload="none" src="{{ audioUrl }}"></audio>
     <div class="controls">

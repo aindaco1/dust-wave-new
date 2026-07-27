@@ -42,6 +42,11 @@ assert.match(playerScript, /playerLanguage\.toLowerCase\(\)\.startsWith\('es'\)/
 assert.match(playerScript, /seekTo\(playerId, seconds/);
 assert.match(playerScript, /async mount\(scope = document\)/);
 assert.match(playerScript, /card\.dataset\.audioCredentials === "include"/);
+assert.match(playerScript, /dataset\.analyticsEndpoint/);
+assert.match(playerScript, /event: "engaged_play"/);
+assert.match(playerScript, /elapsed < 60/);
+assert.match(playerScript, /document\.visibilityState === "visible"/);
+assert.match(playerScript, /credentials: "omit"/);
 assert.match(playerScript, /const svgBack = `<svg/);
 assert.match(playerScript, /const svgForward = `<svg/);
 assert.match(playerScript, /const svgDownload = `<svg/);

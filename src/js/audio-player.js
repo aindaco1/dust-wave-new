@@ -328,6 +328,7 @@ async function createWaveForCard(card, opts={eager:false}) {
 	media.crossOrigin = card.dataset.audioCredentials === "include"
 		? "use-credentials"
 		: (media.crossOrigin || "anonymous");
+	attachPodcastEngagementTracking(card, media);
 
 	// skeleton + fallback progress + overlay
 	waveEl.classList.add("wave--skeleton","wave--fallback","wave--loading");
@@ -438,6 +439,62 @@ async function createWaveForCard(card, opts={eager:false}) {
 	try { document.querySelectorAll('.audio-card').forEach(window.__AudioSquelchAttach?.bind(null) || (()=>{})); } catch {}
 
 	card._ws = ws;
+}
+
+function attachPodcastEngagementTracking(card, media) {
+	const analyticsSource = card.querySelector("[data-analytics-endpoint]");
+	const endpoint = analyticsSource?.dataset.analyticsEndpoint;
+	const episodeId = analyticsSource?.dataset.analyticsEpisodeId;
+	if (!endpoint || !episodeId || card.dataset.analyticsTracking === "1") return;
+	card.dataset.analyticsTracking = "1";
+	let elapsed = 0;
+	let lastTick = 0;
+	let timer = 0;
+	let sent = false;
+
+	const stop = () => {
+		if (timer) window.clearInterval(timer);
+		timer = 0;
+		lastTick = 0;
+	};
+	const send = () => {
+		if (sent || elapsed < 60) return;
+		sent = true;
+		stop();
+		fetch(endpoint, {
+			method: "POST",
+			credentials: "omit",
+			keepalive: true,
+			headers: { "content-type": "application/json" },
+			body: JSON.stringify({
+				episodeId,
+				event: "engaged_play",
+				seconds: Math.floor(elapsed)
+			})
+		}).catch(() => {});
+	};
+	const tick = () => {
+		const now = performance.now();
+		if (
+			lastTick
+			&& !media.paused
+			&& !media.seeking
+			&& document.visibilityState === "visible"
+		) {
+			elapsed += Math.min(2, Math.max(0, (now - lastTick) / 1000));
+			send();
+		}
+		lastTick = now;
+	};
+	const start = () => {
+		if (sent || timer) return;
+		lastTick = performance.now();
+		timer = window.setInterval(tick, 1000);
+	};
+	media.addEventListener("play", start);
+	media.addEventListener("pause", stop);
+	media.addEventListener("ended", stop);
+	window.addEventListener("pagehide", stop, { once: true });
 }
 
 async function boot() {

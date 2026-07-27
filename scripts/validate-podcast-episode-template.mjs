@@ -60,6 +60,7 @@ const show = {
   language: 'es'
 };
 const episode = {
+  id: 'episode_fixture',
   publicationSchemaVersion: 1,
   pageMode: 'full_episode',
   showSlug: show.slug,
@@ -85,11 +86,17 @@ const rendered = environment.renderString(body, {
   i18n,
   language: 'es',
   metadata: { url: 'https://dustwave.xyz' },
+  podcastApi: { apiOrigin: 'https://feeds.dustwave.xyz' },
   podcastShows: [show]
 });
 
 assert.match(rendered, /id="wave_opera-en-la-selva_una-charla-sobre-codigo"/);
 assert.match(rendered, /<div class="audio-card" lang="es">/);
+assert.match(rendered, /data-analytics-episode-id="episode_fixture"/);
+assert.match(
+  rendered,
+  /data-analytics-endpoint="https:\/\/feeds\.dustwave\.xyz\/v1\/analytics\/player-events"/
+);
 assert.match(rendered, /aria-label="Reproducir Una charla sobre &quot;código&quot;"/);
 assert.match(rendered, /href="https:\/\/media\.dustwave\.xyz\/episodes\/episode_fixture\/audio\?download=1"/);
 assert.match(rendered, /href="\/es\/podcasts\/opera-en-la-selva\/"/);
@@ -130,6 +137,7 @@ const renderedEmbed = environment.renderString(embedBody, {
   environment: 'production',
   i18n,
   metadata: { url: 'https://dustwave.xyz' },
+  podcastApi: { apiOrigin: 'https://feeds.dustwave.xyz' },
   podcastShows: [show]
 });
 
@@ -170,6 +178,7 @@ const renderedEnglishEmbed = environment.renderString(embedBody, {
   environment: 'production',
   i18n,
   metadata: { url: 'https://dustwave.xyz' },
+  podcastApi: { apiOrigin: 'https://feeds.dustwave.xyz' },
   podcastShows: [{ ...show, language: 'en' }]
 });
 assert.match(renderedEnglishEmbed, /<div class="audio-card" lang="en">/);
@@ -192,6 +201,7 @@ const renderedPremiumTeaser = environment.renderString(body, {
   i18n,
   language: 'es',
   metadata: { url: 'https://dustwave.xyz' },
+  podcastApi: { apiOrigin: 'https://feeds.dustwave.xyz' },
   podcastShows: [show]
 });
 assert.match(renderedPremiumTeaser, /Episodio premium\s*<\/p>/);
@@ -223,6 +233,7 @@ const renderedPremiumEmbed = environment.renderString(embedBody, {
   environment: 'production',
   i18n,
   metadata: { url: 'https://dustwave.xyz' },
+  podcastApi: { apiOrigin: 'https://feeds.dustwave.xyz' },
   podcastShows: [show]
 });
 assert.match(renderedPremiumEmbed, /Solo para suscriptores/);

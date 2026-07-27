@@ -18,6 +18,9 @@ import {
 import {
   mountSavedMarketingLinks
 } from "./podcast-admin-marketing-links.js";
+import {
+  mountPodcastAnalytics
+} from "./podcast-admin-analytics.js";
 import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js";
 import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js";
 
@@ -383,24 +386,10 @@ function startPodcastAdmin(root) {
   const creativeForm = root.querySelector("[data-podcast-creative-form]");
   const creativeStatus = root.querySelector("[data-podcast-creative-status]");
   const creativeProgress = root.querySelector("[data-podcast-creative-progress]");
-  const reconciliationRoot = root.querySelector("[data-podcast-reconciliation]");
-  const reconciliationStatus = root.querySelector("[data-podcast-reconciliation-status]");
-  const reconciliationShow = root.querySelector("[data-podcast-reconciliation-show]");
-  const qualifiedSponsorDeliveries = root.querySelector(
-    "[data-podcast-qualified-sponsor-deliveries]"
-  );
-  const reconciliationDifferences = root.querySelector(
-    "[data-podcast-reconciliation-differences]"
-  );
-  const campaignsAtCap = root.querySelector("[data-podcast-campaigns-at-cap]");
   let shows = [];
   let episodes = [];
   let adminIdentity = null;
   let campaigns = [];
-  let reconciliationRows = [];
-  let reconciliationCursor = null;
-  let reconciliationLoading = false;
-  let reconciliationRequestId = 0;
   let distributionRequestId = 0;
   let billingRequestId = 0;
   let subscriberRows = [];
@@ -501,6 +490,15 @@ function startPodcastAdmin(root) {
     resetBuilder: resetMarketingLinkForm,
     downloadQr: downloadMarketingQr
   });
+  const podcastAnalytics = mountPodcastAnalytics({
+    root,
+    client,
+    apiOrigin,
+    getShow: () => shows.find(({ id }) => id === selectedShowId) || null,
+    text: adminText,
+    setStatus,
+    friendlyError
+  });
   mountAccessibleTabs(root.querySelector("[data-podcast-tabs]"), {
     storageKey: "dustwave-podcast-admin-tab",
     onSelect(tab) {
@@ -525,7 +523,7 @@ function startPodcastAdmin(root) {
       if (tab === "subscribers") loadSubscribers({ reset: true });
       if (tab === "billing") loadBilling();
       if (tab === "sponsors") loadCampaigns();
-      if (tab === "analytics") loadAdReconciliation({ reset: true });
+      if (tab === "analytics") podcastAnalytics.load();
     }
   });
 
@@ -548,10 +546,6 @@ function startPodcastAdmin(root) {
   subscribersFilters?.addEventListener("submit", (event) => {
     event.preventDefault();
   });
-  root.querySelector("[data-podcast-reconciliation-refresh]")?.addEventListener(
-    "click",
-    () => loadAdReconciliation({ reset: true })
-  );
   distributionRoot?.addEventListener("click", handleDistributionClick);
   distributionRoot?.addEventListener(
     "submit",
@@ -587,7 +581,7 @@ function startPodcastAdmin(root) {
     }
     const analyticsPanel = root.querySelector("#podcast-panel-analytics");
     if (analyticsPanel && !analyticsPanel.hidden) {
-      await loadAdReconciliation({ reset: true });
+      await podcastAnalytics.load();
     }
     const distributionPanel = root.querySelector(
       "#podcast-panel-distribution"
@@ -778,11 +772,6 @@ function startPodcastAdmin(root) {
   );
   creativeForm?.addEventListener("submit", uploadCreative);
   campaignList?.addEventListener("click", handleCampaignAction);
-  reconciliationRoot?.addEventListener("click", (event) => {
-    if (event.target.closest("[data-podcast-reconciliation-more]")) {
-      loadAdReconciliation({ reset: false });
-    }
-  });
   episodeList?.addEventListener("click", async (event) => {
     const button = event.target.closest("[data-publish-episode]");
     if (!button) return;
@@ -910,10 +899,7 @@ function startPodcastAdmin(root) {
     episodes = [];
     adminIdentity = null;
     campaigns = [];
-    reconciliationRows = [];
-    reconciliationCursor = null;
-    reconciliationLoading = false;
-    reconciliationRequestId += 1;
+    podcastAnalytics.reset();
     distributionRequestId += 1;
     billingRequestId += 1;
     subscriberRows = [];
@@ -1027,8 +1013,6 @@ function startPodcastAdmin(root) {
     latestProcessorManifest = null;
     sponsorResult?.replaceChildren();
     campaignList?.replaceChildren();
-    reconciliationRoot?.replaceChildren();
-    setReconciliationMetrics();
     creativeForm?.reset();
     adPlanForm?.reset();
     adPlanResult?.replaceChildren();
@@ -1061,7 +1045,7 @@ function startPodcastAdmin(root) {
       }
       const analyticsPanel = root.querySelector("#podcast-panel-analytics");
       if (analyticsPanel && !analyticsPanel.hidden) {
-        await loadAdReconciliation({ reset: true });
+        await podcastAnalytics.load();
       }
       setStatus(globalStatus, "");
     } catch (error) {
@@ -8364,170 +8348,6 @@ function startPodcastAdmin(root) {
       setStatus(billingStatus, friendlyError(error), true);
     } finally {
       billingExport.disabled = false;
-    }
-  }
-
-  async function loadAdReconciliation({ reset = false } = {}) {
-    if (
-      (!reset && reconciliationLoading)
-      || !selectedShowId
-      || !reconciliationRoot
-    ) return;
-    const requestedShowId = selectedShowId;
-    if (reset) {
-      reconciliationRows = [];
-      reconciliationCursor = null;
-      reconciliationRoot.replaceChildren();
-    } else if (!reconciliationCursor) {
-      return;
-    }
-    const requestId = ++reconciliationRequestId;
-    reconciliationLoading = true;
-    setStatus(
-      reconciliationStatus,
-      reset
-        ? adminText(
-            "loadingTrustedEvidence"
-          )
-        : adminText(
-            "loadingMoreCampaignEvidence"
-          )
-    );
-    const cursor = reset ? null : reconciliationCursor;
-    const query = new URLSearchParams({
-      showId: requestedShowId,
-      limit: "50"
-    });
-    if (cursor) query.set("cursor", cursor);
-    try {
-      const payload = await client.request(
-        `/v1/admin/ads/reconciliation?${query.toString()}`
-      );
-      if (
-        selectedShowId !== requestedShowId
-        || requestId !== reconciliationRequestId
-      ) return;
-      reconciliationRows = reset
-        ? payload.campaigns || []
-        : reconciliationRows.concat(payload.campaigns || []);
-      reconciliationCursor = payload.pagination?.nextCursor || null;
-      renderAdReconciliation(payload);
-      setStatus(
-        reconciliationStatus,
-        payload.summary?.discrepancyCount
-          ? adminText(
-              "counterDifferences"
-            )
-          : adminText(
-              "campaignCountersReconcile"
-            )
-      );
-    } catch (error) {
-      if (
-        selectedShowId !== requestedShowId
-        || requestId !== reconciliationRequestId
-      ) return;
-      setStatus(reconciliationStatus, friendlyError(error), true);
-      if (reset) {
-        reconciliationRoot.replaceChildren();
-        setReconciliationMetrics();
-      }
-    } finally {
-      if (requestId === reconciliationRequestId) {
-        reconciliationLoading = false;
-      }
-    }
-  }
-
-  function renderAdReconciliation(payload) {
-    const summary = payload.summary || {};
-    const show = shows.find(({ id }) => id === selectedShowId);
-    if (reconciliationShow) {
-      reconciliationShow.textContent = show?.title
-        || adminText("thisShow");
-    }
-    setReconciliationMetrics(summary);
-    if (!reconciliationRows.length) {
-      reconciliationRoot.innerHTML = `<p class="podcast-admin__empty">${
-        escapeHtml(adminText(
-          "noCampaignsToReconcile"
-        ))
-      }</p>`;
-      return;
-    }
-    const tableRows = reconciliationRows.map((campaign) => {
-      const progressTarget =
-        campaign.qualifiedImpressionGoal || campaign.impressionCap;
-      const progress = progressTarget
-        ? `${formatInteger(campaign.qualifiedImpressions)} / ${formatInteger(progressTarget)}`
-        : formatInteger(campaign.qualifiedImpressions);
-      return `
-        <tr>
-          <th scope="row">
-            <strong>${escapeHtml(campaign.name)}</strong>
-            <span>${escapeHtml(campaign.sponsorName || localizedCode(
-              "campaignType",
-              campaign.campaignType
-            ))}</span>
-          </th>
-          <td>${escapeHtml(localizedCode(
-            "campaignStatus",
-            campaign.approvalStatus
-          ))}</td>
-          <td>${progress}</td>
-          <td>${formatInteger(campaign.qualificationRows)}</td>
-          <td class="${campaign.reconciled ? "" : "is-error"}">${formatInteger(campaign.difference)}</td>
-          <td>${escapeHtml(formatDate(campaign.lastQualifiedAt))}</td>
-        </tr>`;
-    }).join("");
-    reconciliationRoot.innerHTML = `
-      <div
-        class="podcast-admin__table-scroll"
-        role="region"
-        aria-label="${escapeAttribute(adminText(
-          "sponsorDeliveryReconciliation"
-        ))}"
-        tabindex="0">
-        <table class="podcast-admin__table">
-          <caption>${escapeHtml(adminText(
-            "reconciliationCaption"
-          ))}</caption>
-          <thead>
-            <tr>
-              <th scope="col">${escapeHtml(adminText("campaign"))}</th>
-              <th scope="col">${escapeHtml(adminText("status"))}</th>
-              <th scope="col">${escapeHtml(adminText("progress"))}</th>
-              <th scope="col">${escapeHtml(adminText("durableRows"))}</th>
-              <th scope="col">${escapeHtml(adminText("difference"))}</th>
-              <th scope="col">${escapeHtml(adminText("lastQualified"))}</th>
-            </tr>
-          </thead>
-          <tbody>${tableRows}</tbody>
-        </table>
-      </div>
-      ${reconciliationCursor
-        ? `<button class="btn btn-outline-light podcast-admin__more" type="button" data-podcast-reconciliation-more>${escapeHtml(
-            adminText("loadMoreCampaigns")
-          )}</button>`
-        : ""}`;
-  }
-
-  function setReconciliationMetrics(summary = {}) {
-    if (qualifiedSponsorDeliveries) {
-      qualifiedSponsorDeliveries.textContent = summary.counterValue === undefined
-        ? "—"
-        : formatInteger(summary.counterValue);
-    }
-    if (reconciliationDifferences) {
-      reconciliationDifferences.textContent =
-        summary.discrepancyCount === undefined
-          ? "—"
-          : formatInteger(summary.discrepancyCount);
-    }
-    if (campaignsAtCap) {
-      campaignsAtCap.textContent = summary.campaignsAtCap === undefined
-        ? "—"
-        : formatInteger(summary.campaignsAtCap);
     }
   }
 

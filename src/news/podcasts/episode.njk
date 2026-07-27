@@ -50,6 +50,8 @@ eleventyComputed:
     {% set artworkAlt = i18n | t(language, "podcast.artworkAlt", { title: (show.title if show else episode.title) }) %}
     {% set peaksUrl = episode.peaksUrl %}
     {% set playerLanguage = show.language if show else "es" %}
+    {% set analyticsEndpoint = podcastApi.apiOrigin + "/v1/analytics/player-events" %}
+    {% set analyticsEpisodeId = episode.id %}
     {% include "snippets/audio-player.njk" %}
     {% endif %}
 

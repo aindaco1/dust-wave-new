@@ -19,8 +19,16 @@ const marketingLinksScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-marketing-links.js'),
   'utf8'
 );
+const analyticsScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-analytics.js'),
+  'utf8'
+);
 const adminConfig = await readFile(
   path.join(repositoryRoot, 'src/_data/podcastAdmin.js'),
+  'utf8'
+);
+const podcastApiConfig = await readFile(
+  path.join(repositoryRoot, 'src/_data/podcastApi.js'),
   'utf8'
 );
 const adminStyles = await readFile(
@@ -41,6 +49,7 @@ const spanishRuntime = spanishI18n.runtime.admin;
 const englishRuntimeText = JSON.stringify(englishRuntime);
 const staticRuntimeKeys = [
   ...adminScript.matchAll(/adminText\(\s*"([^"]+)"/g),
+  ...analyticsScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...marketingLinksScript.matchAll(/text\(\s*"([^"]+)"/g)
 ].map((match) => match[1]);
 for (const key of new Set(staticRuntimeKeys)) {
@@ -100,8 +109,10 @@ assert.match(adminLayout, /noindex,nofollow,noarchive/);
 assert.match(adminLayout, /snippets\/language-switcher\.njk/);
 assert.match(adminLayout, /type="module" src="\/js\/podcast-admin\.js"/);
 assert.match(adminLayout, /src="\/js\/audio-player\.js" defer/);
-assert.match(adminConfig, /https:\/\/feeds\.dustwave\.xyz/);
+assert.match(adminConfig, /require\("\.\/podcastApi\.js"\)\.apiOrigin/);
+assert.match(podcastApiConfig, /https:\/\/feeds\.dustwave\.xyz/);
 assert.doesNotMatch(adminConfig, /workers\.dev/);
+assert.doesNotMatch(podcastApiConfig, /workers\.dev/);
 assert.match(adminTemplate, /data-podcast-auth/);
 assert.match(adminTemplate, /data-podcast-episode-form/);
 assert.match(adminTemplate, /data-podcast-upload-form/);
@@ -111,6 +122,16 @@ assert.match(adminTemplate, /data-podcast-distribution/);
 assert.match(adminTemplate, /data-podcast-billing-refresh/);
 assert.match(adminTemplate, /data-podcast-billing-export/);
 assert.match(adminTemplate, /data-podcast-billing-status/);
+assert.match(adminTemplate, /data-podcast-analytics-range/);
+assert.match(adminTemplate, /data-podcast-qualified-downloads/);
+assert.match(adminTemplate, /data-podcast-engaged-plays/);
+assert.match(adminTemplate, /data-podcast-premium-listeners/);
+assert.match(adminTemplate, /data-podcast-analytics-trend/);
+assert.match(adminTemplate, /data-podcast-analytics-episodes/);
+assert.match(adminTemplate, /data-podcast-analytics-apps/);
+assert.match(analyticsScript, /\/analytics\/overview\?days=/);
+assert.match(analyticsScript, /\/analytics\/overview\.csv\?days=/);
+assert.doesNotMatch(analyticsScript, /innerHTML/);
 assert.match(adminTemplate, /data-tab="subscribers"/);
 assert.match(adminTemplate, /data-podcast-subscribers-filters/);
 assert.match(adminTemplate, /data-podcast-subscribers-export/);
@@ -227,7 +248,7 @@ assert.match(adminScript, /created\.upload\.lengthHeader/);
 assert.match(adminScript, /\/v1\/admin\/ads\/creatives/);
 assert.match(adminScript, /validated\.validationStatus !== "ready"/);
 assert.match(adminScript, /payload\.previewOnly/);
-assert.match(adminScript, /\/v1\/admin\/ads\/reconciliation/);
+assert.match(analyticsScript, /\/v1\/admin\/ads\/reconciliation/);
 assert.match(adminScript, /\/v1\/admin\/billing\/readiness/);
 assert.match(adminScript, /\/v1\/admin\/billing\/tax-evidence/);
 assert.match(adminScript, /\/v1\/admin\/subscribers/);

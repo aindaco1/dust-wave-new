@@ -326,6 +326,98 @@ function responseFor(request) {
   }
   if (
     request.method === "GET"
+    && path === `/v1/admin/shows/${show.id}/analytics/overview`
+  ) {
+    return json({
+      showId: show.id,
+      range: {
+        days: Number(url.searchParams.get("days") || 30),
+        startDate: "2026-07-20",
+        endDate: "2026-07-26",
+        timeZone: "UTC"
+      },
+      methodology: {
+        version: "dustwave-analytics-v1",
+        certification: "not_iab_certified"
+      },
+      totals: {
+        qualifiedDownloads: 1842,
+        engagedPlays: 619,
+        activePremiumListeners: 37
+      },
+      daily: [
+        { date: "2026-07-20", qualifiedDownloads: 180, engagedPlays: 52 },
+        { date: "2026-07-21", qualifiedDownloads: 215, engagedPlays: 61 },
+        { date: "2026-07-22", qualifiedDownloads: 244, engagedPlays: 78 },
+        { date: "2026-07-23", qualifiedDownloads: 301, engagedPlays: 103 },
+        { date: "2026-07-24", qualifiedDownloads: 290, engagedPlays: 96 },
+        { date: "2026-07-25", qualifiedDownloads: 338, engagedPlays: 117 },
+        { date: "2026-07-26", qualifiedDownloads: 274, engagedPlays: 112 }
+      ],
+      episodes: [{
+        episodeId: episode.id,
+        title: episode.title,
+        qualifiedDownloads: 1842,
+        engagedPlays: 619
+      }],
+      breakdowns: {
+        apps: [
+          { code: "apple_podcasts", count: 812 },
+          { code: "spotify", count: 601 },
+          { code: "browser", count: 429 }
+        ],
+        devices: [
+          { code: "mobile", count: 1320 },
+          { code: "desktop", count: 522 }
+        ],
+        countries: [
+          { code: "MX", count: 744 },
+          { code: "US", count: 611 },
+          { code: "CO", count: 487 }
+        ]
+      },
+      generatedAt: "2026-07-26T18:00:00.000Z"
+    });
+  }
+  if (
+    request.method === "GET"
+    && path === `/v1/admin/shows/${show.id}/analytics/overview.csv`
+  ) {
+    return {
+      status: 200,
+      contentType: "text/csv; charset=utf-8",
+      headers: {
+        "content-disposition":
+          'attachment; filename="podcast-analytics-show_opera_en_la_selva-30d.csv"',
+        "access-control-expose-headers": "content-disposition"
+      },
+      body:
+        '"date","qualified_downloads","engaged_plays","methodology_version"\r\n'
+        + '"2026-07-26","274","112","dustwave-analytics-v1"\r\n'
+    };
+  }
+  if (
+    request.method === "GET"
+    && path === "/v1/admin/ads/reconciliation"
+  ) {
+    return json({
+      showId: show.id,
+      methodology: { version: "trusted-download-v1" },
+      summary: {
+        campaignCount: 0,
+        counterValue: 0,
+        qualificationRows: 0,
+        difference: 0,
+        discrepancyCount: 0,
+        campaignsAtCap: 0,
+        lastQualifiedAt: null
+      },
+      campaigns: [],
+      pagination: { limit: 50, nextCursor: null }
+    });
+  }
+  if (
+    request.method === "GET"
     && path === "/v1/admin/alignment-benchmarks"
   ) {
     return json({
