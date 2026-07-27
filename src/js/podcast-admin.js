@@ -15,6 +15,9 @@ import {
   qrSvgMarkup,
   safeMarketingFilename
 } from "./dust-wave-admin-shell/marketing-assets.js";
+import {
+  mountSavedMarketingLinks
+} from "./podcast-admin-marketing-links.js";
 import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js";
 import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js";
 
@@ -287,6 +290,21 @@ function startPodcastAdmin(root) {
   const marketingLinkStatus = root.querySelector(
     "[data-podcast-marketing-link-status]"
   );
+  const marketingLinkSave = root.querySelector(
+    "[data-podcast-marketing-save]"
+  );
+  const marketingLinkCancel = root.querySelector(
+    "[data-podcast-marketing-cancel]"
+  );
+  const marketingLinksRoot = root.querySelector(
+    "[data-podcast-marketing-links]"
+  );
+  const marketingLinksStatus = root.querySelector(
+    "[data-podcast-marketing-links-status]"
+  );
+  const marketingLinksMore = root.querySelector(
+    "[data-podcast-marketing-links-more]"
+  );
   const embedForm = root.querySelector("[data-podcast-embed-form]");
   const embedPreview = root.querySelector("[data-podcast-embed-preview]");
   const embedStatus = root.querySelector("[data-podcast-embed-status]");
@@ -463,6 +481,26 @@ function startPodcastAdmin(root) {
       }
     }
   );
+  const savedMarketingLinks = mountSavedMarketingLinks({
+    client,
+    form: marketingLinkForm,
+    saveButton: marketingLinkSave,
+    cancelButton: marketingLinkCancel,
+    listRoot: marketingLinksRoot,
+    listStatus: marketingLinksStatus,
+    loadMoreButton: marketingLinksMore,
+    refreshButton: root.querySelector(
+      "[data-podcast-marketing-links-refresh]"
+    ),
+    getShow: () => shows.find(({ id }) => id === selectedShowId) || null,
+    canWrite: canOperateSelectedShowPublication,
+    text: adminText,
+    setStatus,
+    friendlyError,
+    applyLink: applySavedMarketingLinkFields,
+    resetBuilder: resetMarketingLinkForm,
+    downloadQr: downloadMarketingQr
+  });
   mountAccessibleTabs(root.querySelector("[data-podcast-tabs]"), {
     storageKey: "dustwave-podcast-admin-tab",
     onSelect(tab) {
@@ -482,6 +520,7 @@ function startPodcastAdmin(root) {
         updateMarketingTools();
         loadClipLibrary({ reset: true });
         loadAnnouncementHistory();
+        savedMarketingLinks.load({ reset: true });
       }
       if (tab === "subscribers") loadSubscribers({ reset: true });
       if (tab === "billing") loadBilling();
@@ -542,7 +581,8 @@ function startPodcastAdmin(root) {
     if (marketingPanel && !marketingPanel.hidden) {
       await Promise.all([
         loadClipLibrary({ reset: true }),
-        loadAnnouncementHistory()
+        loadAnnouncementHistory(),
+        savedMarketingLinks.load({ reset: true })
       ]);
     }
     const analyticsPanel = root.querySelector("#podcast-panel-analytics");
@@ -678,10 +718,6 @@ function startPodcastAdmin(root) {
   clipYouTubeForm
     ?.querySelector("[data-podcast-clip-youtube-close]")
     ?.addEventListener("click", closeClipYouTubeForm);
-  marketingLinkForm?.addEventListener("submit", (event) => {
-    event.preventDefault();
-    updateMarketingLink();
-  });
   marketingLinkForm?.addEventListener("input", updateMarketingLink);
   root.querySelector("[data-podcast-marketing-copy]")?.addEventListener(
     "click",
@@ -904,6 +940,7 @@ function startPodcastAdmin(root) {
     announcementHistoryRequestId += 1;
     announcementReview?.replaceChildren();
     announcementHistory?.replaceChildren();
+    savedMarketingLinks.reset();
     if (announcementApprove) announcementApprove.hidden = true;
     setStatus(announcementHistoryStatus, "");
     transcript = null;
@@ -1015,11 +1052,12 @@ function startPodcastAdmin(root) {
       });
       await Promise.all([loadEpisodes(), loadCampaigns()]);
       const marketingPanel = root.querySelector("#podcast-panel-marketing");
-    if (marketingPanel && !marketingPanel.hidden) {
-      await Promise.all([
-        loadClipLibrary({ reset: true }),
-        loadAnnouncementHistory()
-      ]);
+      if (marketingPanel && !marketingPanel.hidden) {
+        await Promise.all([
+          loadClipLibrary({ reset: true }),
+          loadAnnouncementHistory(),
+          savedMarketingLinks.load({ reset: true })
+        ]);
       }
       const analyticsPanel = root.querySelector("#podcast-panel-analytics");
       if (analyticsPanel && !analyticsPanel.hidden) {
@@ -1081,6 +1119,7 @@ function startPodcastAdmin(root) {
       marketingCurrentQr = null;
       marketingQr?.replaceChildren();
       announcementReview?.replaceChildren();
+      savedMarketingLinks.reset();
       return;
     }
     if (
@@ -1088,10 +1127,9 @@ function startPodcastAdmin(root) {
       || marketingLinkForm?.dataset.showId !== show.id
     ) {
       marketingLinkForm.dataset.showId = show.id;
-      marketingLinkForm.elements.campaign.value = `${show.slug}-launch`;
-      marketingLinkForm.elements.content.value = "";
-      marketingLinkForm.elements.ref.value = "";
+      savedMarketingLinks.resetForShow();
     }
+    savedMarketingLinks.refreshPermissions();
     if (
       showChanged
       || announcementForm?.dataset.showId !== show.id
@@ -1304,6 +1342,32 @@ function startPodcastAdmin(root) {
     link.click();
     link.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1_000);
+  }
+
+  function resetMarketingLinkForm() {
+    if (!marketingLinkForm) return;
+    const show = shows.find(({ id }) => id === selectedShowId);
+    marketingLinkForm.elements.label.value = "";
+    marketingLinkForm.elements.source.value = "podcast";
+    marketingLinkForm.elements.medium.value = "owned";
+    marketingLinkForm.elements.campaign.value = show
+      ? `${show.slug}-launch`
+      : "";
+    marketingLinkForm.elements.content.value = "";
+    marketingLinkForm.elements.ref.value = "";
+    updateMarketingLink();
+  }
+
+  function applySavedMarketingLinkFields(row, { edit = false } = {}) {
+    if (!marketingLinkForm) return;
+    marketingLinkForm.elements.label.value = String(row.label || "");
+    marketingLinkForm.elements.source.value = String(row.utmSource || "");
+    marketingLinkForm.elements.medium.value = String(row.utmMedium || "");
+    marketingLinkForm.elements.campaign.value = String(row.utmCampaign || "");
+    marketingLinkForm.elements.content.value = String(row.utmContent || "");
+    marketingLinkForm.elements.ref.value = String(row.referralCode || "");
+    updateMarketingLink();
+    if (edit) marketingLinkForm.elements.label.focus();
   }
 
   async function runAnnouncementDryRun(event) {

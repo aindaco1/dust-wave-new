@@ -15,6 +15,10 @@ const adminScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin.js'),
   'utf8'
 );
+const marketingLinksScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-marketing-links.js'),
+  'utf8'
+);
 const adminConfig = await readFile(
   path.join(repositoryRoot, 'src/_data/podcastAdmin.js'),
   'utf8'
@@ -36,7 +40,8 @@ const englishRuntime = englishI18n.runtime.admin;
 const spanishRuntime = spanishI18n.runtime.admin;
 const englishRuntimeText = JSON.stringify(englishRuntime);
 const staticRuntimeKeys = [
-  ...adminScript.matchAll(/adminText\(\s*"([^"]+)"/g)
+  ...adminScript.matchAll(/adminText\(\s*"([^"]+)"/g),
+  ...marketingLinksScript.matchAll(/text\(\s*"([^"]+)"/g)
 ].map((match) => match[1]);
 for (const key of new Set(staticRuntimeKeys)) {
   assert.equal(
@@ -181,6 +186,10 @@ assert.match(englishWorkbenchText, /Never public/);
 assert.match(englishWorkbenchText, /recently authenticated super-admin/);
 assert.match(adminTemplate, /data-podcast-marketing-link-form/);
 assert.match(adminTemplate, /data-podcast-marketing-qr/);
+assert.match(adminTemplate, /data-podcast-marketing-save/);
+assert.match(adminTemplate, /data-podcast-marketing-links/);
+assert.match(adminTemplate, /data-podcast-marketing-links-more/);
+assert.match(englishWorkbenchText, /Reusable, show-scoped links/);
 assert.match(adminTemplate, /data-podcast-embed-form/);
 assert.match(adminTemplate, /data-podcast-embed-preview/);
 assert.match(englishWorkbenchText, /Portable episode player/);
@@ -222,6 +231,17 @@ assert.match(adminScript, /\/v1\/admin\/ads\/reconciliation/);
 assert.match(adminScript, /\/v1\/admin\/billing\/readiness/);
 assert.match(adminScript, /\/v1\/admin\/billing\/tax-evidence/);
 assert.match(adminScript, /\/v1\/admin\/subscribers/);
+assert.match(
+  marketingLinksScript,
+  /\/v1\/admin\/shows\/\$\{encodeURIComponent\(show\.id\)\}\/marketing\/links/
+);
+assert.match(marketingLinksScript, /function safeSavedUrl/);
+assert.match(marketingLinksScript, /listRoot\.replaceChildren/);
+assert.doesNotMatch(
+  marketingLinksScript,
+  /listRoot\.innerHTML/,
+  'Saved marketing links must render provider-backed fields through DOM text nodes'
+);
 assert.match(adminScript, /function loadSubscribers/);
 assert.match(adminScript, /function renderSubscriberRecord/);
 assert.match(adminScript, /function exportSubscribers/);

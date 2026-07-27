@@ -69,6 +69,24 @@ const announcement = {
   }
 };
 
+let marketingLinks = [{
+  id: "marketing_link_browser_fixture",
+  showId: show.id,
+  code: "festival-newsletter",
+  label: "Festival newsletter",
+  canonicalUrl: show.canonicalUrl,
+  utmSource: "newsletter",
+  utmMedium: "email",
+  utmCampaign: "opera-launch",
+  utmContent: "hero",
+  referralCode: "festival",
+  taggedUrl:
+    `${show.canonicalUrl}?utm_source=newsletter&utm_medium=email&utm_campaign=opera-launch&utm_content=hero&ref=festival`,
+  revision: 1,
+  createdAt: "2026-07-26T12:00:00.000Z",
+  updatedAt: "2026-07-26T12:00:00.000Z"
+}];
+
 const audioMasterPayload = {
   state: {
     revision: 1,
@@ -424,6 +442,38 @@ function responseFor(request) {
       idempotent: false,
       queueAccepted: true
     }, 202);
+  }
+  if (
+    request.method === "GET"
+    && path === `/v1/admin/shows/${show.id}/marketing/links`
+  ) {
+    return json({
+      showId: show.id,
+      links: marketingLinks,
+      pagination: { limit: 20, nextCursor: null }
+    });
+  }
+  if (
+    request.method === "POST"
+    && path === `/v1/admin/shows/${show.id}/marketing/links`
+  ) {
+    const current = marketingLinks[0];
+    const link = {
+      ...current,
+      id: current?.id || "marketing_link_browser_fixture",
+      revision: Number(current?.revision || 0) + 1,
+      updatedAt: new Date().toISOString()
+    };
+    marketingLinks = [link];
+    return json({ updated: Boolean(current), link }, current ? 200 : 201);
+  }
+  if (
+    request.method === "DELETE"
+    && path.startsWith(`/v1/admin/shows/${show.id}/marketing/links/`)
+  ) {
+    const linkId = path.split("/").at(-1);
+    marketingLinks = marketingLinks.filter(({ id }) => id !== linkId);
+    return json({ deleted: true, linkId });
   }
   if (
     request.method === "GET"

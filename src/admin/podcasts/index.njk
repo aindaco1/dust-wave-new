@@ -658,9 +658,12 @@ eleventyComputed:
                 <h3>{{ workbench.marketing.shareKitHeading }}</h3>
                 <p>{{ workbench.marketing.shareKitIntro }}</p>
               </div>
-              <p class="podcast-admin__pill">{{ workbench.marketing.noServerWrites }}</p>
+              <p class="podcast-admin__pill">{{ workbench.marketing.savedPerShow }}</p>
             </div>
             <div class="podcast-admin__field-grid podcast-admin__field-grid--three">
+              <label>{{ workbench.marketing.linkLabel }}
+                <input name="label" maxlength="120" required placeholder="{{ workbench.marketing.linkLabelPlaceholder }}">
+              </label>
               <label>{{ workbench.marketing.source }}
                 <input name="source" maxlength="160" value="podcast">
               </label>
@@ -689,12 +692,26 @@ eleventyComputed:
               </div>
             </div>
             <div class="podcast-admin__clip-actions">
+              <button class="btn btn-danger" type="submit" data-podcast-marketing-save>{{ workbench.marketing.saveLink }}</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-marketing-cancel hidden>{{ workbench.marketing.cancelEdit }}</button>
               <button class="btn btn-outline-light" type="button" data-podcast-marketing-copy>{{ workbench.marketing.copyLink }}</button>
               <button class="btn btn-outline-light" type="button" data-podcast-marketing-share>{{ workbench.marketing.share }}</button>
               <button class="btn btn-outline-light" type="button" data-podcast-marketing-qr-png>{{ workbench.marketing.downloadQrPng }}</button>
               <button class="btn btn-outline-light" type="button" data-podcast-marketing-qr-svg>{{ workbench.marketing.downloadQrSvg }}</button>
             </div>
             <p class="podcast-admin__status" data-podcast-marketing-link-status role="status" aria-live="polite"></p>
+            <section class="podcast-admin__marketing-saved" aria-labelledby="podcast-marketing-saved-heading">
+              <div class="podcast-admin__panel-heading">
+                <div>
+                  <h4 id="podcast-marketing-saved-heading">{{ workbench.marketing.savedLinksHeading }}</h4>
+                  <p>{{ workbench.marketing.savedLinksIntro }}</p>
+                </div>
+                <button class="btn btn-outline-light" type="button" data-podcast-marketing-links-refresh>{{ workbench.marketing.refreshSavedLinks }}</button>
+              </div>
+              <p class="podcast-admin__status" data-podcast-marketing-links-status role="status" aria-live="polite"></p>
+              <div class="podcast-admin__card-grid" data-podcast-marketing-links></div>
+              <button class="btn btn-outline-light podcast-admin__load-more" type="button" data-podcast-marketing-links-more hidden>{{ workbench.common.loadMore }}</button>
+            </section>
           </form>
 
           <form class="podcast-admin__form" data-podcast-embed-form>
