@@ -84,6 +84,7 @@ for (const [name, layout] of [
 
 const scriptBudgets = new Map([
   ["src/js/podcast-admin.js", 300_000],
+  ["src/js/podcast-admin-episode-youtube.js", 10_000],
   ["src/js/podcast-admin-analytics.js", 20_000],
   ["src/js/podcast-member.js", 30_000],
   ["src/js/podcast-checkout.js", 25_000]

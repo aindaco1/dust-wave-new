@@ -19,6 +19,9 @@ import {
   mountSavedMarketingLinks
 } from "./podcast-admin-marketing-links.js";
 import {
+  buildEpisodeYouTubeControls
+} from "./podcast-admin-episode-youtube.js";
+import {
   mountPodcastAnalytics
 } from "./podcast-admin-analytics.js";
 import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js?v=0.6.0";
@@ -574,6 +577,10 @@ function startPodcastAdmin(root) {
   distributionRoot?.addEventListener(
     "submit",
     updateDirectoryObservation
+  );
+  distributionRoot?.addEventListener(
+    "submit",
+    prepareEpisodeYouTubePublication
   );
   distributionFilter?.elements.episodeId?.addEventListener(
     "change",
@@ -6691,6 +6698,22 @@ function startPodcastAdmin(root) {
         error.textContent = String(channel.error);
         card.append(error);
       }
+      if (channel.id === "youtube" && episodeId) {
+        const youtubeControls = buildEpisodeYouTubeControls({
+          channel,
+          release,
+          episodeId,
+          episode: episodes.find(({ id }) => id === episodeId),
+          show: shows.find(({ id }) => id === selectedShowId),
+          canPrepare: canOperateSelectedShowPublication(),
+          canApprove: canApproveClipYouTube,
+          publicationId: operationId("episode_youtube"),
+          text: adminText,
+          localizedCode,
+          formatInteger
+        });
+        if (youtubeControls) card.append(youtubeControls);
+      }
       if (
         channel.retryable
         && episodeId
@@ -7178,6 +7201,13 @@ function startPodcastAdmin(root) {
   }
 
   async function handleDistributionClick(event) {
+    const youtubeApproval = event.target.closest(
+      "[data-podcast-episode-youtube-approve]"
+    );
+    if (youtubeApproval) {
+      await approveEpisodeYouTubePublication(youtubeApproval);
+      return;
+    }
     const retry = event.target.closest("[data-podcast-release-retry]");
     if (retry) {
       await retryReleaseChannel(retry);
@@ -7207,6 +7237,83 @@ function startPodcastAdmin(root) {
         ),
         true
       );
+    }
+  }
+
+  async function prepareEpisodeYouTubePublication(event) {
+    const form = event.target.closest(
+      "[data-podcast-episode-youtube-form]"
+    );
+    if (!form) return;
+    event.preventDefault();
+    if (!canOperateSelectedShowPublication()) return;
+    const episodeId = String(form.dataset.episodeId || "");
+    const publicationRevision = Number(
+      form.dataset.publicationRevision || 0
+    );
+    if (
+      !episodeId
+      || !Number.isSafeInteger(publicationRevision)
+      || publicationRevision <= 0
+    ) return;
+    const button = form.querySelector('button[type="submit"]');
+    const status = form.querySelector(
+      "[data-podcast-episode-youtube-status]"
+    );
+    button.disabled = true;
+    setStatus(status, adminText("preparingEpisodeYoutubeDraft"));
+    try {
+      const result = await client.request(
+        `/v1/admin/episodes/${encodeURIComponent(episodeId)}/youtube`,
+        {
+          method: "POST",
+          body: {
+            publicationId: form.dataset.publicationId,
+            expectedPublicationRevision: publicationRevision,
+            title: form.elements.title.value,
+            description: form.elements.description.value,
+            privacyStatus: form.elements.privacyStatus.value,
+            confirmChannelUrl: form.elements.confirmChannelUrl.value
+          }
+        }
+      );
+      setStatus(
+        status,
+        result.idempotent
+          ? adminText("youtubeDraftExists")
+          : adminText("episodeYoutubeDraftPrepared")
+      );
+      await loadDistribution(episodeId);
+    } catch (error) {
+      setStatus(status, friendlyError(error), true);
+      button.disabled = false;
+    }
+  }
+
+  async function approveEpisodeYouTubePublication(button) {
+    if (!canApproveClipYouTube) return;
+    const publicationId = String(
+      button.dataset.podcastEpisodeYoutubeApprove || ""
+    );
+    const episodeId = String(button.dataset.episodeId || "");
+    if (!publicationId || !episodeId) return;
+    const status = button.parentElement?.querySelector(
+      "[data-podcast-episode-youtube-status]"
+    );
+    if (!window.confirm(adminText("approveEpisodeYoutubeConfirm"))) return;
+    button.disabled = true;
+    setStatus(status, adminText("approvingYoutubeTest"));
+    try {
+      await client.request(
+        `/v1/admin/episode-youtube-publications/${encodeURIComponent(
+          publicationId
+        )}/approve`,
+        { method: "POST", body: {} }
+      );
+      await loadDistribution(episodeId);
+    } catch (error) {
+      setStatus(status, friendlyError(error), true);
+      button.disabled = false;
     }
   }
 

@@ -734,6 +734,20 @@
   background: rgba(255, 255, 255, 0.025);
 }
 
+.podcast-admin__episode-youtube-form {
+  grid-template-columns: minmax(0, 1fr);
+  width: 100%;
+  margin-top: var(--dw-admin-space-xs);
+  padding: var(--dw-admin-space-md);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 0.65rem;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.podcast-admin__episode-youtube-form .btn {
+  width: 100%;
+}
+
 .podcast-admin__directory-observation-form textarea {
   min-height: 3rem;
 }
