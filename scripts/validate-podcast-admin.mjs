@@ -533,6 +533,10 @@ assert.match(adminScript, /`qc_\$\{crypto\.randomUUID/);
 assert.match(adminScript, /item\.append\(label, evidence\)/);
 assert.match(adminStyles, /\.podcast-admin__audio-qc-findings/);
 assert.match(adminScript, /function loadAudioMaster/);
+assert.match(
+  adminScript,
+  /audioMasterState = payload;\s+setStatus\(audioEnhancementStatus, ""\);/
+);
 assert.match(adminScript, /function approveSourceWorkingMaster/);
 assert.match(adminScript, /function queueAudioEnhancementPreview/);
 assert.match(
