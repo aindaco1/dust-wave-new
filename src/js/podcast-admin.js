@@ -466,6 +466,7 @@ function startPodcastAdmin(root) {
   let latestProcessorManifest = null;
   let turnstileToken = "";
   let turnstileWidgetId;
+  let turnstileInitialization;
 
   const notesEditorLabel = adminText("editorEpisodeNotes");
   const notesEditor = mountRichTextEditor(
@@ -797,7 +798,6 @@ function startPodcastAdmin(root) {
     await publishEpisode(button.dataset.publishEpisode, button);
   });
 
-  initializeTurnstile();
   initializeCampaignForm();
   updateAdPlanFields();
   restoreOrExchange();
@@ -941,6 +941,7 @@ function startPodcastAdmin(root) {
     canRunAudioEnhancements = false;
     canApproveClipYouTube = false;
     canImportAlignmentBenchmarks = false;
+    initializeTurnstile();
     latestAnnouncementReview = null;
     announcementHistoryRequestId += 1;
     announcementReview?.replaceChildren();
@@ -8374,20 +8375,32 @@ function startPodcastAdmin(root) {
 
   function initializeTurnstile() {
     const siteKey = root.dataset.turnstileSiteKey;
-    if (!siteKey) return;
-    const render = () => {
-      if (!globalThis.turnstile) {
-        setTimeout(render, 100);
-        return;
-      }
-      turnstileWidgetId = globalThis.turnstile.render("#podcast-turnstile", {
-        sitekey: siteKey,
-        action: "podcast_admin_login",
-        callback: (token) => { turnstileToken = token; },
-        "expired-callback": () => { turnstileToken = ""; }
+    if (
+      !siteKey
+      || turnstileWidgetId !== undefined
+      || turnstileInitialization
+    ) return;
+    turnstileInitialization = loadTurnstile()
+      .then(() => {
+        if (turnstileWidgetId !== undefined || authPanel.hidden) return;
+        turnstileWidgetId = globalThis.turnstile.render("#podcast-turnstile", {
+          sitekey: siteKey,
+          action: "podcast_admin_login",
+          callback: (token) => { turnstileToken = token; },
+          "expired-callback": () => { turnstileToken = ""; },
+          "error-callback": () => { turnstileToken = ""; }
+        });
+      })
+      .catch(() => {
+        setStatus(
+          authStatus,
+          adminText("verificationUnavailable"),
+          true
+        );
+      })
+      .finally(() => {
+        turnstileInitialization = undefined;
       });
-    };
-    render();
   }
 
   function resetTurnstile() {
@@ -8396,6 +8409,31 @@ function startPodcastAdmin(root) {
       globalThis.turnstile?.reset?.(turnstileWidgetId);
     }
   }
+}
+
+let turnstileLoader;
+
+function loadTurnstile() {
+  if (globalThis.turnstile) return Promise.resolve();
+  if (turnstileLoader) return turnstileLoader;
+  turnstileLoader = new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src =
+      "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+    script.async = true;
+    script.defer = true;
+    script.referrerPolicy = "no-referrer";
+    script.addEventListener("load", () => {
+      if (globalThis.turnstile) resolve();
+      else reject(new Error("turnstile_unavailable"));
+    }, { once: true });
+    script.addEventListener("error", reject, { once: true });
+    document.head.append(script);
+  }).catch((error) => {
+    turnstileLoader = undefined;
+    throw error;
+  });
+  return turnstileLoader;
 }
 
 function setStatus(element, message, error = false) {

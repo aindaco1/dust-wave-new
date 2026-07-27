@@ -626,6 +626,7 @@
       "editorList": "List",
       "editorLink": "Link",
       "editorLinkPrompt": "Link URL (https://, mailto:, /path, or #anchor)",
+      "verificationUnavailable": "Secure verification could not load. Refresh the page.",
       "noBenchmarkLoaded": "No benchmark evidence loaded.",
       "loadingShows": "Loading shows…",
       "episodesLabel": "Episodes",

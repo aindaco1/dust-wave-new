@@ -626,6 +626,7 @@
       "editorList": "Lista",
       "editorLink": "Enlace",
       "editorLinkPrompt": "URL del enlace (https://, mailto:, /ruta o #ancla)",
+      "verificationUnavailable": "No se pudo cargar la verificación segura. Recarga la página.",
       "noBenchmarkLoaded": "No hay evidencia de benchmark cargada.",
       "loadingShows": "Cargando programas…",
       "episodesLabel": "Episodios",

@@ -109,6 +109,21 @@ assert.match(adminLayout, /noindex,nofollow,noarchive/);
 assert.match(adminLayout, /snippets\/language-switcher\.njk/);
 assert.match(adminLayout, /type="module" src="\/js\/podcast-admin\.js\?v=\{\{ assets\.version/);
 assert.match(adminLayout, /src="\/js\/audio-player\.js\?v=\{\{ assets\.version/);
+assert.doesNotMatch(
+  adminLayout,
+  /turnstile\/v0\/api\.js/,
+  'Authenticated admin sessions must not eagerly load the Turnstile runtime'
+);
+assert.match(
+  adminScript,
+  /function showLoggedOut\(\) \{[\s\S]+initializeTurnstile\(\);/,
+  'Turnstile must initialize only when the login surface is needed'
+);
+assert.match(
+  adminScript,
+  /function loadTurnstile\(\) \{[\s\S]+document\.head\.append\(script\);/,
+  'The login surface must load Turnstile on demand'
+);
 assert.match(adminConfig, /require\("\.\/podcastApi\.js"\)\.apiOrigin/);
 assert.match(podcastApiConfig, /https:\/\/feeds\.dustwave\.xyz/);
 assert.doesNotMatch(adminConfig, /workers\.dev/);
