@@ -4082,11 +4082,21 @@ function startPodcastAdmin(root) {
       adminText("policyRevision", {
         revision: formatInteger(audioQcPolicy.revision)
       }),
-      `mono ${Number(audioQcPolicy.monoIntegratedLufs)} LUFS`,
-      `stereo ${Number(audioQcPolicy.stereoIntegratedLufs)} LUFS`,
-      `±${Number(audioQcPolicy.integratedLufsTolerance)} LU`,
-      `peak ≤ ${Number(audioQcPolicy.maximumTruePeakDbtp)} dBTP`,
-      `silence detector ${Number(audioQcPolicy.silenceThresholdDb)} dB`
+      adminText("policyCompactMono", {
+        value: Number(audioQcPolicy.monoIntegratedLufs)
+      }),
+      adminText("policyCompactStereo", {
+        value: Number(audioQcPolicy.stereoIntegratedLufs)
+      }),
+      adminText("policyCompactTolerance", {
+        value: Number(audioQcPolicy.integratedLufsTolerance)
+      }),
+      adminText("policyCompactTruePeak", {
+        value: Number(audioQcPolicy.maximumTruePeakDbtp)
+      }),
+      adminText("policyCompactSilence", {
+        value: Number(audioQcPolicy.silenceThresholdDb)
+      })
     ].join(" · ");
     if (!audioQcPolicyForm) return;
     audioQcPolicyForm.hidden = !canManageAudioQcPolicy;
@@ -4750,7 +4760,10 @@ function startPodcastAdmin(root) {
     }
     const warning = document.createElement("p");
     warning.className = "podcast-admin__audio-enhancement-warning";
-    warning.textContent = String(preview.warning || "");
+    warning.textContent = adminText(
+      "enhancementPreviewWarning",
+      String(preview.warning || "")
+    );
     article.append(warning);
     return article;
   }
@@ -5008,20 +5021,26 @@ function startPodcastAdmin(root) {
     const card = document.createElement("article");
     const status = String(readinessNode.status || "missing");
     const severity = String(readinessNode.severity || "info");
+    const label = localizedReadinessNodeLabel(readinessNode);
     card.className =
       `podcast-admin__readiness-card is-${status} severity-${severity}`;
     const heading = document.createElement("div");
     heading.className = "podcast-admin__readiness-card-heading";
     const title = document.createElement("h4");
-    title.textContent = String(
-      readinessNode.label || adminText("dependencyFallback")
-    );
+    title.textContent = label;
     const pill = document.createElement("span");
     pill.className = "podcast-admin__pill";
-    pill.textContent = `${humanizeCode(status)} · ${humanizeCode(severity)}`;
+    pill.textContent = [
+      localizedCode("readinessStatus", status),
+      localizedCode("readinessSeverity", severity)
+    ].join(" · ");
     heading.append(title, pill);
     const summary = document.createElement("p");
-    summary.textContent = String(readinessNode.summary || "");
+    summary.textContent = adminText(
+      `readinessSummary_${status}`,
+      String(readinessNode.summary || ""),
+      { label }
+    );
     const evidence = document.createElement("details");
     const evidenceSummary = document.createElement("summary");
     evidenceSummary.textContent = adminText("evidenceLabel");
@@ -5037,6 +5056,18 @@ function startPodcastAdmin(root) {
     evidence.append(evidenceSummary, values);
     card.append(heading, summary, evidence);
     return card;
+  }
+
+  function localizedReadinessNodeLabel(readinessNode) {
+    const id = String(readinessNode?.id || "")
+      .replace(/[^A-Za-z0-9]+/g, "_")
+      .replace(/^_+|_+$/g, "");
+    return adminText(
+      `readinessNode_${id}`,
+      String(
+        readinessNode?.label || adminText("dependencyFallback")
+      )
+    );
   }
 
   function readinessEvidenceValue(value) {
@@ -6455,10 +6486,7 @@ function startPodcastAdmin(root) {
             node.severity === "blocker"
             && !["ready", "not_applicable"].includes(node.status)
           )
-          .map((node) => String(
-            node.label
-            || adminText("unresolvedDependency")
-          ));
+          .map((node) => localizedReadinessNodeLabel(node));
         const reason = globalThis.prompt(
           [
             adminText(

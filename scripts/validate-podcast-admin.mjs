@@ -585,7 +585,10 @@ assert.match(
   /\/v1\/admin\/episodes\/\$\{encodeURIComponent\(episodeId\)\}\/readiness/
 );
 assert.match(adminScript, /function renderPublicationReadiness/);
-assert.match(adminScript, /summary\.textContent = String\(readinessNode\.summary/);
+assert.match(adminScript, /function localizedReadinessNodeLabel/);
+assert.match(adminScript, /`readinessSummary_\$\{status\}`/);
+assert.match(adminScript, /localizedCode\("readinessStatus", status\)/);
+assert.match(adminScript, /localizedCode\("readinessSeverity", severity\)/);
 assert.match(adminScript, /publicationGateMode/);
 assert.match(adminScript, /PUBLISH_WITH_BLOCKERS/);
 assert.match(adminScript, /publication_override/);

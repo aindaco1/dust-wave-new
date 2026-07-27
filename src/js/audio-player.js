@@ -51,6 +51,13 @@ const WAVESURFER_PATH = "/js/vendor/wavesurfer.min.js";
 let wavesurferLoadPromise;
 
 // ----- utils -----
+function playerText(key, fallback, variables = {}) {
+	const translated = window.DustWaveI18n?.t(`admin.${key}`, variables);
+	return translated && !translated.startsWith("[missing:")
+		? translated
+		: fallback;
+}
+
 function ensureWavesurferLoaded() {
 	if (window.WaveSurfer) return Promise.resolve();
 	if (wavesurferLoadPromise) return wavesurferLoadPromise;
@@ -189,7 +196,7 @@ function wireControls(card, ws) {
 	ppBtn = document.createElement('button');
 	ppBtn.className = 'playpause';
 	ppBtn.type = 'button';
-	ppBtn.setAttribute('aria-label', 'Play');
+	ppBtn.setAttribute('aria-label', playerText('play', 'Play'));
 	ctrls.insertBefore(ppBtn, ctrls.firstChild);
 	}
 	(function harden(btn){
@@ -212,7 +219,12 @@ function wireControls(card, ws) {
 	const setState = (playing) => {
 	ppBtn.setAttribute('data-state', playing ? 'playing' : 'paused');
 	ppBtn.innerHTML = playing ? svgPause : svgPlay;
-	ppBtn.setAttribute('aria-label', playing ? 'Pause' : 'Play');
+	ppBtn.setAttribute(
+		'aria-label',
+		playing
+			? playerText('pause', 'Pause')
+			: playerText('play', 'Play')
+	);
 	};
 	setState(false);
 
@@ -277,7 +289,14 @@ function wireControls(card, ws) {
 		ws.setPlaybackRate(next);
 		speedBtn.textContent = `${next}x`;
 		speedBtn.setAttribute('aria-live', 'polite');
-		speedBtn.setAttribute('aria-label', `Playback speed: ${next}x`);
+		speedBtn.setAttribute(
+			'aria-label',
+			playerText(
+				'playbackSpeed',
+				`Playback speed: ${next}x`,
+				{ speed: `${next}x` }
+			)
+		);
 	};
 	bindThrottled(speedBtn, "click",  advanceRate, "ws-speed-click");
 	bindThrottled(speedBtn, "keydown",(e) => {

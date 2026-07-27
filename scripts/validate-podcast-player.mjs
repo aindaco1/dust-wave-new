@@ -56,6 +56,9 @@ assert.match(playerScript, /credentials: "omit"/);
 assert.match(playerScript, /const svgBack = `<svg/);
 assert.match(playerScript, /const svgForward = `<svg/);
 assert.match(playerScript, /const svgDownload = `<svg/);
+assert.match(playerScript, /function playerText\(key, fallback, variables/);
+assert.match(playerScript, /playerText\('pause', 'Pause'\)/);
+assert.match(playerScript, /playerText\(\s*'playbackSpeed'/);
 assert.match(playerScript, /document\.getElementById\(`wave_\$\{playerId\}`\)/);
 assert.doesNotMatch(playerScript, /unpkg\.com|cdn\.jsdelivr\.net/);
 assert.match(
