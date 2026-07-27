@@ -20,6 +20,11 @@ assert.match(page, /maxlength="42"/);
 assert.match(page, /aria-live="polite"/);
 assert.match(layout, /noindex,nofollow,noarchive/);
 assert.match(layout, /name="referrer" content="no-referrer"/);
+assert.match(script, /dust-wave-admin-shell\/api-client\.js\?v=0\.5\.0/);
+assert.match(
+  script,
+  /dust-wave-admin-shell\/passwordless-session\.js\?v=0\.5\.0/
+);
 assert.match(script, /\/v1\/member\/auth\/start/);
 assert.match(script, /\/v1\/member\/auth\/exchange/);
 assert.match(script, /\/v1\/member\/session/);

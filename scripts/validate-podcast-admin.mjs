@@ -536,11 +536,19 @@ assert.doesNotMatch(
 assert.match(gulpfile, /copySharedAdminShell/);
 assert.equal(sharedPackage.name, '@dustwave/admin-shell');
 assert.equal(sharedPackage.version, '0.5.0');
-assert.match(
-  adminScript,
-  /dust-wave-admin-shell\/editor\.js\?v=0\.5\.0/,
-  'The localized editor module must be cache-busted with its exact shared package version'
+const sharedConsumerImports = [adminScript, analyticsScript].flatMap(
+  (source) => [...source.matchAll(
+    /from "\.\/dust-wave-admin-shell\/([^"]+)"/g
+  )].map((match) => match[1])
 );
+assert(sharedConsumerImports.length > 0);
+for (const specifier of sharedConsumerImports) {
+  assert.match(
+    specifier,
+    /\.js\?v=0\.5\.0$/,
+    `Shared Admin Shell imports must use the exact package cache key: ${specifier}`
+  );
+}
 
 const sharedSources = [
   'api-client.js',
