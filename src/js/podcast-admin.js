@@ -4385,6 +4385,7 @@ function startPodcastAdmin(root) {
       );
       if (requestId !== audioMasterRequestId) return;
       audioMasterState = payload;
+      setStatus(audioMasterApprovalStatus, "");
       setStatus(audioEnhancementStatus, "");
       await audioDerivatives.load(
         episodeId,

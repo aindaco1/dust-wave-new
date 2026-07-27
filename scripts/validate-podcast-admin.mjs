@@ -535,7 +535,7 @@ assert.match(adminStyles, /\.podcast-admin__audio-qc-findings/);
 assert.match(adminScript, /function loadAudioMaster/);
 assert.match(
   adminScript,
-  /audioMasterState = payload;\s+setStatus\(audioEnhancementStatus, ""\);/
+  /audioMasterState = payload;\s+setStatus\(audioMasterApprovalStatus, ""\);\s+setStatus\(audioEnhancementStatus, ""\);/
 );
 assert.match(adminScript, /function approveSourceWorkingMaster/);
 assert.match(adminScript, /function queueAudioEnhancementPreview/);
