@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict';
 import { access, readFile } from 'node:fs/promises';
 import path from 'node:path';
+import {
+  sharedAdminShellPackage,
+  sharedAdminShellVersion
+} from './lib/shared-admin-shell-version.mjs';
 
 const repositoryRoot = path.resolve(import.meta.dirname, '..');
 const adminTemplate = await readFile(
@@ -98,9 +102,7 @@ const sharedRoot = path.join(
   repositoryRoot,
   'shared/dust-wave-platform/packages/admin-shell'
 );
-const sharedPackage = JSON.parse(
-  await readFile(path.join(sharedRoot, 'package.json'), 'utf8')
-);
+const sharedPackage = sharedAdminShellPackage;
 
 assert.match(adminTemplate, /translationKey: podcastAdmin/);
 assert.match(adminTemplate, /i18nRuntime: true/);
@@ -550,17 +552,21 @@ assert.doesNotMatch(
 );
 assert.match(gulpfile, /copySharedAdminShell/);
 assert.equal(sharedPackage.name, '@dustwave/admin-shell');
-assert.equal(sharedPackage.version, '0.5.0');
+assert.equal(sharedPackage.version, '0.6.0');
 const sharedConsumerImports = [adminScript, analyticsScript].flatMap(
   (source) => [...source.matchAll(
     /from "\.\/dust-wave-admin-shell\/([^"]+)"/g
   )].map((match) => match[1])
 );
 assert(sharedConsumerImports.length > 0);
+const escapedSharedVersion = sharedAdminShellVersion.replace(
+  /[.*+?^${}()|[\]\\]/g,
+  '\\$&'
+);
 for (const specifier of sharedConsumerImports) {
   assert.match(
     specifier,
-    /\.js\?v=0\.5\.0$/,
+    new RegExp(`\\.js\\?v=${escapedSharedVersion}$`),
     `Shared Admin Shell imports must use the exact package cache key: ${specifier}`
   );
 }

@@ -1,7 +1,7 @@
 import {
   AdminApiClient as PodcastApiClient,
   AdminApiError as PodcastApiError
-} from "./dust-wave-admin-shell/api-client.js?v=0.5.0";
+} from "./dust-wave-admin-shell/api-client.js?v=0.6.0";
 
 const translate = globalThis.DustWaveI18n?.t || ((key) => key);
 const COUNTRY_CODES = (

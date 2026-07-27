@@ -1,28 +1,28 @@
-import { AdminApiClient, AdminApiError } from "./dust-wave-admin-shell/api-client.js?v=0.5.0";
+import { AdminApiClient, AdminApiError } from "./dust-wave-admin-shell/api-client.js?v=0.6.0";
 import {
   AdminDownloadError,
   requestCredentialedBlob,
   triggerBlobDownload
-} from "./dust-wave-admin-shell/credentialed-download.js?v=0.5.0";
-import { mountRichTextEditor } from "./dust-wave-admin-shell/editor.js?v=0.5.0";
+} from "./dust-wave-admin-shell/credentialed-download.js?v=0.6.0";
+import { mountRichTextEditor } from "./dust-wave-admin-shell/editor.js?v=0.6.0";
 import {
   markdownToEditorHtml
-} from "./dust-wave-admin-shell/editor-codec.js?v=0.5.0";
+} from "./dust-wave-admin-shell/editor-codec.js?v=0.6.0";
 import {
   buildTaggedMarketingUrl,
   createMarketingQr,
   drawQrCanvas,
   qrSvgMarkup,
   safeMarketingFilename
-} from "./dust-wave-admin-shell/marketing-assets.js?v=0.5.0";
+} from "./dust-wave-admin-shell/marketing-assets.js?v=0.6.0";
 import {
   mountSavedMarketingLinks
 } from "./podcast-admin-marketing-links.js";
 import {
   mountPodcastAnalytics
 } from "./podcast-admin-analytics.js";
-import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js?v=0.5.0";
-import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js?v=0.5.0";
+import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js?v=0.6.0";
+import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js?v=0.6.0";
 
 const TRANSCRIPT_CUES_PER_PAGE = 100;
 const MAXIMUM_ALIGNMENT_BENCHMARK_BYTES = 8 * 1024 * 1024;

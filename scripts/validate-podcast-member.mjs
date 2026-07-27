@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import {
+  sharedAdminShellImportPattern
+} from "./lib/shared-admin-shell-version.mjs";
 
 const [page, layout, script, buildPipeline] = await Promise.all([
   readFile(new URL("../src/podcasts/account.njk", import.meta.url), "utf8"),
@@ -20,10 +23,10 @@ assert.match(page, /maxlength="42"/);
 assert.match(page, /aria-live="polite"/);
 assert.match(layout, /noindex,nofollow,noarchive/);
 assert.match(layout, /name="referrer" content="no-referrer"/);
-assert.match(script, /dust-wave-admin-shell\/api-client\.js\?v=0\.5\.0/);
+assert.match(script, sharedAdminShellImportPattern("api-client"));
 assert.match(
   script,
-  /dust-wave-admin-shell\/passwordless-session\.js\?v=0\.5\.0/
+  sharedAdminShellImportPattern("passwordless-session")
 );
 assert.match(script, /\/v1\/member\/auth\/start/);
 assert.match(script, /\/v1\/member\/auth\/exchange/);

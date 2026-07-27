@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import {
+  sharedAdminShellImportPattern
+} from "./lib/shared-admin-shell-version.mjs";
 
 const [page, script, styles, configuration] = await Promise.all([
   readFile(new URL("../src/podcasts/show.njk", import.meta.url), "utf8"),
@@ -31,7 +34,7 @@ assert.match(page, /name="line1"/);
 assert.match(page, /data-podcast-checkout-quote/);
 assert.match(page, /aria-live="polite"/);
 assert.match(page, /src="\/js\/podcast-checkout\.js\?v=\{\{ assets\.version/);
-assert.match(script, /dust-wave-admin-shell\/api-client\.js\?v=0\.5\.0/);
+assert.match(script, sharedAdminShellImportPattern("api-client"));
 
 assert.match(script, /\/v1\/shows\/\$\{encodeURIComponent\(slug\)\}/);
 assert.match(script, /\/tax\/quote/);

@@ -1,7 +1,7 @@
 import {
   requestCredentialedBlob,
   triggerBlobDownload
-} from "./dust-wave-admin-shell/credentialed-download.js?v=0.5.0";
+} from "./dust-wave-admin-shell/credentialed-download.js?v=0.6.0";
 
 export function mountPodcastAnalytics({
   root,
