@@ -19,6 +19,13 @@ const adminScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin.js'),
   'utf8'
 );
+const audioDerivativeScript = await readFile(
+  path.join(
+    repositoryRoot,
+    'src/js/podcast-admin-audio-derivatives.js'
+  ),
+  'utf8'
+);
 const marketingLinksScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-marketing-links.js'),
   'utf8'
@@ -64,6 +71,7 @@ const spanishRuntime = spanishI18n.runtime.admin;
 const englishRuntimeText = JSON.stringify(englishRuntime);
 const staticRuntimeKeys = [
   ...adminScript.matchAll(/adminText\(\s*"([^"]+)"/g),
+  ...audioDerivativeScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...analyticsScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...marketingLinksScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...youtubeAudioRenditionScript.matchAll(/text\(\s*"([^"]+)"/g)
@@ -197,8 +205,14 @@ assert.match(adminTemplate, /data-podcast-audio-master/);
 assert.match(adminTemplate, /data-podcast-audio-master-approval/);
 assert.match(adminTemplate, /data-podcast-audio-enhancement-form/);
 assert.match(adminTemplate, /data-podcast-audio-enhancement-results/);
+assert.match(adminTemplate, /data-podcast-audio-derivatives/);
+assert.match(adminTemplate, /data-podcast-audio-derivative-results/);
 assert.match(englishWorkbenchText, /An enhancement preview is never a master/);
 assert.match(englishWorkbenchText, /Replacing an approved master makes transcript, chapter, clip, and readiness approvals stale/);
+assert.match(
+  englishWorkbenchText,
+  /renderer cannot replace the working master/
+);
 assert.match(adminTemplate, /data-podcast-transcript-workbench/);
 assert.match(adminTemplate, /data-podcast-transcription-workbench/);
 assert.match(adminTemplate, /data-podcast-transcription-queue/);
@@ -421,6 +435,10 @@ assert.match(
   /audio-master\/approve-source/
 );
 assert.match(adminScript, /audio-enhancement-previews/);
+assert.match(audioDerivativeScript, /audio-enhancement-derivatives/);
+assert.match(audioDerivativeScript, /async function queue/);
+assert.match(audioDerivativeScript, /async function approve/);
+assert.match(englishRuntimeText, /exact output bytes/);
 assert.match(adminScript, /baseRevision: Number\(state\.revision/);
 assert.match(adminScript, /acknowledgeExactSource/);
 assert.match(adminScript, /DWDigestAudio\?\.mount/);
@@ -433,6 +451,10 @@ assert.match(
 assert.match(
   adminScript,
   /audio-enhancements\\\/\[A-Za-z0-9_-\]\+\\\/media/
+);
+assert.match(
+  adminScript,
+  /audio-enhancement-derivatives\\\/\[A-Za-z0-9_-\]\+\\\/media/
 );
 assert.match(adminStyles, /\.podcast-admin__audio-enhancement-comparison/);
 assert.match(adminScript, /\/review-comments\//);

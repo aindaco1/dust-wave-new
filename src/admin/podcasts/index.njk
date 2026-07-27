@@ -327,6 +327,21 @@ eleventyComputed:
             </form>
 
             <div class="podcast-admin__audio-enhancement-results" data-podcast-audio-enhancement-results></div>
+
+            <section class="podcast-admin__form podcast-admin__audio-derivative-workbench" data-podcast-audio-derivatives>
+              <div class="podcast-admin__panel-heading podcast-admin__section-heading">
+                <div>
+                  <h3>{{ workbench.production.derivativeHeading }}</h3>
+                  <p>{{ workbench.production.derivativeIntro }}</p>
+                </div>
+                <p class="podcast-admin__pill">{{ workbench.production.fullQcPill }}</p>
+              </div>
+              <div class="podcast-admin__callout">
+                <p>{{ workbench.production.derivativeCallout }}</p>
+              </div>
+              <p class="podcast-admin__status" data-podcast-audio-derivative-status role="status" aria-live="polite"></p>
+              <div class="podcast-admin__audio-enhancement-results" data-podcast-audio-derivative-results></div>
+            </section>
           </section>
           <div class="podcast-admin__panel-heading podcast-admin__section-heading">
             <div>

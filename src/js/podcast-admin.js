@@ -27,6 +27,9 @@ import {
   mountYouTubeAudioRenditions
 } from "./podcast-admin-youtube-audio-renditions.js";
 import {
+  mountAudioEnhancementDerivatives
+} from "./podcast-admin-audio-derivatives.js";
+import {
   mountPodcastAnalytics
 } from "./podcast-admin-analytics.js";
 import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js?v=0.6.1";
@@ -522,6 +525,25 @@ function startPodcastAdmin(root) {
     setStatus,
     friendlyError,
     canQueue: () => canRunAudioQc
+  });
+  const audioDerivatives = mountAudioEnhancementDerivatives({
+    root,
+    client,
+    text: adminText,
+    setStatus,
+    friendlyError,
+    operationId,
+    buildPlayer: buildPrivatePodcastPlayer,
+    localizeCode: localizedCode,
+    canQueue: () => canRunAudioEnhancements,
+    canApprove: () => canApproveAudioMasters,
+    onApproved: async (episodeId) => {
+      await Promise.all([
+        loadAudioMaster(),
+        loadProductionReviews(),
+        loadPublicationReadiness(episodeId)
+      ]);
+    }
   });
   const podcastAnalytics = mountPodcastAnalytics({
     root,
@@ -1043,6 +1065,7 @@ function startPodcastAdmin(root) {
     releaseAudioMasterPlayers();
     audioMasterCurrent?.replaceChildren();
     audioEnhancementResults?.replaceChildren();
+    audioDerivatives.reset();
     if (audioMasterSummary) audioMasterSummary.textContent = "";
     if (audioMasterApprovalForm) audioMasterApprovalForm.hidden = true;
     if (audioEnhancementForm) audioEnhancementForm.hidden = true;
@@ -1944,6 +1967,7 @@ function startPodcastAdmin(root) {
       releaseAudioMasterPlayers();
       audioMasterCurrent?.replaceChildren();
       audioEnhancementResults?.replaceChildren();
+      audioDerivatives.reset();
       if (audioMasterSummary) {
         audioMasterSummary.textContent =
           adminText(
@@ -4291,8 +4315,12 @@ function startPodcastAdmin(root) {
   }
 
   function audioQcCardStatus(status) {
-    if (status === "succeeded" || status === "ready") return "ready";
-    if (status === "failed") return "failed";
+    if (
+      status === "succeeded"
+      || status === "ready"
+      || status === "approved"
+    ) return "ready";
+    if (status === "failed" || status === "stale") return "failed";
     return "pending";
   }
 
@@ -4311,6 +4339,7 @@ function startPodcastAdmin(root) {
       if (audioEnhancementForm) audioEnhancementForm.hidden = true;
       setStatus(audioMasterApprovalStatus, "");
       setStatus(audioEnhancementStatus, "");
+      audioDerivatives.reset();
       return;
     }
     if (audioMasterRefresh) audioMasterRefresh.disabled = true;
@@ -4323,6 +4352,11 @@ function startPodcastAdmin(root) {
       );
       if (requestId !== audioMasterRequestId) return;
       audioMasterState = payload;
+      await audioDerivatives.load(
+        episodeId,
+        Number(payload.state?.revision || 0)
+      );
+      if (requestId !== audioMasterRequestId) return;
       renderAudioMaster();
     } catch (error) {
       if (requestId !== audioMasterRequestId) return;
@@ -4359,7 +4393,10 @@ function startPodcastAdmin(root) {
           adminText("workingMasterRevision", {
             revision: formatInteger(current.revision)
           }),
-          humanizeCode(current.originKind || "source_original"),
+          localizedCode(
+            "originKind",
+            current.originKind || "source_original"
+          ),
           formatBytes(Number(current.objectBytes || 0)),
           adminText("approvedAt", { date: formatDate(current.approvedAt) })
         ].join(" · ")
@@ -4427,7 +4464,10 @@ function startPodcastAdmin(root) {
     heading.append(title, pill);
     const summary = document.createElement("p");
     summary.textContent = [
-      humanizeCode(master.originKind || "source_original"),
+      localizedCode(
+        "originKind",
+        master.originKind || "source_original"
+      ),
       formatBytes(Number(master.objectBytes || 0)),
       String(master.mimeType || "private audio")
     ].join(" · ");
@@ -4476,8 +4516,12 @@ function startPodcastAdmin(root) {
     const selected = select.value;
     select.replaceChildren(...presets.map((preset) =>
       new Option(
-        `${String(preset.label || preset.id)} — ${String(
-          preset.description || ""
+        `${localizedCode(
+          "audioPreset",
+          preset.id || preset.label
+        )} — ${adminText(
+          `audioPresetDescription_${String(preset.id || "")}`,
+          String(preset.description || "")
         )}`,
         String(preset.id || ""),
         false,
@@ -4635,12 +4679,12 @@ function startPodcastAdmin(root) {
     });
     const pill = document.createElement("span");
     pill.className = "podcast-admin__pill";
-    pill.textContent = status;
+    pill.textContent = localizedCode("jobStatus", status);
     heading.append(title, pill);
     const recipe = preview.recipe || {};
     const summary = document.createElement("p");
     summary.textContent = [
-      humanizeCode(recipe.presetId || "preset"),
+      localizedCode("audioPreset", recipe.presetId || "preset"),
       adminText("startsAt", {
         time: formatDurationMilliseconds(Number(recipe.previewStartMs || 0))
       }),
@@ -4664,6 +4708,13 @@ function startPodcastAdmin(root) {
         )
       );
       article.append(comparison);
+      const queue = audioDerivatives.queueButtonForPreview(preview);
+      if (queue) {
+        const actions = document.createElement("div");
+        actions.className = "podcast-admin__transcript-actions";
+        actions.append(queue);
+        article.append(actions);
+      }
     } else {
       const detail = document.createElement("p");
       detail.textContent = status === "failed"
@@ -4740,7 +4791,7 @@ function startPodcastAdmin(root) {
       mediaUrl.origin !== apiBase.origin
       || mediaUrl.search
       || mediaUrl.hash
-      || !/^\/v1\/admin\/audio-enhancements\/[A-Za-z0-9_-]+\/media\/(?:original|enhanced)$/.test(
+      || !/^\/v1\/admin\/(?:audio-enhancements\/[A-Za-z0-9_-]+\/media\/(?:original|enhanced)|audio-enhancement-derivatives\/[A-Za-z0-9_-]+\/media)$/.test(
         mediaUrl.pathname
       )
     ) {
@@ -4768,6 +4819,7 @@ function startPodcastAdmin(root) {
       const wave = card.querySelector(".wave");
       try { wave?.__wsRO?.disconnect?.(); } catch {}
     }
+    audioDerivatives.releasePlayers();
   }
 
   async function loadProductionReviews() {

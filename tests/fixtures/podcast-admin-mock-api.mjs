@@ -138,6 +138,30 @@ const audioMasterPayload = {
       },
       warning:
         'Private preview only <script id="qa-warning-injection">bad()</script>'
+    },
+    {
+      id: "enhance_mock",
+      status: "ready",
+      recipe: {
+        presetId: "dialogue-gentle-v1",
+        previewStartMs: 15_000,
+        previewDurationMs: 45_000
+      },
+      original: {
+        mediaUrl:
+          "/v1/admin/audio-enhancements/enhance_mock/media/original",
+        bytes: 1_080_000,
+        sha256: sha("c"),
+        durationMs: 45_000
+      },
+      enhanced: {
+        mediaUrl:
+          "/v1/admin/audio-enhancements/enhance_mock/media/enhanced",
+        bytes: 1_080_000,
+        sha256: sha("d"),
+        durationMs: 45_000
+      },
+      warning: "Private preview only; it cannot become a master."
     }
   ],
   presets: [
@@ -162,6 +186,65 @@ const audioMasterPayload = {
     mode: "staging_manual"
   }
 };
+
+let audioEnhancementDerivatives = [
+  {
+    id: "derivative_browser_fixture",
+    episodeId: episode.id,
+    selectedPreviewId: "enhance_mock",
+    sourceMasterId: "master_mock",
+    sourceQualityControlRunId: "qc_mock",
+    recipe: {
+      schemaVersion: "audio-enhancement-derivative-recipe-v1",
+      presetId: "dialogue-gentle-v1",
+      targetIntegratedLufs: -19,
+      maximumTruePeakDbtp: -1
+    },
+    recipeSha256: sha("4"),
+    processorManifestSha256: sha("5"),
+    status: "ready",
+    current: true,
+    output: {
+      uploadId: "upload_derivative_browser_fixture",
+      objectBytes: 4_320_000,
+      etag: '"derivative-browser-etag"',
+      sha256: sha("6"),
+      durationMs: 180_000,
+      mimeType: "audio/mpeg",
+      mediaUrl:
+        "/v1/admin/audio-enhancement-derivatives/"
+        + "derivative_browser_fixture/media",
+      downloadUrl:
+        "/v1/admin/audio-enhancement-derivatives/"
+        + "derivative_browser_fixture/media?download=1"
+    },
+    qualityControl: {
+      runId: "qc_derivative_browser_fixture",
+      status: "succeeded",
+      policyRevision: 1,
+      currentPolicyRevision: 1,
+      policyCurrent: true,
+      sourceSha256: sha("6"),
+      outputDigestMatches: true,
+      reportSha256: sha("7"),
+      blockerCount: 0,
+      warningCount: 1,
+      completedAt: "2026-07-26T12:05:00.000Z"
+    },
+    approvable: true,
+    processorVersion:
+      "dustwave-audio-enhancement-derivative-1 (ffmpeg fixture)",
+    processorReportSha256: sha("8"),
+    failureCode: null,
+    approvalReason:
+      'Literal derivative evidence <img id="qa-derivative-injection" src=x>.',
+    requestedAt: "2026-07-26T12:00:00.000Z",
+    completedAt: "2026-07-26T12:04:00.000Z",
+    approvedAt: null,
+    processor: null,
+    environment: "staging"
+  }
+];
 
 let youtubeAudioRenditions = [
   {
@@ -718,6 +801,89 @@ function responseFor(request) {
   if (
     request.method === "GET"
     && path
+      === `/v1/admin/episodes/${episode.id}/audio-enhancement-derivatives`
+  ) {
+    return json({
+      derivatives: audioEnhancementDerivatives,
+      processor: { available: true, mode: "staging_manual" },
+      safeguards: {
+        selectedReadyPreviewRequired: true,
+        currentMasterSnapshotRequired: true,
+        fullLengthQualityControlRequired: true,
+        explicitSuperAdminApprovalRequired: true,
+        rendererCannotReplaceMaster: true
+      }
+    });
+  }
+  if (
+    request.method === "POST"
+    && path
+      === `/v1/admin/episodes/${episode.id}/audio-enhancement-derivatives`
+  ) {
+    const queued = {
+      ...audioEnhancementDerivatives[0],
+      id: "derivative_browser_queued",
+      status: "queued",
+      output: null,
+      qualityControl: null,
+      approvable: false,
+      processorVersion: null,
+      processorReportSha256: null,
+      requestedAt: new Date().toISOString(),
+      completedAt: null,
+      processor: null
+    };
+    audioEnhancementDerivatives = [
+      queued,
+      ...audioEnhancementDerivatives.filter(({ id }) => id !== queued.id)
+    ];
+    return json({
+      derivative: queued,
+      processor: {
+        workflow: "process-audio-enhancement-derivative.yml",
+        jobId: queued.id,
+        manifestSha256: queued.processorManifestSha256
+      },
+      idempotent: false
+    }, 202);
+  }
+  if (
+    request.method === "POST"
+    && path
+      === "/v1/admin/audio-enhancement-derivatives/"
+        + "derivative_browser_fixture/approve"
+  ) {
+    audioEnhancementDerivatives = audioEnhancementDerivatives.map(
+      (derivative) => derivative.id === "derivative_browser_fixture"
+        ? {
+            ...derivative,
+            status: "approved",
+            approvable: false,
+            approvedAt: new Date().toISOString()
+          }
+        : derivative
+    );
+    audioMasterPayload.state.revision = 2;
+    audioMasterPayload.state.currentMasterId =
+      "master_derivative_browser_fixture";
+    audioMasterPayload.current = {
+      id: "master_derivative_browser_fixture",
+      revision: 2,
+      originKind: "enhanced_derivative",
+      objectBytes: 4_320_000,
+      mimeType: "audio/mpeg",
+      sourceSha256: sha("6"),
+      qualityControlReportSha256: sha("7"),
+      approvalReason: "Browser fixture approval.",
+      approvedAt: new Date().toISOString()
+    };
+    return json({
+      master: audioMasterPayload.current
+    });
+  }
+  if (
+    request.method === "GET"
+    && path
       === `/v1/admin/episodes/${episode.id}/youtube-audio-renditions`
   ) {
     return json({
@@ -891,6 +1057,17 @@ function responseFor(request) {
     return {
       status: 200,
       contentType: "audio/wav",
+      body: silentWav()
+    };
+  }
+  if (
+    request.method === "GET"
+    && path.startsWith("/v1/admin/audio-enhancement-derivatives/")
+    && path.endsWith("/media")
+  ) {
+    return {
+      status: 200,
+      contentType: "audio/mpeg",
       body: silentWav()
     };
   }

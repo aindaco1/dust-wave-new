@@ -977,6 +977,7 @@
 [data-podcast-audio-master-refresh],
 [data-podcast-audio-master-approval] .btn,
 [data-podcast-audio-enhancement-form] .btn,
+[data-podcast-audio-derivatives] .btn,
 [data-podcast-youtube-audio-refresh],
 [data-podcast-youtube-audio-queue] {
   min-height: var(--dw-admin-control-min-height);
@@ -986,6 +987,7 @@
 [data-podcast-audio-master-summary],
 [data-podcast-audio-master-approval-status],
 [data-podcast-audio-enhancement-status],
+[data-podcast-audio-derivative-status],
 [data-podcast-youtube-audio-summary],
 [data-podcast-youtube-audio-status] {
   overflow-wrap: anywhere;
