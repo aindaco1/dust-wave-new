@@ -38,6 +38,10 @@ const rssImportScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-rss-import.js'),
   'utf8'
 );
+const catalogScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-catalog.js'),
+  'utf8'
+);
 const analyticsScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-analytics.js'),
   'utf8'
@@ -90,6 +94,7 @@ const staticRuntimeKeys = [
   ...audioDerivativeScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...analyticsScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...marketingLinksScript.matchAll(/text\(\s*"([^"]+)"/g),
+  ...catalogScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...rssImportScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...youtubeAudioRenditionScript.matchAll(/text\(\s*"([^"]+)"/g)
 ].map((match) => match[1]);
@@ -193,6 +198,33 @@ assert.doesNotMatch(
   /innerHTML/,
   "Untrusted RSS preview content must use DOM text nodes"
 );
+assert.match(
+  catalogScript,
+  /localizedCode\("showStatus", show\.status\)/
+);
+assert.match(
+  catalogScript,
+  /localizedCode\("episodeStatus", episode\.status\)/
+);
+assert.match(
+  catalogScript,
+  /localizedCode\("episodeAccess", episode\.access\)/
+);
+assert.match(
+  catalogScript,
+  /localizedCode\("mediaStatus", episode\.mediaStatus\)/
+);
+assert.match(
+  catalogScript,
+  /localizedCode\("language", episode\.sourceLanguage \|\| "not_set"\)/
+);
+assert.match(adminScript, /renderShowCatalog\(\{/);
+assert.match(adminScript, /renderEpisodeCatalog\(\{/);
+assert.equal(spanishRuntime.showStatus_active, "Activo");
+assert.equal(spanishRuntime.episodeStatus_draft, "Borrador");
+assert.equal(spanishRuntime.episodeAccess_early_access, "Acceso anticipado");
+assert.equal(spanishRuntime.mediaStatus_processing, "Procesando");
+assert.equal(spanishRuntime.language_es, "Español");
 assert.match(adminTemplate, /data-podcast-ad-plan-form/);
 assert.match(adminTemplate, /data-podcast-ad-plan-result/);
 assert.match(adminTemplate, /data-podcast-distribution/);

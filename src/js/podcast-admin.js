@@ -19,6 +19,10 @@ import {
   mountSavedMarketingLinks
 } from "./podcast-admin-marketing-links.js";
 import {
+  renderEpisodeCatalog,
+  renderShowCatalog
+} from "./podcast-admin-catalog.js";
+import {
   mountRssImportPreview
 } from "./podcast-admin-rss-import.js";
 import {
@@ -1171,23 +1175,14 @@ function startPodcastAdmin(root) {
   }
 
   function renderShows() {
-    showCards.replaceChildren(...shows.map((show) => {
-      const card = document.createElement("article");
-      card.className = "podcast-admin__card";
-      card.innerHTML = `
-        <p class="podcast-admin__pill">${escapeHtml(show.status)}</p>
-        <h3>${escapeHtml(show.title)}</h3>
-        <p>${escapeHtml(show.description)}</p>
-        <dl>
-          <div><dt>${escapeHtml(adminText("episodesLabel"))}</dt><dd>${Number(show.episodeCount || 0)}</dd></div>
-          <div><dt>${escapeHtml(adminText("earlyAccessLabel"))}</dt><dd>${show.earlyAccessDays ?? "—"} ${escapeHtml(adminText("daysUnit"))}</dd></div>
-          <div><dt>${escapeHtml(adminText("premiumLabel"))}</dt><dd>${escapeHtml(show.premiumEnabled
-            ? adminText("configured")
-            : adminText("off"))}</dd></div>
-        </dl>
-        <p><a href="${escapeAttribute(show.canonicalUrl)}">${escapeHtml(adminText("canonicalShowPage"))}</a></p>`;
-      return card;
-    }));
+    renderShowCatalog({
+      target: showCards,
+      shows,
+      text: adminText,
+      localizedCode,
+      escapeHtml,
+      escapeAttribute
+    });
   }
 
   function fillShowSelect() {
@@ -1866,33 +1861,15 @@ function startPodcastAdmin(root) {
   }
 
   function renderEpisodes() {
-    if (!episodes.length) {
-      const empty = document.createElement("p");
-      empty.className = "podcast-admin__empty";
-      empty.textContent = adminText(
-        "noEpisodeRecords"
-      );
-      episodeList.replaceChildren(empty);
-      return;
-    }
-    episodeList.replaceChildren(...episodes.map((episode) => {
-      const row = document.createElement("article");
-      row.className = "podcast-admin__episode";
-      const publishable = episode.mediaStatus === "ready";
-      row.innerHTML = `
-        <div>
-          <p class="podcast-admin__pill">${escapeHtml(episode.status)} · ${escapeHtml(episode.access)}</p>
-          <h3>${escapeHtml(episode.title)}</h3>
-          <p>${escapeHtml(episode.summary)}</p>
-          <p>${escapeHtml(adminText("mediaLabel"))}: ${escapeHtml(episode.mediaStatus)}${episode.audioFilename ? ` · ${escapeHtml(episode.audioFilename)}` : ""}</p>
-          <p>${escapeHtml(adminText("sourceLanguageLabel"))}: ${escapeHtml(humanizeCode(episode.sourceLanguage || "not set"))} · ${escapeHtml(adminText("revisionLabel"))}: ${Number(episode.publicationRevision || 0)} · ${escapeHtml(adminText("publicLabel"))}: ${escapeHtml(formatDate(episode.publicAt))}</p>
-        </div>
-        <div class="podcast-admin__episode-actions">
-          <a class="btn btn-outline-light" href="${escapeAttribute(episode.canonicalUrl)}">${escapeHtml(adminText("page"))}</a>
-          <button class="btn btn-danger" type="button" data-publish-episode="${escapeAttribute(episode.id)}" ${publishable ? "" : "disabled"}>${escapeHtml(adminText("publish"))}</button>
-        </div>`;
-      return row;
-    }));
+    renderEpisodeCatalog({
+      target: episodeList,
+      episodes,
+      text: adminText,
+      localizedCode,
+      escapeHtml,
+      escapeAttribute,
+      formatDate
+    });
   }
 
   function fillEpisodeSelects() {
@@ -2066,7 +2043,7 @@ function startPodcastAdmin(root) {
       ),
       ...episodes.map((episode) =>
         new Option(
-          `${episode.title} — ${episode.status}`,
+        `${episode.title} — ${localizedCode("episodeStatus", episode.status)}`,
           episode.id,
           false,
           episode.id === previousValue
