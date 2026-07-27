@@ -42,6 +42,10 @@ assert.match(playerScript, /playerLanguage\.toLowerCase\(\)\.startsWith\('es'\)/
 assert.match(playerScript, /seekTo\(playerId, seconds/);
 assert.match(playerScript, /async mount\(scope = document\)/);
 assert.match(playerScript, /card\.dataset\.audioCredentials === "include"/);
+assert.match(
+  playerScript,
+  /credentials: card\.dataset\.audioCredentials === "include"[\s\S]*\? "include"[\s\S]*: "same-origin"/
+);
 assert.match(playerScript, /dataset\.analyticsEndpoint/);
 assert.match(playerScript, /event: "engaged_play"/);
 assert.match(playerScript, /event: "web_player_completion"/);

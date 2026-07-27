@@ -88,8 +88,14 @@ for (const show of shows) {
     );
     if (episode.peaksUrl) {
       assert(
-        typeof episode.peaksUrl === 'string' && episode.peaksUrl.startsWith('/peaks/'),
-        `${show.slug}/${episode.slug}: peaksUrl must use the existing /peaks/ player contract`
+        typeof episode.peaksUrl === 'string'
+          && (
+            episode.peaksUrl.startsWith('/peaks/')
+            || /^https:\/\/media\.dustwave\.xyz\/episodes\/[A-Za-z0-9_-]+\/peaks$/.test(
+              episode.peaksUrl
+            )
+          ),
+        `${show.slug}/${episode.slug}: peaksUrl must use a bounded first-party player-peaks endpoint`
       );
     }
   }
@@ -169,6 +175,7 @@ for (const episode of publications) {
   if (episode.pageMode === 'full_episode') {
     assert.match(episode.audioUrl, /^https:\/\/media\.dustwave\.xyz\/episodes\/[A-Za-z0-9_-]+\/audio$/);
     assert.match(episode.downloadUrl, /^https:\/\/media\.dustwave\.xyz\/episodes\/[A-Za-z0-9_-]+\/audio\?download=1$/);
+    assert.match(episode.peaksUrl, /^https:\/\/media\.dustwave\.xyz\/episodes\/[A-Za-z0-9_-]+\/peaks$/);
     assert.match(episode.transcriptUrl, /^https:\/\/feeds\.dustwave\.xyz\/v1\/shows\/[a-z0-9-]+\/episodes\/[a-z0-9-]+\/transcripts$/);
     assert.match(episode.chapterUrl, /^https:\/\/feeds\.dustwave\.xyz\/v1\/shows\/[a-z0-9-]+\/episodes\/[a-z0-9-]+\/chapters\.json$/);
     assert(Number.isSafeInteger(episode.duration) && episode.duration > 0);

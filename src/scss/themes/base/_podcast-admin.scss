@@ -978,6 +978,9 @@
 [data-podcast-audio-master-approval] .btn,
 [data-podcast-audio-enhancement-form] .btn,
 [data-podcast-audio-derivatives] .btn,
+[data-podcast-delivery-audio-refresh],
+[data-podcast-delivery-audio-queue],
+[data-podcast-delivery-audio-results] .btn,
 [data-podcast-youtube-audio-refresh],
 [data-podcast-youtube-audio-queue] {
   min-height: var(--dw-admin-control-min-height);
@@ -988,11 +991,14 @@
 [data-podcast-audio-master-approval-status],
 [data-podcast-audio-enhancement-status],
 [data-podcast-audio-derivative-status],
+[data-podcast-delivery-audio-summary],
+[data-podcast-delivery-audio-status],
 [data-podcast-youtube-audio-summary],
 [data-podcast-youtube-audio-status] {
   overflow-wrap: anywhere;
 }
 
+[data-podcast-delivery-audio-results] code,
 [data-podcast-youtube-audio-results] code {
   color: #fff;
   display: block;
@@ -1010,7 +1016,8 @@
 
 .podcast-admin__audio-master-current,
 .podcast-admin__audio-master-approval,
-.podcast-admin__audio-enhancement-form {
+.podcast-admin__audio-enhancement-form,
+.podcast-admin__delivery-audio {
   margin-top: var(--dw-admin-space-md);
 }
 

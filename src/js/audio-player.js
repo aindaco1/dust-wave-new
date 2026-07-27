@@ -383,7 +383,12 @@ async function createWaveForCard(card, opts={eager:false}) {
 	if (peaksUrl) {
 		try {
 		// default cache behavior is fine; 'force-cache' can mask updates
-		const res = await fetch(peaksUrl, { cache: 'default' });
+		const res = await fetch(peaksUrl, {
+			cache: 'default',
+			credentials: card.dataset.audioCredentials === "include"
+				? "include"
+				: "same-origin"
+		});
 		if (res.ok) {
 			const j = await res.json();
 			precomputedPeaks = j.data || j.samples || j.peaks || undefined;

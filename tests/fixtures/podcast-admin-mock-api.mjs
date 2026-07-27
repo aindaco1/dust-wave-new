@@ -246,6 +246,47 @@ let audioEnhancementDerivatives = [
   }
 ];
 
+let deliveryAudioJobs = [
+  {
+    id: "delivery_audio_browser_fixture",
+    episodeId: episode.id,
+    sourceMasterId: "master_mock",
+    current: true,
+    streamProfile: "mp3-44100-stereo-cbr128-frame-v1",
+    status: "ready",
+    failureCode: null,
+    requestedAt: "2026-07-26T12:00:00.000Z",
+    completedAt: "2026-07-26T12:03:00.000Z",
+    approvedAt: null,
+    approvalReason: null,
+    output: {
+      bytes: 2_880_000,
+      sha256: sha("c"),
+      durationMs: 180_000,
+      mimeType: "audio/mpeg",
+      mediaPath:
+        "/v1/admin/delivery-audio-jobs/delivery_audio_browser_fixture/media",
+      downloadPath:
+        "/v1/admin/delivery-audio-jobs/delivery_audio_browser_fixture/media?download=1"
+    },
+    peaks: {
+      bytes: 256,
+      sha256: sha("d"),
+      length: 8,
+      path:
+        "/v1/admin/delivery-audio-jobs/delivery_audio_browser_fixture/peaks"
+    },
+    processor: {
+      version: "dustwave-delivery-audio-1 (ffmpeg browser fixture)",
+      reportSha256: sha("e")
+    },
+    approval: {
+      eligible: true,
+      approvedCurrent: false
+    }
+  }
+];
+
 let youtubeAudioRenditions = [
   {
     id:
@@ -883,6 +924,75 @@ function responseFor(request) {
   }
   if (
     request.method === "GET"
+    && path === `/v1/admin/episodes/${episode.id}/delivery-audio-jobs`
+  ) {
+    return json({
+      jobs: deliveryAudioJobs,
+      processor: { available: true, mode: "staging_manual" },
+      safeguards: {
+        currentWorkingMasterRequired: true,
+        normalizedStreamProfile: "mp3-44100-stereo-cbr128-frame-v1",
+        fullyDecodedAudioRequired: true,
+        checksumBoundPeaksRequired: true,
+        explicitRecentSuperAdminApprovalRequired: true,
+        productionQueueDisabled: true
+      }
+    });
+  }
+  if (
+    request.method === "POST"
+    && path === `/v1/admin/episodes/${episode.id}/delivery-audio-jobs`
+  ) {
+    const queued = {
+      ...deliveryAudioJobs[0],
+      id: "delivery_audio_browser_queued",
+      status: "queued",
+      output: null,
+      peaks: null,
+      processor: { version: null, reportSha256: null },
+      approval: { eligible: false, approvedCurrent: false },
+      requestedAt: new Date().toISOString(),
+      completedAt: null
+    };
+    deliveryAudioJobs = [
+      queued,
+      ...deliveryAudioJobs.filter(({ id }) => id !== queued.id)
+    ];
+    return json({
+      job: queued,
+      processor: {
+        workflow: "process-delivery-audio.yml",
+        jobId: queued.id,
+        manifestSha256: sha("f")
+      },
+      idempotent: false
+    }, 202);
+  }
+  if (
+    request.method === "POST"
+    && path
+      === "/v1/admin/delivery-audio-jobs/"
+        + "delivery_audio_browser_fixture/approve"
+  ) {
+    deliveryAudioJobs = deliveryAudioJobs.map((job) =>
+      job.id === "delivery_audio_browser_fixture"
+        ? {
+            ...job,
+            status: "approved",
+            approvedAt: new Date().toISOString(),
+            approval: { eligible: false, approvedCurrent: true }
+          }
+        : job
+    );
+    return json({
+      job: deliveryAudioJobs.find(
+        ({ id }) => id === "delivery_audio_browser_fixture"
+      ),
+      idempotent: false
+    });
+  }
+  if (
+    request.method === "GET"
     && path
       === `/v1/admin/episodes/${episode.id}/youtube-audio-renditions`
   ) {
@@ -1070,6 +1180,33 @@ function responseFor(request) {
       contentType: "audio/mpeg",
       body: silentWav()
     };
+  }
+  if (
+    request.method === "GET"
+    && path.startsWith("/v1/admin/delivery-audio-jobs/")
+    && path.endsWith("/media")
+  ) {
+    return {
+      status: 200,
+      contentType: "audio/mpeg",
+      body: silentWav()
+    };
+  }
+  if (
+    request.method === "GET"
+    && path.startsWith("/v1/admin/delivery-audio-jobs/")
+    && path.endsWith("/peaks")
+  ) {
+    return json({
+      schemaVersion: "dustwave-player-peaks-v1",
+      version: 2,
+      channels: 1,
+      sample_rate: 16_000,
+      samples_per_pixel: 1_000,
+      bits: 8,
+      length: 8,
+      data: [-2, 2, -8, 8, -16, 16, -32, 32, -48, 48, -24, 24, -8, 8, -2, 2]
+    });
   }
   return json({ error: "mock_route_not_found", method: request.method, path }, 404);
 }

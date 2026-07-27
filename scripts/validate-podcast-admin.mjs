@@ -26,6 +26,10 @@ const audioDerivativeScript = await readFile(
   ),
   'utf8'
 );
+const deliveryAudioScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-delivery-audio.js'),
+  'utf8'
+);
 const marketingLinksScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-marketing-links.js'),
   'utf8'
@@ -207,11 +211,18 @@ assert.match(adminTemplate, /data-podcast-audio-enhancement-form/);
 assert.match(adminTemplate, /data-podcast-audio-enhancement-results/);
 assert.match(adminTemplate, /data-podcast-audio-derivatives/);
 assert.match(adminTemplate, /data-podcast-audio-derivative-results/);
+assert.match(adminTemplate, /data-podcast-delivery-audio/);
+assert.match(adminTemplate, /data-podcast-delivery-audio-queue/);
+assert.match(adminTemplate, /data-podcast-delivery-audio-results/);
 assert.match(englishWorkbenchText, /An enhancement preview is never a master/);
 assert.match(englishWorkbenchText, /Replacing an approved master makes transcript, chapter, clip, and readiness approvals stale/);
 assert.match(
   englishWorkbenchText,
   /renderer cannot replace the working master/
+);
+assert.match(
+  englishWorkbenchText,
+  /validates every complete MP3 frame/
 );
 assert.match(adminTemplate, /data-podcast-transcript-workbench/);
 assert.match(adminTemplate, /data-podcast-transcription-workbench/);
@@ -443,7 +454,7 @@ assert.match(adminScript, /baseRevision: Number\(state\.revision/);
 assert.match(adminScript, /acknowledgeExactSource/);
 assert.match(adminScript, /DWDigestAudio\?\.mount/);
 assert.match(adminScript, /audio\.crossOrigin = "use-credentials"/);
-assert.match(adminScript, /function checkedAudioEnhancementMediaUrl/);
+assert.match(adminScript, /function checkedPrivatePodcastMediaUrl/);
 assert.match(
   adminScript,
   /mediaUrl\.origin !== apiBase\.origin/
@@ -456,6 +467,16 @@ assert.match(
   adminScript,
   /audio-enhancement-derivatives\\\/\[A-Za-z0-9_-\]\+\\\/media/
 );
+assert.match(
+  adminScript,
+  /delivery-audio-jobs\\\/\[A-Za-z0-9_-\]\+\\\/peaks/
+);
+assert.match(deliveryAudioScript, /delivery-audio-jobs/);
+assert.match(deliveryAudioScript, /workingMasterId: currentMaster\.id/);
+assert.match(deliveryAudioScript, /contract: "deliveryAudio"/);
+assert.match(deliveryAudioScript, /async function approve/);
+assert.match(deliveryAudioScript, /exactDeliveryAudioAck/);
+assert.match(adminStyles, /\[data-podcast-delivery-audio-queue\]/);
 assert.match(adminStyles, /\.podcast-admin__audio-enhancement-comparison/);
 assert.match(adminScript, /\/review-comments\//);
 assert.match(adminScript, /function publicationGateLabel/);

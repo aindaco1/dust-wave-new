@@ -345,6 +345,30 @@ eleventyComputed:
           </section>
           <div class="podcast-admin__panel-heading podcast-admin__section-heading">
             <div>
+              <h2>{{ workbench.production.deliveryAudioHeading }}</h2>
+              <p>{{ workbench.production.deliveryAudioIntro }}</p>
+            </div>
+            <p class="podcast-admin__pill">{{ workbench.production.deliveryAudioPill }}</p>
+          </div>
+          <div class="podcast-admin__callout">
+            <p>{{ workbench.production.deliveryAudioCallout }}</p>
+          </div>
+          <section class="podcast-admin__form podcast-admin__delivery-audio" data-podcast-delivery-audio aria-label="{{ workbench.production.deliveryAudioLabel }}">
+            <div class="podcast-admin__field-grid">
+              <label>{{ workbench.common.episode }}
+                <select data-podcast-delivery-audio-episode required></select>
+              </label>
+            </div>
+            <div class="podcast-admin__transcript-actions">
+              <button class="btn btn-outline-light" type="button" data-podcast-delivery-audio-refresh>{{ workbench.production.deliveryAudioRefresh }}</button>
+              <button class="btn btn-danger" type="button" data-podcast-delivery-audio-queue disabled>{{ workbench.production.deliveryAudioQueue }}</button>
+            </div>
+            <p class="podcast-admin__transcript-meta" data-podcast-delivery-audio-summary aria-live="polite">{{ workbench.production.deliveryAudioChoose }}</p>
+            <p class="podcast-admin__status" data-podcast-delivery-audio-status role="status" aria-live="polite"></p>
+            <div class="podcast-admin__audio-enhancement-results" data-podcast-delivery-audio-results></div>
+          </section>
+          <div class="podcast-admin__panel-heading podcast-admin__section-heading">
+            <div>
               <h2>{{ workbench.production.youtubeAudioHeading }}</h2>
               <p>{{ workbench.production.youtubeAudioIntro }}</p>
             </div>

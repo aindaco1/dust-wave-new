@@ -30,6 +30,9 @@ import {
   mountAudioEnhancementDerivatives
 } from "./podcast-admin-audio-derivatives.js";
 import {
+  mountDeliveryAudio
+} from "./podcast-admin-delivery-audio.js";
+import {
   mountPodcastAnalytics
 } from "./podcast-admin-analytics.js";
 import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js?v=0.6.1";
@@ -526,6 +529,24 @@ function startPodcastAdmin(root) {
     friendlyError,
     canQueue: () => canRunAudioQc
   });
+  const deliveryAudio = mountDeliveryAudio({
+    root,
+    client,
+    text: adminText,
+    setStatus,
+    friendlyError,
+    operationId,
+    buildPlayer: buildPrivatePodcastPlayer,
+    localizeCode: localizedCode,
+    canQueue: () => canRunAudioQc,
+    canApprove: () => canApproveAudioMasters,
+    onApproved: async (episodeId) => {
+      await Promise.all([
+        loadEpisodes(),
+        loadPublicationReadiness(episodeId)
+      ]);
+    }
+  });
   const audioDerivatives = mountAudioEnhancementDerivatives({
     root,
     client,
@@ -570,6 +591,7 @@ function startPodcastAdmin(root) {
         loadAlignmentBenchmarks();
         loadChapters();
         loadProductionReviews();
+        deliveryAudio.refresh();
         youtubeAudioRenditions.refresh();
       }
       if (tab === "distribution") loadDistribution();
@@ -971,6 +993,7 @@ function startPodcastAdmin(root) {
     adminIdentity = null;
     campaigns = [];
     podcastAnalytics.reset();
+    deliveryAudio.reset();
     distributionRequestId += 1;
     billingRequestId += 1;
     subscriberRows = [];
@@ -1851,6 +1874,7 @@ function startPodcastAdmin(root) {
   }
 
   function fillEpisodeSelects() {
+    deliveryAudio.setEpisodes(episodes);
     youtubeAudioRenditions.setEpisodes(episodes);
     for (const select of [
       uploadForm?.elements.episodeId,
@@ -4731,7 +4755,12 @@ function startPodcastAdmin(root) {
     return article;
   }
 
-  function buildPrivatePodcastPlayer(playerId, title, mediaPath) {
+  function buildPrivatePodcastPlayer(
+    playerId,
+    title,
+    mediaPath,
+    options = {}
+  ) {
     const section = document.createElement("section");
     section.className = "podcast-admin__audio-enhancement-player";
     const heading = document.createElement("h4");
@@ -4743,11 +4772,20 @@ function startPodcastAdmin(root) {
     const body = document.createElement("div");
     const wave = document.createElement("div");
     const safeId = String(playerId).replace(/[^A-Za-z0-9_-]/g, "-");
-    const mediaUrl = checkedAudioEnhancementMediaUrl(mediaPath);
+    const mediaUrl = checkedPrivatePodcastMediaUrl(
+      mediaPath,
+      options.contract || "enhancementAudio"
+    );
     wave.className = "wave";
     wave.id = `wave_${safeId}`;
     wave.dataset.audioId = `audio_${safeId}`;
     wave.dataset.audioSrc = mediaUrl;
+    if (options.peaksPath) {
+      wave.dataset.peaksSrc = checkedPrivatePodcastMediaUrl(
+        options.peaksPath,
+        "deliveryPeaks"
+      );
+    }
     const audio = document.createElement("audio");
     audio.id = `audio_${safeId}`;
     audio.preload = "none";
@@ -4784,16 +4822,22 @@ function startPodcastAdmin(root) {
     return section;
   }
 
-  function checkedAudioEnhancementMediaUrl(mediaPath) {
+  function checkedPrivatePodcastMediaUrl(mediaPath, contract) {
     const apiBase = new URL(`${apiOrigin.replace(/\/+$/, "")}/`);
     const mediaUrl = new URL(String(mediaPath || ""), apiBase);
+    const pathPatterns = {
+      enhancementAudio:
+        /^\/v1\/admin\/(?:audio-enhancements\/[A-Za-z0-9_-]+\/media\/(?:original|enhanced)|audio-enhancement-derivatives\/[A-Za-z0-9_-]+\/media)$/,
+      deliveryAudio:
+        /^\/v1\/admin\/delivery-audio-jobs\/[A-Za-z0-9_-]+\/media$/,
+      deliveryPeaks:
+        /^\/v1\/admin\/delivery-audio-jobs\/[A-Za-z0-9_-]+\/peaks$/
+    };
     if (
       mediaUrl.origin !== apiBase.origin
       || mediaUrl.search
       || mediaUrl.hash
-      || !/^\/v1\/admin\/(?:audio-enhancements\/[A-Za-z0-9_-]+\/media\/(?:original|enhanced)|audio-enhancement-derivatives\/[A-Za-z0-9_-]+\/media)$/.test(
-        mediaUrl.pathname
-      )
+      || !pathPatterns[contract]?.test(mediaUrl.pathname)
     ) {
       throw new Error(adminText("invalidEnhancementUrl"));
     }
