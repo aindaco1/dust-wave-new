@@ -154,7 +154,14 @@ const languageRuntime = await readFile(
   path.join(sourceRoot, "js", "site-i18n.js"),
   "utf8"
 );
-assert.match(languageRuntime, /admin_login\|code\|magic\|t\|token/);
+assert.match(
+  languageRuntime,
+  /admin_login\|code\|magic\(\?:-link\)\?\|t\|token/
+);
+assert.match(
+  languageRuntime,
+  /code\|magic\(\?:-link\)\?\|token/
+);
 assert.match(languageRuntime, /protectedPage[\s\S]+window\.location\.hash/);
 
 const sharePanel = await readFile(

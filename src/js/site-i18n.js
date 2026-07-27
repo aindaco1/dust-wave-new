@@ -33,11 +33,14 @@
       );
     const params = new URLSearchParams(window.location.search);
     for (const key of Array.from(params.keys())) {
-      if (/^(?:admin_login|code|magic|t|token)$/i.test(key)) params.delete(key);
+      if (
+        /^(?:admin_login|code|magic(?:-link)?|t|token)$/i.test(key)
+      ) params.delete(key);
     }
     const search = params.toString();
     const hash =
-      protectedPage && /(?:code|magic|token)=/i.test(window.location.hash)
+      protectedPage
+        && /(?:code|magic(?:-link)?|token)=/i.test(window.location.hash)
         ? ""
         : window.location.hash;
     return `${search ? `?${search}` : ""}${hash}`;
