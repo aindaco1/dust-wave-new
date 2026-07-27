@@ -69,6 +69,51 @@ const announcement = {
   }
 };
 
+const distributionDestinations = [
+  ["apple_podcasts", "Apple Podcasts"],
+  ["spotify", "Spotify"],
+  ["youtube_music", "YouTube Music"],
+  ["amazon_music", "Amazon Music"],
+  ["audible", "Audible"],
+  ["iheartradio", "iHeartRadio"],
+  ["tunein", "TuneIn"],
+  ["pocket_casts", "Pocket Casts"],
+  ["overcast", "Overcast"],
+  ["castbox", "Castbox"],
+  ["podcast_index", "Podcast Index"]
+].map(([id, name], index) => {
+  const certified = index < 10;
+  return {
+    id,
+    name,
+    mode: "rss_follow",
+    enabled: true,
+    ownerSetupStatus: "verified",
+    submissionUrl: `https://example.invalid/directory/${id}/setup`,
+    submissionEvidenceUrl:
+      `https://example.invalid/directory/${id}/submission`,
+    listingUrl: `https://example.invalid/directory/${id}/listing`,
+    ownerAccountLabel: "Dust Wave operations",
+    submissionDate: "2026-07-26",
+    setupNotes: certified
+      ? "Browser fixture with the complete launch evidence chain."
+      : "Recovery evidence remains intentionally incomplete.",
+    publicationStatus: null,
+    publicationRevision: null,
+    lastObservedAt: null,
+    evidenceUrl: null,
+    setupError: null,
+    publicationError: null,
+    certification: {
+      ownerVerified: true,
+      feedValidated: true,
+      ingestionObserved: true,
+      failureRecoveryVerified: certified,
+      certified
+    }
+  };
+});
+
 let marketingLinks = [{
   id: "marketing_link_browser_fixture",
   showId: show.id,
@@ -409,6 +454,45 @@ function responseFor(request) {
   }
   if (request.method === "GET" && path === "/v1/admin/shows") {
     return json({ shows: [show] });
+  }
+  if (
+    request.method === "GET"
+    && path === "/v1/admin/distribution"
+    && url.searchParams.get("showId") === show.id
+  ) {
+    return json({
+      showId: show.id,
+      feedUrl:
+        "https://feeds.dustwave.xyz/opera-en-la-selva/rss.xml",
+      semantics: "rss-follow-after-one-time-owner-setup",
+      summary: {
+        total: distributionDestinations.length,
+        setupComplete: distributionDestinations.length,
+        setupRequired: 0,
+        observed: 0,
+        ingestionObserved: distributionDestinations.length,
+        failureRecoveryVerified: 10,
+        certified: 10
+      },
+      launchClaim: {
+        ready: true,
+        requiredDestinations: 10,
+        certifiedDestinations: 10,
+        remainingDestinations: 0,
+        feedValidation: {
+          status: "valid",
+          feedUrl:
+            "https://feeds.dustwave.xyz/opera-en-la-selva/rss.xml",
+          validatorVersion: "dustwave-public-rss-validator-v1",
+          sha256: sha("f"),
+          itemCount: 1,
+          failureCode: null,
+          checkedAt: "2026-07-26T12:05:00.000Z",
+          validatedAt: "2026-07-26T12:05:00.000Z"
+        }
+      },
+      destinations: distributionDestinations
+    });
   }
   if (
     request.method === "GET"

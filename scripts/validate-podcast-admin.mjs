@@ -38,6 +38,13 @@ const analyticsScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-analytics.js'),
   'utf8'
 );
+const distributionCertificationScript = await readFile(
+  path.join(
+    repositoryRoot,
+    'src/js/podcast-admin-distribution-certification.js'
+  ),
+  'utf8'
+);
 const youtubeAudioRenditionScript = await readFile(
   path.join(
     repositoryRoot,
@@ -75,6 +82,7 @@ const spanishRuntime = spanishI18n.runtime.admin;
 const englishRuntimeText = JSON.stringify(englishRuntime);
 const staticRuntimeKeys = [
   ...adminScript.matchAll(/adminText\(\s*"([^"]+)"/g),
+  ...distributionCertificationScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...audioDerivativeScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...analyticsScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...marketingLinksScript.matchAll(/text\(\s*"([^"]+)"/g),
@@ -384,6 +392,16 @@ assert.match(
 );
 assert.match(adminScript, /\/v1\/admin\/distribution\?showId=/);
 assert.match(adminScript, /function renderDistribution/);
+assert.match(
+  distributionCertificationScript,
+  /function renderDistributionLaunchClaim/
+);
+assert.match(
+  distributionCertificationScript,
+  /function distributionCertificationList/
+);
+assert.match(distributionCertificationScript, /requiredDestinations/);
+assert.match(distributionCertificationScript, /failureRecoveryVerified/);
 assert.match(adminScript, /function renderReleaseChannels/);
 assert.match(adminScript, /function releaseStatusLabel/);
 assert.match(
@@ -415,6 +433,22 @@ assert.match(
 assert.match(adminScript, /method: "PATCH"/);
 assert.match(adminScript, /url\.protocol !== "https:"/);
 assert.match(adminScript, /navigator\.clipboard\.writeText\(value\)/);
+assert.match(
+  adminStyles,
+  /\.podcast-admin__certification-list li \{[\s\S]+display: flex;[\s\S]+gap: var\(--dw-admin-space-sm\);/
+);
+assert.match(
+  adminStyles,
+  /@media \(max-width: 760px\) \{[\s\S]+\.podcast-admin__certification-list li \{[\s\S]+flex-direction: column;/
+);
+assert.match(
+  englishRuntimeText,
+  /Owner verification[\s\S]+Canonical feed validation[\s\S]+Failure recovery verified/
+);
+assert.match(
+  JSON.stringify(spanishRuntime),
+  /Verificación del propietario[\s\S]+Validación del feed canónico[\s\S]+Recuperación ante fallos verificada/
+);
 assert.match(englishRuntimeText, /trusted sponsor-delivery evidence/i);
 assert.match(adminScript, /mode: "timed_text"/);
 assert.match(adminScript, /function loadChapters/);

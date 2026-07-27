@@ -35,6 +35,10 @@ import {
 import {
   mountPodcastAnalytics
 } from "./podcast-admin-analytics.js";
+import {
+  distributionCertificationList,
+  renderDistributionLaunchClaim
+} from "./podcast-admin-distribution-certification.js";
 import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js?v=0.6.1";
 import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js?v=0.6.1";
 
@@ -6648,7 +6652,8 @@ function startPodcastAdmin(root) {
         summary.setupRequired,
         adminText("ownerSetupRequired")
       ],
-      [summary.observed, adminText("episodeObserved")]
+      [summary.observed, adminText("episodeObserved")],
+      [summary.certified, adminText("certifiedDirectories")]
     ]) {
       const card = document.createElement("article");
       const strong = document.createElement("strong");
@@ -6661,6 +6666,15 @@ function startPodcastAdmin(root) {
       overview.append(card);
     }
     fragment.append(overview);
+    fragment.append(
+      renderDistributionLaunchClaim({
+        launchClaim: payload.launchClaim || {},
+        text: adminText,
+        formatDate,
+        formatInteger,
+        badge: distributionBadge
+      })
+    );
 
     const feed = document.createElement("div");
     feed.className = "podcast-admin__distribution-feed";
@@ -6931,6 +6945,14 @@ function startPodcastAdmin(root) {
         )
       );
     }
+    if (destination.certification?.certified) {
+      badges.append(
+        distributionBadge(
+          adminText("certificationComplete"),
+          "is-ready"
+        )
+      );
+    }
     heading.append(titleGroup, badges);
     card.append(heading);
 
@@ -6950,6 +6972,12 @@ function startPodcastAdmin(root) {
           "directorySetupApplies"
         );
     card.append(details);
+    card.append(
+      distributionCertificationList({
+        certification: destination.certification || {},
+        text: adminText
+      })
+    );
 
     const checklist = [
       destination.ownerAccountLabel
