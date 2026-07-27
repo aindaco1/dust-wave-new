@@ -774,6 +774,84 @@ function responseFor(request) {
     });
   }
   if (
+    request.method === "POST"
+    && path === `/v1/admin/shows/${show.id}/rss-import/preview`
+  ) {
+    return json({
+      show: {
+        id: show.id,
+        title: show.title
+      },
+      importMutationPerformed: false,
+      preview: {
+        schemaVersion: "dustwave-rss-import-preview-v1",
+        requestedUrl: "https://podcast.example.org/feed.xml",
+        resolvedUrl: "https://feeds.example.org/opera.xml",
+        redirectCount: 1,
+        feedSha256: sha("e"),
+        title: "Authorized source <img id=\"qa-rss-title\" src=x>",
+        description: "Sanitized source metadata.",
+        language: "es",
+        artworkUrl: "https://cdn.example.org/opera.jpg",
+        ownerEmailPresent: true,
+        itemCount: 2,
+        audioItemCount: 1,
+        migratableItemCount: 1,
+        previewItemCount: 2,
+        previewTruncated: false,
+        episodes: [
+          {
+            sourceIdentitySha256: sha("f"),
+            title: "Migratable episode",
+            summary: "One validated audio item.",
+            publishedAt: "2026-07-26T12:00:00.000Z",
+            durationSeconds: 754,
+            explicit: false,
+            canonicalUrl:
+              "https://podcast.example.org/episodes/migratable",
+            enclosure: {
+              url: "https://cdn.example.org/migratable.mp3",
+              mimeType: "audio/mpeg",
+              bytes: 1_234_567
+            },
+            migrationReady: true,
+            blockers: [],
+            warnings: []
+          },
+          {
+            sourceIdentitySha256: sha("0"),
+            title: "Article <script id=\"qa-rss-item\">bad()</script>",
+            summary: "Image-only newsletter item.",
+            publishedAt: "2026-07-25T12:00:00.000Z",
+            durationSeconds: null,
+            explicit: null,
+            canonicalUrl:
+              "https://podcast.example.org/articles/not-a-podcast",
+            enclosure: {
+              url: "https://cdn.example.org/article.jpg",
+              mimeType: "image/jpeg",
+              bytes: null
+            },
+            migrationReady: false,
+            blockers: [
+              "unsupported_enclosure_type",
+              "missing_or_invalid_enclosure_bytes"
+            ],
+            warnings: [
+              "missing_or_invalid_duration",
+              "missing_or_invalid_explicit_value"
+            ]
+          }
+        ],
+        limits: {
+          maximumFeedBytes: 5 * 1024 * 1024,
+          maximumFeedItems: 500,
+          maximumPreviewItems: 25
+        }
+      }
+    });
+  }
+  if (
     request.method === "GET"
     && path === `/v1/admin/shows/${show.id}/episodes`
   ) {

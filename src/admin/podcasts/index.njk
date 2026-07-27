@@ -104,6 +104,22 @@ eleventyComputed:
             <button class="btn btn-danger" type="submit">{{ workbench.overview.save }}</button>
             <p class="podcast-admin__status" data-podcast-show-status role="status" aria-live="polite"></p>
           </form>
+
+          <form class="podcast-admin__form podcast-admin__form--settings" data-podcast-rss-import-form hidden>
+            <h3>{{ workbench.overview.importHeading }}</h3>
+            <p>{{ workbench.overview.importIntro }}</p>
+            <label>{{ workbench.overview.importFeedUrl }}
+              <input name="feedUrl" type="url" inputmode="url" autocomplete="url" required>
+            </label>
+            <label class="podcast-admin__checkbox">
+              <input name="ownershipConfirmed" type="checkbox" required>
+              {{ workbench.overview.importOwnership }}
+            </label>
+            <p class="podcast-admin__callout">{{ workbench.overview.importPreviewOnly }}</p>
+            <button class="btn btn-outline-light" type="submit">{{ workbench.overview.previewImport }}</button>
+            <p class="podcast-admin__status" data-podcast-rss-import-status role="status" aria-live="polite"></p>
+            <div class="podcast-admin__readiness-groups" data-podcast-rss-import-preview aria-live="polite"></div>
+          </form>
         </section>
 
         <section id="podcast-panel-episodes" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-episodes" hidden>

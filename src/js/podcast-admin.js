@@ -19,6 +19,9 @@ import {
   mountSavedMarketingLinks
 } from "./podcast-admin-marketing-links.js";
 import {
+  mountRssImportPreview
+} from "./podcast-admin-rss-import.js";
+import {
   buildEpisodeYouTubeControls,
   handleEpisodeYouTubeApproval,
   handleEpisodeYouTubeSubmit
@@ -486,6 +489,17 @@ function startPodcastAdmin(root) {
   let turnstileWidgetId;
   let turnstileInitialization;
 
+  const rssImport = mountRssImportPreview({
+    root,
+    client,
+    text: adminText,
+    formatInteger,
+    formatDate,
+    isSuperAdmin,
+    selectedShowId: () => selectedShowId,
+    friendlyError,
+    setStatus
+  });
   const notesEditorLabel = adminText("editorEpisodeNotes");
   const notesEditor = mountRichTextEditor(
     root.querySelector("[data-podcast-notes-editor]"),
@@ -666,6 +680,7 @@ function startPodcastAdmin(root) {
     }
     closeClipYouTubeForm();
     clearClipLibraryState();
+    rssImport.reset({ form: true });
     fillShowForm();
     updateMarketingTools({ showChanged: true });
     await Promise.all([loadEpisodes(), loadCampaigns()]);
@@ -1020,6 +1035,8 @@ function startPodcastAdmin(root) {
     canRunAudioEnhancements = false;
     canApproveClipYouTube = false;
     canImportAlignmentBenchmarks = false;
+    rssImport.reset({ form: true });
+    rssImport.setShow(false);
     initializeTurnstile();
     latestAnnouncementReview = null;
     announcementHistoryRequestId += 1;
@@ -1182,6 +1199,7 @@ function startPodcastAdmin(root) {
   function fillShowForm() {
     const show = shows.find(({ id }) => id === selectedShowId);
     showForm.hidden = !show;
+    rssImport.setShow(Boolean(show));
     if (!show) return;
     for (const field of [
       "title", "description", "descriptionEn", "earlyAccessDays", "youtubeChannelUrl"

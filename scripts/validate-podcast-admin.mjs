@@ -34,6 +34,10 @@ const marketingLinksScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-marketing-links.js'),
   'utf8'
 );
+const rssImportScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-rss-import.js'),
+  'utf8'
+);
 const analyticsScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-analytics.js'),
   'utf8'
@@ -86,6 +90,7 @@ const staticRuntimeKeys = [
   ...audioDerivativeScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...analyticsScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...marketingLinksScript.matchAll(/text\(\s*"([^"]+)"/g),
+  ...rssImportScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...youtubeAudioRenditionScript.matchAll(/text\(\s*"([^"]+)"/g)
 ].map((match) => match[1]);
 for (const key of new Set(staticRuntimeKeys)) {
@@ -165,6 +170,29 @@ assert.doesNotMatch(podcastApiConfig, /workers\.dev/);
 assert.match(adminTemplate, /data-podcast-auth/);
 assert.match(adminTemplate, /data-podcast-episode-form/);
 assert.match(adminTemplate, /data-podcast-upload-form/);
+assert.match(adminTemplate, /data-podcast-rss-import-form/);
+assert.match(adminTemplate, /data-podcast-rss-import-preview/);
+assert.match(
+  englishWorkbench.overview.importPreviewOnly,
+  /no episode, media object, redirect, directory, or provider state will change/
+);
+assert.match(
+  spanishWorkbench.overview.importPreviewOnly,
+  /no cambiará ningún episodio/
+);
+assert.match(
+  rssImportScript,
+  /\/rss-import\/preview/
+);
+assert.match(
+  adminMockApi,
+  /dustwave-rss-import-preview-v1/
+);
+assert.doesNotMatch(
+  rssImportScript,
+  /innerHTML/,
+  "Untrusted RSS preview content must use DOM text nodes"
+);
 assert.match(adminTemplate, /data-podcast-ad-plan-form/);
 assert.match(adminTemplate, /data-podcast-ad-plan-result/);
 assert.match(adminTemplate, /data-podcast-distribution/);
