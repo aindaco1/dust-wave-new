@@ -163,6 +163,61 @@ const audioMasterPayload = {
   }
 };
 
+let youtubeAudioRenditions = [
+  {
+    id:
+      "youtube_rendition_browser_fixture_with_a_deliberately_long_identifier",
+    episodeId: episode.id,
+    showId: show.id,
+    workingMasterId: "master_mock",
+    sourceBytes: 14_400_000,
+    sourceMimeType: "audio/wav",
+    artworkBytes: 248_000,
+    artworkMimeType: "image/jpeg",
+    outputUploadId: "youtube_rendition_upload_browser_fixture",
+    outputBytes: 8_400_000,
+    outputSha256: sha("8"),
+    outputDurationMs: 180_000,
+    outputWidth: 1920,
+    outputHeight: 1080,
+    processorManifestSha256: sha("9"),
+    processorVersion: "dustwave-youtube-audio-1 (ffmpeg browser fixture)",
+    status: "ready",
+    failureCode: null,
+    current: true,
+    selected: true,
+    nativeVideoPreferred: false,
+    requestedAt: "2026-07-26T12:00:00.000Z",
+    completedAt: "2026-07-26T12:03:00.000Z"
+  },
+  {
+    id: "youtube_rendition_stale_browser_fixture",
+    episodeId: episode.id,
+    showId: show.id,
+    workingMasterId: "master_previous",
+    sourceBytes: 14_100_000,
+    sourceMimeType: "audio/wav",
+    artworkBytes: 248_000,
+    artworkMimeType: "image/jpeg",
+    outputUploadId: null,
+    outputBytes: null,
+    outputSha256: null,
+    outputDurationMs: null,
+    outputWidth: null,
+    outputHeight: null,
+    processorManifestSha256: sha("0"),
+    processorVersion: "dustwave-youtube-audio-1 (ffmpeg browser fixture)",
+    status: "failed",
+    failureCode:
+      "source_stale_<img id=\"qa-youtube-audio-injection\" src=x>",
+    current: false,
+    selected: false,
+    nativeVideoPreferred: false,
+    requestedAt: "2026-07-25T12:00:00.000Z",
+    completedAt: "2026-07-25T12:01:00.000Z"
+  }
+];
+
 function json(response, status = 200) {
   return {
     status,
@@ -659,6 +714,55 @@ function responseFor(request) {
     && path === `/v1/admin/episodes/${episode.id}/audio-master`
   ) {
     return json(audioMasterPayload);
+  }
+  if (
+    request.method === "GET"
+    && path
+      === `/v1/admin/episodes/${episode.id}/youtube-audio-renditions`
+  ) {
+    return json({
+      episodeId: episode.id,
+      environment: "staging",
+      processorEnabled: true,
+      nativeVideoPreferred: true,
+      renditions: youtubeAudioRenditions
+    });
+  }
+  if (
+    request.method === "POST"
+    && path
+      === `/v1/admin/episodes/${episode.id}/youtube-audio-renditions`
+  ) {
+    const queued = {
+      id: "youtube_rendition_browser_queued",
+      episodeId: episode.id,
+      showId: show.id,
+      workingMasterId: "master_mock",
+      sourceBytes: 14_400_000,
+      sourceMimeType: "audio/wav",
+      artworkBytes: 248_000,
+      artworkMimeType: "image/jpeg",
+      outputUploadId: null,
+      outputBytes: null,
+      outputSha256: null,
+      outputDurationMs: null,
+      outputWidth: null,
+      outputHeight: null,
+      processorManifestSha256: sha("4"),
+      processorVersion: null,
+      status: "queued",
+      failureCode: null,
+      current: true,
+      selected: false,
+      nativeVideoPreferred: false,
+      requestedAt: new Date().toISOString(),
+      completedAt: null
+    };
+    youtubeAudioRenditions = [
+      queued,
+      ...youtubeAudioRenditions.filter(({ id }) => id !== queued.id)
+    ];
+    return json({ rendition: queued, idempotent: false }, 202);
   }
   if (
     request.method === "GET"

@@ -27,10 +27,6 @@ export function mountYouTubeAudioRenditions({
     "[data-podcast-youtube-audio-status]"
   );
   const productionPanel = root.querySelector("#podcast-panel-production");
-  root.querySelector("#podcast-tab-production")?.addEventListener(
-    "click",
-    () => queueMicrotask(refresh)
-  );
   let requestId = 0;
   let state = null;
 

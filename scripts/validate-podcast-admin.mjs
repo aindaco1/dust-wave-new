@@ -34,6 +34,10 @@ const youtubeAudioRenditionScript = await readFile(
   ),
   'utf8'
 );
+const adminMockApi = await readFile(
+  path.join(repositoryRoot, 'tests/fixtures/podcast-admin-mock-api.mjs'),
+  'utf8'
+);
 const adminConfig = await readFile(
   path.join(repositoryRoot, 'src/_data/podcastAdmin.js'),
   'utf8'
@@ -61,7 +65,8 @@ const englishRuntimeText = JSON.stringify(englishRuntime);
 const staticRuntimeKeys = [
   ...adminScript.matchAll(/adminText\(\s*"([^"]+)"/g),
   ...analyticsScript.matchAll(/text\(\s*"([^"]+)"/g),
-  ...marketingLinksScript.matchAll(/text\(\s*"([^"]+)"/g)
+  ...marketingLinksScript.matchAll(/text\(\s*"([^"]+)"/g),
+  ...youtubeAudioRenditionScript.matchAll(/text\(\s*"([^"]+)"/g)
 ].map((match) => match[1]);
 for (const key of new Set(staticRuntimeKeys)) {
   assert.equal(
@@ -568,6 +573,22 @@ assert.match(
 assert.doesNotMatch(
   youtubeAudioRenditionScript,
   /(?:localStorage|sessionStorage)/
+);
+assert.doesNotMatch(
+  youtubeAudioRenditionScript,
+  /podcast-tab-production/
+);
+assert.match(
+  adminScript,
+  /if \(tab === "production"\) \{[\s\S]*youtubeAudioRenditions\.refresh\(\)/
+);
+assert.match(
+  adminMockApi,
+  /youtube-audio-renditions/
+);
+assert.match(
+  adminMockApi,
+  /qa-youtube-audio-injection/
 );
 assert.doesNotMatch(adminScript, /privacyStatus:\s*"public"/);
 assert.doesNotMatch(adminScript, /startsAtMs:\s*clipForm/);

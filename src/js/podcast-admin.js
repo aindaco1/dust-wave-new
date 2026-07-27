@@ -548,6 +548,7 @@ function startPodcastAdmin(root) {
         loadAlignmentBenchmarks();
         loadChapters();
         loadProductionReviews();
+        youtubeAudioRenditions.refresh();
       }
       if (tab === "distribution") loadDistribution();
       if (tab === "marketing") {
