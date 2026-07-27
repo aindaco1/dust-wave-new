@@ -4,11 +4,12 @@ import {
   mkdir,
   mkdtemp,
   open,
+  readdir,
   readFile,
   rm,
   stat
 } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { homedir, tmpdir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
 
 const DEFAULT_URL =
@@ -17,9 +18,11 @@ const DEFAULT_DURATION_SECONDS = 8;
 const DEFAULT_VIEWPORT = "1440x900";
 const SUPPORTED_EXECUTABLE_NAMES = new Set([
   "chrome",
+  "chrome.exe",
   "chromium",
   "chromium-browser",
   "google chrome",
+  "google chrome for testing",
   "google-chrome",
   "google-chrome-stable"
 ]);
@@ -32,6 +35,12 @@ const TRACE_CATEGORIES = [
   "net",
   "v8.execute"
 ].join(",");
+const SAFE_CHROME_STARTUP_DOCUMENTS = new Set([
+  "about:blank",
+  "chrome://new-tab-page/",
+  "chrome://newtab/",
+  "chrome://webui-toolbar.top-chrome/"
+]);
 
 function usage() {
   return `Capture an isolated Chrome performance trace for Podcast Admin.
@@ -115,6 +124,73 @@ function assertSupportedExecutable(candidate) {
   }
 }
 
+async function playwrightChromeCandidates() {
+  const configuredCache = String(
+    process.env.PLAYWRIGHT_BROWSERS_PATH || ""
+  ).trim();
+  const cacheRoots = configuredCache && configuredCache !== "0"
+    ? [resolve(configuredCache)]
+    : process.platform === "darwin"
+      ? [join(homedir(), "Library", "Caches", "ms-playwright")]
+      : process.platform === "win32"
+        ? [
+            join(
+              process.env.LOCALAPPDATA || join(homedir(), "AppData", "Local"),
+              "ms-playwright"
+            )
+          ]
+        : [join(homedir(), ".cache", "ms-playwright")];
+  const relativeExecutables = process.platform === "darwin"
+    ? [
+        join(
+          "chrome-mac-arm64",
+          "Google Chrome for Testing.app",
+          "Contents",
+          "MacOS",
+          "Google Chrome for Testing"
+        ),
+        join(
+          "chrome-mac",
+          "Chromium.app",
+          "Contents",
+          "MacOS",
+          "Chromium"
+        )
+      ]
+    : process.platform === "win32"
+      ? [
+          join("chrome-win64", "chrome.exe"),
+          join("chrome-win", "chrome.exe")
+        ]
+      : [
+          join("chrome-linux64", "chrome"),
+          join("chrome-linux", "chrome")
+        ];
+  const candidates = [];
+
+  for (const cacheRoot of cacheRoots) {
+    let entries;
+    try {
+      entries = await readdir(cacheRoot, { withFileTypes: true });
+    } catch {
+      continue;
+    }
+
+    const browsers = entries
+      .filter((entry) => entry.isDirectory() && /^chromium-\d+$/.test(entry.name))
+      .sort((left, right) =>
+        right.name.localeCompare(left.name, undefined, { numeric: true })
+      );
+    for (const browser of browsers) {
+      for (const executable of relativeExecutables) {
+        candidates.push(join(cacheRoot, browser.name, executable));
+      }
+    }
+  }
+
+  return candidates;
+}
+
 async function findChrome(explicitPath) {
   if (explicitPath) {
     await access(explicitPath);
@@ -129,7 +205,8 @@ async function findChrome(explicitPath) {
     "/usr/bin/google-chrome",
     "/usr/bin/google-chrome-stable",
     "/usr/bin/chromium",
-    "/usr/bin/chromium-browser"
+    "/usr/bin/chromium-browser",
+    ...await playwrightChromeCandidates()
   ].filter(Boolean);
 
   for (const candidate of candidates) {
@@ -238,12 +315,15 @@ async function verifyJsonTrace(outputPath, targetUrl) {
       .map((event) => event.args.data.documentLoaderURL)
   );
   const unexpectedDocuments = [...outermostDocuments].filter(
-    (documentUrl) => documentUrl !== targetUrl
+    (documentUrl) =>
+      documentUrl !== targetUrl
+      && !SAFE_CHROME_STARTUP_DOCUMENTS.has(documentUrl)
   );
   if (!outermostDocuments.has(targetUrl) || unexpectedDocuments.length > 0) {
     throw new Error(
       "Trace isolation check failed because an unexpected top-level page was " +
-        "recorded. The generated trace has been removed."
+        "recorded. The generated trace has been removed. Recorded pages: " +
+        ([...outermostDocuments].join(", ") || "(none)")
     );
   }
 }
