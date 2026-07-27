@@ -12,7 +12,7 @@ const rename = require('gulp-rename');
 const purgecss = require('gulp-purgecss');
 const htmlmin = require('gulp-html-minifier-terser');
 const htmlreplace = require('gulp-html-replace');
-const { version: assetVersion } = require('./package.json');
+const { version: assetVersion } = require('./src/_data/assets.js');
 
 // Load (and gently normalize) config
 const cfg = require('./gulpconfig.json');

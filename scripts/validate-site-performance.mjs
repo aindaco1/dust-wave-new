@@ -68,8 +68,28 @@ assert.match(
 );
 assert.match(
   assetData,
-  /const \{ version \} = require\("\.\.\/\.\.\/package\.json"\)/,
-  "asset cache keys must derive from the single package release version"
+  /process\.env\.DUST_WAVE_ASSET_VERSION/,
+  "deployed asset cache keys must accept the exact build revision"
+);
+assert.match(
+  assetData,
+  /process\.env\.GITHUB_SHA/,
+  "GitHub builds must use the exact source revision without workflow duplication"
+);
+assert.match(
+  assetData,
+  /\^\[A-Za-z0-9\._-\]\{1,64\}\$/,
+  "build revision cache keys must be length-bounded and character-allowlisted"
+);
+assert.match(
+  assetData,
+  /: packageVersion/,
+  "local asset cache keys must fall back to the package release version"
+);
+assert.match(
+  gulpfile,
+  /require\('\.\/src\/_data\/assets\.js'\)/,
+  "Eleventy and the production CSS injector must share one asset version source"
 );
 assert.equal(
   JSON.parse(packageSource).version,
