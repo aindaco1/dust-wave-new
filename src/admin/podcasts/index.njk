@@ -1054,6 +1054,11 @@ eleventyComputed:
             <h3 id="podcast-analytics-episodes-heading">{{ workbench.analytics.topEpisodes }}</h3>
             <div data-podcast-analytics-episodes></div>
           </section>
+          <section class="podcast-admin__analytics-section" aria-labelledby="podcast-analytics-completion-heading">
+            <h3 id="podcast-analytics-completion-heading">{{ workbench.analytics.webPlayerCompletion }}</h3>
+            <p>{{ workbench.analytics.webPlayerCompletionIntro }}</p>
+            <div data-podcast-web-player-completion></div>
+          </section>
           <section class="podcast-admin__analytics-section" aria-labelledby="podcast-analytics-breakdowns-heading">
             <h3 id="podcast-analytics-breakdowns-heading">{{ workbench.analytics.breakdowns }}</h3>
             <div class="podcast-admin__analytics-breakdowns">

@@ -128,6 +128,7 @@ assert.match(adminTemplate, /data-podcast-engaged-plays/);
 assert.match(adminTemplate, /data-podcast-premium-listeners/);
 assert.match(adminTemplate, /data-podcast-analytics-trend/);
 assert.match(adminTemplate, /data-podcast-analytics-episodes/);
+assert.match(adminTemplate, /data-podcast-web-player-completion/);
 assert.match(adminTemplate, /data-podcast-analytics-apps/);
 assert.match(analyticsScript, /\/analytics\/overview\?days=/);
 assert.match(analyticsScript, /\/analytics\/overview\.csv\?days=/);

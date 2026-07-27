@@ -44,6 +44,8 @@ assert.match(playerScript, /async mount\(scope = document\)/);
 assert.match(playerScript, /card\.dataset\.audioCredentials === "include"/);
 assert.match(playerScript, /dataset\.analyticsEndpoint/);
 assert.match(playerScript, /event: "engaged_play"/);
+assert.match(playerScript, /event: "web_player_completion"/);
+assert.match(playerScript, /const completionMilestones = \[25, 50, 75, 100\]/);
 assert.match(playerScript, /elapsed < 60/);
 assert.match(playerScript, /document\.visibilityState === "visible"/);
 assert.match(playerScript, /credentials: "omit"/);

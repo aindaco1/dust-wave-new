@@ -346,20 +346,49 @@ function responseFor(request) {
         activePremiumListeners: 37
       },
       daily: [
-        { date: "2026-07-20", qualifiedDownloads: 180, engagedPlays: 52 },
-        { date: "2026-07-21", qualifiedDownloads: 215, engagedPlays: 61 },
-        { date: "2026-07-22", qualifiedDownloads: 244, engagedPlays: 78 },
-        { date: "2026-07-23", qualifiedDownloads: 301, engagedPlays: 103 },
-        { date: "2026-07-24", qualifiedDownloads: 290, engagedPlays: 96 },
-        { date: "2026-07-25", qualifiedDownloads: 338, engagedPlays: 117 },
-        { date: "2026-07-26", qualifiedDownloads: 274, engagedPlays: 112 }
+        { date: "2026-07-20", qualifiedDownloads: 180, engagedPlays: 52, webPlayerCompletion: { 25: 41, 50: 34, 75: 25, 100: 18 } },
+        { date: "2026-07-21", qualifiedDownloads: 215, engagedPlays: 61, webPlayerCompletion: { 25: 48, 50: 40, 75: 29, 100: 20 } },
+        { date: "2026-07-22", qualifiedDownloads: 244, engagedPlays: 78, webPlayerCompletion: { 25: 62, 50: 49, 75: 37, 100: 26 } },
+        { date: "2026-07-23", qualifiedDownloads: 301, engagedPlays: 103, webPlayerCompletion: { 25: 82, 50: 66, 75: 49, 100: 35 } },
+        { date: "2026-07-24", qualifiedDownloads: 290, engagedPlays: 96, webPlayerCompletion: { 25: 75, 50: 61, 75: 45, 100: 32 } },
+        { date: "2026-07-25", qualifiedDownloads: 338, engagedPlays: 117, webPlayerCompletion: { 25: 93, 50: 75, 75: 57, 100: 39 } },
+        { date: "2026-07-26", qualifiedDownloads: 274, engagedPlays: 112, webPlayerCompletion: { 25: 89, 50: 72, 75: 54, 100: 38 } }
       ],
       episodes: [{
         episodeId: episode.id,
         title: episode.title,
         qualifiedDownloads: 1842,
-        engagedPlays: 619
+        engagedPlays: 619,
+        webPlayerCompletion: {
+          25: 490,
+          50: 397,
+          75: 296,
+          100: 208
+        },
+        webPlayerCompletionRates: {
+          25: 0.7916,
+          50: 0.6414,
+          75: 0.4782,
+          100: 0.336
+        }
       }],
+      webPlayerCompletion: {
+        scope: "dust_wave_web_player_only",
+        cohort: "engaged_plays",
+        engagedPlays: 619,
+        counts: {
+          25: 490,
+          50: 397,
+          75: 296,
+          100: 208
+        },
+        rates: {
+          25: 0.7916,
+          50: 0.6414,
+          75: 0.4782,
+          100: 0.336
+        }
+      },
       breakdowns: {
         apps: [
           { code: "apple_podcasts", count: 812 },
@@ -392,7 +421,7 @@ function responseFor(request) {
         "access-control-expose-headers": "content-disposition"
       },
       body:
-        '"date","qualified_downloads","engaged_plays","methodology_version"\r\n'
+        '"date","qualified_downloads","engaged_plays","web_player_completion_25","web_player_completion_50","web_player_completion_75","web_player_completion_100","methodology_version"\r\n'
         + '"2026-07-26","274","112","dustwave-analytics-v1"\r\n'
     };
   }

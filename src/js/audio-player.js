@@ -447,31 +447,52 @@ function attachPodcastEngagementTracking(card, media) {
 	const episodeId = analyticsSource?.dataset.analyticsEpisodeId;
 	if (!endpoint || !episodeId || card.dataset.analyticsTracking === "1") return;
 	card.dataset.analyticsTracking = "1";
+	const completionMilestones = [25, 50, 75, 100];
 	let elapsed = 0;
 	let lastTick = 0;
 	let timer = 0;
-	let sent = false;
+	let engagementSent = false;
+	const completionSent = new Set();
 
 	const stop = () => {
 		if (timer) window.clearInterval(timer);
 		timer = 0;
 		lastTick = 0;
 	};
-	const send = () => {
-		if (sent || elapsed < 60) return;
-		sent = true;
-		stop();
+	const sendEvent = (payload) => {
 		fetch(endpoint, {
 			method: "POST",
 			credentials: "omit",
 			keepalive: true,
 			headers: { "content-type": "application/json" },
-			body: JSON.stringify({
-				episodeId,
+			body: JSON.stringify({ episodeId, ...payload })
+		}).catch(() => {});
+	};
+	const send = () => {
+		if (!engagementSent && elapsed >= 60) {
+			engagementSent = true;
+			sendEvent({
 				event: "engaged_play",
 				seconds: Math.floor(elapsed)
-			})
-		}).catch(() => {});
+			});
+		}
+		const duration = Number(media.duration);
+		if (
+			elapsed < 60
+			|| !Number.isFinite(duration)
+			|| duration <= 0
+		) return;
+		const reached = completionMilestones.filter((milestone) =>
+			!completionSent.has(milestone)
+			&& elapsed + 2 >= duration * milestone / 100
+		);
+		if (!reached.length) return;
+		reached.forEach((milestone) => completionSent.add(milestone));
+		sendEvent({
+			event: "web_player_completion",
+			seconds: Math.floor(elapsed),
+			milestones: reached
+		});
 	};
 	const tick = () => {
 		const now = performance.now();
@@ -482,18 +503,22 @@ function attachPodcastEngagementTracking(card, media) {
 			&& document.visibilityState === "visible"
 		) {
 			elapsed += Math.min(2, Math.max(0, (now - lastTick) / 1000));
-			send();
+		send();
 		}
 		lastTick = now;
 	};
 	const start = () => {
-		if (sent || timer) return;
+		if (timer || completionSent.has(100)) return;
 		lastTick = performance.now();
 		timer = window.setInterval(tick, 1000);
 	};
 	media.addEventListener("play", start);
 	media.addEventListener("pause", stop);
-	media.addEventListener("ended", stop);
+	media.addEventListener("ended", () => {
+		tick();
+		send();
+		stop();
+	});
 	window.addEventListener("pagehide", stop, { once: true });
 }
 

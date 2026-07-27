@@ -21,6 +21,9 @@ export function mountPodcastAnalytics({
   const premium = root.querySelector("[data-podcast-premium-listeners]");
   const trend = root.querySelector("[data-podcast-analytics-trend]");
   const episodes = root.querySelector("[data-podcast-analytics-episodes]");
+  const completion = root.querySelector(
+    "[data-podcast-web-player-completion]"
+  );
   const apps = root.querySelector("[data-podcast-analytics-apps]");
   const devices = root.querySelector("[data-podcast-analytics-devices]");
   const countries = root.querySelector("[data-podcast-analytics-countries]");
@@ -107,6 +110,7 @@ export function mountPodcastAnalytics({
     setSponsorMetrics();
     trend?.replaceChildren();
     episodes?.replaceChildren();
+    completion?.replaceChildren();
     apps?.replaceChildren();
     devices?.replaceChildren();
     countries?.replaceChildren();
@@ -126,6 +130,10 @@ export function mountPodcastAnalytics({
     }
     renderTrend(payload.daily || []);
     renderEpisodes(payload.episodes || []);
+    renderCompletion(
+      payload.webPlayerCompletion || {},
+      payload.episodes || []
+    );
     renderBreakdown(apps, payload.breakdowns?.apps || [], "analyticsApp");
     renderBreakdown(
       devices,
@@ -204,6 +212,47 @@ export function mountPodcastAnalytics({
         formatInteger(row.engagedPlays)
       ]),
       text("analyticsTopEpisodes")
+    ));
+  }
+
+  function renderCompletion(summary, rows) {
+    if (!completion) return;
+    const engagedPlays = Number(summary?.engagedPlays)
+      || rows.reduce(
+        (total, row) => total + Number(row.engagedPlays || 0),
+        0
+      );
+    const counts = summary?.counts || {};
+    if (!engagedPlays && !rows.length) {
+      completion.replaceChildren(empty(text("analyticsNoCompletion")));
+      return;
+    }
+    const completionRows = [
+      [
+        text("analyticsShowTotal"),
+        formatInteger(engagedPlays),
+        ...completionValues(counts, summary?.rates)
+      ],
+      ...rows.map((row) => [
+        row.title,
+        formatInteger(row.engagedPlays),
+        ...completionValues(
+          row.webPlayerCompletion,
+          row.webPlayerCompletionRates
+        )
+      ])
+    ];
+    completion.replaceChildren(table(
+      [
+        text("analyticsEpisode"),
+        text("analyticsEngagedShort"),
+        "25%",
+        "50%",
+        "75%",
+        "100%"
+      ],
+      completionRows,
+      text("analyticsCompletionCaption")
     ));
   }
 
@@ -486,6 +535,14 @@ function validDays(value) {
   return [7, 30, 90].includes(days) ? days : 30;
 }
 
+function completionValues(counts = {}, rates = {}) {
+  return [25, 50, 75, 100].map((milestone) => {
+    const count = formatInteger(counts?.[milestone]);
+    const rate = formatPercent(rates?.[milestone]);
+    return rate ? `${count} (${rate})` : count;
+  });
+}
+
 function localizedDimension(prefix, code) {
   const translated = window.DustWaveI18n?.t(`admin.${prefix}_${code}`);
   return translated && !translated.startsWith("[missing:")
@@ -497,6 +554,15 @@ function formatInteger(value) {
   return new Intl.NumberFormat(
     document.documentElement.lang || "en"
   ).format(Number(value || 0));
+}
+
+function formatPercent(value) {
+  const rate = Number(value);
+  if (!Number.isFinite(rate)) return "";
+  return new Intl.NumberFormat(
+    document.documentElement.lang || "en",
+    { style: "percent", maximumFractionDigits: 1 }
+  ).format(Math.max(0, Math.min(1, rate)));
 }
 
 function formatDate(value) {
