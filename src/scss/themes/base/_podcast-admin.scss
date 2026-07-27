@@ -976,14 +976,25 @@
 [data-podcast-audio-qc-refresh],
 [data-podcast-audio-master-refresh],
 [data-podcast-audio-master-approval] .btn,
-[data-podcast-audio-enhancement-form] .btn {
+[data-podcast-audio-enhancement-form] .btn,
+[data-podcast-youtube-audio-refresh],
+[data-podcast-youtube-audio-queue] {
   min-height: var(--dw-admin-control-min-height);
 }
 
 [data-podcast-audio-qc-status],
 [data-podcast-audio-master-summary],
 [data-podcast-audio-master-approval-status],
-[data-podcast-audio-enhancement-status] {
+[data-podcast-audio-enhancement-status],
+[data-podcast-youtube-audio-summary],
+[data-podcast-youtube-audio-status] {
+  overflow-wrap: anywhere;
+}
+
+[data-podcast-youtube-audio-results] code {
+  color: #fff;
+  display: block;
+  max-width: 100%;
   overflow-wrap: anywhere;
 }
 

@@ -330,6 +330,30 @@ eleventyComputed:
           </section>
           <div class="podcast-admin__panel-heading podcast-admin__section-heading">
             <div>
+              <h2>{{ workbench.production.youtubeAudioHeading }}</h2>
+              <p>{{ workbench.production.youtubeAudioIntro }}</p>
+            </div>
+            <p class="podcast-admin__pill">{{ workbench.production.stagingOnlyPill }}</p>
+          </div>
+          <div class="podcast-admin__callout">
+            <p>{{ workbench.production.youtubeAudioCallout }}</p>
+          </div>
+          <section class="podcast-admin__form podcast-admin__youtube-audio" aria-label="{{ workbench.production.youtubeAudioLabel }}">
+            <div class="podcast-admin__field-grid">
+              <label>{{ workbench.common.episode }}
+                <select data-podcast-youtube-audio-episode required></select>
+              </label>
+            </div>
+            <div class="podcast-admin__transcript-actions">
+              <button class="btn btn-outline-light" type="button" data-podcast-youtube-audio-refresh>{{ workbench.production.youtubeAudioRefresh }}</button>
+              <button class="btn btn-danger" type="button" data-podcast-youtube-audio-queue disabled>{{ workbench.production.youtubeAudioQueue }}</button>
+            </div>
+            <p class="podcast-admin__transcript-meta" data-podcast-youtube-audio-summary aria-live="polite">{{ workbench.production.youtubeAudioChoose }}</p>
+            <p class="podcast-admin__status" data-podcast-youtube-audio-status role="status" aria-live="polite"></p>
+            <div class="podcast-admin__audio-enhancement-results" data-podcast-youtube-audio-results></div>
+          </section>
+          <div class="podcast-admin__panel-heading podcast-admin__section-heading">
+            <div>
               <h2>{{ workbench.production.transcriptHeading }}</h2>
               <p>{{ workbench.production.transcriptIntro }}</p>
             </div>

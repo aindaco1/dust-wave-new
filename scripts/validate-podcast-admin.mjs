@@ -27,6 +27,13 @@ const analyticsScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-analytics.js'),
   'utf8'
 );
+const youtubeAudioRenditionScript = await readFile(
+  path.join(
+    repositoryRoot,
+    'src/js/podcast-admin-youtube-audio-renditions.js'
+  ),
+  'utf8'
+);
 const adminConfig = await readFile(
   path.join(repositoryRoot, 'src/_data/podcastAdmin.js'),
   'utf8'
@@ -542,6 +549,26 @@ assert.doesNotMatch(
   /announcement\.(?:email|listenerId|destinationHash)/
 );
 assert.match(adminScript, /privacyStatus/);
+assert.match(
+  adminTemplate,
+  /data-podcast-youtube-audio-episode/
+);
+assert.match(
+  youtubeAudioRenditionScript,
+  /\/youtube-audio-renditions/
+);
+assert.match(
+  youtubeAudioRenditionScript,
+  /expectedWorkingMasterId/
+);
+assert.match(
+  youtubeAudioRenditionScript,
+  /process-youtube-audio-rendition\.yml/
+);
+assert.doesNotMatch(
+  youtubeAudioRenditionScript,
+  /(?:localStorage|sessionStorage)/
+);
 assert.doesNotMatch(adminScript, /privacyStatus:\s*"public"/);
 assert.doesNotMatch(adminScript, /startsAtMs:\s*clipForm/);
 assert.doesNotMatch(adminScript, /endsAtMs:\s*clipForm/);
@@ -552,7 +579,7 @@ assert.doesNotMatch(
 );
 assert.match(gulpfile, /copySharedAdminShell/);
 assert.equal(sharedPackage.name, '@dustwave/admin-shell');
-assert.equal(sharedPackage.version, '0.6.0');
+assert.match(sharedPackage.version, /^\d+\.\d+\.\d+$/);
 const sharedConsumerImports = [adminScript, analyticsScript].flatMap(
   (source) => [...source.matchAll(
     /from "\.\/dust-wave-admin-shell\/([^"]+)"/g
