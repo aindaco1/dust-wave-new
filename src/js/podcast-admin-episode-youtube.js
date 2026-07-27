@@ -47,11 +47,18 @@ export function buildEpisodeYouTubeControls({
       approve.textContent = text("approveEpisodeYoutubeTest");
       container.append(approve);
     }
-    container.append(statusNode());
+    if (canApprove && publication.status === "reconciliation_required") {
+      container.append(reconciliationForm({
+        publication,
+        episodeId,
+        text
+      }));
+    } else {
+      container.append(statusNode());
+    }
   } else if (canPrepare) {
     const form = document.createElement("form");
-    form.className =
-      "podcast-admin__distribution-form podcast-admin__episode-youtube-form";
+    form.className = "podcast-admin__distribution-form podcast-admin__episode-youtube-form";
     form.dataset.podcastEpisodeYoutubeForm = "";
     form.dataset.episodeId = episodeId;
     form.dataset.publicationRevision = String(
@@ -99,6 +106,144 @@ export function buildEpisodeYouTubeControls({
   return container.childElementCount ? container : null;
 }
 
+export async function handleEpisodeYouTubeSubmit({
+  event,
+  canPrepare,
+  canReconcile,
+  client,
+  text,
+  setStatus,
+  friendlyError,
+  loadDistribution
+}) {
+  const draftForm = event.target.closest(
+    "[data-podcast-episode-youtube-form]"
+  );
+  const reconciliationForm = event.target.closest(
+    "[data-podcast-episode-youtube-reconcile]"
+  );
+  const form = draftForm || reconciliationForm;
+  if (!form) return;
+  event.preventDefault();
+  if (
+    (draftForm && !canPrepare)
+    || (reconciliationForm && !canReconcile)
+  ) return;
+  const episodeId = String(form.dataset.episodeId || "");
+  const button = form.querySelector('button[type="submit"]');
+  const status = form.querySelector(
+    "[data-podcast-episode-youtube-status]"
+  );
+  if (!episodeId || !button) return;
+  if (draftForm) {
+    const publicationRevision = Number(
+      form.dataset.publicationRevision || 0
+    );
+    if (
+      !Number.isSafeInteger(publicationRevision)
+      || publicationRevision <= 0
+    ) return;
+  }
+  button.disabled = true;
+  try {
+    if (draftForm) {
+      const publicationRevision = Number(
+        form.dataset.publicationRevision || 0
+      );
+      setStatus(status, text("preparingEpisodeYoutubeDraft"));
+      const result = await client.request(
+        `/v1/admin/episodes/${encodeURIComponent(episodeId)}/youtube`,
+        {
+          method: "POST",
+          body: {
+            publicationId: form.dataset.publicationId,
+            expectedPublicationRevision: publicationRevision,
+            title: form.elements.title.value,
+            description: form.elements.description.value,
+            privacyStatus: form.elements.privacyStatus.value,
+            confirmChannelUrl: form.elements.confirmChannelUrl.value
+          }
+        }
+      );
+      setStatus(
+        status,
+        result.idempotent
+          ? text("youtubeDraftExists")
+          : text("episodeYoutubeDraftPrepared")
+      );
+    } else {
+      const publicationId = String(form.dataset.publicationId || "");
+      const outcome = form.elements.outcome.value;
+      if (!publicationId || !form.elements.confirmation.checked) {
+        setStatus(status, text("episodeYoutubeReconcileConfirm"), true);
+        button.disabled = false;
+        return;
+      }
+      const providerVideoId = form.elements.providerVideoId.value.trim();
+      if (outcome === "uploaded" && !providerVideoId) {
+        setStatus(status, text("episodeYoutubeProviderIdRequired"), true);
+        button.disabled = false;
+        return;
+      }
+      setStatus(status, text("reconcilingEpisodeYoutube"));
+      await client.request(
+        `/v1/admin/episode-youtube-publications/${encodeURIComponent(
+          publicationId
+        )}/reconcile`,
+        {
+          method: "POST",
+          body: {
+            outcome,
+            providerVideoId,
+            confirmation: outcome === "uploaded"
+              ? "CONFIRM_VERIFIED_UNLISTED_VIDEO"
+              : "CONFIRM_NO_CHANNEL_VIDEO_REMAINS"
+          }
+        }
+      );
+    }
+    await loadDistribution(episodeId);
+  } catch (error) {
+    setStatus(status, friendlyError(error), true);
+    button.disabled = false;
+  }
+}
+
+export async function handleEpisodeYouTubeApproval({
+  button,
+  authorized,
+  client,
+  text,
+  setStatus,
+  friendlyError,
+  loadDistribution
+}) {
+  if (!authorized) return;
+  const publicationId = String(
+    button.dataset.podcastEpisodeYoutubeApprove || ""
+  );
+  const episodeId = String(button.dataset.episodeId || "");
+  if (!publicationId || !episodeId) return;
+  const status = button.parentElement?.querySelector(
+    "[data-podcast-episode-youtube-status]"
+  );
+  if (!window.confirm(text("approveEpisodeYoutubeConfirm"))) return;
+  button.disabled = true;
+  setStatus(status, text("approvingYoutubeTest"));
+  try {
+    await client.request(
+      `/v1/admin/episode-youtube-publications/${encodeURIComponent(
+        publicationId
+      )}/approve`,
+      { method: "POST", body: {} }
+    );
+    await loadDistribution(episodeId);
+  } catch (error) {
+    setStatus(status, friendlyError(error), true);
+    button.disabled = false;
+  }
+}
+
 function labelNode(text, field, wide = false) {
   const label = document.createElement("label");
   if (wide) label.className = "podcast-admin__distribution-form-wide";
@@ -113,4 +258,49 @@ function statusNode() {
   status.setAttribute("role", "status");
   status.setAttribute("aria-live", "polite");
   return status;
+}
+
+function reconciliationForm({ publication, episodeId, text }) {
+  const form = document.createElement("form");
+  form.className = "podcast-admin__distribution-form podcast-admin__episode-youtube-form";
+  form.dataset.podcastEpisodeYoutubeReconcile = "";
+  form.dataset.publicationId = publication.id;
+  form.dataset.episodeId = episodeId;
+
+  const outcome = document.createElement("select");
+  outcome.name = "outcome";
+  outcome.append(
+    new Option(text("episodeYoutubeFoundVideo"), "uploaded"),
+    new Option(text("episodeYoutubeNoVideo"), "not_uploaded")
+  );
+
+  const providerVideoId = document.createElement("input");
+  providerVideoId.name = "providerVideoId";
+  providerVideoId.maxLength = 64;
+  providerVideoId.autocomplete = "off";
+  providerVideoId.placeholder = text("episodeYoutubeProviderIdPlaceholder");
+
+  const confirmation = document.createElement("input");
+  confirmation.name = "confirmation";
+  confirmation.type = "checkbox";
+  const confirmationLabel = document.createElement("label");
+  confirmationLabel.className = "podcast-admin__checkbox "
+    + "podcast-admin__distribution-form-wide";
+  confirmationLabel.append(
+    confirmation,
+    document.createTextNode(` ${text("episodeYoutubeManualInspection")}`)
+  );
+
+  const submit = document.createElement("button");
+  submit.className = "btn btn-danger";
+  submit.type = "submit";
+  submit.textContent = text("reconcileEpisodeYoutube");
+  form.append(
+    labelNode(text("episodeYoutubeOutcome"), outcome),
+    labelNode(text("episodeYoutubeProviderId"), providerVideoId),
+    confirmationLabel,
+    submit,
+    statusNode()
+  );
+  return form;
 }

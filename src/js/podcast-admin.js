@@ -19,7 +19,9 @@ import {
   mountSavedMarketingLinks
 } from "./podcast-admin-marketing-links.js";
 import {
-  buildEpisodeYouTubeControls
+  buildEpisodeYouTubeControls,
+  handleEpisodeYouTubeApproval,
+  handleEpisodeYouTubeSubmit
 } from "./podcast-admin-episode-youtube.js";
 import {
   mountPodcastAnalytics
@@ -580,7 +582,16 @@ function startPodcastAdmin(root) {
   );
   distributionRoot?.addEventListener(
     "submit",
-    prepareEpisodeYouTubePublication
+    (event) => handleEpisodeYouTubeSubmit({
+      event,
+      canPrepare: canOperateSelectedShowPublication(),
+      canReconcile: canApproveClipYouTube,
+      client,
+      text: adminText,
+      setStatus,
+      friendlyError,
+      loadDistribution
+    })
   );
   distributionFilter?.elements.episodeId?.addEventListener(
     "change",
@@ -7205,7 +7216,15 @@ function startPodcastAdmin(root) {
       "[data-podcast-episode-youtube-approve]"
     );
     if (youtubeApproval) {
-      await approveEpisodeYouTubePublication(youtubeApproval);
+      await handleEpisodeYouTubeApproval({
+        button: youtubeApproval,
+        authorized: canApproveClipYouTube,
+        client,
+        text: adminText,
+        setStatus,
+        friendlyError,
+        loadDistribution
+      });
       return;
     }
     const retry = event.target.closest("[data-podcast-release-retry]");
@@ -7237,83 +7256,6 @@ function startPodcastAdmin(root) {
         ),
         true
       );
-    }
-  }
-
-  async function prepareEpisodeYouTubePublication(event) {
-    const form = event.target.closest(
-      "[data-podcast-episode-youtube-form]"
-    );
-    if (!form) return;
-    event.preventDefault();
-    if (!canOperateSelectedShowPublication()) return;
-    const episodeId = String(form.dataset.episodeId || "");
-    const publicationRevision = Number(
-      form.dataset.publicationRevision || 0
-    );
-    if (
-      !episodeId
-      || !Number.isSafeInteger(publicationRevision)
-      || publicationRevision <= 0
-    ) return;
-    const button = form.querySelector('button[type="submit"]');
-    const status = form.querySelector(
-      "[data-podcast-episode-youtube-status]"
-    );
-    button.disabled = true;
-    setStatus(status, adminText("preparingEpisodeYoutubeDraft"));
-    try {
-      const result = await client.request(
-        `/v1/admin/episodes/${encodeURIComponent(episodeId)}/youtube`,
-        {
-          method: "POST",
-          body: {
-            publicationId: form.dataset.publicationId,
-            expectedPublicationRevision: publicationRevision,
-            title: form.elements.title.value,
-            description: form.elements.description.value,
-            privacyStatus: form.elements.privacyStatus.value,
-            confirmChannelUrl: form.elements.confirmChannelUrl.value
-          }
-        }
-      );
-      setStatus(
-        status,
-        result.idempotent
-          ? adminText("youtubeDraftExists")
-          : adminText("episodeYoutubeDraftPrepared")
-      );
-      await loadDistribution(episodeId);
-    } catch (error) {
-      setStatus(status, friendlyError(error), true);
-      button.disabled = false;
-    }
-  }
-
-  async function approveEpisodeYouTubePublication(button) {
-    if (!canApproveClipYouTube) return;
-    const publicationId = String(
-      button.dataset.podcastEpisodeYoutubeApprove || ""
-    );
-    const episodeId = String(button.dataset.episodeId || "");
-    if (!publicationId || !episodeId) return;
-    const status = button.parentElement?.querySelector(
-      "[data-podcast-episode-youtube-status]"
-    );
-    if (!window.confirm(adminText("approveEpisodeYoutubeConfirm"))) return;
-    button.disabled = true;
-    setStatus(status, adminText("approvingYoutubeTest"));
-    try {
-      await client.request(
-        `/v1/admin/episode-youtube-publications/${encodeURIComponent(
-          publicationId
-        )}/approve`,
-        { method: "POST", body: {} }
-      );
-      await loadDistribution(episodeId);
-    } catch (error) {
-      setStatus(status, friendlyError(error), true);
-      button.disabled = false;
     }
   }
 
