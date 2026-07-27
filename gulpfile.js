@@ -1,12 +1,11 @@
 // Core
 const { src, dest, watch, series, parallel } = require('gulp');
 const gulp = require('gulp');
+const { mkdir, rm } = require('node:fs/promises');
 
 // Utilities
 const cleanCSS = require('gulp-clean-css');
 const sass = require('gulp-dart-sass');
-const clean = require('gulp-clean');
-const browserSync = require('browser-sync').create();
 const rename = require('gulp-rename');
 
 const purgecss = require('gulp-purgecss');
@@ -28,10 +27,14 @@ const DIR = {
 
 // ============ Clean tasks ============
 function cleanDev() {
-  return src(`${DIR.dev}/*`, { read: false, allowEmpty: true }).pipe(clean());
+  return resetDirectory(DIR.dev);
 }
 function cleanDist() {
-  return src(`${DIR.dist}/*`, { read: false, allowEmpty: true }).pipe(clean());
+  return resetDirectory(DIR.dist);
+}
+async function resetDirectory(directory) {
+  await rm(directory, { recursive: true, force: true });
+  await mkdir(directory, { recursive: true });
 }
 
 // ============ Dev asset tasks ============
@@ -96,8 +99,7 @@ gulp.task('minify-css', function minifyCssTask() {
   return src(`${DIR.dev}/css/*.css`)
     .pipe(cleanCSS({ compatibility: 'ie8' }))
     .pipe(rename({ suffix: '.min' }))
-    .pipe(dest(`${DIR.dev}/css`))
-    .pipe(browserSync.stream({ match: '**/*.css' }));
+    .pipe(dest(`${DIR.dev}/css`));
 });
 
 // ============ Production tasks ============
@@ -169,35 +171,16 @@ gulp.task('copy-assets', function vendorAssets(done) {
   done();
 });
 
-// ============ BrowserSync (watch sources only) ============
-gulp.task('browser-sync', function browserSyncTask(done) {
-  browserSync.init({
-    server: { baseDir: `./${DIR.dev}` },
-    notify: false,
-    files: [`${DIR.dev}/**/*.html`],
-    reloadDebounce: 300,
-    // Debounce FS write storms (Eleventy, WSL, network drives)
-    watchOptions: {
-      ignoreInitial: true,
-      awaitWriteFinish: { stabilityThreshold: 400, pollInterval: 80 }
-    }
-  });
-
-  // Watch SOURCES → build → inject/reload
-  watch(`${DIR.src}/scss/**/*.scss`, series('sass', 'minify-css')); // CSS inject only
-  watch(`${DIR.src}/js/**/*.*`, series(copyJs, browserSync.reload)); // one reload
+// ============ Asset watcher (Eleventy owns the dev server) ============
+gulp.task('watch-assets', function watchAssetsTask(done) {
+  watch(`${DIR.src}/scss/**/*.scss`, series('sass', 'minify-css'));
+  watch(`${DIR.src}/js/**/*.*`, copyJs);
   watch(
     'shared/dust-wave-platform/packages/admin-shell/src/**/*.js',
-    series(copySharedAdminShell, browserSync.reload)
+    copySharedAdminShell
   );
-  watch(`${DIR.src}/img/**/*.*`, series(copyImg, browserSync.reload)); // one reload
-  watch(`${DIR.src}/peaks/**/*.*`, series(copyPeaks, browserSync.reload));
-
-  // Eleventy watches templates/content and writes HTML into dev/.
-  // BrowserSync observes that generated HTML and reloads the browser.
-  // If you want to copy raw HTML from src → dev, uncomment below:
-  // function copyHtml() { return src(`${DIR.src}/**/*.html`).pipe(dest(`${DIR.dev}`)); }
-  // watch(`${DIR.src}/**/*.html`, series(copyHtml, browserSync.reload));
+  watch(`${DIR.src}/img/**/*.*`, copyImg);
+  watch(`${DIR.src}/peaks/**/*.*`, copyPeaks);
 
   done();
 });
@@ -207,4 +190,4 @@ gulp.task('clean', cleanDev);
 gulp.task('clean-dist', cleanDist);
 
 // ============ Notes ============
-// - Run `npm run dev` as suggested in scripts (Eleventy --watch to dev + gulp browser-sync).
+// - Run `npm run watch`; Eleventy serves dev/ while Gulp rebuilds source assets.

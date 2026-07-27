@@ -34,8 +34,8 @@ function signalServer(signal) {
     if (process.platform === 'win32') {
       serverProcess.kill(signal);
     } else {
-      // The detached child owns a process group containing npm-run-all,
-      // Eleventy, and BrowserSync, so one signal shuts down the full server.
+      // The detached child owns a process group containing concurrently,
+      // Eleventy, and the Gulp asset watcher, so one signal shuts down the full server.
       process.kill(-serverProcess.pid, signal);
     }
   } catch (error) {
