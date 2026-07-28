@@ -24,7 +24,6 @@ const [page, layout, authFooter, script, buildPipeline] = await Promise.all([
 assert.match(page, /permalink: "\{\{ i18n\.config\.pages\.podcastAccount\[language\] \}\}"/);
 assert.match(page, /data: i18n\.config\.supportedLangs/);
 assert.match(page, /data-podcast-member-login-form/);
-assert.match(page, /class="podcast-auth-turnstile-form"/);
 assert.match(
   page,
   /class="podcast-auth-turnstile podcast-member__turnstile"/

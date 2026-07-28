@@ -119,17 +119,21 @@
   gap: var(--dw-admin-space-sm);
 }
 
-.podcast-auth-turnstile-form {
-  container-type: inline-size;
-}
-
 .podcast-auth-turnstile {
   min-height: 4.0625rem;
   margin-top: 1rem;
 }
 
-@container (max-width: 18.6875rem) {
-  .podcast-auth-turnstile {
+// Account for each shell's outer and panel padding so the reserved height
+// changes at the same point as the shared 300px flexible/compact size helper.
+@media (max-width: 22.8125rem) {
+  .podcast-admin__turnstile {
+    min-height: 8.75rem;
+  }
+}
+
+@media (max-width: 24.5625rem) {
+  .podcast-member__turnstile {
     min-height: 8.75rem;
   }
 }

@@ -85,12 +85,12 @@ assert.doesNotMatch(
 );
 assert.match(
   admin,
-  /class="podcast-auth-turnstile-form"[\s\S]+class="podcast-auth-turnstile podcast-admin__turnstile"/,
+  /class="podcast-auth-turnstile podcast-admin__turnstile"/,
   "Podcast Admin must reserve the responsive Turnstile footprint"
 );
 assert.match(
   member,
-  /class="podcast-auth-turnstile-form"[\s\S]+class="podcast-auth-turnstile podcast-member__turnstile"/,
+  /class="podcast-auth-turnstile podcast-member__turnstile"/,
   "Podcast member auth must reserve the responsive Turnstile footprint"
 );
 for (const [name, template] of [

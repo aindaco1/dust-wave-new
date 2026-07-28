@@ -155,7 +155,6 @@ const sharedPackage = sharedAdminShellPackage;
 
 assert.match(adminTemplate, /translationKey: podcastAdmin/);
 assert.match(adminTemplate, /i18nRuntime: true/);
-assert.match(adminTemplate, /class="podcast-auth-turnstile-form"/);
 assert.match(
   adminTemplate,
   /class="podcast-auth-turnstile podcast-admin__turnstile"/
@@ -420,11 +419,11 @@ assert.match(adminStyles, /\.podcast-admin__subscriber-list/);
 assert.match(adminStyles, /\.podcast-admin__subscriber-sources/);
 assert.match(
   adminStyles,
-  /\.podcast-auth-turnstile-form[\s\S]+container-type: inline-size/
+  /@media \(max-width: 22\.8125rem\)[\s\S]+\.podcast-admin__turnstile[\s\S]+min-height: 8\.75rem/
 );
 assert.match(
   adminStyles,
-  /@container \(max-width: 18\.6875rem\)[\s\S]+min-height: 8\.75rem/
+  /@media \(max-width: 24\.5625rem\)[\s\S]+\.podcast-member__turnstile[\s\S]+min-height: 8\.75rem/
 );
 assert.match(
   adminStyles,
