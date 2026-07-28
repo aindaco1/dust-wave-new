@@ -222,6 +222,26 @@ assert.match(
   /expectedSelectionSha256:[\s\S]+reviewConfirmed: true/
 );
 assert.match(
+  rssImportScript,
+  /\/rss-import\/plans\/\$\{[\s\S]+\/execution/
+);
+assert.match(
+  rssImportScript,
+  /expectedFeedSha256: plan\.feedSha256[\s\S]+expectedSelectionSha256: plan\.selectionSha256[\s\S]+executionConfirmed:/
+);
+assert.match(
+  rssImportScript,
+  /podcastRssImportExecutionItem[\s\S]+targetSlug[\s\S]+sourceLanguage/
+);
+assert.match(
+  englishRuntime.rssImportExecutionNoPublish,
+  /cannot publish News, RSS, redirects, directories, YouTube, email, ads, or billing/
+);
+assert.match(
+  spanishRuntime.rssImportExecutionNoPublish,
+  /no puede publicar Noticias, RSS, redirecciones, directorios, YouTube, correos, anuncios ni facturación/
+);
+assert.match(
   englishWorkbench.overview.importPlansZeroCopy,
   /never copies audio, creates an episode, changes a redirect, or contacts/
 );
@@ -236,6 +256,14 @@ assert.match(
 assert.match(
   adminMockApi,
   /mediaCopyPerformed: false[\s\S]+episodeMutationPerformed: false/
+);
+assert.match(
+  adminMockApi,
+  /rss-import\\\/plans\\\/\(\[A-Za-z0-9_-\]\+\)\\\/execution/
+);
+assert.match(
+  adminMockApi,
+  /executionAvailable: true[\s\S]+publicationMutationPerformed: false[\s\S]+redirectMutationPerformed: false[\s\S]+providerContactPerformed: false/
 );
 assert.doesNotMatch(
   rssImportScript,

@@ -1035,6 +1035,38 @@
   gap: var(--dw-admin-field-gap);
 }
 
+.podcast-admin__rss-import-execution {
+  display: grid;
+  gap: var(--dw-admin-space-md);
+  margin-top: var(--dw-admin-space-md);
+}
+
+.podcast-admin__rss-import-execution > * {
+  margin-block: 0;
+}
+
+.podcast-admin__rss-import-execution > .podcast-admin__form {
+  margin-top: 0;
+}
+
+.podcast-admin__rss-import-execution > .btn {
+  justify-self: start;
+}
+
+.podcast-admin__rss-import-execution ul {
+  display: grid;
+  gap: var(--dw-admin-space-xs);
+  margin: 0;
+  padding-inline-start: 1.25rem;
+}
+
+.podcast-admin__rss-import-mapping {
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 0.5rem;
+  padding: var(--dw-admin-space-sm);
+}
+
 .podcast-admin__readiness-groups,
 .podcast-admin__readiness-list,
 .podcast-admin__audio-qc-results,
@@ -1570,7 +1602,8 @@
   .podcast-admin__transcript-actions .btn,
   .podcast-admin__transcript-pages .btn,
   .podcast-admin__chapter-row .btn,
-  .podcast-admin__form > .btn {
+  .podcast-admin__form > .btn,
+  .podcast-admin__rss-import-execution > .btn {
     width: 100%;
   }
 

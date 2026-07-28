@@ -6,6 +6,7 @@ export function mountRssImportWorkbench({
   formatDate,
   isSuperAdmin,
   selectedShowId,
+  selectedShowLanguage,
   friendlyError,
   setStatus
 }) {
@@ -20,6 +21,7 @@ export function mountRssImportWorkbench({
   const planRoot = root.querySelector("[data-podcast-rss-import-plans]");
   let latestPreview = null;
   let plans = [];
+  const executions = new Map();
   let loadRequestId = 0;
 
   form?.addEventListener("submit", previewImport);
@@ -29,6 +31,7 @@ export function mountRssImportWorkbench({
       loadRequestId += 1;
       latestPreview = null;
       plans = [];
+      executions.clear();
       previewRoot?.replaceChildren();
       planRoot?.replaceChildren();
       setStatus(status, "");
@@ -366,6 +369,9 @@ export function mountRssImportWorkbench({
     if (isSuperAdmin() && plan.status !== "canceled") {
       card.append(renderPlanActions(plan));
     }
+    if (plan.status === "reviewed") {
+      card.append(renderExecutionBoundary(plan));
+    }
     return card;
   }
 
@@ -399,23 +405,260 @@ export function mountRssImportWorkbench({
       );
       controls.append(feedLabel, confirmation, reviewButton);
     }
-    const cancelLabel = document.createElement("label");
-    cancelLabel.textContent = text("rssImportCancelReason");
-    const cancelInput = document.createElement("input");
-    cancelInput.type = "text";
-    cancelInput.maxLength = 500;
-    cancelInput.required = true;
-    cancelInput.dataset.podcastRssImportCancelReason = "";
-    cancelLabel.append(cancelInput);
-    const cancelButton = document.createElement("button");
-    cancelButton.className = "btn btn-outline-light";
-    cancelButton.type = "button";
-    cancelButton.textContent = text("rssImportCancelPlan");
-    cancelButton.addEventListener("click", () =>
-      cancelPlan(plan, controls, cancelButton)
-    );
-    controls.append(cancelLabel, cancelButton);
+    if (!executions.get(plan.id)?.execution) {
+      const cancelLabel = document.createElement("label");
+      cancelLabel.textContent = text("rssImportCancelReason");
+      const cancelInput = document.createElement("input");
+      cancelInput.type = "text";
+      cancelInput.maxLength = 500;
+      cancelInput.required = true;
+      cancelInput.dataset.podcastRssImportCancelReason = "";
+      cancelLabel.append(cancelInput);
+      const cancelButton = document.createElement("button");
+      cancelButton.className = "btn btn-outline-light";
+      cancelButton.type = "button";
+      cancelButton.textContent = text("rssImportCancelPlan");
+      cancelButton.addEventListener("click", () =>
+        cancelPlan(plan, controls, cancelButton)
+      );
+      controls.append(cancelLabel, cancelButton);
+    }
     return controls;
+  }
+
+  function renderExecutionBoundary(plan) {
+    const boundary = document.createElement("section");
+    boundary.className =
+      "podcast-admin__rss-import-execution podcast-admin__readiness-card";
+    const heading = document.createElement("h4");
+    heading.textContent = text("rssImportExecutionHeading");
+    const explanation = document.createElement("p");
+    explanation.textContent = text("rssImportExecutionIntro");
+    boundary.append(heading, explanation);
+    const state = executions.get(plan.id);
+    if (state === undefined) {
+      const button = document.createElement("button");
+      button.className = "btn btn-outline-light";
+      button.type = "button";
+      button.textContent = text("rssImportExecutionLoad");
+      button.addEventListener("click", () =>
+        loadExecution(plan, button)
+      );
+      boundary.append(button);
+      return boundary;
+    }
+    if (!state.executionAvailable && !state.execution) {
+      const unavailable = document.createElement("p");
+      unavailable.className = "podcast-admin__callout";
+      unavailable.textContent = text("rssImportExecutionUnavailable");
+      boundary.append(unavailable);
+      return boundary;
+    }
+    if (state.execution) {
+      boundary.append(renderExecutionState(state.execution));
+      const refresh = document.createElement("button");
+      refresh.className = "btn btn-outline-light";
+      refresh.type = "button";
+      refresh.textContent = text("rssImportExecutionRefresh");
+      refresh.addEventListener("click", () =>
+        loadExecution(plan, refresh)
+      );
+      boundary.append(refresh);
+      return boundary;
+    }
+    if (isSuperAdmin()) {
+      boundary.append(renderExecutionForm(plan));
+    } else {
+      const empty = document.createElement("p");
+      empty.textContent = text("rssImportExecutionEmpty");
+      boundary.append(empty);
+    }
+    return boundary;
+  }
+
+  async function loadExecution(plan, button) {
+    button.disabled = true;
+    setStatus(status, text("rssImportExecutionLoading"));
+    try {
+      const payload = await client.request(
+        `/v1/admin/rss-import/plans/${
+          encodeURIComponent(plan.id)
+        }/execution`
+      );
+      executions.set(plan.id, payload);
+      renderPlans();
+      setStatus(status, "");
+    } catch (error) {
+      setStatus(status, friendlyError(error), true);
+      button.disabled = false;
+    }
+  }
+
+  function renderExecutionForm(plan) {
+    const executionForm = document.createElement("form");
+    executionForm.className = "podcast-admin__form";
+    executionForm.dataset.podcastRssImportExecutionForm = "";
+    const feedLabel = document.createElement("label");
+    feedLabel.textContent = text("rssImportExecutionFeedUrl");
+    const feedInput = document.createElement("input");
+    feedInput.type = "url";
+    feedInput.inputMode = "url";
+    feedInput.autocomplete = "off";
+    feedInput.required = true;
+    feedInput.name = "feedUrl";
+    feedLabel.append(feedInput);
+    const mappingHeading = document.createElement("h4");
+    mappingHeading.textContent = text("rssImportExecutionMapping");
+    executionForm.append(feedLabel, mappingHeading);
+    const usedSlugs = new Set();
+    for (const item of Array.isArray(plan.items) ? plan.items : []) {
+      const mapping = document.createElement("div");
+      mapping.className =
+        "podcast-admin__field-grid podcast-admin__rss-import-mapping";
+      mapping.dataset.podcastRssImportExecutionItem =
+        String(item.sourceIdentitySha256 || "");
+      const slugLabel = document.createElement("label");
+      slugLabel.textContent = text("rssImportExecutionTargetSlug", {
+        title: item.title || text("notAvailable")
+      });
+      const slugInput = document.createElement("input");
+      slugInput.name = "targetSlug";
+      slugInput.required = true;
+      slugInput.maxLength = 120;
+      slugInput.pattern = "[a-z0-9]+(?:-[a-z0-9]+)*";
+      slugInput.value = uniqueImportSlug(
+        item.title,
+        item.sourceIdentitySha256,
+        usedSlugs
+      );
+      slugLabel.append(slugInput);
+      const languageLabel = document.createElement("label");
+      languageLabel.textContent = text("sourceLanguageLabel");
+      const language = document.createElement("select");
+      language.name = "sourceLanguage";
+      language.append(
+        new Option(text("language_es"), "es"),
+        new Option(text("language_en"), "en")
+      );
+      language.value = selectedShowLanguage() === "en" ? "en" : "es";
+      languageLabel.append(language);
+      mapping.append(slugLabel, languageLabel);
+      executionForm.append(mapping);
+    }
+    const confirmation = document.createElement("label");
+    confirmation.className = "podcast-admin__checkbox";
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.required = true;
+    checkbox.name = "executionConfirmed";
+    const confirmationText = document.createElement("span");
+    confirmationText.textContent = text("rssImportExecutionConfirmation");
+    confirmation.append(checkbox, confirmationText);
+    const callout = document.createElement("p");
+    callout.className = "podcast-admin__callout";
+    callout.textContent = text("rssImportExecutionNoPublish");
+    const button = document.createElement("button");
+    button.className = "btn btn-danger";
+    button.type = "submit";
+    button.textContent = text("rssImportExecutePlan");
+    executionForm.append(confirmation, callout, button);
+    executionForm.addEventListener("submit", (event) =>
+      executePlan(event, plan, executionForm, button)
+    );
+    return executionForm;
+  }
+
+  async function executePlan(event, plan, executionForm, button) {
+    event.preventDefault();
+    if (!executionForm.reportValidity()) return;
+    if (!globalThis.confirm(text("rssImportExecutionFinalConfirmation"))) {
+      return;
+    }
+    button.disabled = true;
+    setStatus(status, text("rssImportExecutionQueueing"));
+    const items = [...executionForm.querySelectorAll(
+      "[data-podcast-rss-import-execution-item]"
+    )].map((mapping) => ({
+      sourceIdentitySha256:
+        mapping.dataset.podcastRssImportExecutionItem,
+      targetSlug: mapping.querySelector('[name="targetSlug"]').value,
+      sourceLanguage:
+        mapping.querySelector('[name="sourceLanguage"]').value
+    }));
+    try {
+      const payload = await client.request(
+        `/v1/admin/rss-import/plans/${
+          encodeURIComponent(plan.id)
+        }/execution`,
+        {
+          method: "POST",
+          body: {
+            executionId: newExecutionId(),
+            feedUrl: executionForm.elements.feedUrl.value,
+            expectedFeedSha256: plan.feedSha256,
+            expectedSelectionSha256: plan.selectionSha256,
+            executionConfirmed:
+              executionForm.elements.executionConfirmed.checked,
+            items
+          }
+        }
+      );
+      executions.set(plan.id, {
+        execution: payload.execution,
+        executionAvailable: true
+      });
+      renderPlans();
+      setStatus(status, text("rssImportExecutionQueued"));
+    } catch (error) {
+      setStatus(status, friendlyError(error), true);
+      button.disabled = false;
+    }
+  }
+
+  function renderExecutionState(execution) {
+    const state = document.createElement("div");
+    const summary = document.createElement("p");
+    summary.textContent = text("rssImportExecutionSummary", {
+      status: text(
+        `rssImportExecutionStatus_${execution.status}`,
+        execution.status
+      ),
+      copied: formatInteger(execution.copiedItemCount),
+      drafts: formatInteger(execution.draftItemCount),
+      failed: formatInteger(execution.failedItemCount),
+      expected: formatInteger(execution.expectedItemCount)
+    });
+    state.append(summary);
+    const list = document.createElement("ul");
+    for (const item of Array.isArray(execution.items)
+      ? execution.items
+      : []) {
+      const entry = document.createElement("li");
+      entry.textContent = text("rssImportExecutionItemSummary", {
+        slug: item.targetSlug || text("notAvailable"),
+        status: text(
+          `rssImportExecutionItemStatus_${item.status}`,
+          item.status
+        ),
+        bytes: item.copiedBytes
+          ? formatInteger(item.copiedBytes)
+          : text("notAvailable")
+      });
+      if (item.lastErrorCode) {
+        const error = document.createElement("span");
+        error.textContent = ` · ${text(
+          `error_${item.lastErrorCode}`,
+          item.lastErrorCode
+        )}`;
+        entry.append(error);
+      }
+      list.append(entry);
+    }
+    const callout = document.createElement("p");
+    callout.className = "podcast-admin__callout";
+    callout.textContent = text("rssImportExecutionNoPublish");
+    state.append(list, callout);
+    return state;
   }
 
   async function reviewPlan(plan, controls, button) {
@@ -537,5 +780,31 @@ export function mountRssImportWorkbench({
       ? globalThis.crypto.randomUUID().replaceAll("-", "_")
       : `${Date.now()}_${Math.random().toString(36).slice(2)}`;
     return `rss_import_${suffix}`;
+  }
+
+  function newExecutionId() {
+    const suffix = globalThis.crypto?.randomUUID
+      ? globalThis.crypto.randomUUID().replaceAll("-", "_")
+      : `${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    return `rss_execution_${suffix}`;
+  }
+
+  function uniqueImportSlug(title, identity, used) {
+    const base = String(title || "")
+      .normalize("NFKD")
+      .replace(/\p{Mark}/gu, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/gu, "-")
+      .replace(/^-+|-+$/gu, "")
+      .slice(0, 100)
+      || `episode-${String(identity || "").slice(0, 12)}`;
+    let candidate = base;
+    let suffix = 2;
+    while (used.has(candidate)) {
+      candidate = `${base.slice(0, 110)}-${suffix}`;
+      suffix += 1;
+    }
+    used.add(candidate);
+    return candidate;
   }
 }

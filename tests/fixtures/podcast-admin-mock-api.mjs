@@ -104,6 +104,7 @@ let rssImportPlans = [{
   canceledAt: null,
   updatedAt: "2026-07-27T12:00:00.000Z"
 }];
+let rssImportExecution = null;
 
 const announcement = {
   id: "announcement_browser_fixture",
@@ -946,6 +947,72 @@ function responseFor(request) {
       episodeMutationPerformed: false
     });
   }
+  const rssImportExecutionMatch = path.match(
+    /^\/v1\/admin\/rss-import\/plans\/([A-Za-z0-9_-]+)\/execution$/u
+  );
+  if (request.method === "GET" && rssImportExecutionMatch) {
+    const plan = rssImportPlans.find(
+      ({ id }) => id === rssImportExecutionMatch[1]
+    );
+    if (!plan) return json({ error: "rss_import_plan_not_found" }, 404);
+    return json({
+      execution: rssImportExecution?.planId === plan.id
+        ? rssImportExecution
+        : null,
+      executionAvailable: true,
+      publicationMutationPerformed: false,
+      redirectMutationPerformed: false,
+      providerContactPerformed: false
+    });
+  }
+  if (request.method === "POST" && rssImportExecutionMatch) {
+    const plan = rssImportPlans.find(
+      ({ id }) => id === rssImportExecutionMatch[1]
+    );
+    if (!plan) return json({ error: "rss_import_plan_not_found" }, 404);
+    if (plan.status !== "reviewed") {
+      return json({ error: "rss_import_plan_not_reviewed" }, 409);
+    }
+    rssImportExecution = {
+      id: "rss_execution_browser_fixture",
+      planId: plan.id,
+      showId: show.id,
+      status: "queued",
+      expectedItemCount: plan.selectedItemCount,
+      copiedItemCount: 0,
+      draftItemCount: 0,
+      failedItemCount: 0,
+      sourceUrlRetained: true,
+      sourceUrlExpiresAt: "2026-08-04T12:01:00.000Z",
+      lastErrorCode: null,
+      items: plan.items.map((item, ordinal) => ({
+        sourceIdentitySha256: item.sourceIdentitySha256,
+        ordinal,
+        targetEpisodeId: `episode_rss_browser_${ordinal}`,
+        targetSlug: "migratable-episode",
+        sourceLanguage: "es",
+        status: "queued",
+        attemptCount: 0,
+        copiedBytes: null,
+        copiedSha256: null,
+        copiedMimeType: null,
+        episodeId: null,
+        lastErrorCode: null,
+        completedAt: null
+      })),
+      requestedAt: "2026-07-28T12:01:00.000Z",
+      startedAt: null,
+      completedAt: null,
+      updatedAt: "2026-07-28T12:01:00.000Z"
+    };
+    return json({
+      execution: rssImportExecution,
+      idempotent: false,
+      publicationMutationPerformed: false,
+      redirectMutationPerformed: false,
+      providerContactPerformed: false
+    }, 202);
+  }
   const rssImportReviewMatch = path.match(
     /^\/v1\/admin\/rss-import\/plans\/([A-Za-z0-9_-]+)\/review$/u
   );
@@ -978,6 +1045,9 @@ function responseFor(request) {
       ({ id }) => id === rssImportCancelMatch[1]
     );
     if (!plan) return json({ error: "rss_import_plan_not_found" }, 404);
+    if (rssImportExecution?.planId === plan.id) {
+      return json({ error: "rss_import_plan_has_execution" }, 409);
+    }
     const canceled = {
       ...plan,
       status: "canceled",

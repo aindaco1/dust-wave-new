@@ -508,6 +508,8 @@ function startPodcastAdmin(root) {
     formatDate,
     isSuperAdmin,
     selectedShowId: () => selectedShowId,
+    selectedShowLanguage: () =>
+      shows.find(({ id }) => id === selectedShowId)?.language || "es",
     friendlyError,
     setStatus
   });
