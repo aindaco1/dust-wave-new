@@ -1,7 +1,10 @@
 import {
   AdminApiClient as PodcastApiClient,
   AdminApiError as PodcastApiError
-} from "./dust-wave-admin-shell/api-client.js?v=0.6.1";
+} from "./dust-wave-admin-shell/api-client.js?v=0.7.0";
+import {
+  responsiveTurnstileSize
+} from "./dust-wave-admin-shell/turnstile.js?v=0.7.0";
 
 const translate = globalThis.DustWaveI18n?.t || ((key) => key);
 const COUNTRY_CODES = (
@@ -315,6 +318,7 @@ function startPodcastCheckout(rootElement) {
           sitekey: siteKey,
           action: "podcast_subscription_checkout",
           language: document.documentElement.lang || "en",
+          size: responsiveTurnstileSize(turnstileContainer),
           callback: (token) => {
             turnstileToken = token;
             setStatus(status, translate("checkout.verificationComplete"));

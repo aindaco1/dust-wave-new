@@ -770,7 +770,8 @@ const sharedSources = [
   'editor-codec.js',
   'marketing-assets.js',
   'passwordless-session.js',
-  'tabs.js'
+  'tabs.js',
+  'turnstile.js'
 ];
 for (const source of sharedSources) {
   await access(path.join(sharedRoot, 'src', source));

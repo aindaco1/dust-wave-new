@@ -28,6 +28,11 @@ assert.match(
   script,
   sharedAdminShellImportPattern("passwordless-session")
 );
+assert.match(script, sharedAdminShellImportPattern("turnstile"));
+assert.match(
+  script,
+  /size: responsiveTurnstileSize\(turnstileContainer\)/
+);
 assert.match(script, /\/v1\/member\/auth\/start/);
 assert.match(script, /\/v1\/member\/auth\/exchange/);
 assert.match(script, /\/v1\/member\/session/);

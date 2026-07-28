@@ -1,10 +1,13 @@
 import {
   AdminApiClient as PodcastApiClient,
   AdminApiError as PodcastApiError
-} from "./dust-wave-admin-shell/api-client.js?v=0.6.1";
+} from "./dust-wave-admin-shell/api-client.js?v=0.7.0";
 import {
   PasswordlessAdminSession as PasswordlessSession
-} from "./dust-wave-admin-shell/passwordless-session.js?v=0.6.1";
+} from "./dust-wave-admin-shell/passwordless-session.js?v=0.7.0";
+import {
+  responsiveTurnstileSize
+} from "./dust-wave-admin-shell/turnstile.js?v=0.7.0";
 
 const translate = globalThis.DustWaveI18n?.t || ((key) => key);
 const root = document.querySelector("[data-podcast-member]");
@@ -32,6 +35,9 @@ function startPodcastMember(rootElement) {
     "[data-podcast-member-global-status]"
   );
   const authStatus = rootElement.querySelector("[data-podcast-member-auth-status]");
+  const turnstileContainer = rootElement.querySelector(
+    "#podcast-member-turnstile"
+  );
   const sessionSummary = rootElement.querySelector(
     "[data-podcast-member-session-summary]"
   );
@@ -523,6 +529,7 @@ function startPodcastMember(rootElement) {
           sitekey: siteKey,
           action: "podcast_listener_login",
           language: document.documentElement.lang || "en",
+          size: responsiveTurnstileSize(turnstileContainer),
           callback: (token) => { turnstileToken = token; },
           "expired-callback": () => { turnstileToken = ""; },
           "error-callback": () => { turnstileToken = ""; }

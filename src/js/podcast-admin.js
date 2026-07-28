@@ -1,20 +1,20 @@
-import { AdminApiClient, AdminApiError } from "./dust-wave-admin-shell/api-client.js?v=0.6.1";
+import { AdminApiClient, AdminApiError } from "./dust-wave-admin-shell/api-client.js?v=0.7.0";
 import {
   AdminDownloadError,
   requestCredentialedBlob,
   triggerBlobDownload
-} from "./dust-wave-admin-shell/credentialed-download.js?v=0.6.1";
-import { mountRichTextEditor } from "./dust-wave-admin-shell/editor.js?v=0.6.1";
+} from "./dust-wave-admin-shell/credentialed-download.js?v=0.7.0";
+import { mountRichTextEditor } from "./dust-wave-admin-shell/editor.js?v=0.7.0";
 import {
   markdownToEditorHtml
-} from "./dust-wave-admin-shell/editor-codec.js?v=0.6.1";
+} from "./dust-wave-admin-shell/editor-codec.js?v=0.7.0";
 import {
   buildTaggedMarketingUrl,
   createMarketingQr,
   drawQrCanvas,
   qrSvgMarkup,
   safeMarketingFilename
-} from "./dust-wave-admin-shell/marketing-assets.js?v=0.6.1";
+} from "./dust-wave-admin-shell/marketing-assets.js?v=0.7.0";
 import {
   mountSavedMarketingLinks
 } from "./podcast-admin-marketing-links.js";
@@ -46,8 +46,11 @@ import {
   distributionCertificationList,
   renderDistributionLaunchClaim
 } from "./podcast-admin-distribution-certification.js";
-import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js?v=0.6.1";
-import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js?v=0.6.1";
+import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js?v=0.7.0";
+import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js?v=0.7.0";
+import {
+  responsiveTurnstileSize
+} from "./dust-wave-admin-shell/turnstile.js?v=0.7.0";
 
 const TRANSCRIPT_CUES_PER_PAGE = 100;
 const MAXIMUM_ALIGNMENT_BENCHMARK_BYTES = 8 * 1024 * 1024;
@@ -105,6 +108,7 @@ function startPodcastAdmin(root) {
   });
   const session = new PasswordlessAdminSession({ client });
   const authPanel = root.querySelector("[data-podcast-auth]");
+  const turnstileContainer = root.querySelector("#podcast-turnstile");
   const app = root.querySelector("[data-podcast-app]");
   const logoutButton = root.querySelector("[data-podcast-logout]");
   const globalStatus = root.querySelector("[data-podcast-global-status]");
@@ -8597,6 +8601,7 @@ function startPodcastAdmin(root) {
         turnstileWidgetId = globalThis.turnstile.render("#podcast-turnstile", {
           sitekey: siteKey,
           action: "podcast_admin_login",
+          size: responsiveTurnstileSize(turnstileContainer),
           callback: (token) => { turnstileToken = token; },
           "expired-callback": () => { turnstileToken = ""; },
           "error-callback": () => { turnstileToken = ""; }

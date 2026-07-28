@@ -35,6 +35,11 @@ assert.match(page, /data-podcast-checkout-quote/);
 assert.match(page, /aria-live="polite"/);
 assert.match(page, /src="\/js\/podcast-checkout\.js\?v=\{\{ assets\.version/);
 assert.match(script, sharedAdminShellImportPattern("api-client"));
+assert.match(script, sharedAdminShellImportPattern("turnstile"));
+assert.match(
+  script,
+  /size: responsiveTurnstileSize\(turnstileContainer\)/
+);
 
 assert.match(script, /\/v1\/shows\/\$\{encodeURIComponent\(slug\)\}/);
 assert.match(script, /\/tax\/quote/);
