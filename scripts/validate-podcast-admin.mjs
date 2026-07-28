@@ -26,6 +26,13 @@ const adminScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin.js'),
   'utf8'
 );
+const clipPublicationScript = await readFile(
+  path.join(
+    repositoryRoot,
+    'src/js/podcast-admin-clip-publications.js'
+  ),
+  'utf8'
+);
 const audioDerivativeScript = await readFile(
   path.join(
     repositoryRoot,
@@ -336,6 +343,12 @@ assert.match(englishWorkbenchText, /authenticated preview and download/);
 assert.match(adminTemplate, /data-podcast-clip-library-filters/);
 assert.match(adminTemplate, /data-podcast-clip-library/);
 assert.match(englishWorkbenchText, /Find completed captioned clips/);
+assert.match(adminTemplate, /data-podcast-clip-publication-form/);
+assert.match(adminTemplate, /data-podcast-clip-publication-save/);
+assert.match(adminTemplate, /data-podcast-clip-publication-approve/);
+assert.match(adminTemplate, /data-podcast-clip-publication-withdraw/);
+assert.match(englishWorkbenchText, /Staging preview only/);
+assert.match(englishWorkbenchText, /production clip delivery remains disabled/);
 assert.match(adminTemplate, /data-podcast-clip-youtube-form/);
 assert.match(adminTemplate, /data-podcast-clip-youtube-approve/);
 assert.match(englishWorkbenchText, /Never public/);
@@ -689,6 +702,18 @@ assert.match(
 assert.match(adminScript, /saveClipYouTubeDraft/);
 assert.match(adminScript, /approveClipYouTubePublication/);
 assert.match(adminScript, /clip-youtube-publications/);
+assert.match(adminScript, /clip-publications/);
+assert.match(adminScript, /data-podcast-clip-publication-open/);
+assert.match(clipPublicationScript, /mountClipPublications/);
+assert.match(clipPublicationScript, /async function saveDraft/);
+assert.match(clipPublicationScript, /async function approve/);
+assert.match(clipPublicationScript, /async function withdraw/);
+assert.match(clipPublicationScript, /clip-publications/);
+assert.match(clipPublicationScript, /expectedClipRevision/);
+assert.match(adminMockApi, /clip_publication_browser_fixture/);
+assert.match(adminMockApi, /clip-renders\/\$\{clip\.render\.id\}\/publication/);
+assert.match(adminMockApi, /clip-publications\/clip_publication_browser_fixture\/approve/);
+assert.match(adminMockApi, /clip-publications\/clip_publication_browser_fixture\/withdraw/);
 assert.match(adminScript, /buildTaggedMarketingUrl/);
 assert.match(adminScript, /createMarketingQr/);
 assert.match(adminScript, /function publicMarketingEpisodes/);

@@ -43,6 +43,9 @@ import {
   mountPodcastAnalytics
 } from "./podcast-admin-analytics.js";
 import {
+  mountClipPublications
+} from "./podcast-admin-clip-publications.js";
+import {
   distributionCertificationList,
   renderDistributionLaunchClaim
 } from "./podcast-admin-distribution-certification.js";
@@ -508,6 +511,21 @@ function startPodcastAdmin(root) {
     friendlyError,
     setStatus
   });
+  const clipPublications = mountClipPublications({
+    root,
+    client,
+    text: adminText,
+    setStatus,
+    friendlyError,
+    findClip: (clipId) =>
+      [...clipLibraryRows, ...clips].find(({ id }) => id === clipId),
+    applyPublication: applyClipPublication,
+    renderClips() {
+      renderClipList();
+      renderClipLibrary();
+    },
+    canApprove: () => canApproveClipYouTube
+  });
   const notesEditorLabel = adminText("editorEpisodeNotes");
   const notesEditor = mountRichTextEditor(
     root.querySelector("[data-podcast-notes-editor]"),
@@ -686,6 +704,7 @@ function startPodcastAdmin(root) {
     if (distributionFilter) {
       distributionFilter.elements.episodeId.value = "";
     }
+    clipPublications.close();
     closeClipYouTubeForm();
     clearClipLibraryState();
     rssImport.reset({ form: true });
@@ -1134,6 +1153,7 @@ function startPodcastAdmin(root) {
     if (clipPreview) clipPreview.textContent = "";
     setStatus(clipStatus, "");
     clearClipLibraryState();
+    clipPublications.close();
     closeClipYouTubeForm();
     latestProcessorManifest = null;
     sponsorResult?.replaceChildren();
@@ -1152,7 +1172,11 @@ function startPodcastAdmin(root) {
       selectedShowId = shows.some(({ id }) => id === selectedShowId)
         ? selectedShowId
         : shows[0]?.id || "";
-      if (selectedShowId !== previousShowId) clearClipLibraryState();
+      if (selectedShowId !== previousShowId) {
+        clearClipLibraryState();
+        clipPublications.close();
+        closeClipYouTubeForm();
+      }
       renderShows();
       fillShowSelect();
       fillShowForm();
@@ -5678,7 +5702,16 @@ function startPodcastAdmin(root) {
 
   function clipRenderPresentation(clip, surface) {
     const render = clip.render;
+    const publicPublication = clip.publicPublication;
     const youtubePublication = clip.youtubePublication;
+    const publicDetails = publicPublication
+      ? `<p>${escapeHtml(adminText("publicClipSelection", {
+          status: localizedCode(
+            "clipPublicationStatus",
+            publicPublication.status
+          )
+        }))}</p>`
+      : "";
     const youtubeDetails = youtubePublication
       ? `<p>${escapeHtml(adminText("youtubeTest", {
           status: localizedCode("youtubeStatus", youtubePublication.status),
@@ -5706,13 +5739,23 @@ function startPodcastAdmin(root) {
     if (!ready) {
       return {
         renderLabel,
-        details: youtubeDetails,
+        details: `${publicDetails}${youtubeDetails}`,
         actions: "",
         container: ""
       };
     }
     const previewId =
       `${surface}-clip-render-preview-${render.id}`;
+    const publicAction = canEditTranscripts
+      ? `<button
+          class="btn btn-outline-light"
+          type="button"
+          data-podcast-clip-publication-open="${escapeAttribute(clip.id)}">
+          ${escapeHtml(publicPublication
+            ? adminText("reviewPublicClip")
+            : adminText("preparePublicClip"))}
+        </button>`
+      : "";
     const youtubeAction = canEditTranscripts
       ? `<button
           class="btn btn-outline-light"
@@ -5731,6 +5774,7 @@ function startPodcastAdmin(root) {
           · ${formatClipDuration(Number(render.durationMs))}
           · ${formatInteger(render.outputBytes)} bytes
         </p>
+        ${publicDetails}
         ${youtubeDetails}`,
       actions: `
         <button
@@ -5748,6 +5792,7 @@ function startPodcastAdmin(root) {
           download>
           ${escapeHtml(adminText("downloadMp4"))}
         </a>
+        ${publicAction}
         ${youtubeAction}`,
       container: `<div
         id="${escapeAttribute(previewId)}"
@@ -5758,6 +5803,22 @@ function startPodcastAdmin(root) {
   }
 
   function handleClipAction(event, { editable = false } = {}) {
+    const publication = event.target.closest(
+      "[data-podcast-clip-publication-open]"
+    );
+    if (publication) {
+      closeClipYouTubeForm();
+      if (!clipPublications.open(
+        publication.dataset.podcastClipPublicationOpen
+      )) {
+        setStatus(
+          clipLibraryStatus,
+          adminText("currentRenderRequiredForPublicClip"),
+          true
+        );
+      }
+      return true;
+    }
     const youtube = event.target.closest(
       "[data-podcast-clip-youtube-open]"
     );
@@ -5835,6 +5896,17 @@ function startPodcastAdmin(root) {
     container?.querySelectorAll("video").forEach((video) => video.pause());
   }
 
+  function applyClipPublication(renderId, publication) {
+    if (!renderId || !publication) return;
+    for (const collection of [clips, clipLibraryRows]) {
+      for (const clip of collection) {
+        if (clip.render?.id === renderId) {
+          clip.publicPublication = publication;
+        }
+      }
+    }
+  }
+
   function openClipYouTubeForm(clipId) {
     if (!clipYouTubeForm) return;
     const clip = [...clipLibraryRows, ...clips].find(
@@ -5852,6 +5924,7 @@ function startPodcastAdmin(root) {
       );
       return;
     }
+    clipPublications.close();
     selectedClipYouTube = clip;
     const publication = clip.youtubePublication;
     clipYouTubePublicationId =

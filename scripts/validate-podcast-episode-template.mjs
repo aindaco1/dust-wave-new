@@ -116,6 +116,12 @@ assert.match(
   /data-endpoint="https:\/\/feeds\.dustwave\.xyz\/v1\/shows\/opera-en-la-selva\/episodes\/una-charla-sobre-codigo\/chapters\.json"/
 );
 assert.match(rendered, /src="\/js\/podcast-chapters\.js\?v=dev" defer/);
+assert.match(
+  rendered,
+  /data-endpoint="https:\/\/feeds\.dustwave\.xyz\/v1\/shows\/opera-en-la-selva\/episodes\/una-charla-sobre-codigo\/clips"/
+);
+assert.match(rendered, />Clips</);
+assert.match(rendered, /src="\/js\/podcast-clips\.js\?v=dev" defer/);
 assert.match(rendered, /src="\/js\/podcast-transcript\.js\?v=dev" defer/);
 
 const structuredDataMatch = rendered.match(
@@ -214,7 +220,7 @@ assert.match(renderedPremiumTeaser, /Extra &lt;img src=x onerror=alert\(1\)&gt;/
 assert.doesNotMatch(renderedPremiumTeaser, /<img src=x|<script>alert\(1\)/);
 assert.doesNotMatch(
   renderedPremiumTeaser,
-  /audio-card|data-audio|media\.dustwave|\/transcripts|\/chapters|podcast-transcript\.js|podcast-chapters\.js/
+  /audio-card|data-audio|media\.dustwave|\/transcripts|\/chapters|\/clips|podcast-transcript\.js|podcast-chapters\.js|podcast-clips\.js/
 );
 const premiumStructuredDataMatch = renderedPremiumTeaser.match(
   /<script type="application\/ld\+json">\s*([\s\S]*?)\s*<\/script>/

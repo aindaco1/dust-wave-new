@@ -146,7 +146,14 @@ gulp.task('purgecss', function purgeCssTask() {
           `${DIR.dist}/js/**/*.js`,
           `${DIR.src}/news/podcasts/**/*.njk`
         ],
-        safelist: ['collapsed', 'collapse', 'active', 'show', 'collapsing']
+        safelist: [
+          'collapsed',
+          'collapse',
+          'active',
+          'show',
+          'collapsing',
+          /^podcast-clips__/
+        ]
       })
     )
     .pipe(dest(`${DIR.dist}/css`));

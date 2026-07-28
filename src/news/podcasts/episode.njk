@@ -90,6 +90,27 @@ eleventyComputed:
           data-podcast-chapters-content
           hidden></div>
       </section>
+      {% set clipUrl = episode.clipUrl or (podcastApi.apiOrigin + "/v1/shows/" + episode.showSlug + "/episodes/" + episode.slug + "/clips") %}
+      <section
+        class="podcast-clips"
+        data-podcast-clips
+        data-endpoint="{{ clipUrl }}"
+        data-show-slug="{{ episode.showSlug }}"
+        data-episode-slug="{{ episode.slug }}"
+        aria-labelledby="podcast-clips-heading"
+        hidden>
+        <h2 id="podcast-clips-heading">{{ i18n | t(language, "podcast.episode.clips") }}</h2>
+        <p
+          class="podcast-clips__status"
+          data-podcast-clips-status
+          aria-live="polite">
+          {{ i18n | t(language, "podcast.episode.clipsEmpty") }}
+        </p>
+        <div
+          class="podcast-clips__content"
+          data-podcast-clips-content
+          hidden></div>
+      </section>
       {% set transcriptUrl = episode.transcriptUrl or ("https://feeds.dustwave.xyz/v1/shows/" + episode.showSlug + "/episodes/" + episode.slug + "/transcripts") %}
       <section
         class="podcast-transcript"
@@ -117,6 +138,7 @@ eleventyComputed:
 
 {% if not isPremiumTeaser %}
 <script src="/js/podcast-chapters.js?v={{ assets.version | default('dev') }}" defer></script>
+<script src="/js/podcast-clips.js?v={{ assets.version | default('dev') }}" defer></script>
 <script src="/js/podcast-transcript.js?v={{ assets.version | default('dev') }}" defer></script>
 {% endif %}
 <script type="application/ld+json">

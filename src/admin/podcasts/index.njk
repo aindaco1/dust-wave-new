@@ -700,6 +700,42 @@ eleventyComputed:
             <p class="podcast-admin__status" data-podcast-clip-library-status role="status" aria-live="polite"></p>
           </form>
           <div class="podcast-admin__clip-list" data-podcast-clip-library></div>
+          <form class="podcast-admin__form" data-podcast-clip-publication-form hidden>
+            <div class="podcast-admin__panel-heading">
+              <div>
+                <h3>{{ workbench.marketing.publicClipHeading }}</h3>
+                <p data-podcast-clip-publication-meta></p>
+              </div>
+              <p class="podcast-admin__pill">{{ workbench.marketing.stagingPreview }}</p>
+            </div>
+            <div class="podcast-admin__callout">
+              <p>{{ workbench.marketing.publicClipCallout }}</p>
+            </div>
+            <div class="podcast-admin__field-grid">
+              <label>{{ workbench.marketing.publicSlug }}
+                <input
+                  name="publicSlug"
+                  maxlength="100"
+                  pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
+                  autocomplete="off"
+                  spellcheck="false"
+                  required>
+              </label>
+              <label>{{ workbench.marketing.clipPublicTitle }}
+                <input name="title" maxlength="160" required>
+              </label>
+              <label class="podcast-admin__field-wide">{{ workbench.marketing.publicDescription }}
+                <textarea name="description" maxlength="1000" rows="4"></textarea>
+              </label>
+            </div>
+            <div class="podcast-admin__clip-actions">
+              <button class="btn btn-outline-light" type="submit" data-podcast-clip-publication-save>{{ workbench.marketing.preparePublicClip }}</button>
+              <button class="btn btn-danger" type="button" data-podcast-clip-publication-approve hidden>{{ workbench.marketing.approvePublicClip }}</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-clip-publication-withdraw hidden>{{ workbench.marketing.withdrawPublicClip }}</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-clip-publication-close>{{ workbench.marketing.close }}</button>
+            </div>
+            <p class="podcast-admin__status" data-podcast-clip-publication-status role="status" aria-live="polite"></p>
+          </form>
           <form class="podcast-admin__form" data-podcast-clip-youtube-form hidden>
             <div class="podcast-admin__panel-heading">
               <div>

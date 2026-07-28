@@ -43,6 +43,34 @@ const episode = {
     "https://dustwave.xyz/news/podcasts/opera-en-la-selva/episodio-de-prueba/"
 };
 
+const clip = {
+  id: "clip_browser_fixture",
+  episodeId: episode.id,
+  episodeTitle: episode.title,
+  title: "La selva también escucha",
+  revision: 1,
+  status: "approved",
+  aspectRatio: "9:16",
+  captionLanguage: "es",
+  boundaryMode: "segment",
+  durationMs: 24_000,
+  render: {
+    id: "clip_render_browser_fixture",
+    clipRevision: 1,
+    status: "ready",
+    width: 1_080,
+    height: 1_920,
+    durationMs: 24_000,
+    outputBytes: 1_048_576,
+    mediaPath:
+      "/v1/admin/clip-renders/clip_render_browser_fixture/media",
+    downloadPath:
+      "/v1/admin/clip-renders/clip_render_browser_fixture/media?download=1"
+  },
+  youtubePublication: null
+};
+let clipPublication = null;
+
 const announcement = {
   id: "announcement_browser_fixture",
   showId: show.id,
@@ -1311,9 +1339,77 @@ function responseFor(request) {
   }
   if (
     request.method === "GET"
+    && path === `/v1/admin/shows/${show.id}/clips`
+  ) {
+    return json({
+      clips: [{ ...clip, publicPublication: clipPublication }],
+      pagination: { limit: 24, nextCursor: null }
+    });
+  }
+  if (
+    request.method === "POST"
+    && path === `/v1/admin/clip-renders/${clip.render.id}/publication`
+  ) {
+    clipPublication = {
+      id: "clip_publication_browser_fixture",
+      showId: show.id,
+      episodeId: episode.id,
+      clipId: clip.id,
+      clipRevision: clip.revision,
+      renderId: clip.render.id,
+      publicSlug: "la-selva-tambien-escucha",
+      title: clip.title,
+      description: "",
+      status: "draft",
+      aspectRatio: clip.aspectRatio,
+      width: clip.render.width,
+      height: clip.render.height,
+      durationMs: clip.durationMs,
+      captionLanguage: clip.captionLanguage,
+      evidenceCurrent: true,
+      publicPath:
+        "/v1/shows/opera-en-la-selva/episodes/episodio-de-prueba"
+        + "/clips/la-selva-tambien-escucha.mp4",
+      requestedAt: "2026-07-28T12:00:00.000Z",
+      approvedAt: null,
+      withdrawnAt: null,
+      updatedAt: "2026-07-28T12:00:00.000Z"
+    };
+    return json({ publication: clipPublication, idempotent: false });
+  }
+  if (
+    request.method === "POST"
+    && path ===
+      "/v1/admin/clip-publications/clip_publication_browser_fixture/approve"
+  ) {
+    clipPublication = {
+      ...clipPublication,
+      status: "approved",
+      approvedAt: "2026-07-28T12:01:00.000Z",
+      updatedAt: "2026-07-28T12:01:00.000Z"
+    };
+    return json({ publication: clipPublication, idempotent: false });
+  }
+  if (
+    request.method === "POST"
+    && path ===
+      "/v1/admin/clip-publications/clip_publication_browser_fixture/withdraw"
+  ) {
+    clipPublication = {
+      ...clipPublication,
+      status: "withdrawn",
+      withdrawnAt: "2026-07-28T12:02:00.000Z",
+      updatedAt: "2026-07-28T12:02:00.000Z"
+    };
+    return json({ publication: clipPublication, idempotent: false });
+  }
+  if (
+    request.method === "GET"
     && path === `/v1/admin/episodes/${episode.id}/clips`
   ) {
-    return json({ clips: [] });
+    return json({
+      clips: [{ ...clip, publicPublication: clipPublication }]
+    });
   }
   if (
     request.method === "GET"
