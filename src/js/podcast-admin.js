@@ -23,7 +23,7 @@ import {
   renderShowCatalog
 } from "./podcast-admin-catalog.js";
 import {
-  mountRssImportPreview
+  mountRssImportWorkbench
 } from "./podcast-admin-rss-import.js";
 import {
   buildEpisodeYouTubeControls,
@@ -500,7 +500,7 @@ function startPodcastAdmin(root) {
   let turnstileWidgetId;
   let turnstileInitialization;
 
-  const rssImport = mountRssImportPreview({
+  const rssImport = mountRssImportWorkbench({
     root,
     client,
     text: adminText,

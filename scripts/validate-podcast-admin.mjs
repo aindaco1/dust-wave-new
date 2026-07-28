@@ -196,6 +196,7 @@ assert.match(adminTemplate, /data-podcast-episode-form/);
 assert.match(adminTemplate, /data-podcast-upload-form/);
 assert.match(adminTemplate, /data-podcast-rss-import-form/);
 assert.match(adminTemplate, /data-podcast-rss-import-preview/);
+assert.match(adminTemplate, /data-podcast-rss-import-plans/);
 assert.match(
   englishWorkbench.overview.importPreviewOnly,
   /no episode, media object, redirect, directory, or provider state will change/
@@ -209,8 +210,32 @@ assert.match(
   /\/rss-import\/preview/
 );
 assert.match(
+  rssImportScript,
+  /\/rss-import\/plans/
+);
+assert.match(
+  rssImportScript,
+  /expectedFeedSha256:[\s\S]+selectedSourceIdentitySha256/
+);
+assert.match(
+  rssImportScript,
+  /expectedSelectionSha256:[\s\S]+reviewConfirmed: true/
+);
+assert.match(
+  englishWorkbench.overview.importPlansZeroCopy,
+  /never copies audio, creates an episode, changes a redirect, or contacts/
+);
+assert.match(
+  spanishWorkbench.overview.importPlansZeroCopy,
+  /nunca copia audio, crea un episodio, cambia una redirección ni contacta/
+);
+assert.match(
   adminMockApi,
   /dustwave-rss-import-preview-v1/
+);
+assert.match(
+  adminMockApi,
+  /mediaCopyPerformed: false[\s\S]+episodeMutationPerformed: false/
 );
 assert.doesNotMatch(
   rssImportScript,

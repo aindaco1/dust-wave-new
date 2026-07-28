@@ -70,6 +70,40 @@ const clip = {
   youtubePublication: null
 };
 let clipPublication = null;
+let rssImportPlans = [{
+  id: "rss_import_browser_fixture",
+  showId: show.id,
+  status: "draft",
+  requestedFeedUrl: "https://podcast.example.org/feed.xml",
+  resolvedFeedUrl: "https://feeds.example.org/opera.xml",
+  feedSha256: sha("e"),
+  selectionSha256: sha("9"),
+  feedTitle: "Authorized source podcast",
+  feedItemCount: 2,
+  migratableItemCount: 1,
+  selectedItemCount: 1,
+  items: [{
+    sourceIdentitySha256: sha("f"),
+    ordinal: 0,
+    metadataSha256: sha("8"),
+    title: "Migratable episode",
+    summary: "One validated audio item.",
+    publishedAt: "2026-07-26T12:00:00.000Z",
+    durationSeconds: 754,
+    explicit: false,
+    canonicalUrl: "https://podcast.example.org/episodes/migratable",
+    enclosure: {
+      url: "https://cdn.example.org/migratable.mp3",
+      mimeType: "audio/mpeg",
+      bytes: 1_234_567
+    },
+    warnings: []
+  }],
+  requestedAt: "2026-07-27T12:00:00.000Z",
+  reviewedAt: null,
+  canceledAt: null,
+  updatedAt: "2026-07-27T12:00:00.000Z"
+}];
 
 const announcement = {
   id: "announcement_browser_fixture",
@@ -877,6 +911,87 @@ function responseFor(request) {
           maximumPreviewItems: 25
         }
       }
+    });
+  }
+  if (
+    request.method === "GET"
+    && path === `/v1/admin/shows/${show.id}/rss-import/plans`
+  ) {
+    return json({
+      plans: rssImportPlans,
+      limit: 10,
+      mediaCopyPerformed: false,
+      episodeMutationPerformed: false
+    });
+  }
+  if (
+    request.method === "POST"
+    && path === `/v1/admin/shows/${show.id}/rss-import/plans`
+  ) {
+    const prepared = {
+      ...rssImportPlans[0],
+      id: "rss_import_browser_prepared",
+      status: "draft",
+      requestedAt: "2026-07-28T12:00:00.000Z",
+      updatedAt: "2026-07-28T12:00:00.000Z"
+    };
+    rssImportPlans = [
+      prepared,
+      ...rssImportPlans.filter(({ id }) => id !== prepared.id)
+    ];
+    return json({
+      plan: prepared,
+      idempotent: false,
+      mediaCopyPerformed: false,
+      episodeMutationPerformed: false
+    });
+  }
+  const rssImportReviewMatch = path.match(
+    /^\/v1\/admin\/rss-import\/plans\/([A-Za-z0-9_-]+)\/review$/u
+  );
+  if (request.method === "POST" && rssImportReviewMatch) {
+    const plan = rssImportPlans.find(
+      ({ id }) => id === rssImportReviewMatch[1]
+    );
+    if (!plan) return json({ error: "rss_import_plan_not_found" }, 404);
+    const reviewed = {
+      ...plan,
+      status: "reviewed",
+      reviewedAt: "2026-07-28T12:01:00.000Z",
+      updatedAt: "2026-07-28T12:01:00.000Z"
+    };
+    rssImportPlans = rssImportPlans.map((candidate) =>
+      candidate.id === reviewed.id ? reviewed : candidate
+    );
+    return json({
+      plan: reviewed,
+      idempotent: false,
+      mediaCopyPerformed: false,
+      episodeMutationPerformed: false
+    });
+  }
+  const rssImportCancelMatch = path.match(
+    /^\/v1\/admin\/rss-import\/plans\/([A-Za-z0-9_-]+)\/cancel$/u
+  );
+  if (request.method === "POST" && rssImportCancelMatch) {
+    const plan = rssImportPlans.find(
+      ({ id }) => id === rssImportCancelMatch[1]
+    );
+    if (!plan) return json({ error: "rss_import_plan_not_found" }, 404);
+    const canceled = {
+      ...plan,
+      status: "canceled",
+      canceledAt: "2026-07-28T12:02:00.000Z",
+      updatedAt: "2026-07-28T12:02:00.000Z"
+    };
+    rssImportPlans = rssImportPlans.map((candidate) =>
+      candidate.id === canceled.id ? canceled : candidate
+    );
+    return json({
+      plan: canceled,
+      idempotent: false,
+      mediaCopyPerformed: false,
+      episodeMutationPerformed: false
     });
   }
   if (

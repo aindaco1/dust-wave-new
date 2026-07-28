@@ -124,6 +124,12 @@ eleventyComputed:
             <p class="podcast-admin__status" data-podcast-rss-import-status role="status" aria-live="polite"></p>
             <div class="podcast-admin__readiness-groups" data-podcast-rss-import-preview aria-live="polite"></div>
           </form>
+          <section class="podcast-admin__form podcast-admin__form--settings" data-podcast-rss-import-plan-section hidden>
+            <h3>{{ workbench.overview.importPlansHeading }}</h3>
+            <p>{{ workbench.overview.importPlansIntro }}</p>
+            <p class="podcast-admin__callout">{{ workbench.overview.importPlansZeroCopy }}</p>
+            <div class="podcast-admin__readiness-list" data-podcast-rss-import-plans aria-live="polite"></div>
+          </section>
         </section>
 
         <section id="podcast-panel-episodes" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-episodes" hidden>
