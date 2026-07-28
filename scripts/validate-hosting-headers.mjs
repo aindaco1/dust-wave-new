@@ -14,6 +14,21 @@ const requiredPrivateHeaders = [
   /Permissions-Policy: camera=\(\), geolocation=\(\), microphone=\(\), payment=\(\), usb=\(\)/,
   /X-Robots-Tag: noindex, nofollow, noarchive/
 ];
+const requiredCspDirectives = [
+  "default-src 'self'",
+  "base-uri 'none'",
+  "connect-src 'self' https://challenges.cloudflare.com https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz",
+  "font-src 'self'",
+  "form-action 'none'",
+  "frame-ancestors 'none'",
+  "frame-src https://challenges.cloudflare.com",
+  "img-src 'self' data: blob: https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz https://media.dustwave.xyz",
+  "media-src 'self' blob: https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz https://media.dustwave.xyz",
+  "object-src 'none'",
+  "script-src 'self' https://challenges.cloudflare.com",
+  "style-src 'self' 'unsafe-inline'",
+  "worker-src 'self' blob:"
+];
 
 function headerBlockFor(route) {
   const start = headers.indexOf(`${route}\n`);
@@ -31,6 +46,16 @@ for (const route of [
   const block = headerBlockFor(route);
   for (const expected of requiredPrivateHeaders) {
     assert.match(block, expected, `${route} is missing ${expected}`);
+  }
+  const csp = block
+    .split("\n")
+    .find((line) => line.trimStart().startsWith("Content-Security-Policy:"));
+  assert(csp, `${route} is missing its Content Security Policy`);
+  for (const directive of requiredCspDirectives) {
+    assert(
+      csp.includes(`${directive};`) || csp.endsWith(directive),
+      `${route} CSP is missing ${directive}`
+    );
   }
 }
 
@@ -62,6 +87,11 @@ assert.match(headers, /https:\/\/:project\.pages\.dev\/\*/);
 assert.match(headers, /https:\/\/:version\.:project\.pages\.dev\/\*/);
 assert.doesNotMatch(headers, /\/news\/podcasts\/embed/);
 assert.doesNotMatch(headers, /Access-Control-Allow-Origin/);
+assert.equal(
+  (headers.match(/^  Content-Security-Policy:/gm) || []).length,
+  4,
+  "CSP must remain scoped to the four authenticated shells"
+);
 assert.match(gulpfile, /src\(\['\.\/CNAME', '\.\/_headers'\]/);
 
 console.log("Hosting header validation passed.");
