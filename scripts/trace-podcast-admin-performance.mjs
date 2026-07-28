@@ -7,7 +7,8 @@ import {
   readdir,
   readFile,
   rm,
-  stat
+  stat,
+  writeFile
 } from "node:fs/promises";
 import { homedir, tmpdir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
@@ -230,43 +231,260 @@ function delay(milliseconds) {
   return new Promise((resolveDelay) => setTimeout(resolveDelay, milliseconds));
 }
 
-async function waitForTrace(
-  outputPath,
+async function connectToCdp(
+  profileDirectory,
   child,
-  durationSeconds,
   getLaunchError
 ) {
-  const deadline = Date.now() + durationSeconds * 1_000 + 15_000;
-  let previousSize = -1;
-  let stableChecks = 0;
-
+  const deadline = Date.now() + 15_000;
   while (Date.now() < deadline) {
     if (getLaunchError()) {
       throw getLaunchError();
     }
     if (child.exitCode !== null) {
-      break;
+      throw new Error("Chrome exited before DevTools became available.");
     }
     try {
-      const details = await stat(outputPath);
-      stableChecks = details.size > 1_024 && details.size === previousSize
-        ? stableChecks + 1
-        : 0;
-      previousSize = details.size;
-      if (stableChecks >= 2) {
-        return details;
+      const activePort = await readFile(
+        join(profileDirectory, "DevToolsActivePort"),
+        "utf8"
+      );
+      const port = Number(activePort.split(/\r?\n/, 1)[0]);
+      if (Number.isInteger(port) && port > 0 && port < 65_536) {
+        const response = await fetch(
+          `http://127.0.0.1:${port}/json/list`,
+          { signal: AbortSignal.timeout(2_000) }
+        );
+        if (!response.ok) {
+          throw new Error(`DevTools target lookup failed (${response.status}).`);
+        }
+        const targets = await response.json();
+        const page = targets.find((target) =>
+          target.type === "page"
+          && typeof target.webSocketDebuggerUrl === "string"
+        );
+        if (page) {
+          return new CdpSession(page.webSocketDebuggerUrl);
+        }
       }
     } catch {
-      // Chrome writes the trace only after the configured recording duration.
+      // Chrome may not have written its DevTools endpoint yet.
     }
-    await delay(500);
+    await delay(100);
+  }
+  throw new Error("Chrome did not expose a DevTools page within 15 seconds.");
+}
+
+class CdpSession {
+  constructor(url) {
+    if (typeof WebSocket !== "function") {
+      throw new Error(
+        "This trace command requires the Node.js WebSocket runtime."
+      );
+    }
+    this.nextId = 1;
+    this.pending = new Map();
+    this.queuedEvents = new Map();
+    this.eventWaiters = new Map();
+    this.socket = new WebSocket(url);
+    this.ready = new Promise((resolveReady, rejectReady) => {
+      const timeout = setTimeout(
+        () => rejectReady(new Error("DevTools WebSocket connection timed out.")),
+        10_000
+      );
+      this.socket.addEventListener("open", () => {
+        clearTimeout(timeout);
+        resolveReady();
+      }, { once: true });
+      this.socket.addEventListener("error", () => {
+        clearTimeout(timeout);
+        rejectReady(new Error("DevTools WebSocket connection failed."));
+      }, { once: true });
+    });
+    this.socket.addEventListener("message", (event) => {
+      this.receive(event.data);
+    });
+    this.socket.addEventListener("close", () => {
+      const error = new Error("DevTools WebSocket closed unexpectedly.");
+      for (const pending of this.pending.values()) {
+        clearTimeout(pending.timeout);
+        pending.reject(error);
+      }
+      this.pending.clear();
+    });
   }
 
-  try {
-    return await stat(outputPath);
-  } catch {
-    throw new Error("Chrome exited without producing a trace file.");
+  async send(method, params = {}, timeoutMs = 30_000) {
+    await this.ready;
+    const id = this.nextId;
+    this.nextId += 1;
+    return new Promise((resolveResult, rejectResult) => {
+      const timeout = setTimeout(() => {
+        this.pending.delete(id);
+        rejectResult(new Error(`DevTools command timed out: ${method}.`));
+      }, timeoutMs);
+      this.pending.set(id, {
+        method,
+        reject: rejectResult,
+        resolve: resolveResult,
+        timeout
+      });
+      this.socket.send(JSON.stringify({ id, method, params }));
+    });
   }
+
+  async waitForEvent(method, timeoutMs = 30_000) {
+    await this.ready;
+    const queued = this.queuedEvents.get(method);
+    if (queued?.length) {
+      return queued.shift();
+    }
+    return new Promise((resolveEvent, rejectEvent) => {
+      const timeout = setTimeout(() => {
+        const waiters = this.eventWaiters.get(method) ?? [];
+        this.eventWaiters.set(
+          method,
+          waiters.filter((waiter) => waiter.resolve !== resolveEvent)
+        );
+        rejectEvent(new Error(`DevTools event timed out: ${method}.`));
+      }, timeoutMs);
+      const waiters = this.eventWaiters.get(method) ?? [];
+      waiters.push({
+        resolve: resolveEvent,
+        reject: rejectEvent,
+        timeout
+      });
+      this.eventWaiters.set(method, waiters);
+    });
+  }
+
+  close() {
+    if (this.socket.readyState < WebSocket.CLOSING) {
+      this.socket.close();
+    }
+  }
+
+  receive(raw) {
+    let message;
+    try {
+      message = JSON.parse(typeof raw === "string" ? raw : String(raw));
+    } catch {
+      return;
+    }
+    if (Number.isInteger(message.id)) {
+      const pending = this.pending.get(message.id);
+      if (!pending) return;
+      this.pending.delete(message.id);
+      clearTimeout(pending.timeout);
+      if (message.error) {
+        pending.reject(
+          new Error(
+            `DevTools ${pending.method} failed: `
+            + String(message.error.message || "unknown error")
+          )
+        );
+      } else {
+        pending.resolve(message.result ?? {});
+      }
+      return;
+    }
+    if (!message.method) return;
+    const waiters = this.eventWaiters.get(message.method) ?? [];
+    const waiter = waiters.shift();
+    if (waiter) {
+      clearTimeout(waiter.timeout);
+      waiter.resolve(message.params ?? {});
+      this.eventWaiters.set(message.method, waiters);
+      return;
+    }
+    const queued = this.queuedEvents.get(message.method) ?? [];
+    queued.push(message.params ?? {});
+    this.queuedEvents.set(message.method, queued.slice(-10));
+  }
+}
+
+async function captureTrace({
+  cdp,
+  durationSeconds,
+  outputPath,
+  url,
+  viewport
+}) {
+  const mobile = viewport.width < 768;
+  await cdp.send("Page.enable");
+  await cdp.send("Runtime.enable");
+  await cdp.send("Emulation.setDeviceMetricsOverride", {
+    width: viewport.width,
+    height: viewport.height,
+    deviceScaleFactor: 1,
+    mobile,
+    screenWidth: viewport.width,
+    screenHeight: viewport.height,
+    positionX: 0,
+    positionY: 0,
+    dontSetVisibleSize: false
+  });
+  await cdp.send("Emulation.setTouchEmulationEnabled", {
+    enabled: mobile,
+    maxTouchPoints: mobile ? 5 : 1
+  });
+  await cdp.send("Tracing.start", {
+    categories: TRACE_CATEGORIES,
+    options: "record-as-much-as-possible",
+    transferMode: "ReturnAsStream"
+  });
+  const navigation = await cdp.send("Page.navigate", { url });
+  if (navigation.errorText) {
+    throw new Error(`Chrome navigation failed: ${navigation.errorText}.`);
+  }
+  await delay(durationSeconds * 1_000);
+  const measured = await cdp.send("Runtime.evaluate", {
+    expression:
+      "({ innerWidth, innerHeight, "
+      + "scrollWidth: document.documentElement.scrollWidth })",
+    returnByValue: true
+  });
+  const observed = measured.result?.value;
+  if (
+    observed?.innerWidth !== viewport.width
+    || observed?.innerHeight !== viewport.height
+    || observed?.scrollWidth > viewport.width
+  ) {
+    throw new Error(
+      "Chrome did not honor the exact requested viewport or the page "
+      + "overflowed horizontally. "
+      + `Expected ${viewport.width}x${viewport.height}; observed `
+      + `${observed?.innerWidth ?? "unknown"}x`
+      + `${observed?.innerHeight ?? "unknown"} with `
+      + `${observed?.scrollWidth ?? "unknown"}px document width.`
+    );
+  }
+  const tracingComplete = cdp.waitForEvent(
+    "Tracing.tracingComplete",
+    30_000
+  );
+  await cdp.send("Tracing.end");
+  const completed = await tracingComplete;
+  if (!completed.stream) {
+    throw new Error("Chrome completed tracing without a result stream.");
+  }
+  const chunks = [];
+  while (true) {
+    const result = await cdp.send(
+      "IO.read",
+      { handle: completed.stream, size: 1_048_576 },
+      30_000
+    );
+    chunks.push(
+      result.base64Encoded
+        ? Buffer.from(result.data, "base64")
+        : Buffer.from(result.data, "utf8")
+    );
+    if (result.eof) break;
+  }
+  await cdp.send("IO.close", { handle: completed.stream });
+  await writeFile(outputPath, Buffer.concat(chunks), { mode: 0o600 });
+  return observed;
 }
 
 async function stopChrome(child) {
@@ -377,13 +595,10 @@ async function main() {
     "--disable-extensions",
     "--disable-sync",
     "--metrics-recording-only",
+    "--remote-debugging-port=0",
     `--user-data-dir=${profileDirectory}`,
-    `--window-size=${viewport.width},${viewport.height}`,
-    `--trace-startup=${TRACE_CATEGORIES}`,
-    `--trace-startup-duration=${durationSeconds}`,
-    `--trace-startup-file=${outputPath}`,
-    "--trace-startup-format=json",
-    url
+    `--window-size=${Math.max(viewport.width, 500)},${viewport.height}`,
+    "about:blank"
   ];
 
   const child = spawn(chromePath, chromeArguments, {
@@ -399,20 +614,31 @@ async function main() {
     stderr = `${stderr}${chunk}`.slice(-8_192);
   });
 
+  let cdp;
   try {
-    const traceDetails = await waitForTrace(
-      outputPath,
+    cdp = await connectToCdp(
+      profileDirectory,
       child,
-      durationSeconds,
       () => launchError
     );
+    const observed = await captureTrace({
+      cdp,
+      durationSeconds,
+      outputPath,
+      url,
+      viewport
+    });
+    cdp.close();
     await stopChrome(child);
     await verifyJsonTrace(outputPath, url);
+    const traceDetails = await stat(outputPath);
     process.stdout.write(
       [
         "Podcast Admin Chrome trace captured.",
         `URL: ${url}`,
         `Viewport: ${viewport.width}x${viewport.height}`,
+        `Verified CSS viewport: ${observed.innerWidth}x${observed.innerHeight}`,
+        `Document width: ${observed.scrollWidth}px`,
         `Duration: ${durationSeconds}s`,
         `Trace: ${outputPath}`,
         `Size: ${traceDetails.size.toLocaleString("en-US")} bytes`,
@@ -423,11 +649,13 @@ async function main() {
       ].join("\n")
     );
   } catch (error) {
+    cdp?.close();
     await stopChrome(child);
     await rm(outputPath, { force: true });
     const details = stderr.trim() ? `\nChrome output:\n${stderr.trim()}` : "";
     throw new Error(`${error.message}${details}`);
   } finally {
+    cdp?.close();
     await rm(profileDirectory, { recursive: true, force: true });
   }
 }

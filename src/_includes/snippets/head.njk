@@ -42,10 +42,14 @@
   <title>{{ title or metadata.title }}</title>
   <!-- build:css -->
   <link rel="stylesheet" href="/css/theme.css?v={{ assets.version | default('dev') }}">
-   <!-- endbuild -->
+  <!-- endbuild -->
   {% include 'snippets/gif-hover-styles.njk' %}
+  {% if not disableTypekit %}
   <link rel="stylesheet" href="https://use.typekit.net/hoj2yet.css">
+  {% endif %}
+  {% if not disableFontAwesome %}
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  {% endif %}
 
 {% if customFont %}
    <style>

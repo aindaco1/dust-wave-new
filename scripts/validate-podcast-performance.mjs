@@ -38,6 +38,26 @@ assert.match(
   /{% if not disableLegacyMediaPreconnects %}[\s\S]+stitcher\.simplecastaudio\.com[\s\S]+{% endif %}/,
   "legacy media preconnects must remain suppressible on Podcast surfaces"
 );
+assert.match(
+  head,
+  /{% if not disableFontAwesome %}[\s\S]+cdnjs\.cloudflare\.com\/ajax\/libs\/font-awesome\/6\.5\.2\/css\/all\.min\.css[\s\S]+{% endif %}/,
+  "Font Awesome must remain suppressible on icon-free performance surfaces"
+);
+assert.match(
+  head,
+  /{% if not disableTypekit %}[\s\S]+use\.typekit\.net\/hoj2yet\.css[\s\S]+{% endif %}/,
+  "Typekit must remain suppressible on pages that use only system fonts"
+);
+assert.match(
+  admin,
+  /disableFontAwesome: true/,
+  "Podcast Admin must not block first paint on its unused icon font"
+);
+assert.match(
+  admin,
+  /disableTypekit: true/,
+  "Podcast Admin must not block first paint on its unused brand font"
+);
 for (const [name, template] of [
   ["show", show],
   ["admin", admin],
@@ -119,6 +139,16 @@ assert.match(
   tracer,
   /--disable-extensions/,
   "performance traces must not load personal browser extensions"
+);
+assert.match(
+  tracer,
+  /Emulation\.setDeviceMetricsOverride[\s\S]+observed\?\.innerWidth !== viewport\.width[\s\S]+observed\?\.innerHeight !== viewport\.height[\s\S]+observed\?\.scrollWidth > viewport\.width/,
+  "performance traces must verify the exact CSS viewport and horizontal fit"
+);
+assert.match(
+  tracer,
+  /Tracing\.start[\s\S]+Page\.navigate[\s\S]+Tracing\.end[\s\S]+IO\.read/,
+  "performance traces must capture navigation through a bounded CDP stream"
 );
 assert.match(
   tracer,
