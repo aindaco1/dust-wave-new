@@ -597,6 +597,17 @@
   margin: 0;
 }
 
+.podcast-admin__distribution-claim-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--dw-admin-space-sm);
+}
+
+.podcast-admin__distribution-claim-actions .podcast-admin__status {
+  flex: 1 1 16rem;
+}
+
 .podcast-admin__certification-list {
   display: grid;
   gap: var(--dw-admin-space-xs);

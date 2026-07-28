@@ -6776,7 +6776,8 @@ function startPodcastAdmin(root) {
         text: adminText,
         formatDate,
         formatInteger,
-        badge: distributionBadge
+        badge: distributionBadge,
+        canValidate: canOperateSelectedShowPublication()
       })
     );
 
@@ -7468,6 +7469,13 @@ function startPodcastAdmin(root) {
       });
       return;
     }
+    const feedValidation = event.target.closest(
+      "[data-podcast-feed-validation-retry]"
+    );
+    if (feedValidation) {
+      await revalidateCanonicalFeed(feedValidation);
+      return;
+    }
     const retry = event.target.closest("[data-podcast-release-retry]");
     if (retry) {
       await retryReleaseChannel(retry);
@@ -7497,6 +7505,33 @@ function startPodcastAdmin(root) {
         ),
         true
       );
+    }
+  }
+
+  async function revalidateCanonicalFeed(button) {
+    if (!canOperateSelectedShowPublication() || !selectedShowId) return;
+    const status = button.parentElement?.querySelector(
+      "[data-podcast-feed-validation-status]"
+    );
+    button.disabled = true;
+    setStatus(status, adminText("validatingRssFeed"));
+    try {
+      const result = await client.request(
+        `/v1/admin/shows/${encodeURIComponent(
+          selectedShowId
+        )}/feed-validation`,
+        { method: "POST" }
+      );
+      setStatus(
+        status,
+        adminText("rssFeedValidationPassed", {
+          items: formatInteger(Math.max(0, Number(result.itemCount) || 0))
+        })
+      );
+      await loadDistribution();
+    } catch (error) {
+      setStatus(status, friendlyError(error), true);
+      button.disabled = false;
     }
   }
 

@@ -3,7 +3,8 @@ export function renderDistributionLaunchClaim({
   text,
   formatDate,
   formatInteger,
-  badge
+  badge,
+  canValidate = false
 }) {
   const ready = Boolean(launchClaim.ready);
   const required = Math.max(
@@ -73,6 +74,22 @@ export function renderDistributionLaunchClaim({
     feedStatus.textContent = text("feedValidationPending");
   }
   section.append(heading, summary, feedStatus);
+  if (canValidate) {
+    const actions = document.createElement("div");
+    actions.className = "podcast-admin__distribution-claim-actions";
+    const validate = document.createElement("button");
+    validate.className = "btn btn-outline-light";
+    validate.type = "button";
+    validate.dataset.podcastFeedValidationRetry = "";
+    validate.textContent = text("validateRssFeed");
+    const status = document.createElement("p");
+    status.className = "podcast-admin__status";
+    status.dataset.podcastFeedValidationStatus = "";
+    status.setAttribute("role", "status");
+    status.setAttribute("aria-live", "polite");
+    actions.append(validate, status);
+    section.append(actions);
+  }
   return section;
 }
 

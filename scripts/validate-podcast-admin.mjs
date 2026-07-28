@@ -664,6 +664,16 @@ assert.match(
   /feed\.status === "valid" && feed\.currentValidator === false/,
   'A legacy valid feed result must render as stale instead of launch-ready'
 );
+assert.match(
+  distributionCertificationScript,
+  /data\.podcastFeedValidationRetry|podcastFeedValidationRetry/,
+  'Feed validation recovery must remain available in the launch claim'
+);
+assert.match(
+  adminScript,
+  /\/v1\/admin\/shows\/\$\{encodeURIComponent\([\s\S]+\/feed-validation/,
+  'Feed validation recovery must use the show-scoped admin endpoint'
+);
 assert.match(englishRuntime.feedValidationStale, /older validation contract/);
 assert.match(
   spanishRuntime.feedValidationStale,

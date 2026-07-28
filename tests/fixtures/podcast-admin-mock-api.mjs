@@ -730,6 +730,18 @@ function responseFor(request) {
     });
   }
   if (
+    request.method === "POST"
+    && path === `/v1/admin/shows/${show.id}/feed-validation`
+  ) {
+    return json({
+      valid: true,
+      validatorVersion: "dustwave-rss-launch-v2",
+      itemCount: 1,
+      checkedAt: "2026-07-26T12:05:00.000Z",
+      validatedAt: "2026-07-26T12:05:00.000Z"
+    });
+  }
+  if (
     request.method === "GET"
     && path === "/v1/admin/subscribers"
   ) {
