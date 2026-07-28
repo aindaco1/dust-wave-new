@@ -105,6 +105,100 @@ let rssImportPlans = [{
   updatedAt: "2026-07-27T12:00:00.000Z"
 }];
 let rssImportExecution = null;
+let rssImportReconciliation = null;
+
+function completeRssImportExecution() {
+  if (!rssImportExecution || rssImportExecution.status !== "queued") return;
+  rssImportExecution = {
+    ...rssImportExecution,
+    status: "succeeded",
+    copiedItemCount: rssImportExecution.expectedItemCount,
+    draftItemCount: rssImportExecution.expectedItemCount,
+    items: rssImportExecution.items.map((item) => ({
+      ...item,
+      status: "succeeded",
+      attemptCount: 1,
+      copiedBytes: 1_234_567,
+      copiedSha256: sha("4"),
+      copiedMimeType: "audio/mpeg",
+      episodeId: item.targetEpisodeId,
+      completedAt: "2026-07-28T12:01:30.000Z"
+    })),
+    startedAt: "2026-07-28T12:01:05.000Z",
+    completedAt: "2026-07-28T12:01:30.000Z",
+    updatedAt: "2026-07-28T12:01:30.000Z"
+  };
+}
+
+function rssImportReconciliationPayload(plan) {
+  const copyReady = rssImportExecution?.status === "succeeded";
+  const approval = rssImportReconciliation
+    ? {
+        ...rssImportReconciliation,
+        fresh: copyReady
+      }
+    : null;
+  return {
+    reconciliationAvailable: true,
+    executionId: rssImportExecution?.id || null,
+    planId: plan.id,
+    readiness: {
+      evidenceSha256: sha("7"),
+      itemCount: 1,
+      copiedBytes: copyReady ? 1_234_567 : 0,
+      copyReady,
+      prePublicationReady: copyReady,
+      readyForApproval: copyReady && !approval,
+      blockers: copyReady
+        ? []
+        : ["rss_import_execution_not_succeeded"],
+      items: [{
+        sourceIdentitySha256: sha("f"),
+        targetEpisodeId: "episode_rss_browser_0",
+        targetSlug: "migratable-episode",
+        copiedBytes: copyReady ? 1_234_567 : null,
+        copiedSha256: copyReady ? sha("4") : null,
+        copiedMimeType: copyReady ? "audio/mpeg" : null,
+        copyReady,
+        privateObjectVerified: copyReady,
+        draftIdentityVerified: copyReady,
+        sourceUploadVerified: copyReady,
+        blockers: copyReady
+          ? []
+          : ["rss_import_execution_item_not_succeeded"]
+      }]
+    },
+    approval,
+    oldHostRedirectChecklist: {
+      activationAvailable: false,
+      ready: false,
+      newFeedUrl:
+        "https://feeds.dustwave.xyz/opera-en-la-selva/rss.xml",
+      blockers: [
+        ...(approval
+          ? []
+          : ["rss_import_owner_reconciliation_required"]),
+        "rss_import_imported_episodes_unpublished",
+        "rss_import_canonical_feed_not_revalidated",
+        "rss_import_directory_reobservation_required",
+        "rss_import_old_host_attestation_required"
+      ],
+      checks: {
+        ownerReconciliationApproved: Boolean(approval),
+        importedEpisodesPublic: false,
+        canonicalFeedRevalidated: false,
+        directoryCertificationReady: false,
+        ownerRedirectAttested: false
+      }
+    },
+    idempotent: null,
+    r2MutationPerformed: false,
+    episodeMutationPerformed: false,
+    publicationMutationPerformed: false,
+    redirectMutationPerformed: false,
+    providerContactPerformed: false
+  };
+}
 
 const announcement = {
   id: "announcement_browser_fixture",
@@ -955,6 +1049,7 @@ function responseFor(request) {
       ({ id }) => id === rssImportExecutionMatch[1]
     );
     if (!plan) return json({ error: "rss_import_plan_not_found" }, 404);
+    completeRssImportExecution();
     return json({
       execution: rssImportExecution?.planId === plan.id
         ? rssImportExecution
@@ -973,6 +1068,7 @@ function responseFor(request) {
     if (plan.status !== "reviewed") {
       return json({ error: "rss_import_plan_not_reviewed" }, 409);
     }
+    rssImportReconciliation = null;
     rssImportExecution = {
       id: "rss_execution_browser_fixture",
       planId: plan.id,
@@ -1012,6 +1108,50 @@ function responseFor(request) {
       redirectMutationPerformed: false,
       providerContactPerformed: false
     }, 202);
+  }
+  const rssImportReconciliationMatch = path.match(
+    /^\/v1\/admin\/rss-import\/plans\/([A-Za-z0-9_-]+)\/reconciliation$/u
+  );
+  if (
+    (request.method === "GET" || request.method === "POST")
+    && rssImportReconciliationMatch
+  ) {
+    const plan = rssImportPlans.find(
+      ({ id }) => id === rssImportReconciliationMatch[1]
+    );
+    if (!plan) {
+      return json({ error: "rss_import_reconciliation_not_found" }, 404);
+    }
+    if (
+      !rssImportExecution
+      || rssImportExecution.planId !== plan.id
+    ) {
+      return json({ error: "rss_import_reconciliation_not_found" }, 404);
+    }
+    if (
+      request.method === "POST"
+      && rssImportExecution.status !== "succeeded"
+    ) {
+      return json({ error: "rss_import_reconciliation_not_ready" }, 409);
+    }
+    const idempotent = Boolean(rssImportReconciliation);
+    if (request.method === "POST" && !rssImportReconciliation) {
+      rssImportReconciliation = {
+        id: "rss_reconciliation_browser_fixture",
+        evidenceSha256: sha("7"),
+        itemCount: 1,
+        copiedBytes: 1_234_567,
+        approvedAt: "2026-07-28T12:02:00.000Z"
+      };
+    }
+    const payload = rssImportReconciliationPayload(plan);
+    payload.idempotent = request.method === "POST"
+      ? idempotent
+      : null;
+    return json(
+      payload,
+      request.method === "POST" && !idempotent ? 201 : 200
+    );
   }
   const rssImportReviewMatch = path.match(
     /^\/v1\/admin\/rss-import\/plans\/([A-Za-z0-9_-]+)\/review$/u

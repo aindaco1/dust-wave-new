@@ -1067,6 +1067,94 @@
   padding: var(--dw-admin-space-sm);
 }
 
+.podcast-admin__rss-import-reconciliation,
+.podcast-admin__rss-import-reconciliation-state,
+.podcast-admin__rss-import-redirect-checklist {
+  display: grid;
+  gap: var(--dw-admin-space-md);
+}
+
+.podcast-admin__rss-import-reconciliation {
+  margin-top: var(--dw-admin-space-md);
+}
+
+.podcast-admin__rss-import-reconciliation > *,
+.podcast-admin__rss-import-reconciliation-state > *,
+.podcast-admin__rss-import-redirect-checklist > * {
+  margin-block: 0;
+}
+
+.podcast-admin__rss-import-reconciliation > .podcast-admin__form {
+  margin-top: 0;
+}
+
+.podcast-admin__rss-import-reconciliation > .btn {
+  justify-self: start;
+}
+
+.podcast-admin__rss-import-reconciliation-items {
+  display: grid;
+  gap: var(--dw-admin-space-sm);
+  grid-template-columns:
+    repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
+
+.podcast-admin__rss-import-reconciliation-items h5 {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.podcast-admin__rss-import-checks,
+.podcast-admin__rss-import-blockers {
+  display: grid;
+  gap: var(--dw-admin-space-xs);
+  margin: 0;
+  padding: 0;
+}
+
+.podcast-admin__rss-import-checks {
+  list-style: none;
+}
+
+.podcast-admin__rss-import-checks li {
+  align-items: baseline;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 0.5rem;
+  display: flex;
+  gap: var(--dw-admin-space-sm);
+  justify-content: space-between;
+  padding: var(--dw-admin-space-xs) var(--dw-admin-space-sm);
+}
+
+.podcast-admin__rss-import-checks li.is-ready {
+  border-color: rgba(105, 211, 152, 0.44);
+  color: #b9f7cd;
+}
+
+.podcast-admin__rss-import-checks li.is-pending {
+  border-color: rgba(229, 183, 91, 0.44);
+  color: #f1d89c;
+}
+
+.podcast-admin__rss-import-checks li > * {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.podcast-admin__rss-import-checks strong {
+  flex: 0 0 auto;
+  text-align: right;
+}
+
+.podcast-admin__rss-import-blockers {
+  padding-inline-start: 1.25rem;
+}
+
+.podcast-admin__rss-import-redirect-checklist {
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  padding-top: var(--dw-admin-space-md);
+}
+
 .podcast-admin__readiness-groups,
 .podcast-admin__readiness-list,
 .podcast-admin__audio-qc-results,
@@ -1603,8 +1691,18 @@
   .podcast-admin__transcript-pages .btn,
   .podcast-admin__chapter-row .btn,
   .podcast-admin__form > .btn,
-  .podcast-admin__rss-import-execution > .btn {
+  .podcast-admin__rss-import-execution > .btn,
+  .podcast-admin__rss-import-reconciliation > .btn {
     width: 100%;
+  }
+
+  .podcast-admin__rss-import-checks li {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .podcast-admin__rss-import-checks strong {
+    text-align: left;
   }
 
   .podcast-admin__review-controls {

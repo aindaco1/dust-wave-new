@@ -1,3 +1,7 @@
+import {
+  createRssImportReconciliationController
+} from "./podcast-admin-rss-reconciliation.js";
+
 export function mountRssImportWorkbench({
   root,
   client,
@@ -22,6 +26,15 @@ export function mountRssImportWorkbench({
   let latestPreview = null;
   let plans = [];
   const executions = new Map();
+  const reconciliation = createRssImportReconciliationController({
+    client,
+    text,
+    formatInteger,
+    isSuperAdmin,
+    friendlyError,
+    setStatus,
+    statusRoot: status
+  });
   let loadRequestId = 0;
 
   form?.addEventListener("submit", previewImport);
@@ -32,6 +45,7 @@ export function mountRssImportWorkbench({
       latestPreview = null;
       plans = [];
       executions.clear();
+      reconciliation.reset();
       previewRoot?.replaceChildren();
       planRoot?.replaceChildren();
       setStatus(status, "");
@@ -464,6 +478,7 @@ export function mountRssImportWorkbench({
         loadExecution(plan, refresh)
       );
       boundary.append(refresh);
+      boundary.append(reconciliation.render(plan));
       return boundary;
     }
     if (isSuperAdmin()) {

@@ -52,6 +52,13 @@ const rssImportScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-rss-import.js'),
   'utf8'
 );
+const rssImportReconciliationScript = await readFile(
+  path.join(
+    repositoryRoot,
+    'src/js/podcast-admin-rss-reconciliation.js'
+  ),
+  'utf8'
+);
 const catalogScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-catalog.js'),
   'utf8'
@@ -110,6 +117,7 @@ const staticRuntimeKeys = [
   ...marketingLinksScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...catalogScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...rssImportScript.matchAll(/text\(\s*"([^"]+)"/g),
+  ...rssImportReconciliationScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...youtubeAudioRenditionScript.matchAll(/text\(\s*"([^"]+)"/g)
 ].map((match) => match[1]);
 for (const key of new Set(staticRuntimeKeys)) {
@@ -234,12 +242,49 @@ assert.match(
   /podcastRssImportExecutionItem[\s\S]+targetSlug[\s\S]+sourceLanguage/
 );
 assert.match(
+  rssImportScript,
+  /createRssImportReconciliationController/
+);
+assert.match(
+  rssImportReconciliationScript,
+  /\/rss-import\/plans\/\$\{[\s\S]+\/reconciliation/
+);
+assert.match(
+  rssImportReconciliationScript,
+  /reconciliationId:[\s\S]+expectedEvidenceSha256:[\s\S]+reconciliationConfirmed: true/
+);
+assert.match(
+  rssImportReconciliationScript,
+  /state\.oldHostRedirectChecklist[\s\S]+ownerRedirectAttested/
+);
+assert.doesNotMatch(
+  rssImportReconciliationScript,
+  /innerHTML/,
+  "Untrusted reconciliation evidence must use DOM text nodes"
+);
+assert.match(
   englishRuntime.rssImportExecutionNoPublish,
   /cannot publish News, RSS, redirects, directories, YouTube, email, ads, or billing/
 );
 assert.match(
   spanishRuntime.rssImportExecutionNoPublish,
   /no puede publicar Noticias, RSS, redirecciones, directorios, YouTube, correos, anuncios ni facturación/
+);
+assert.match(
+  englishRuntime.rssImportReconciliationNoPublish,
+  /cannot publish an episode[\s\S]+activate a redirect/
+);
+assert.match(
+  spanishRuntime.rssImportReconciliationNoPublish,
+  /No puede publicar un episodio[\s\S]+activar una redirección/
+);
+assert.match(
+  englishRuntime.rssImportRedirectUnavailable,
+  /activation is intentionally unavailable/
+);
+assert.match(
+  spanishRuntime.rssImportRedirectUnavailable,
+  /no está disponible intencionalmente/
 );
 assert.match(
   englishWorkbench.overview.importPlansZeroCopy,
@@ -263,7 +308,19 @@ assert.match(
 );
 assert.match(
   adminMockApi,
+  /rss-import\\\/plans\\\/\(\[A-Za-z0-9_-\]\+\)\\\/reconciliation/
+);
+assert.match(
+  adminMockApi,
   /executionAvailable: true[\s\S]+publicationMutationPerformed: false[\s\S]+redirectMutationPerformed: false[\s\S]+providerContactPerformed: false/
+);
+assert.match(
+  adminMockApi,
+  /reconciliationAvailable: true[\s\S]+activationAvailable: false[\s\S]+ownerRedirectAttested: false/
+);
+assert.match(
+  adminMockApi,
+  /r2MutationPerformed: false[\s\S]+episodeMutationPerformed: false[\s\S]+publicationMutationPerformed: false[\s\S]+redirectMutationPerformed: false[\s\S]+providerContactPerformed: false/
 );
 assert.doesNotMatch(
   rssImportScript,
