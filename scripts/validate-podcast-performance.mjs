@@ -170,6 +170,21 @@ assert.match(
   /https:\/\/dust-wave-podcast-staging\.jogo\.workers\.dev/,
   "the staging build must target only the isolated Podcast Worker"
 );
+assert.match(
+  stagingBuild,
+  /git", \["rev-parse", "--verify", "HEAD"\]/,
+  "local staging builds must resolve their exact checkout revision"
+);
+assert.match(
+  stagingBuild,
+  /DUST_WAVE_ASSET_VERSION: assetRevision/,
+  "staging builds must key browser assets by the exact source revision"
+);
+assert.match(
+  stagingBuild,
+  /\(\?:\[A-Fa-f0-9\]\{40\}\|\[A-Fa-f0-9\]\{64\}\)/,
+  "staging asset revisions must be exact Git SHA-1 or SHA-256 values"
+);
 for (const environmentName of [
   "PODCAST_ADMIN_API_ORIGIN",
   "PODCAST_MEMBER_API_ORIGIN",

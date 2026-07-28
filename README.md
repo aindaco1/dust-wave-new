@@ -78,9 +78,11 @@ API origins with
 `https://dust-wave-podcast-staging.jogo.workers.dev`. Do not substitute
 `feeds.dustwave.xyz` or `media.dustwave.xyz`: those names remain reserved for
 the future production Worker routes and may not have DNS records during
-staging. The command contains no secret; the Turnstile site key is public, but
-it is supplied explicitly so a production widget is never selected by
-accident.
+staging. It also resolves the exact current Git commit and uses that SHA for
+every browser asset cache key; CI uses `GITHUB_SHA`, and an explicit
+`DUST_WAVE_ASSET_VERSION` must likewise be a full Git SHA-1 or SHA-256. The
+command contains no secret; the Turnstile site key is public, but it is
+supplied explicitly so a production widget is never selected by accident.
 
 Canonical podcast News pages progressively fetch the episode's approved
 English/Spanish transcript URL from the immutable publication snapshot. The
