@@ -1104,6 +1104,28 @@ function responseFor(request) {
     });
   }
   if (
+    request.method === "POST"
+    && path === `/v1/admin/shows/${show.id}/rss-import/podcast-guid`
+  ) {
+    return json({
+      show: {
+        id: show.id,
+        podcastGuid: show.podcastGuid
+      },
+      assignment: {
+        podcastGuid: show.podcastGuid,
+        requestedFeedUrl: "https://podcast.example.org/feed.xml",
+        resolvedFeedUrl: "https://feeds.example.org/opera.xml",
+        feedSha256: sha("e"),
+        assignedAt: "2026-07-28T12:00:00.000Z"
+      },
+      idempotent: true,
+      episodeMutationPerformed: false,
+      importMutationPerformed: false,
+      publicationMutationPerformed: false
+    });
+  }
+  if (
     request.method === "GET"
     && path === `/v1/admin/shows/${show.id}/rss-import/plans`
   ) {

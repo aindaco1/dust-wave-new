@@ -44,7 +44,7 @@ export function mountRssImportWorkbench({
     "[data-podcast-rss-import-plan-section]"
   );
   const planRoot = root.querySelector("[data-podcast-rss-import-plans]");
-  let latestPreview = null;
+  let latestPreviewPayload = null;
   let plans = [];
   const executions = new Map();
   const reconciliation = createRssImportReconciliationController({
@@ -63,7 +63,7 @@ export function mountRssImportWorkbench({
   return {
     reset({ form: resetForm = false } = {}) {
       loadRequestId += 1;
-      latestPreview = null;
+      latestPreviewPayload = null;
       plans = [];
       executions.clear();
       reconciliation.reset();
@@ -103,7 +103,7 @@ export function mountRssImportWorkbench({
     if (!showId || !isSuperAdmin() || !form) return;
     const button = form.querySelector('button[type="submit"]');
     button.disabled = true;
-    latestPreview = null;
+    latestPreviewPayload = null;
     previewRoot?.replaceChildren();
     setStatus(status, text("rssImportPreviewing"));
     try {
@@ -117,7 +117,7 @@ export function mountRssImportWorkbench({
           }
         }
       );
-      latestPreview = payload?.preview || null;
+      latestPreviewPayload = payload || null;
       renderPreview(payload);
       setStatus(status, text("rssImportPreviewComplete"));
     } catch (error) {
@@ -233,11 +233,123 @@ export function mountRssImportWorkbench({
       episodeRows,
       podcastGuidAssessment.ready
     );
+    const identityAssignment = renderPodcastGuidAssignment(
+      payload,
+      podcastGuidAssessment
+    );
     previewRoot.replaceChildren(
       summary,
+      ...(identityAssignment ? [identityAssignment] : []),
       episodes,
       ...(selection ? [selection] : [])
     );
+  }
+
+  function renderPodcastGuidAssignment(payload, assessment) {
+    if (
+      !isSuperAdmin()
+      || assessment.state !== "unassigned"
+      || payload?.preview?.podcastGuidStatus !== "valid"
+      || !payload.preview.podcastGuid
+    ) {
+      return null;
+    }
+    const controls = document.createElement("section");
+    controls.className =
+      "podcast-admin__review-controls podcast-admin__readiness-card";
+    const heading = document.createElement("h4");
+    heading.textContent = text("rssImportPodcastGuidAssignHeading");
+    const explanation = document.createElement("p");
+    explanation.textContent = text("rssImportPodcastGuidAssignIntro");
+    const confirmation = document.createElement("label");
+    confirmation.className = "podcast-admin__checkbox";
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.dataset.podcastRssImportGuidAssignmentConfirmed = "";
+    const confirmationText = document.createElement("span");
+    confirmationText.textContent = text(
+      "rssImportPodcastGuidAssignConfirmation",
+      { guid: payload.preview.podcastGuid }
+    );
+    confirmation.append(checkbox, confirmationText);
+    const button = document.createElement("button");
+    button.className = "btn btn-outline-light";
+    button.type = "button";
+    button.dataset.podcastRssImportGuidAssignment = "";
+    button.disabled = true;
+    button.textContent = text("rssImportPodcastGuidAssign");
+    checkbox.addEventListener("change", () => {
+      button.disabled = !checkbox.checked;
+    });
+    button.addEventListener("click", () =>
+      assignPodcastGuid(payload, controls, button)
+    );
+    controls.append(heading, explanation, confirmation, button);
+    return controls;
+  }
+
+  async function assignPodcastGuid(payload, controls, button) {
+    const showId = selectedShowId();
+    const preview = payload?.preview;
+    const confirmation = controls.querySelector(
+      "[data-podcast-rss-import-guid-assignment-confirmed]"
+    );
+    if (
+      !showId
+      || !isSuperAdmin()
+      || !preview?.feedSha256
+      || !preview?.podcastGuid
+      || !confirmation?.checked
+    ) {
+      confirmation?.focus();
+      return;
+    }
+    if (
+      !globalThis.confirm(
+        text("rssImportPodcastGuidAssignFinalConfirmation")
+      )
+    ) {
+      return;
+    }
+    button.disabled = true;
+    setStatus(status, text("rssImportPodcastGuidAssigning"));
+    try {
+      const result = await client.request(
+        `/v1/admin/shows/${encodeURIComponent(showId)}/rss-import/podcast-guid`,
+        {
+          method: "POST",
+          body: {
+            feedUrl: preview.requestedUrl,
+            ownershipConfirmed: true,
+            expectedFeedSha256: preview.feedSha256,
+            expectedPodcastGuid: preview.podcastGuid,
+            assignmentConfirmed: true
+          }
+        }
+      );
+      if (showId !== selectedShowId()) return;
+      if (result?.show?.podcastGuid !== preview.podcastGuid) {
+        setStatus(
+          status,
+          text("error_rss_import_podcast_guid_assignment_conflict"),
+          true
+        );
+        button.disabled = false;
+        return;
+      }
+      latestPreviewPayload = {
+        ...payload,
+        show: {
+          ...payload.show,
+          podcastGuid: result.show.podcastGuid
+        }
+      };
+      renderPreview(latestPreviewPayload);
+      setStatus(status, text("rssImportPodcastGuidAssigned"));
+    } catch (error) {
+      setStatus(status, friendlyError(error), true);
+      button.disabled = false;
+    }
   }
 
   function renderEpisode(episode, identityReady) {
@@ -338,7 +450,7 @@ export function mountRssImportWorkbench({
       !showId
       || !isSuperAdmin()
       || !form
-      || !latestPreview?.feedSha256
+      || !latestPreviewPayload?.preview?.feedSha256
       || selected.length < 1
       || !button
     ) {
@@ -355,7 +467,7 @@ export function mountRssImportWorkbench({
             planId: newPlanId(),
             feedUrl: form.elements.feedUrl.value,
             ownershipConfirmed: form.elements.ownershipConfirmed.checked,
-            expectedFeedSha256: latestPreview.feedSha256,
+            expectedFeedSha256: latestPreviewPayload.preview.feedSha256,
             selectedSourceIdentitySha256: selected
           }
         }

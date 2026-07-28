@@ -241,6 +241,16 @@ assert.match(
 );
 assert.match(
   rssImportScript,
+  /\/rss-import\/podcast-guid[\s\S]+expectedPodcastGuid:[\s\S]+assignmentConfirmed: true/,
+  "One-time channel identity assignment must bind the exact preview evidence"
+);
+assert.match(
+  rssImportScript,
+  /rssImportPodcastGuidAssignFinalConfirmation[\s\S]+globalThis\.confirm/,
+  "One-time channel identity assignment must require final confirmation"
+);
+assert.match(
+  rssImportScript,
   /rssImportSourcePodcastGuid[\s\S]+rssImportTargetPodcastGuid[\s\S]+rssImportPodcastGuidStatus/,
   "RSS migration preview must present source and destination identity evidence"
 );
@@ -350,6 +360,11 @@ assert.match(
   adminMockApi,
   /podcastGuid: show\.podcastGuid[\s\S]+podcastGuidStatus: "valid"/,
   "Browser QA must exercise a matching immutable channel identity"
+);
+assert.match(
+  adminMockApi,
+  /rss-import\/podcast-guid[\s\S]+importMutationPerformed: false[\s\S]+publicationMutationPerformed: false/,
+  "Browser QA must retain the one-time identity boundary's zero-mutation flags"
 );
 assert.match(
   adminMockApi,
