@@ -71,6 +71,10 @@
   display: none;
 }
 
+.podcast-admin__status[data-podcast-global-status]:empty {
+  display: block;
+}
+
 .podcast-admin__status.is-error {
   color: #ff9aa2;
 }

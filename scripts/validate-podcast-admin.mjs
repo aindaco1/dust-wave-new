@@ -419,6 +419,11 @@ assert.match(adminStyles, /\.podcast-admin__subscriber-list/);
 assert.match(adminStyles, /\.podcast-admin__subscriber-sources/);
 assert.match(
   adminStyles,
+  /\.podcast-admin__status\[data-podcast-global-status\]:empty[\s\S]+display: block/,
+  'Admin must reserve the session-status row to prevent authentication CLS'
+);
+assert.match(
+  adminStyles,
   /@media \(max-width: 22\.8125rem\)[\s\S]+\.podcast-admin__turnstile[\s\S]+min-height: 8\.75rem/
 );
 assert.match(
