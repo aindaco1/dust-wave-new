@@ -43,6 +43,16 @@ official API directly so no third-party action receives credentials. Prefer a
 zone-scoped `CLOUDFLARE_CACHE_PURGE_TOKEN` with Cache Purge permission; the
 existing email/global-key pair is a temporary compatibility fallback.
 
+Because production is served by GitHub Pages through Cloudflare, GitHub Pages
+does not consume `_headers`. After every production deploy, the workflow
+therefore translates the four authenticated route blocks in `_headers` into
+one idempotent Cloudflare Response Header Transform Rule. The sync owns only
+the stable `dust_wave_authenticated_shell_response_headers` rule, preserves
+unrelated zone rules, and verifies both authenticated and public Podcast
+responses after the cache purge. Prefer a zone-scoped
+`CLOUDFLARE_TRANSFORM_RULES_TOKEN` with Zone Transform Rules Write permission;
+the existing email/global-key pair remains a temporary fallback.
+
 ### Podcast UI configuration
 
 The Pages build reads the following GitHub Actions repository variables:
@@ -53,12 +63,14 @@ The Pages build reads the following GitHub Actions repository variables:
 - `PODCAST_MEMBER_TURNSTILE_SITE_KEY`
 - `PODCAST_CHECKOUT_TURNSTILE_SITE_KEY`
 
-Cloudflare Pages previews consume the checked-in `_headers` file. All
-`pages.dev` deployment hosts are noindex, while `/admin/*` and
-`/podcasts/account/*` additionally use `no-store`, deny framing, suppress
-referrers, and disable browser capabilities those authenticated shells do not
-need. The rules deliberately do not apply anti-framing headers to public
-podcast embeds.
+Cloudflare Pages previews consume the checked-in `_headers` file, and the
+production edge sync described above consumes the same authenticated-route
+policy. All `pages.dev` deployment hosts are noindex, while `/admin/*`,
+`/es/admin/*`, `/podcasts/account/*`, and `/es/podcasts/account/*`
+additionally use `no-store`, deny framing, suppress referrers, and disable
+browser capabilities those authenticated shells do not need. The rules
+deliberately do not apply anti-framing headers to public Podcast pages or
+embeds.
 
 The public premium form remains hidden unless the Podcast API reports
 `checkoutEnabled: true`, returns at least one valid USD price, and the build
