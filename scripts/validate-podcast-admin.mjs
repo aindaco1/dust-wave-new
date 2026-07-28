@@ -231,6 +231,21 @@ assert.match(
 );
 assert.match(
   rssImportScript,
+  /assessPodcastGuidCompatibility\([\s\S]+podcastGuidStatus === "absent"[\s\S]+state: "mismatch"/,
+  "RSS migration must classify source and destination channel identity"
+);
+assert.match(
+  rssImportScript,
+  /renderSelectionControls\([\s\S]+podcastGuidAssessment\.ready/,
+  "RSS migration selection must remain hidden when channel identity conflicts"
+);
+assert.match(
+  rssImportScript,
+  /rssImportSourcePodcastGuid[\s\S]+rssImportTargetPodcastGuid[\s\S]+rssImportPodcastGuidStatus/,
+  "RSS migration preview must present source and destination identity evidence"
+);
+assert.match(
+  rssImportScript,
   /expectedSelectionSha256:[\s\S]+reviewConfirmed: true/
 );
 assert.match(
@@ -330,6 +345,11 @@ assert.match(
 assert.match(
   adminMockApi,
   /dustwave-rss-import-preview-v1/
+);
+assert.match(
+  adminMockApi,
+  /podcastGuid: show\.podcastGuid[\s\S]+podcastGuidStatus: "valid"/,
+  "Browser QA must exercise a matching immutable channel identity"
 );
 assert.match(
   adminMockApi,

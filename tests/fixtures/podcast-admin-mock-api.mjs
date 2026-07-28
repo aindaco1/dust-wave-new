@@ -23,7 +23,8 @@ const show = {
   premiumEnabled: true,
   freeMiniEpisodeEnabled: true,
   youtubeChannelUrl: "https://www.youtube.com/@dustwavecollective",
-  canonicalUrl: "https://dustwave.xyz/podcasts/opera-en-la-selva/"
+  canonicalUrl: "https://dustwave.xyz/podcasts/opera-en-la-selva/",
+  podcastGuid: "d21642df-1816-55c8-b308-6209066e9ef6"
 };
 
 const episode = {
@@ -77,6 +78,7 @@ let rssImportPlans = [{
   requestedFeedUrl: "https://podcast.example.org/feed.xml",
   resolvedFeedUrl: "https://feeds.example.org/opera.xml",
   feedSha256: sha("e"),
+  sourcePodcastGuid: show.podcastGuid,
   selectionSha256: sha("9"),
   feedTitle: "Authorized source podcast",
   feedItemCount: 2,
@@ -1027,7 +1029,8 @@ function responseFor(request) {
     return json({
       show: {
         id: show.id,
-        title: show.title
+        title: show.title,
+        podcastGuid: show.podcastGuid
       },
       importMutationPerformed: false,
       preview: {
@@ -1041,6 +1044,8 @@ function responseFor(request) {
         language: "es",
         artworkUrl: "https://cdn.example.org/opera.jpg",
         ownerEmailPresent: true,
+        podcastGuid: show.podcastGuid,
+        podcastGuidStatus: "valid",
         itemCount: 2,
         audioItemCount: 1,
         migratableItemCount: 1,

@@ -2,6 +2,27 @@ import {
   createRssImportReconciliationController
 } from "./podcast-admin-rss-reconciliation.js";
 
+export function assessPodcastGuidCompatibility(
+  targetPodcastGuid,
+  preview
+) {
+  if (preview?.podcastGuidStatus === "absent") {
+    return { ready: true, state: "absent" };
+  }
+  if (
+    preview?.podcastGuidStatus !== "valid"
+    || typeof preview.podcastGuid !== "string"
+  ) {
+    return { ready: false, state: "invalid" };
+  }
+  if (typeof targetPodcastGuid !== "string" || !targetPodcastGuid) {
+    return { ready: false, state: "unassigned" };
+  }
+  return preview.podcastGuid === targetPodcastGuid
+    ? { ready: true, state: "match" }
+    : { ready: false, state: "mismatch" };
+}
+
 export function mountRssImportWorkbench({
   root,
   client,
@@ -109,11 +130,17 @@ export function mountRssImportWorkbench({
   function renderPreview(payload) {
     if (!previewRoot) return;
     const preview = payload?.preview || {};
+    const podcastGuidAssessment = assessPodcastGuidCompatibility(
+      payload?.show?.podcastGuid,
+      preview
+    );
+    const migrationReady = (
+      Number(preview.migratableItemCount || 0) > 0
+      && podcastGuidAssessment.ready
+    );
     const summary = document.createElement("section");
     summary.className = `podcast-admin__readiness-card ${
-      Number(preview.migratableItemCount || 0) > 0
-        ? "is-ready"
-        : "is-missing"
+      migrationReady ? "is-ready" : "is-missing"
     }`;
     const heading = document.createElement("div");
     heading.className = "podcast-admin__readiness-card-heading";
@@ -121,7 +148,7 @@ export function mountRssImportWorkbench({
     title.textContent = String(preview.title || text("notAvailable"));
     const state = document.createElement("span");
     state.className = "podcast-admin__pill";
-    state.textContent = Number(preview.migratableItemCount || 0) > 0
+    state.textContent = migrationReady
       ? text("rssImportReady")
       : text("rssImportBlocked");
     heading.append(title, state);
@@ -159,7 +186,34 @@ export function mountRssImportWorkbench({
         ? text("rssImportPresent")
         : text("rssImportAbsent")
     );
+    appendEvidence(
+      evidence,
+      text("rssImportSourcePodcastGuid"),
+      preview.podcastGuidStatus === "valid"
+        ? preview.podcastGuid
+        : podcastGuidStateText(preview.podcastGuidStatus)
+    );
+    appendEvidence(
+      evidence,
+      text("rssImportTargetPodcastGuid"),
+      payload?.show?.podcastGuid || text("notAvailable")
+    );
+    appendEvidence(
+      evidence,
+      text("rssImportPodcastGuidStatus"),
+      podcastGuidStateText(podcastGuidAssessment.state)
+    );
     summary.append(heading, description, evidence);
+    if (!podcastGuidAssessment.ready) {
+      const identityBlocker = document.createElement("div");
+      identityBlocker.className = "podcast-admin__callout";
+      const explanation = document.createElement("p");
+      explanation.textContent = podcastGuidStateText(
+        podcastGuidAssessment.state
+      );
+      identityBlocker.append(explanation);
+      summary.append(identityBlocker);
+    }
 
     const episodes = document.createElement("div");
     episodes.className = "podcast-admin__readiness-list";
@@ -171,9 +225,14 @@ export function mountRssImportWorkbench({
       empty.textContent = text("rssImportNoItems");
       episodes.append(empty);
     } else {
-      episodes.append(...episodeRows.map(renderEpisode));
+      episodes.append(...episodeRows.map((episode) =>
+        renderEpisode(episode, podcastGuidAssessment.ready)
+      ));
     }
-    const selection = renderSelectionControls(episodeRows);
+    const selection = renderSelectionControls(
+      episodeRows,
+      podcastGuidAssessment.ready
+    );
     previewRoot.replaceChildren(
       summary,
       episodes,
@@ -181,7 +240,7 @@ export function mountRssImportWorkbench({
     );
   }
 
-  function renderEpisode(episode) {
+  function renderEpisode(episode, identityReady) {
     const card = document.createElement("article");
     card.className = `podcast-admin__readiness-card ${
       episode.migrationReady ? "is-ready" : "is-missing"
@@ -207,7 +266,7 @@ export function mountRssImportWorkbench({
         : text("notAvailable")
     });
     card.append(heading, evidence);
-    if (episode.migrationReady) {
+    if (episode.migrationReady && identityReady) {
       const label = document.createElement("label");
       label.className = "podcast-admin__checkbox";
       const input = document.createElement("input");
@@ -227,9 +286,10 @@ export function mountRssImportWorkbench({
     return card;
   }
 
-  function renderSelectionControls(episodeRows) {
+  function renderSelectionControls(episodeRows, identityReady) {
     if (
       !isSuperAdmin()
+      || !identityReady
       || !episodeRows.some(({ migrationReady }) => migrationReady)
     ) {
       return null;
@@ -355,6 +415,11 @@ export function mountRssImportWorkbench({
       evidence,
       text("rssImportFeedDigest"),
       plan.feedSha256
+    );
+    appendEvidence(
+      evidence,
+      text("rssImportSourcePodcastGuid"),
+      plan.sourcePodcastGuid || text("rssImportPodcastGuidAbsent")
     );
     appendEvidence(
       evidence,
@@ -763,6 +828,18 @@ export function mountRssImportWorkbench({
     if (isError) paragraph.classList.add("is-error");
     paragraph.textContent = message;
     planRoot.replaceChildren(paragraph);
+  }
+
+  function podcastGuidStateText(state) {
+    if (state === "absent") return text("rssImportPodcastGuidAbsent");
+    if (state === "match") return text("rssImportPodcastGuidMatch");
+    if (state === "unassigned") {
+      return text("rssImportPodcastGuidUnassigned");
+    }
+    if (state === "mismatch") {
+      return text("rssImportPodcastGuidMismatch");
+    }
+    return text("rssImportPodcastGuidInvalid");
   }
 
   function appendEvidence(list, label, value) {
