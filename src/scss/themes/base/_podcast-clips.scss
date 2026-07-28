@@ -1,0 +1,130 @@
+.podcast-clips {
+  border-top: 1px solid rgba(0, 0, 0, 0.16);
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+}
+
+.podcast-clips__grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  margin-top: 1rem;
+}
+
+.podcast-clips__card {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: 0.75rem;
+  color: #111;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.podcast-clips__video {
+  aspect-ratio: var(--podcast-clip-aspect, 9 / 16);
+  background: #111;
+  display: block;
+  height: auto;
+  max-height: min(72vh, 40rem);
+  object-fit: contain;
+  width: 100%;
+}
+
+.podcast-clips__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+}
+
+.podcast-clips__title,
+.podcast-clips__description,
+.podcast-clips__meta {
+  margin: 0;
+}
+
+.podcast-clips__title {
+  font-size: 1.125rem;
+  line-height: 1.35;
+}
+
+.podcast-clips__description {
+  line-height: 1.55;
+}
+
+.podcast-clips__meta {
+  color: #555;
+  font-size: 0.875rem;
+}
+
+.podcast-clips__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: auto;
+  padding-top: 0.25rem;
+}
+
+.podcast-clips .podcast-clips__action {
+  align-items: center;
+  background: #111;
+  border: 2px solid #111;
+  border-radius: 999px;
+  color: #fff !important;
+  display: inline-flex;
+  font: inherit;
+  font-weight: 700;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.55rem 0.9rem;
+  text-decoration: none;
+}
+
+.podcast-clips .podcast-clips__action--secondary {
+  background: #fff;
+  color: #111 !important;
+}
+
+.podcast-clips__action:hover {
+  transform: translateY(-1px);
+}
+
+.podcast-clips__action:focus-visible {
+  outline: 3px solid #ca2538;
+  outline-offset: 2px;
+}
+
+.podcast-clips__copy-status {
+  color: #555;
+  flex-basis: 100%;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.podcast-clips__copy-input {
+  border: 1px solid #777;
+  border-radius: 0.4rem;
+  flex-basis: 100%;
+  font: inherit;
+  min-height: 44px;
+  padding: 0.55rem 0.7rem;
+  width: 100%;
+}
+
+@media (max-width: 540px) {
+  .podcast-clips__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .podcast-clips__actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .podcast-clips .podcast-clips__action {
+    width: 100%;
+  }
+}

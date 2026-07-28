@@ -1,25 +1,28 @@
 ---
-title: News
 layout: layouts/default.njk
 footer: footer1
-permalink: news.html
+translationKey: news
 pagination:
-    data: collections.news
-    size: 100
-    reverse: true
-    alias: news
+  data: i18n.config.supportedLangs
+  size: 1
+  alias: language
+permalink: "{{ i18n.config.pages.news[language] }}"
+eleventyComputed:
+  title: "{{ i18n[language].pages.news.title }}"
+  description: "{{ i18n[language].pages.news.description }}"
 ---
 
 <div class="container">
+  {% set news = collections.news | reverse %}
   <div class="row d-flex justify-content-center">
     <div class="col-12 text-center py-vh-3">
       <h1>{{title}}</h1>
     </div>
     <div class="col-11 col-lg-10 col-xl-8">
+      <p class="text-center">{{ i18n | t(language, "pages.news.authoredNotice") }}</p>
       <div class="row border-bottom">
         {% include "snippets/loop-news.njk" %}
       </div>
-      {% include 'snippets/loopprevnext.njk' %}
     </div>
   </div>
 </div>

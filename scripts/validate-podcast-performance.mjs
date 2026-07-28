@@ -1,0 +1,302 @@
+import assert from "node:assert/strict";
+import { readFile, stat } from "node:fs/promises";
+import {
+  versionModuleImports
+} from "./version-module-imports.mjs";
+
+const repositoryRoot = new URL("../", import.meta.url);
+const [
+  head,
+  show,
+  admin,
+  member,
+  adminLayout,
+  memberLayout,
+  tracer,
+  stagingBuild,
+  packageJson,
+  gitignore
+] = await Promise.all([
+  readFile(new URL("src/_includes/snippets/head.njk", repositoryRoot), "utf8"),
+  readFile(new URL("src/podcasts/show.njk", repositoryRoot), "utf8"),
+  readFile(new URL("src/admin/podcasts/index.njk", repositoryRoot), "utf8"),
+  readFile(new URL("src/podcasts/account.njk", repositoryRoot), "utf8"),
+  readFile(
+    new URL("src/_includes/layouts/podcast-admin.njk", repositoryRoot),
+    "utf8"
+  ),
+  readFile(
+    new URL("src/_includes/layouts/podcast-member.njk", repositoryRoot),
+    "utf8"
+  ),
+  readFile(
+    new URL("scripts/trace-podcast-admin-performance.mjs", repositoryRoot),
+    "utf8"
+  ),
+  readFile(
+    new URL("scripts/build-podcast-staging.mjs", repositoryRoot),
+    "utf8"
+  ),
+  readFile(new URL("package.json", repositoryRoot), "utf8"),
+  readFile(new URL(".gitignore", repositoryRoot), "utf8")
+]);
+
+assert.match(
+  head,
+  /{% if not disableLegacyMediaPreconnects %}[\s\S]+stitcher\.simplecastaudio\.com[\s\S]+{% endif %}/,
+  "legacy media preconnects must remain suppressible on Podcast surfaces"
+);
+assert.match(
+  head,
+  /{% if not disableFontAwesome %}[\s\S]+cdnjs\.cloudflare\.com\/ajax\/libs\/font-awesome\/6\.5\.2\/css\/all\.min\.css[\s\S]+{% endif %}/,
+  "Font Awesome must remain suppressible on icon-free performance surfaces"
+);
+assert.match(
+  head,
+  /{% if not disableTypekit %}[\s\S]+use\.typekit\.net\/hoj2yet\.css[\s\S]+{% endif %}/,
+  "Typekit must remain suppressible on pages that use only system fonts"
+);
+assert.match(
+  admin,
+  /disableFontAwesome: true/,
+  "Podcast Admin must not block first paint on its unused icon font"
+);
+assert.match(
+  admin,
+  /disableTypekit: true/,
+  "Podcast Admin must not block first paint on its unused brand font"
+);
+assert.match(
+  member,
+  /disableFontAwesome: true/,
+  "Podcast member auth must not load its unused external icon font"
+);
+assert.match(
+  member,
+  /disableTypekit: true/,
+  "Podcast member auth must not load its unused external brand font"
+);
+assert.match(
+  memberLayout,
+  /snippets\/podcast-auth-footer\.njk/,
+  "Podcast member auth must use the lightweight bilingual auth footer"
+);
+assert.doesNotMatch(
+  memberLayout,
+  /snippets\/footer1\.njk/,
+  "Podcast member auth must not load the public footer's legacy scripts"
+);
+assert.match(
+  admin,
+  /class="podcast-auth-turnstile podcast-admin__turnstile"/,
+  "Podcast Admin must reserve the responsive Turnstile footprint"
+);
+assert.match(
+  member,
+  /class="podcast-auth-turnstile podcast-member__turnstile"/,
+  "Podcast member auth must reserve the responsive Turnstile footprint"
+);
+for (const [name, template] of [
+  ["show", show],
+  ["admin", admin],
+  ["member", member]
+]) {
+  assert.match(
+    template,
+    /disableLegacyMediaPreconnects: true/,
+    `${name} must not establish unused legacy media connections`
+  );
+}
+
+assert.match(
+  show,
+  /srcset="{{ show\.wordmarkWebpSmall }} 640w, {{ show\.wordmarkWebp }} 1280w, {{ show\.wordmarkWebpLarge }} 2560w"/,
+  "show wordmark must use responsive generated WebPs"
+);
+assert.match(
+  show,
+  /srcset="{{ show\.artworkWebpSmall }} 256w, {{ show\.artworkWebp }} 505w"/,
+  "show artwork must use responsive generated WebPs"
+);
+assert.match(
+  show,
+  /class="podcast-show__artwork"[\s\S]+width="505"[\s\S]+height="505"[\s\S]+fetchpriority="high"/,
+  "show artwork must reserve layout space and prioritize the likely LCP image"
+);
+assert.doesNotMatch(
+  show.match(/<img[\s\S]+?class="podcast-show__artwork"[\s\S]+?>/)?.[0] ?? "",
+  /loading="lazy"/,
+  "above-the-fold artwork must not be lazy loaded"
+);
+
+for (const [name, layout] of [
+  ["admin", adminLayout],
+  ["member", memberLayout]
+]) {
+  assert.match(
+    layout,
+    /{% if podcast(?:Admin|Member)\.turnstileSiteKey %}[\s\S]+<link rel="preconnect" href="https:\/\/challenges\.cloudflare\.com" crossorigin>/,
+    `${name} must preconnect only when its Turnstile script will load`
+  );
+}
+
+const scriptBudgets = new Map([
+  ["src/js/podcast-admin.js", 302_000],
+  ["src/js/podcast-admin-clip-publications.js", 10_000],
+  ["src/js/podcast-admin-distribution-certification.js", 5_000],
+  ["src/js/podcast-admin-catalog.js", 8_000],
+  ["src/js/podcast-admin-episode-youtube.js", 10_000],
+  ["src/js/podcast-admin-analytics.js", 20_000],
+  ["src/js/podcast-admin-rss-import.js", 35_000],
+  ["src/js/podcast-admin-rss-reconciliation.js", 18_000],
+  ["src/js/podcast-admin-rss-cutover.js", 9_000],
+  ["src/js/podcast-member.js", 30_000],
+  ["src/js/podcast-checkout.js", 25_000],
+  ["src/js/podcast-clips.js", 15_000]
+]);
+for (const [relativePath, maximumBytes] of scriptBudgets) {
+  const { size } = await stat(new URL(relativePath, repositoryRoot));
+  assert(
+    size <= maximumBytes,
+    `${relativePath} exceeds its ${maximumBytes}-byte unminified budget (${size})`
+  );
+}
+
+assert.match(
+  packageJson,
+  /"perf:podcast-admin:trace": "node scripts\/trace-podcast-admin-performance\.mjs"/,
+  "Podcast Admin must expose its repeatable Chrome trace command"
+);
+assert.match(
+  packageJson,
+  /"build:podcast-staging": "node scripts\/build-podcast-staging\.mjs"/,
+  "the isolated Podcast staging artifact must have a repeatable build command"
+);
+assert.match(
+  packageJson,
+  /gulp prod-copy && npm run version:module-imports && gulp inject-min-css/,
+  "production builds must version local module edges before HTML finalization"
+);
+const moduleRevision = "a".repeat(40);
+assert.equal(
+  versionModuleImports(
+    [
+      'import { one } from "./one.js";',
+      'const two = import("./two.js");',
+      'import "./three.js";',
+      'import { fixed } from "./fixed.js?v=0.7.0";'
+    ].join("\n"),
+    moduleRevision
+  ),
+  [
+    `import { one } from "./one.js?v=${moduleRevision}";`,
+    `const two = import("./two.js?v=${moduleRevision}");`,
+    `import "./three.js?v=${moduleRevision}";`,
+    'import { fixed } from "./fixed.js?v=0.7.0";'
+  ].join("\n"),
+  "local static, dynamic, and side-effect imports must share one revision"
+);
+assert.match(
+  stagingBuild,
+  /https:\/\/dust-wave-podcast-staging\.jogo\.workers\.dev/,
+  "the staging build must target only the isolated Podcast Worker"
+);
+assert.match(
+  stagingBuild,
+  /git", \["rev-parse", "--verify", "HEAD"\]/,
+  "local staging builds must resolve their exact checkout revision"
+);
+assert.match(
+  stagingBuild,
+  /DUST_WAVE_ASSET_VERSION: assetRevision/,
+  "staging builds must key browser assets by the exact source revision"
+);
+assert.match(
+  stagingBuild,
+  /\(\?:\[A-Fa-f0-9\]\{40\}\|\[A-Fa-f0-9\]\{64\}\)/,
+  "staging asset revisions must be exact Git SHA-1 or SHA-256 values"
+);
+for (const environmentName of [
+  "PODCAST_ADMIN_API_ORIGIN",
+  "PODCAST_MEMBER_API_ORIGIN",
+  "PODCAST_PUBLIC_API_ORIGIN"
+]) {
+  assert.match(
+    stagingBuild,
+    new RegExp(`${environmentName}: STAGING_API_ORIGIN`),
+    `${environmentName} must be pinned by the isolated staging build`
+  );
+}
+for (const environmentName of [
+  "PODCAST_ADMIN_TURNSTILE_SITE_KEY",
+  "PODCAST_CHECKOUT_TURNSTILE_SITE_KEY",
+  "PODCAST_MEMBER_TURNSTILE_SITE_KEY"
+]) {
+  assert.match(
+    stagingBuild,
+    new RegExp(`${environmentName}: turnstileSiteKey`),
+    `${environmentName} must use the explicit staging Turnstile site key`
+  );
+}
+assert.doesNotMatch(
+  stagingBuild,
+  /feeds\.dustwave\.xyz|media\.dustwave\.xyz/,
+  "the isolated staging artifact must not depend on reserved production DNS"
+);
+assert.match(
+  tracer,
+  /https:\/\/dust-wave-website-staging\.pages\.dev\/admin\/podcasts\//,
+  "performance traces must default to isolated staging"
+);
+assert.match(
+  tracer,
+  /mkdtemp\([\s\S]+dust-wave-podcast-trace-/,
+  "performance traces must use a temporary browser profile"
+);
+assert.match(
+  tracer,
+  /--disable-extensions/,
+  "performance traces must not load personal browser extensions"
+);
+assert.match(
+  tracer,
+  /Emulation\.setDeviceMetricsOverride[\s\S]+observed\?\.innerWidth !== viewport\.width[\s\S]+observed\?\.innerHeight !== viewport\.height[\s\S]+observed\?\.scrollWidth > viewport\.width/,
+  "performance traces must verify the exact CSS viewport and horizontal fit"
+);
+assert.match(
+  tracer,
+  /securitypolicyviolation/,
+  "performance traces must listen for CSP violations before navigation"
+);
+assert.match(
+  tracer,
+  /Page\.addScriptToEvaluateOnNewDocument[\s\S]+source: CSP_VIOLATION_PROBE/,
+  "performance traces must install the CSP probe before navigation"
+);
+assert.match(
+  tracer,
+  /securityPolicyViolations[\s\S]+enforcedViolations\.length > 0/,
+  "performance traces must fail closed on enforced CSP violations"
+);
+assert.match(
+  tracer,
+  /Tracing\.start[\s\S]+Page\.navigate[\s\S]+Tracing\.end[\s\S]+IO\.read/,
+  "performance traces must capture navigation through a bounded CDP stream"
+);
+assert.match(
+  tracer,
+  /Trace isolation check failed[\s\S]+await rm\(outputPath, \{ force: true \}\)/,
+  "performance traces must fail closed when browser isolation is violated"
+);
+assert.doesNotMatch(
+  tracer,
+  /--no-sandbox/,
+  "performance traces must retain the Chrome sandbox"
+);
+assert.match(
+  gitignore,
+  /^\.artifacts\/$/m,
+  "performance traces must never be committed"
+);
+
+console.log("Podcast performance contract validation passed.");

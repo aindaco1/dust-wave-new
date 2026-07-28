@@ -20,19 +20,21 @@
 {# OPEN GRAPH TAGS                                                             #}
 {# ═══════════════════════════════════════════════════════════════════════════ #}
 
-<meta property="og:type" content="{% if tags and ('posts' in tags or 'news' in tags) %}article{% else %}website{% endif %}">
+<meta property="og:type" content="{% if isProject or (tags and ('posts' in tags or 'news' in tags)) %}article{% else %}website{% endif %}">
 <meta property="og:site_name" content="{{ metadata.brandName or metadata.title }}">
 <meta property="og:title" content="{{ pageTitle }}">
 <meta property="og:description" content="{{ pageDescription }}">
 <meta property="og:url" content="{{ pageUrl }}">
-<meta property="og:locale" content="{{ metadata.language | default('en') }}_US">
+<meta property="og:locale" content="{{ (language or metadata.language) | default('en') }}_US">
+{% set alternateLanguage = "es" if (language or metadata.language) == "en" else "en" %}
+<meta property="og:locale:alternate" content="{{ alternateLanguage }}_US">
 
 {# OG Image #}
 <meta property="og:image" content="{{ ogImage }}">
 <meta property="og:image:secure_url" content="{{ ogImage }}">
 <meta property="og:image:alt" content="{{ ogAlt }}">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
+<meta property="og:image:width" content="{{ og_image_width or 1200 }}">
+<meta property="og:image:height" content="{{ og_image_height or 630 }}">
 <meta property="og:image:type" content="image/{% if ogImage.endsWith('.png') %}png{% elif ogImage.endsWith('.webp') %}webp{% elif ogImage.endsWith('.gif') %}gif{% else %}jpeg{% endif %}">
 
 {# Optional OG video (MP4 loop) #}
@@ -61,7 +63,7 @@
   {% endfor %}
 {% endif %}
 {% if summary %}
-<meta property="article:section" content="{% if tags and 'posts' in tags %}Films{% else %}News{% endif %}">
+<meta property="article:section" content="{% if isProject or (tags and 'posts' in tags) %}Films{% else %}News{% endif %}">
 {% endif %}
 
 {# ═══════════════════════════════════════════════════════════════════════════ #}
@@ -107,6 +109,27 @@
 {# ═══════════════════════════════════════════════════════════════════════════ #}
 
 <link rel="canonical" href="{{ pageUrl }}">
+{% set alternatePaths = localizedPaths or i18n.config.pages[translationKey] %}
+{% if not alternatePaths and podcastShowSlug %}
+  {% set alternatePaths = {
+    en: "/podcasts/" + podcastShowSlug + "/",
+    es: "/es/podcasts/" + podcastShowSlug + "/"
+  } %}
+{% endif %}
+{% if not alternatePaths and tags and "posts" in tags %}
+  {% set alternatePaths = {
+    en: page.url,
+    es: "/es" + page.url
+  } %}
+{% endif %}
+{% if alternatePaths %}
+  {% for lang in i18n.config.supportedLangs %}
+    {% if alternatePaths[lang] %}
+<link rel="alternate" hreflang="{{ lang }}" href="{{ metadata.url }}{{ alternatePaths[lang] }}">
+    {% endif %}
+  {% endfor %}
+<link rel="alternate" hreflang="x-default" href="{{ metadata.url }}{{ alternatePaths[i18n.config.defaultLang] }}">
+{% endif %}
 
 {# ═══════════════════════════════════════════════════════════════════════════ #}
 {# JSON-LD STRUCTURED DATA                                                     #}
@@ -128,11 +151,11 @@
 </script>
 
 {# Article/CreativeWork schema for posts and news #}
-{% if tags and ('posts' in tags or 'news' in tags) %}
+{% if isProject or (tags and ('posts' in tags or 'news' in tags)) %}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "{% if tags and 'posts' in tags %}Movie{% else %}Article{% endif %}",
+  "@type": "{% if isProject or (tags and 'posts' in tags) %}Movie{% else %}Article{% endif %}",
   "headline": "{{ pageTitle | replace('"', '\\"') }}",
   "description": "{{ pageDescription | replace('"', '\\"') }}",
   "image": "{{ ogImage }}",

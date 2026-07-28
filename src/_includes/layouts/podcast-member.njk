@@ -1,0 +1,23 @@
+<!doctype html>
+<html class="h-100" lang="{{ language or metadata.language }}">
+  <head>
+    {% include "snippets/head.njk" %}
+    <meta name="robots" content="noindex,nofollow,noarchive">
+    <meta name="referrer" content="no-referrer">
+    {% if podcastMember.turnstileSiteKey %}
+    <link rel="preconnect" href="https://challenges.cloudflare.com" crossorigin>
+    {% endif %}
+  </head>
+  <body class="podcast-member-page">
+    <a class="skip-link" href="#main-content">{{ i18n | t(language, "nav.skipToContent") }}</a>
+    {% include "snippets/navbar1.njk" %}
+    <main id="main-content" class="podcast-member" tabindex="-1">
+      {{ content | safe }}
+    </main>
+    {% include "snippets/podcast-auth-footer.njk" %}
+    {% if podcastMember.turnstileSiteKey %}
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
+    {% endif %}
+    <script type="module" src="/js/podcast-member.js?v={{ assets.version | default('dev') }}"></script>
+  </body>
+</html>

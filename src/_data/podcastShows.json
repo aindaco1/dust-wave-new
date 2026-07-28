@@ -1,0 +1,51 @@
+[
+  {
+    "id": "show_opera_en_la_selva",
+    "slug": "opera-en-la-selva",
+    "title": "Ópera en la Selva",
+    "description": "Belleza y alegría. Y un poco de tecnología de vez en cuando.",
+    "descriptionEn": "Beauty and joy. And a bit of tech from time to time.",
+    "language": "es",
+    "status": "coming_soon",
+    "sourceUrl": "https://operaenlaselva.substack.com/",
+    "feedUrl": "https://feeds.dustwave.xyz/opera-en-la-selva/rss.xml",
+    "feedStatus": "reserved",
+    "mediaOrigin": "https://media.dustwave.xyz",
+    "artwork": "/img/podcasts/opera-en-la-selva/artwork.png",
+    "artworkWebpSmall": "/img/webp/podcasts/opera-en-la-selva/artwork--w256.webp",
+    "artworkWebp": "/img/webp/podcasts/opera-en-la-selva/artwork.webp",
+    "wordmark": "/img/podcasts/opera-en-la-selva/wordmark.png",
+    "wordmarkWebpSmall": "/img/webp/podcasts/opera-en-la-selva/wordmark--w640.webp",
+    "wordmarkWebp": "/img/webp/podcasts/opera-en-la-selva/wordmark--w1280.webp",
+    "wordmarkWebpLarge": "/img/webp/podcasts/opera-en-la-selva/wordmark--w2560.webp",
+    "socialImage": "/img/podcasts/opera-en-la-selva/social-card.jpg",
+    "socialImageWidth": 920,
+    "socialImageHeight": 480,
+    "youtubeChannel": "https://www.youtube.com/@dustwavecollective",
+    "publicAccess": {
+      "priceCents": 0,
+      "label": "Gratis"
+    },
+    "premium": {
+      "enabled": true,
+      "currency": "USD",
+      "monthlyCents": 500,
+      "annualCents": 5000,
+      "checkoutStatus": "coming_soon",
+      "benefits": [
+        "Episodios extra",
+        "Acceso anticipado"
+      ]
+    },
+    "earlyAccess": {
+      "mode": "days_before_public",
+      "days": 7,
+      "allowEpisodeOverride": true
+    },
+    "freeMiniEpisode": {
+      "enabled": true,
+      "maximumPerShow": 1
+    },
+    "episodes": []
+  }
+]

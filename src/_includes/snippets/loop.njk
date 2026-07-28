@@ -1,6 +1,7 @@
 {%- for post in posts -%}
+    {% set postUrl = "/es" + post.url if language == "es" else post.url %}
     <article class="col-12 border-top px-0 py-4 d-flex justify-content-between align-items-center project-{{ post.data.title | slugify }}">
-      <h2 class="h4 lh-1 mb-0"><a href="{{ post.url }}" class="white-text text-decoration-none">{{ post.data.title }}</a></h2>
-      <time datetime="{{ post.date | htmlDateString }}">{{ post.date | readableDate }}</time>
+      <h2 class="h4 lh-1 mb-0"><a href="{{ postUrl }}" class="white-text text-decoration-none">{{ post.data.title }}</a></h2>
+      <time datetime="{{ post.date | htmlDateString }}">{{ post.date | localizedDate(language) }}</time>
     </article>
   {% endfor %}

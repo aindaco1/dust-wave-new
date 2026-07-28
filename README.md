@@ -12,8 +12,11 @@ node --version
 ## Installation
 
 ```bash
+git submodule update --init --recursive
 npm install
 ```
+
+Clone with `--recurse-submodules` when possible. Existing checkouts must initialize the recorded `shared/dust-wave-platform` commit before installing or testing; CI pins that gitlink and does not follow the shared repository's moving branch.
 
 ## Development
 
@@ -31,6 +34,86 @@ empty and will be populated again by the next local or production build.
 Push to `main` branch → GitHub Actions builds and deploys via GitHub Pages artifacts automatically. No manual build needed.
 
 You can also trigger a manual deploy from the Actions tab → "Build and Deploy" → "Run workflow".
+
+The build runs `npm run check:podcasts`, which scans tracked text through the
+shared Dust Wave credential-leak gate, fails on high-severity dependency
+advisories, and then validates the bilingual Podcast surfaces. GitHub Actions
+are pinned to immutable commits. The post-deploy Cloudflare purge calls the
+official API directly so no third-party action receives credentials. Prefer a
+zone-scoped `CLOUDFLARE_CACHE_PURGE_TOKEN` with Cache Purge permission; the
+existing email/global-key pair is a temporary compatibility fallback.
+
+### Podcast UI configuration
+
+The Pages build reads the following GitHub Actions repository variables:
+
+- `PODCAST_ADMIN_API_ORIGIN`
+- `PODCAST_ADMIN_TURNSTILE_SITE_KEY`
+- `PODCAST_MEMBER_API_ORIGIN`
+- `PODCAST_MEMBER_TURNSTILE_SITE_KEY`
+- `PODCAST_CHECKOUT_TURNSTILE_SITE_KEY`
+
+Cloudflare Pages previews consume the checked-in `_headers` file. All
+`pages.dev` deployment hosts are noindex, while `/admin/*` and
+`/podcasts/account/*` additionally use `no-store`, deny framing, suppress
+referrers, and disable browser capabilities those authenticated shells do not
+need. The rules deliberately do not apply anti-framing headers to public
+podcast embeds.
+
+The public premium form remains hidden unless the Podcast API reports
+`checkoutEnabled: true`, returns at least one valid USD price, and the build
+has a Checkout Turnstile site key. Subscriber billing controls appear only
+when the authenticated, non-secret session projection reports a show-scoped
+Stripe billing source.
+
+Build the isolated Cloudflare Pages staging artifact with:
+
+```bash
+PODCAST_STAGING_TURNSTILE_SITE_KEY="<public staging site key>" \
+  npm run build:podcast-staging
+```
+
+That command deliberately overrides the public, member, Admin, and Checkout
+API origins with
+`https://dust-wave-podcast-staging.jogo.workers.dev`. Do not substitute
+`feeds.dustwave.xyz` or `media.dustwave.xyz`: those names remain reserved for
+the future production Worker routes and may not have DNS records during
+staging. It also resolves the exact current Git commit and uses that SHA for
+every browser asset cache key; CI uses `GITHUB_SHA`, and an explicit
+`DUST_WAVE_ASSET_VERSION` must likewise be a full Git SHA-1 or SHA-256. The
+command contains no secret; the Turnstile site key is public, but it is
+supplied explicitly so a production widget is never selected by accident.
+
+Canonical podcast News pages progressively fetch the episode's approved
+English/Spanish transcript URL from the immutable publication snapshot. The
+browser validates the bounded response again, builds the transcript only with
+DOM text nodes, and uses the existing Digest/Podcast player contract for
+timestamp seek-and-play. If no approved public transcript is available, the
+audio player and episode notes remain usable and the bilingual empty state is
+preserved.
+
+The same canonical page progressively loads an approved Podcasting 2.0 chapter
+document. Chapter titles and links are validated, rendered with DOM text nodes,
+and wired to the existing player's seek/time-subscription API so the current
+chapter follows playback. The page deliberately does not load remote chapter
+artwork; related links open with no referrer and opener isolation. Missing or
+ineligible chapters preserve a bilingual empty state without affecting audio,
+notes, or transcripts.
+
+The publication JSON is a versioned `full_episode|premium_teaser`
+discriminated contract. Premium-bonus public snapshots are deliberately
+media-free: the canonical News page, show aggregate, and noindex embed render
+only public teaser copy and a subscription CTA, without the shared player,
+download, transcript/chapter clients, media CSP origins, duration, private
+timing, or token-shaped data. Build validation rejects a teaser that contains
+any of those fields. Podcast episode and show JSON-LD use the shared
+HTML-significant-character-safe serializer.
+
+The private Production tab also layers timestamped plain-text review over the
+Worker's exact current audio, transcript, chapter, clip, and ad-plan revisions.
+It renders review text only through DOM text nodes, distinguishes current from
+historical targets, exposes resolve/reopen and role-gated approval state, and
+labels readiness as non-enforcing until the later publication dependency gate.
 
 ## Roadmap
 
@@ -171,6 +254,34 @@ npm run build:og
 ```
 
 Create a default fallback image at `src/img/og/default.png` (1200×630).
+
+### Podcast Admin performance traces
+
+Capture a Chrome DevTools-compatible JSON trace against the isolated staging
+admin with the repository's dependency-free tracer:
+
+```bash
+npm run perf:podcast-admin:trace
+```
+
+The command launches a temporary, extension-free Chrome profile, records an
+8-second desktop trace, and writes it below `.artifacts/performance/` (ignored
+by Git). It never reuses browser cookies or an authenticated session. The
+tracer discovers system Chrome/Chromium and Playwright's standard browser cache;
+set `PLAYWRIGHT_BROWSERS_PATH` or pass `--chrome` for a custom installation.
+
+Use `--viewport 390x844` for the mobile breakpoint, or override the safe
+staging default explicitly:
+
+```bash
+npm run perf:podcast-admin:trace -- \
+  --viewport 390x844 \
+  --url https://dust-wave-website-staging.pages.dev/es/admin/podcasts/
+```
+
+Load the resulting JSON from Chrome DevTools **Performance → Load profile**.
+Trace files contain visited URLs and page metadata, so review them before
+sharing. Run `npm run perf:podcast-admin:trace -- --help` for all options.
 
 ### WebP Images
 

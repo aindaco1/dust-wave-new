@@ -1,0 +1,65 @@
+# Keep Cloudflare Pages deployment and branch-preview hosts out of search.
+# These host-specific rules do not apply to dustwave.xyz.
+https://:project.pages.dev/*
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+https://:version.:project.pages.dev/*
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+# These assets are not content-hashed yet. Give repeat visits a useful browser
+# cache while keeping deploys reasonably fresh; immutable caching should wait
+# until the build emits fingerprinted filenames.
+/css/*
+  Cache-Control: public, max-age=3600, must-revalidate
+  X-Content-Type-Options: nosniff
+
+/js/*
+  Cache-Control: public, max-age=3600, must-revalidate
+  X-Content-Type-Options: nosniff
+
+/img/*
+  Cache-Control: public, max-age=86400, must-revalidate
+  X-Content-Type-Options: nosniff
+
+/fonts/*
+  Cache-Control: public, max-age=86400, must-revalidate
+  X-Content-Type-Options: nosniff
+
+# Authenticated shells must not be cached, embedded, or receive unnecessary
+# browser capabilities. Public show, episode, player, and embed routes remain
+# unaffected.
+/admin/*
+  Cache-Control: private, no-store, max-age=0
+  Content-Security-Policy: default-src 'self'; base-uri 'none'; connect-src 'self' https://challenges.cloudflare.com https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz; font-src 'self'; form-action 'none'; frame-ancestors 'none'; frame-src https://challenges.cloudflare.com; img-src 'self' data: blob: https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz https://media.dustwave.xyz; media-src 'self' blob: https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz https://media.dustwave.xyz; object-src 'none'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), geolocation=(), microphone=(), payment=(), usb=()
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/es/admin/*
+  Cache-Control: private, no-store, max-age=0
+  Content-Security-Policy: default-src 'self'; base-uri 'none'; connect-src 'self' https://challenges.cloudflare.com https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz; font-src 'self'; form-action 'none'; frame-ancestors 'none'; frame-src https://challenges.cloudflare.com; img-src 'self' data: blob: https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz https://media.dustwave.xyz; media-src 'self' blob: https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz https://media.dustwave.xyz; object-src 'none'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), geolocation=(), microphone=(), payment=(), usb=()
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/podcasts/account/*
+  Cache-Control: private, no-store, max-age=0
+  Content-Security-Policy: default-src 'self'; base-uri 'none'; connect-src 'self' https://challenges.cloudflare.com https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz; font-src 'self'; form-action 'none'; frame-ancestors 'none'; frame-src https://challenges.cloudflare.com; img-src 'self' data: blob: https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz https://media.dustwave.xyz; media-src 'self' blob: https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz https://media.dustwave.xyz; object-src 'none'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), geolocation=(), microphone=(), payment=(), usb=()
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/es/podcasts/account/*
+  Cache-Control: private, no-store, max-age=0
+  Content-Security-Policy: default-src 'self'; base-uri 'none'; connect-src 'self' https://challenges.cloudflare.com https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz; font-src 'self'; form-action 'none'; frame-ancestors 'none'; frame-src https://challenges.cloudflare.com; img-src 'self' data: blob: https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz https://media.dustwave.xyz; media-src 'self' blob: https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz https://media.dustwave.xyz; object-src 'none'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), geolocation=(), microphone=(), payment=(), usb=()
+  X-Robots-Tag: noindex, nofollow, noarchive

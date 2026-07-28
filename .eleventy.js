@@ -1,8 +1,7 @@
 const { DateTime } = require("luxon");
+const { safeJsonLd } = require("./lib/safe-json-ld.cjs");
 const navigationPlugin = require('@11ty/eleventy-navigation');
 const rssPlugin = require('@11ty/eleventy-plugin-rss');
-const Image = require("@11ty/eleventy-img");
-const EleventyFetch = require("@11ty/eleventy-fetch");
 const { EleventyHtmlBasePlugin } = require("@11ty/eleventy");
 const pluginRss = require("@11ty/eleventy-plugin-rss");
 const { SitemapStream, streamToPromise } = require("sitemap");
@@ -12,6 +11,40 @@ const crypto = require("crypto");
 // WebP URLs are emitted only for the GitHub Pages build. Local builds keep
 // source image URLs so development never depends on generated assets.
 const useWebp = process.env.USE_WEBP === "true";
+const DEFAULT_LANGUAGE = "en";
+
+function valueAtPath(source, key) {
+  return String(key || "")
+    .split(".")
+    .filter(Boolean)
+    .reduce((value, part) => value?.[part], source);
+}
+
+function interpolateTranslation(value, variables = {}) {
+  if (typeof value !== "string") return value;
+  return Object.entries(variables || {}).reduce(
+    (result, [key, replacement]) =>
+      result.replaceAll(`%{${key}}`, String(replacement ?? "")),
+    value
+  );
+}
+
+function translate(i18n, language, key, variables = {}) {
+  const requestedLanguage = i18n?.config?.supportedLangs?.includes(language)
+    ? language
+    : i18n?.config?.defaultLang || DEFAULT_LANGUAGE;
+  const fallbackLanguage = i18n?.config?.defaultLang || DEFAULT_LANGUAGE;
+  const translated = valueAtPath(i18n?.[requestedLanguage], key);
+  const fallback = valueAtPath(i18n?.[fallbackLanguage], key);
+  return interpolateTranslation(translated ?? fallback ?? `[missing: ${key}]`, variables);
+}
+
+function localizedUrl(i18n, language, translationKey, fallback = "/") {
+  const requestedLanguage = i18n?.config?.supportedLangs?.includes(language)
+    ? language
+    : i18n?.config?.defaultLang || DEFAULT_LANGUAGE;
+  return i18n?.config?.pages?.[translationKey]?.[requestedLanguage] || fallback;
+}
 
 function resolveImagePath(imgPath) {
   if (!useWebp || !imgPath) return imgPath;
@@ -233,6 +266,28 @@ ${content}
     if (!Array.isArray(array) || !n) return array;
     return n < 0 ? array.slice(n) : array.slice(0, n);
   });
+
+  eleventyConfig.addFilter("podcastEpisodesForShow", (episodes, showSlug) => {
+    return (Array.isArray(episodes) ? episodes : [])
+      .filter((episode) => episode?.showSlug === showSlug)
+      .sort((left, right) => String(right.publicAt || '').localeCompare(String(left.publicAt || '')));
+  });
+
+  eleventyConfig.addFilter("podcastShowBySlug", (shows, showSlug) => {
+    return (Array.isArray(shows) ? shows : []).find((show) => show?.slug === showSlug) || null;
+  });
+
+  eleventyConfig.addFilter("readablePodcastDate", (value) => {
+    const parsed = DateTime.fromISO(String(value || ''), { setZone: true });
+    return parsed.isValid ? parsed.setZone('America/Denver').toFormat('LLLL d, yyyy') : '';
+  });
+  eleventyConfig.addFilter("t", translate);
+  eleventyConfig.addFilter("localizedUrl", localizedUrl);
+  eleventyConfig.addFilter("localizedDate", (dateObj, language = DEFAULT_LANGUAGE, format = "dd LLL yyyy") => {
+    const locale = language === "es" ? "es-US" : "en-US";
+    return DateTime.fromJSDate(dateObj, { zone: "utc" }).setLocale(locale).toFormat(format);
+  });
+  eleventyConfig.addFilter("safeJsonLd", safeJsonLd);
 
   // Substack excerpt filter - splits content at <!-- more:substack --> marker
   // Returns only the content before the marker for the Substack feed

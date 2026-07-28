@@ -1,0 +1,53 @@
+{#
+  Shared contract for the WaveSurfer player already used by the Digest.
+  Required: playerId, title, audioUrl. Optional: downloadUrl, artworkUrl,
+  artworkAlt, peaksUrl, playerLanguage ("es" or "en"). Podcast episode pages
+  may also pass analyticsEndpoint and analyticsEpisodeId.
+#}
+{% set playerLang = "en" if playerLanguage == "en" else "es" %}
+{% set playLabel = "Play " if playerLang == "en" else "Reproducir " %}
+{% set rewindLabel = "Rewind 10 seconds" if playerLang == "en" else "Retroceder 10 segundos" %}
+{% set forwardLabel = "Skip forward 30 seconds" if playerLang == "en" else "Avanzar 30 segundos" %}
+{% set speedLabel = "Change speed" if playerLang == "en" else "Cambiar velocidad" %}
+{% set downloadLabel = "Download " if playerLang == "en" else "Descargar " %}
+<div class="audio-card" lang="{{ playerLang }}">
+  {% if artworkUrl %}
+  <div class="art-col">
+    <img
+      src="{{ artworkUrl }}"
+      alt="{{ artworkAlt or title }}"
+      width="180"
+      height="180"
+      loading="lazy"
+      decoding="async">
+  </div>
+  {% endif %}
+  <div>
+    <div
+      class="wave"
+      id="wave_{{ playerId }}"
+      data-audio-id="audio_{{ playerId }}"
+      data-audio-src="{{ audioUrl }}"
+      {% if analyticsEndpoint and analyticsEpisodeId %}data-analytics-endpoint="{{ analyticsEndpoint }}" data-analytics-episode-id="{{ analyticsEpisodeId }}"{% endif %}
+      {% if peaksUrl %}data-peaks-src="{{ peaksUrl }}"{% endif %}></div>
+    <audio id="audio_{{ playerId }}" preload="none" src="{{ audioUrl }}"></audio>
+    <div class="controls">
+      <button type="button" class="playpause" aria-label="{{ playLabel }}{{ title }}" data-state="paused">
+        <svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+        <svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+      </button>
+      <button type="button" class="skip-back" aria-label="{{ rewindLabel }}">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5V2L7 6l5 4V7a6 6 0 1 1-5.7 8H4.2A8 8 0 1 0 12 5z"/></svg>
+      </button>
+      <button type="button" class="skip-fwd" aria-label="{{ forwardLabel }}">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5V2l5 4-5 4V7a6 6 0 1 0 5.7 8h2.1A8 8 0 1 1 12 5z"/></svg>
+      </button>
+      <button type="button" class="speed" data-audio-speed aria-label="{{ speedLabel }}" aria-live="polite">1x</button>
+      <a class="download" href="{{ downloadUrl or audioUrl }}" download aria-label="{{ downloadLabel }}{{ title }}">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M5 20h14v-2H5v2zM12 2v10.59l3.3-3.3 1.4 1.41L12 16.41l-4.7-4.71 1.4-1.41L11 12.59V2h1z"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</div>

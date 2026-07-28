@@ -1,0 +1,18 @@
+Ópera en la Selva source assets
+
+Imported on 2026-07-23 from the publication assets exposed by
+https://operaenlaselva.substack.com/ at the show owner's direction.
+
+artwork.png
+  Source: Substack publication cover 7af7d6da-bbf7-4ac9-8209-d1a47c9924ed_505x505.png
+  SHA-256: f0c758f7e3a6a14f6f57aab0d4b724ce3707aa0dd0db2065f4b42385d9cd015c
+
+wordmark.png
+  Source: Substack wide logo d1258a95-12a7-490f-b17e-2e5dc139d63e_2708x532.png
+  SHA-256: cf8549c7d57bfe2c1260389871bddba989320430cceaad70aa2b6ad595eb9086
+
+social-card.jpg
+  Source: Substack generated subscribe card, version 349470249/9
+  SHA-256: 6ffbca43ee57d86a9b04aff16982fa0c2ffe5474142c9e5c002ede05e281c1b2
+
+These are retained source assets. Generated WebP derivatives remain build artifacts.

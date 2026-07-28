@@ -1,34 +1,42 @@
 <div class="collapse navbar-collapse" id="navbarContent">
+  {% set podcastPath = "/es/podcasts/opera-en-la-selva/" if language == "es" else "/podcasts/opera-en-la-selva/" %}
+  <nav class="w-100" aria-label="{{ i18n | t(language, 'nav.main') }}">
   <ul class="navbar-nav mx-auto">
     <li class="nav-item">
-        <a class="nav-link initialism white-text"  href="/about.html" aria-label="About">
-          About
+        <a class="nav-link initialism white-text" href="{{ i18n | localizedUrl(language, 'about', '/about.html') }}">
+          {{ i18n | t(language, "nav.about") }}
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link initialism white-text"  href="/news.html" aria-label="News">
-          News
+        <a class="nav-link initialism white-text" href="{{ i18n | localizedUrl(language, 'news', '/news.html') }}">
+          {{ i18n | t(language, "nav.news") }}
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link initialism white-text"  href="/partners.html" aria-label="Partners">
-          Partners
+        <a class="nav-link initialism white-text" href="{{ podcastPath }}">
+          {{ i18n | t(language, "nav.podcasts") }}
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link initialism white-text"  href="/contact.html" aria-label="Contact Us">
-          Contact
+        <a class="nav-link initialism white-text" href="{{ i18n | localizedUrl(language, 'partners', '/partners.html') }}">
+          {{ i18n | t(language, "nav.partners") }}
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link initialism white-text"  href="/microcinema.html" aria-label="Dust Wave Microcinema">
-          Microcinema
+        <a class="nav-link initialism white-text" href="{{ i18n | localizedUrl(language, 'contact', '/contact.html') }}">
+          {{ i18n | t(language, "nav.contact") }}
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link initialism white-text"  href="https://shop.dustwave.xyz" target="_blank" aria-label="Shop">
-          Shop
+        <a class="nav-link initialism white-text" href="{{ i18n | localizedUrl(language, 'microcinema', '/microcinema.html') }}">
+          {{ i18n | t(language, "nav.microcinema") }}
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link initialism white-text" href="https://shop.dustwave.xyz{% if language == 'es' %}/es/{% endif %}" target="_blank" rel="noopener noreferrer">
+          {{ i18n | t(language, "nav.shop") }}
         </a>
     </li>
   </ul>
+  </nav>
 </div>

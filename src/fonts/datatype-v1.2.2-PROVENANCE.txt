@@ -1,0 +1,16 @@
+Datatype variable font provenance
+=================================
+
+Upstream project: https://github.com/franktisellano/datatype
+Release: v1.2.2
+Pinned commit: 04e189f3222ab436fb7f84a20c62c48a1a7689f7
+Source file: fonts/variable/Datatype[wdth,wght].woff2
+Local file: datatype-v1.2.2-b7bd0abb.woff2
+Byte size: 81904
+SHA-256: b7bd0abb2cad57bfa29129228d93e4cd78b1d46045899f9284938ced0ee68489
+License: SIL Open Font License 1.1 (see datatype-OFL-1.1.txt)
+
+This is an unmodified copy of the upstream WOFF2. Its variable axes are
+width (`wdth`) 50–150, default 100, and weight (`wght`) 100–900, default
+400. Dust Wave uses width 100 and weight 500 by default, with width 75 at
+compact container sizes.

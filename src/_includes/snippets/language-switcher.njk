@@ -1,0 +1,35 @@
+{% set currentLanguage = language or i18n.config.defaultLang %}
+{% set pagePaths = localizedPaths or i18n.config.pages[translationKey] %}
+{% if not pagePaths and podcastShowSlug %}
+  {% set pagePaths = {
+    en: "/podcasts/" + podcastShowSlug + "/",
+    es: "/es/podcasts/" + podcastShowSlug + "/"
+  } %}
+{% endif %}
+{% if not pagePaths and tags and "posts" in tags %}
+  {% set pagePaths = {
+    en: page.url,
+    es: "/es" + page.url
+  } %}
+{% endif %}
+{% if not pagePaths and tags and "news" in tags %}
+  {% set pagePaths = {
+    en: page.url if currentLanguage == "en" else i18n.config.pages.news.en,
+    es: page.url if currentLanguage == "es" else i18n.config.pages.news.es
+  } %}
+{% endif %}
+{% if pagePaths %}
+<nav class="site-footer__lang-switcher" aria-label="{{ i18n | t(currentLanguage, 'nav.languageSwitcher') }}">
+  {% for lang in i18n.config.supportedLangs %}
+    {% if pagePaths[lang] %}
+    <a
+      class="site-footer__lang-link{% if lang == currentLanguage %} is-current{% endif %}"
+      href="{{ pagePaths[lang] }}"
+      lang="{{ lang }}"
+      hreflang="{{ lang }}"
+      data-lang-switcher-link="true"
+      {% if lang == currentLanguage %}aria-current="page"{% endif %}>{{ i18n.config.languageLabels[lang] }}</a>
+    {% endif %}
+  {% endfor %}
+</nav>
+{% endif %}

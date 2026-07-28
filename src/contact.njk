@@ -1,10 +1,17 @@
 ---
-title: Contact
 layout: layouts/default.njk
 navbar: navbar1
 footer: footer1
 colorModifier: dark
-permalink: contact.html
+translationKey: contact
+pagination:
+  data: i18n.config.supportedLangs
+  size: 1
+  alias: language
+permalink: "{{ i18n.config.pages.contact[language] }}"
+eleventyComputed:
+  title: "{{ i18n[language].pages.contact.title }}"
+  description: "{{ i18n[language].pages.contact.description }}"
 ---
 <div class="container">
   <div class="row d-flex justify-content-center">
@@ -17,27 +24,27 @@ permalink: contact.html
         <form method="post" action="https://formspree.io/f/xrgrjbwo" id="contact-form">
 
           <div class="contact-form__item">
-            <label class="contact-form__label">Email Address *</label>
-            <input type="text" name="email" placeholder="Your email address..." class="contact-form__input">
+            <label class="contact-form__label" for="contact-email">{{ i18n | t(language, "pages.contact.email") }} *</label>
+            <input id="contact-email" type="email" name="email" placeholder="{{ i18n | t(language, 'pages.contact.emailPlaceholder') }}" class="contact-form__input" autocomplete="email" inputmode="email" required>
           </div>
 
           <div class="contact-form__item">
-            <label class="contact-form__label">Name *</label>
-            <input type="text" name="name" placeholder="Your name..." class="contact-form__input">
+            <label class="contact-form__label" for="contact-name">{{ i18n | t(language, "pages.contact.name") }} *</label>
+            <input id="contact-name" type="text" name="name" placeholder="{{ i18n | t(language, 'pages.contact.namePlaceholder') }}" class="contact-form__input" autocomplete="name" required>
           </div>
 
           <div class="contact-form__item">
-            <label class="contact-form__label">Message *</label>
-            <textarea name="message" placeholder="Your message..." class="contact-form__textarea"></textarea>
+            <label class="contact-form__label" for="contact-message">{{ i18n | t(language, "pages.contact.message") }} *</label>
+            <textarea id="contact-message" name="message" placeholder="{{ i18n | t(language, 'pages.contact.messagePlaceholder') }}" class="contact-form__textarea" required></textarea>
           </div>
           <br><br>
-          <div class="cf-turnstile" data-sitekey="0x4AAAAAAAAudwxAIPEUguw8" data-callback="javascriptCallback" data-theme="light"></div>
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAAAAudwxAIPEUguw8" data-callback="javascriptCallback" data-theme="light" data-language="{{ language }}"></div>
 
-          <input type="hidden" name="_next" value="/thanks" />
-          <input type="hidden" name="_subject" value="Dust Wave contact form submission" />
+          <input type="hidden" name="_next" value="{{ i18n | localizedUrl(language, 'home', '/') }}" />
+          <input type="hidden" name="_subject" value="{{ i18n | t(language, 'pages.contact.subject') }}" />
 
           <div class="contact-form__item">
-            <input type="submit" value="Submit" class="button button--large border-color-white">
+            <input type="submit" value="{{ i18n | t(language, 'pages.contact.submit') }}" class="button button--large border-color-white">
           </div>
 
         </form>

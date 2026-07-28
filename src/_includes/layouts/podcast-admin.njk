@@ -1,0 +1,21 @@
+<!doctype html>
+<html class="h-100" lang="{{ language or metadata.language }}">
+  <head>
+    {% include "snippets/head.njk" %}
+    <meta name="robots" content="noindex,nofollow,noarchive">
+    {% if podcastAdmin.turnstileSiteKey %}
+    <link rel="preconnect" href="https://challenges.cloudflare.com" crossorigin>
+    {% endif %}
+  </head>
+  <body class="podcast-admin-page">
+    <a class="skip-link" href="#main-content">{{ i18n | t(language, "nav.skipToContent") }}</a>
+    {% include "snippets/navbar1.njk" %}
+    <main id="main-content" class="podcast-admin" tabindex="-1">
+      {{ content | safe }}
+    </main>
+    {% include "snippets/podcast-auth-footer.njk" %}
+    <script src="/js/dust-wave-admin-shell/vendor/qrcode-generator.js?v={{ assets.version | default('dev') }}" defer></script>
+    <script src="/js/audio-player.js?v={{ assets.version | default('dev') }}" defer></script>
+    <script type="module" src="/js/podcast-admin.js?v={{ assets.version | default('dev') }}"></script>
+  </body>
+</html>

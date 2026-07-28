@@ -1,5 +1,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  {% set pageLanguage = language or metadata.language or i18n.config.defaultLang %}
+  {% if i18nRuntime %}
+  <script id="dust-wave-runtime-i18n" type="application/json">{{ i18n[pageLanguage].runtime | safeJsonLd | safe }}</script>
+  {% endif %}
+  <script src="/js/site-i18n.js?v={{ assets.version | default('dev') }}" defer></script>
   {% if summary or description %}
     <meta name="description" content="{{ description or summary }}">
   {% else %}
@@ -9,6 +14,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon/favicon-16x16.png">
   <link rel="icon" type="image/png" sizes="96x96" href="/img/favicon/favicon.png">
+  {% if not disableLegacyMediaPreconnects %}
   <link rel="preconnect" href="https://www.youtube-nocookie.com" crossorigin>
   <link rel="preconnect" href="https://www.youtube.com" crossorigin>
   <link rel="preconnect" href="https://i.ytimg.com" crossorigin>
@@ -19,6 +25,7 @@
   <link rel="preconnect" href="https://dts.podtrac.com" crossorigin>
   <link rel="dns-prefetch" href="https://www.youtube-nocookie.com">
   <link rel="dns-prefetch" href="https://i.ytimg.com">
+  {% endif %}
   <meta name="author" content="{{ metadata.author }}">
   <meta name="generator" content="{{ eleventy.generator }}">
   <meta name="HandheldFriendly" content="true"/>
@@ -34,11 +41,15 @@
 
   <title>{{ title or metadata.title }}</title>
   <!-- build:css -->
-  <link rel="stylesheet" href="/css/theme.css">
-   <!-- endbuild -->
+  <link rel="stylesheet" href="/css/theme.css?v={{ assets.version | default('dev') }}">
+  <!-- endbuild -->
   {% include 'snippets/gif-hover-styles.njk' %}
+  {% if not disableTypekit %}
   <link rel="stylesheet" href="https://use.typekit.net/hoj2yet.css">
+  {% endif %}
+  {% if not disableFontAwesome %}
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  {% endif %}
 
 {% if customFont %}
    <style>

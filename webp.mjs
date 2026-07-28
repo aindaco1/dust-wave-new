@@ -49,14 +49,22 @@ async function findReferencedWebps() {
 }
 
 async function findSourceImage(webpPath) {
-  const sourceStem = path.join(sourceDirectory, webpPath.replace(/\.webp$/i, ''));
+  const widthMatch = webpPath.match(/--w([1-9][0-9]{1,3})\.webp$/i);
+  const resizeWidth = widthMatch ? Number(widthMatch[1]) : null;
+  const sourceWebpPath = widthMatch
+    ? webpPath.replace(/--w[1-9][0-9]{1,3}\.webp$/i, '.webp')
+    : webpPath;
+  const sourceStem = path.join(
+    sourceDirectory,
+    sourceWebpPath.replace(/\.webp$/i, '')
+  );
 
   for (const extension of sourceExtensions) {
     const sourcePath = `${sourceStem}${extension}`;
 
     try {
       await access(sourcePath);
-      return sourcePath;
+      return { resizeWidth, sourcePath };
     } catch {
       // Try the next supported source extension.
     }
@@ -65,10 +73,14 @@ async function findSourceImage(webpPath) {
   throw new Error(`No JPG or PNG source found for /img/webp/${webpPath}`);
 }
 
-async function convertImage({ sourcePath, webpPath }) {
+async function convertImage({ resizeWidth, sourcePath, webpPath }) {
   const outputPath = path.join(outputDirectory, webpPath);
   const sourceBuffer = await readFile(sourcePath);
-  const webpBuffer = await sharp(sourceBuffer).webp({ quality: 70 }).toBuffer();
+  const image = sharp(sourceBuffer);
+  if (resizeWidth) {
+    image.resize({ width: resizeWidth, withoutEnlargement: true });
+  }
+  const webpBuffer = await image.webp({ quality: 70 }).toBuffer();
 
   await mkdir(path.dirname(outputPath), { recursive: true });
   await writeFile(outputPath, webpBuffer);
@@ -78,7 +90,7 @@ async function main() {
   const webpPaths = await findReferencedWebps();
   const conversions = await Promise.all(webpPaths.map(async (webpPath) => ({
     webpPath,
-    sourcePath: await findSourceImage(webpPath)
+    ...await findSourceImage(webpPath)
   })));
   let nextImageIndex = 0;
   const workerCount = Math.min(4, conversions.length);

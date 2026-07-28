@@ -1,17 +1,17 @@
 // Core
 const { src, dest, watch, series, parallel } = require('gulp');
 const gulp = require('gulp');
+const { mkdir, rm } = require('node:fs/promises');
 
 // Utilities
 const cleanCSS = require('gulp-clean-css');
 const sass = require('gulp-dart-sass');
-const clean = require('gulp-clean');
-const browserSync = require('browser-sync').create();
 const rename = require('gulp-rename');
 
 const purgecss = require('gulp-purgecss');
 const htmlmin = require('gulp-html-minifier-terser');
 const htmlreplace = require('gulp-html-replace');
+const { version: assetVersion } = require('./src/_data/assets.js');
 
 // Load (and gently normalize) config
 const cfg = require('./gulpconfig.json');
@@ -27,10 +27,14 @@ const DIR = {
 
 // ============ Clean tasks ============
 function cleanDev() {
-  return src(`${DIR.dev}/*`, { read: false, allowEmpty: true }).pipe(clean());
+  return resetDirectory(DIR.dev);
 }
 function cleanDist() {
-  return src(`${DIR.dist}/*`, { read: false, allowEmpty: true }).pipe(clean());
+  return resetDirectory(DIR.dist);
+}
+async function resetDirectory(directory) {
+  await rm(directory, { recursive: true, force: true });
+  await mkdir(directory, { recursive: true });
 }
 
 // ============ Dev asset tasks ============
@@ -44,13 +48,37 @@ function copyPeaks() {
 function copyJs() {
   return src(`${DIR.src}/js/**/*.*`).pipe(dest(`${DIR.dev}/js`));
 }
+function copyAudioPlayerVendor() {
+  return src(`${DIR.node}/wavesurfer.js/dist/wavesurfer.min.js`)
+    .pipe(dest(`${DIR.dev}/js/vendor`));
+}
+function copyThirdPartyNotices() {
+  return src('THIRD_PARTY_NOTICES.md').pipe(dest(DIR.dev));
+}
+function copySharedAdminShell() {
+  return src(
+    'shared/dust-wave-platform/packages/admin-shell/src/**/*.js',
+    { base: 'shared/dust-wave-platform/packages/admin-shell/src' }
+  ).pipe(dest(`${DIR.dev}/js/dust-wave-admin-shell`));
+}
 function copyImg() {
   return src(`${DIR.src}/img/**/*.*`, { encoding: false }).pipe(dest(`${DIR.dev}/img`));
 }
 function copyPdf() {
   return src(`${DIR.src}/pdf/**/*.*`, { allowEmpty: true, encoding: false }).pipe(dest(`${DIR.dev}/pdf`));
 }
-gulp.task('dist-assets', parallel(copyPeaks, copyJs, copyImg, copyPdf)); // keep task name for scripts
+gulp.task(
+  'dist-assets',
+  parallel(
+    copyPeaks,
+    copyJs,
+    copyAudioPlayerVendor,
+    copyThirdPartyNotices,
+    copySharedAdminShell,
+    copyImg,
+    copyPdf
+  )
+); // keep task name for scripts
 
 // Sass → CSS
 // NOTE: Deprecation warnings are silenced because they come from Bootstrap 5's SCSS,
@@ -59,7 +87,7 @@ gulp.task('dist-assets', parallel(copyPeaks, copyJs, copyImg, copyPdf)); // keep
 // theme files (src/scss/themes/) don't use any deprecated syntax.
 // See: https://sass-lang.com/documentation/breaking-changes/import/
 gulp.task('sass', function sassTask() {
-  return src(`${DIR.src}/scss/theme.scss`)
+  return src(`${DIR.src}/scss/*.scss`)
     .pipe(sass({
       silenceDeprecations: ['legacy-js-api', 'import', 'global-builtin', 'color-functions', 'abs-percent']
     }).on('error', sass.logError))
@@ -71,13 +99,12 @@ gulp.task('minify-css', function minifyCssTask() {
   return src(`${DIR.dev}/css/*.css`)
     .pipe(cleanCSS({ compatibility: 'ie8' }))
     .pipe(rename({ suffix: '.min' }))
-    .pipe(dest(`${DIR.dev}/css`))
-    .pipe(browserSync.stream({ match: '**/*.css' }));
+    .pipe(dest(`${DIR.dev}/css`));
 });
 
 // ============ Production tasks ============
 gulp.task('copy-CNAME', function copyCNAME() {
-  return src('./CNAME', { allowEmpty: true }).pipe(dest(`${DIR.dist}/`));
+  return src(['./CNAME', './_headers'], { allowEmpty: true }).pipe(dest(`${DIR.dist}/`));
 });
 
 gulp.task('prod-copy', function prodCopy(done) {
@@ -89,7 +116,7 @@ gulp.task('prod-copy', function prodCopy(done) {
 
 // Minify HTML in docs
 gulp.task('minify-html', function minHtml() {
-  return src(`${DIR.dist}/*.html`)
+  return src(`${DIR.dist}/**/*.html`)
     .pipe(htmlmin({ collapseWhitespace: false, removeComments: true }))
     .pipe(dest(`${DIR.dist}`));
 });
@@ -99,7 +126,7 @@ gulp.task('inject-min-css', function injectCss(done) {
   src(`${DIR.dist}/**/*.html`)
     .pipe(
       htmlreplace({
-        css: '/css/theme.min.css'
+        css: `/css/theme.min.css?v=${assetVersion}`
       })
     )
     .pipe(dest(`${DIR.dist}`));
@@ -111,8 +138,22 @@ gulp.task('purgecss', function purgeCssTask() {
   return src(`${DIR.dist}/css/theme.min.css`)
     .pipe(
       purgecss({
-        content: [`${DIR.dist}/**/*.html`],
-        safelist: ['collapsed', 'collapse', 'active', 'show', 'collapsing']
+        // Account/admin cards and states are created by the checked-in modules
+        // after authentication, so their selectors must participate in the
+        // production extraction pass as well as static Eleventy output.
+        content: [
+          `${DIR.dist}/**/*.html`,
+          `${DIR.dist}/js/**/*.js`,
+          `${DIR.src}/news/podcasts/**/*.njk`
+        ],
+        safelist: [
+          'collapsed',
+          'collapse',
+          'active',
+          'show',
+          'collapsing',
+          /^podcast-clips__/
+        ]
       })
     )
     .pipe(dest(`${DIR.dist}/css`));
@@ -132,35 +173,21 @@ gulp.task('copy-assets', function vendorAssets(done) {
   // AOS CSS & JS
   src(`${DIR.node}/aos/dist/**/*.css`).pipe(dest(`${DIR.dev}/scss/assets/aos`));
   src(`${DIR.node}/aos/dist/**/*.js`).pipe(dest(`${DIR.dev}/js`));
+  copyAudioPlayerVendor();
 
   done();
 });
 
-// ============ BrowserSync (watch sources only) ============
-gulp.task('browser-sync', function browserSyncTask(done) {
-  browserSync.init({
-    server: { baseDir: `./${DIR.dev}` },
-    notify: false,
-    files: [`${DIR.dev}/**/*.html`],
-    reloadDebounce: 300,
-    // Debounce FS write storms (Eleventy, WSL, network drives)
-    watchOptions: {
-      ignoreInitial: true,
-      awaitWriteFinish: { stabilityThreshold: 400, pollInterval: 80 }
-    }
-  });
-
-  // Watch SOURCES → build → inject/reload
-  watch(`${DIR.src}/scss/**/*.scss`, series('sass', 'minify-css')); // CSS inject only
-  watch(`${DIR.src}/js/**/*.*`, series(copyJs, browserSync.reload)); // one reload
-  watch(`${DIR.src}/img/**/*.*`, series(copyImg, browserSync.reload)); // one reload
-  watch(`${DIR.src}/peaks/**/*.*`, series(copyPeaks, browserSync.reload));
-
-  // Eleventy watches templates/content and writes HTML into dev/.
-  // BrowserSync observes that generated HTML and reloads the browser.
-  // If you want to copy raw HTML from src → dev, uncomment below:
-  // function copyHtml() { return src(`${DIR.src}/**/*.html`).pipe(dest(`${DIR.dev}`)); }
-  // watch(`${DIR.src}/**/*.html`, series(copyHtml, browserSync.reload));
+// ============ Asset watcher (Eleventy owns the dev server) ============
+gulp.task('watch-assets', function watchAssetsTask(done) {
+  watch(`${DIR.src}/scss/**/*.scss`, series('sass', 'minify-css'));
+  watch(`${DIR.src}/js/**/*.*`, copyJs);
+  watch(
+    'shared/dust-wave-platform/packages/admin-shell/src/**/*.js',
+    copySharedAdminShell
+  );
+  watch(`${DIR.src}/img/**/*.*`, copyImg);
+  watch(`${DIR.src}/peaks/**/*.*`, copyPeaks);
 
   done();
 });
@@ -170,4 +197,4 @@ gulp.task('clean', cleanDev);
 gulp.task('clean-dist', cleanDist);
 
 // ============ Notes ============
-// - Run `npm run dev` as suggested in scripts (Eleventy --watch to dev + gulp browser-sync).
+// - Run `npm run watch`; Eleventy serves dev/ while Gulp rebuilds source assets.

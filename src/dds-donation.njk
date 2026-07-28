@@ -1,10 +1,17 @@
 ---
-title: Donate to Dust Don't Settle!
 layout: layouts/default.njk
 navbar: navbar1
 footer: footer1
 colorModifier: dark
-permalink: dds-donate.html
+translationKey: ddsDonate
+pagination:
+  data: i18n.config.supportedLangs
+  size: 1
+  alias: language
+permalink: "{{ i18n.config.pages.ddsDonate[language] }}"
+eleventyComputed:
+  title: "{{ i18n[language].pages.ddsDonate.title }}"
+  description: "{{ i18n[language].pages.ddsDonate.title }}"
 ---
 <style>
   #popup {
@@ -18,7 +25,7 @@ permalink: dds-donate.html
       <h1>{{title}}</h1>
     </div>
     <div class="col-11 col-lg-10 col-xl-6 border-bottom border-top py-vh-3">
-      <iframe id="qgiv-embed" class="qgiv-embed-form qgiv-embed" frameborder="0" allowtransparency="true" style="display: block; float: none; width: 100%; border: 0px; overflow: hidden; height: 663px;" scrolling="no" data-embed-position="278.9609375" title="Dust Don't Settle - NMFF Fiscal Project" src="https://secure.qgiv.com/for/dustdontsettle-nmfffiscalproject/embed"></iframe>
+      <iframe id="qgiv-embed" class="qgiv-embed-form qgiv-embed" frameborder="0" allowtransparency="true" style="display: block; float: none; width: 100%; border: 0; overflow: hidden; height: 663px;" scrolling="no" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" data-embed-position="278.9609375" title="{{ i18n | t(language, 'pages.ddsDonate.embedTitle') }}" src="https://secure.qgiv.com/for/dustdontsettle-nmfffiscalproject/embed"></iframe>
     </div>
   </div>
 </div>
