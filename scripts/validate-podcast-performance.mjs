@@ -83,6 +83,16 @@ assert.doesNotMatch(
   /snippets\/footer1\.njk/,
   "Podcast member auth must not load the public footer's legacy scripts"
 );
+assert.match(
+  admin,
+  /class="podcast-auth-turnstile-form"[\s\S]+class="podcast-auth-turnstile podcast-admin__turnstile"/,
+  "Podcast Admin must reserve the responsive Turnstile footprint"
+);
+assert.match(
+  member,
+  /class="podcast-auth-turnstile-form"[\s\S]+class="podcast-auth-turnstile podcast-member__turnstile"/,
+  "Podcast member auth must reserve the responsive Turnstile footprint"
+);
 for (const [name, template] of [
   ["show", show],
   ["admin", admin],

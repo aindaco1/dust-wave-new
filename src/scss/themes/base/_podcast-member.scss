@@ -108,11 +108,6 @@
   font-weight: 700;
 }
 
-.podcast-member__turnstile {
-  min-height: 4rem;
-  margin-top: 1rem;
-}
-
 .podcast-member__subscriptions {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));

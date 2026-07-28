@@ -48,7 +48,9 @@ eleventyComputed:
     <p class="podcast-member__eyebrow">{{ i18n | t(language, "podcast.member.privateAccess") }}</p>
     <h2 id="podcast-member-login-title">{{ i18n | t(language, "podcast.member.magicLinkTitle") }}</h2>
     <p>{{ i18n | t(language, "podcast.member.magicLinkBody") }}</p>
-    <form data-podcast-member-login-form>
+    <form
+      class="podcast-auth-turnstile-form"
+      data-podcast-member-login-form>
       <label for="podcast-member-email">{{ i18n | t(language, "podcast.email") }}</label>
       <div class="podcast-member__inline-form">
         <input
@@ -64,7 +66,9 @@ eleventyComputed:
         </button>
       </div>
       {% if podcastMember.turnstileSiteKey %}
-      <div id="podcast-member-turnstile" class="podcast-member__turnstile"></div>
+      <div
+        id="podcast-member-turnstile"
+        class="podcast-auth-turnstile podcast-member__turnstile"></div>
       {% endif %}
     </form>
     <p

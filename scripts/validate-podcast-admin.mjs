@@ -155,6 +155,11 @@ const sharedPackage = sharedAdminShellPackage;
 
 assert.match(adminTemplate, /translationKey: podcastAdmin/);
 assert.match(adminTemplate, /i18nRuntime: true/);
+assert.match(adminTemplate, /class="podcast-auth-turnstile-form"/);
+assert.match(
+  adminTemplate,
+  /class="podcast-auth-turnstile podcast-admin__turnstile"/
+);
 assert.match(adminTemplate, /permalink: "\{\{ i18n\.config\.pages\.podcastAdmin\[language\] \}\}"/);
 assert.match(adminLayout, /noindex,nofollow,noarchive/);
 assert.match(adminLayout, /snippets\/podcast-auth-footer\.njk/);
@@ -413,6 +418,14 @@ assert.match(adminStyles, /\.podcast-admin__billing-readiness/);
 assert.match(adminStyles, /\.podcast-admin__billing-evidence-list/);
 assert.match(adminStyles, /\.podcast-admin__subscriber-list/);
 assert.match(adminStyles, /\.podcast-admin__subscriber-sources/);
+assert.match(
+  adminStyles,
+  /\.podcast-auth-turnstile-form[\s\S]+container-type: inline-size/
+);
+assert.match(
+  adminStyles,
+  /@container \(max-width: 18\.6875rem\)[\s\S]+min-height: 8\.75rem/
+);
 assert.match(
   adminStyles,
   /--dw-admin-space-xxs: 0\.25rem;[\s\S]+--dw-admin-space-4xl: 4rem;/,

@@ -38,14 +38,16 @@ eleventyComputed:
   <section class="podcast-admin__auth" data-podcast-auth aria-labelledby="podcast-login-title">
     <h2 id="podcast-login-title">{{ i18n | t(language, "podcast.admin.signIn") }}</h2>
     <p>{{ i18n | t(language, "podcast.admin.signInBody") }}</p>
-    <form data-podcast-login-form>
+    <form class="podcast-auth-turnstile-form" data-podcast-login-form>
       <label for="podcast-admin-email">{{ i18n | t(language, "podcast.admin.email") }}</label>
       <div class="podcast-admin__inline-form">
         <input id="podcast-admin-email" name="email" type="email" autocomplete="email" required>
         <button class="btn btn-danger" type="submit">{{ i18n | t(language, "podcast.admin.sendLink") }}</button>
       </div>
       {% if podcastAdmin.turnstileSiteKey %}
-      <div id="podcast-turnstile" class="podcast-admin__turnstile"></div>
+      <div
+        id="podcast-turnstile"
+        class="podcast-auth-turnstile podcast-admin__turnstile"></div>
       {% endif %}
     </form>
     <p class="podcast-admin__status" data-podcast-auth-status role="status" aria-live="polite"></p>
