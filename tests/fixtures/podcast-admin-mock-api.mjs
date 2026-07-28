@@ -107,6 +107,7 @@ let rssImportPlans = [{
 let rssImportExecution = null;
 let rssImportReconciliation = null;
 let rssImportRedirectAttestation = null;
+let rssImportCutoverPacket = null;
 
 function completeRssImportExecution() {
   if (!rssImportExecution || rssImportExecution.status !== "queued") return;
@@ -145,6 +146,7 @@ function rssImportReconciliationPayload(plan) {
         fresh: copyReady && Boolean(approval)
       }
     : null;
+  const cutoverReady = Boolean(attestation && approval);
   return {
     reconciliationAvailable: true,
     executionId: rssImportExecution?.id || null,
@@ -176,6 +178,62 @@ function rssImportReconciliationPayload(plan) {
       }]
     },
     approval,
+    cutoverReadiness: {
+      schema: "dustwave-rss-import-cutover-v1",
+      activationAvailable: false,
+      evidenceReady: cutoverReady,
+      readyForPacket: cutoverReady && !rssImportCutoverPacket,
+      evidenceSha256: sha("8"),
+      importedEpisodeStateSha256: sha("9"),
+      feedValidationEvidenceSha256: sha("a"),
+      directoryEvidenceSha256: sha("b"),
+      importedEpisodeCount: 1,
+      publicEpisodeCount: cutoverReady ? 1 : 0,
+      feedItemCount: cutoverReady ? 1 : 0,
+      expectedFeedItemCount: cutoverReady ? 1 : 0,
+      feedValidatedAt: cutoverReady
+        ? "2026-07-28T12:04:00.000Z"
+        : null,
+      certifiedDestinationCount: cutoverReady ? 10 : 0,
+      reobservedDestinationCount: cutoverReady ? 10 : 0,
+      requiredDestinationCount: 10,
+      blockers: cutoverReady
+        ? []
+        : [
+            "rss_import_cutover_episode_not_public",
+            "rss_import_cutover_rss_not_published",
+            "rss_import_cutover_news_not_published",
+            "rss_import_cutover_feed_not_current",
+            "rss_import_cutover_directory_certification_required",
+            "rss_import_cutover_directory_reobservation_required"
+          ],
+      checks: {
+        ownerReconciliationApproved: Boolean(approval),
+        importedEpisodeRevisionsPublished: cutoverReady,
+        canonicalFeedCurrent: cutoverReady,
+        directoryCertificationReady: cutoverReady,
+        directoriesReobservedAfterFeed: cutoverReady,
+        ownerRedirectAttested: Boolean(attestation?.fresh)
+      },
+      items: [{
+        episodeId: "episode_rss_browser_0",
+        slug: "migratable-episode",
+        publicationRevision: cutoverReady ? 1 : 0,
+        public: cutoverReady,
+        rssPublished: cutoverReady,
+        newsPublished: cutoverReady,
+        blockers: cutoverReady
+          ? []
+          : [
+              "rss_import_cutover_episode_not_public",
+              "rss_import_cutover_rss_not_published",
+              "rss_import_cutover_news_not_published"
+            ]
+      }],
+      packet: rssImportCutoverPacket
+        ? { ...rssImportCutoverPacket, fresh: true }
+        : null
+    },
     oldHostRedirectChecklist: {
       activationAvailable: false,
       ready: false,
@@ -188,9 +246,13 @@ function rssImportReconciliationPayload(plan) {
         ...(approval
           ? []
           : ["rss_import_owner_reconciliation_required"]),
-        "rss_import_imported_episodes_unpublished",
-        "rss_import_canonical_feed_not_revalidated",
-        "rss_import_directory_reobservation_required",
+        ...(cutoverReady
+          ? []
+          : [
+              "rss_import_imported_episodes_unpublished",
+              "rss_import_canonical_feed_not_revalidated",
+              "rss_import_directory_reobservation_required"
+            ]),
         ...(attestation
           ? []
           : ["rss_import_old_host_attestation_required"]),
@@ -198,14 +260,15 @@ function rssImportReconciliationPayload(plan) {
       ],
       checks: {
         ownerReconciliationApproved: Boolean(approval),
-        importedEpisodesPublic: false,
-        canonicalFeedRevalidated: false,
-        directoryCertificationReady: false,
+        importedEpisodesPublic: cutoverReady,
+        canonicalFeedRevalidated: cutoverReady,
+        directoryCertificationReady: cutoverReady,
         ownerRedirectAttested: Boolean(attestation?.fresh)
       }
     },
     idempotent: null,
     redirectAttestationMutationPerformed: false,
+    cutoverPacketMutationPerformed: false,
     r2MutationPerformed: false,
     episodeMutationPerformed: false,
     publicationMutationPerformed: false,
@@ -1084,6 +1147,7 @@ function responseFor(request) {
     }
     rssImportReconciliation = null;
     rssImportRedirectAttestation = null;
+    rssImportCutoverPacket = null;
     rssImportExecution = {
       id: "rss_execution_browser_fixture",
       planId: plan.id,
@@ -1201,6 +1265,37 @@ function responseFor(request) {
     const payload = rssImportReconciliationPayload(plan);
     payload.idempotent = idempotent;
     payload.redirectAttestationMutationPerformed = !idempotent;
+    return json(payload, idempotent ? 200 : 201);
+  }
+  const rssImportCutoverPacketMatch = path.match(
+    /^\/v1\/admin\/rss-import\/plans\/([A-Za-z0-9_-]+)\/cutover-packet$/u
+  );
+  if (request.method === "POST" && rssImportCutoverPacketMatch) {
+    const plan = rssImportPlans.find(
+      ({ id }) => id === rssImportCutoverPacketMatch[1]
+    );
+    if (
+      !plan
+      || !rssImportExecution
+      || rssImportExecution.planId !== plan.id
+      || !rssImportReconciliation
+      || !rssImportRedirectAttestation
+    ) {
+      return json({ error: "rss_import_cutover_not_ready" }, 409);
+    }
+    const idempotent = Boolean(rssImportCutoverPacket);
+    if (!rssImportCutoverPacket) {
+      rssImportCutoverPacket = {
+        id: "rss_cutover_packet_browser_fixture",
+        evidenceSha256: sha("8"),
+        preparedAt: "2026-07-28T12:05:00.000Z",
+        importedEpisodeCount: 1,
+        reobservedDestinationCount: 10
+      };
+    }
+    const payload = rssImportReconciliationPayload(plan);
+    payload.idempotent = idempotent;
+    payload.cutoverPacketMutationPerformed = !idempotent;
     return json(payload, idempotent ? 200 : 201);
   }
   const rssImportReviewMatch = path.match(

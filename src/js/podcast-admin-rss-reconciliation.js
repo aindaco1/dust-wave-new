@@ -1,3 +1,7 @@
+import {
+  createRssImportCutoverController
+} from "./podcast-admin-rss-cutover.js";
+
 export function createRssImportReconciliationController({
   client,
   text,
@@ -8,6 +12,20 @@ export function createRssImportReconciliationController({
   statusRoot
 }) {
   const states = new Map();
+  const cutover = createRssImportCutoverController({
+    client,
+    text,
+    formatInteger,
+    isSuperAdmin,
+    friendlyError,
+    setStatus,
+    statusRoot,
+    checkItem,
+    appendBlockers,
+    appendEvidence,
+    confirmationCheckbox,
+    callout
+  });
 
   return {
     reset() {
@@ -296,6 +314,10 @@ export function createRssImportReconciliationController({
         state
       ));
     }
+    root.append(cutover.render(plan, boundary, state, (payload) => {
+      states.set(plan.id, payload);
+      boundary.replaceWith(renderBoundary(plan));
+    }));
     appendBlockers(root, checklist.blockers);
     root.append(callout("rssImportRedirectUnavailable"));
     return root;
@@ -493,4 +515,5 @@ export function createRssImportReconciliationController({
       : `${Date.now()}_${Math.random().toString(36).slice(2)}`;
     return `rss_redirect_attestation_${suffix}`;
   }
+
 }

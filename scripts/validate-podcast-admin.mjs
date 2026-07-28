@@ -59,6 +59,10 @@ const rssImportReconciliationScript = await readFile(
   ),
   'utf8'
 );
+const rssImportCutoverScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-rss-cutover.js'),
+  'utf8'
+);
 const catalogScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-catalog.js'),
   'utf8'
@@ -265,10 +269,23 @@ assert.match(
   rssImportReconciliationScript,
   /state\.oldHostRedirectChecklist[\s\S]+ownerRedirectAttested/
 );
+assert.match(
+  rssImportCutoverScript,
+  /state\.cutoverReadiness[\s\S]+\/cutover-packet/
+);
+assert.match(
+  rssImportCutoverScript,
+  /packetId:[\s\S]+expectedEvidenceSha256:[\s\S]+ownerReviewConfirmed: true[\s\S]+noActivationConfirmed: true/
+);
 assert.doesNotMatch(
   rssImportReconciliationScript,
   /innerHTML/,
   "Untrusted reconciliation evidence must use DOM text nodes"
+);
+assert.doesNotMatch(
+  rssImportCutoverScript,
+  /innerHTML/,
+  "Untrusted cutover evidence must use DOM text nodes"
 );
 assert.match(
   englishRuntime.rssImportExecutionNoPublish,
@@ -293,6 +310,14 @@ assert.match(
 assert.match(
   spanishRuntime.rssImportRedirectUnavailable,
   /no está disponible intencionalmente/
+);
+assert.match(
+  englishRuntime.rssImportCutoverNoActivation,
+  /cannot contact the old host[\s\S]+activate a new-feed tag or HTTP 301/
+);
+assert.match(
+  spanishRuntime.rssImportCutoverNoActivation,
+  /No puede contactar el host anterior[\s\S]+activar una etiqueta de nuevo feed o HTTP 301/
 );
 assert.match(
   englishWorkbench.overview.importPlansZeroCopy,
@@ -324,6 +349,10 @@ assert.match(
 );
 assert.match(
   adminMockApi,
+  /rss-import\\\/plans\\\/\(\[A-Za-z0-9_-\]\+\)\\\/cutover-packet/
+);
+assert.match(
+  adminMockApi,
   /executionAvailable: true[\s\S]+publicationMutationPerformed: false[\s\S]+redirectMutationPerformed: false[\s\S]+providerContactPerformed: false/
 );
 assert.match(
@@ -337,6 +366,10 @@ assert.match(
 assert.match(
   adminMockApi,
   /redirectAttestationMutationPerformed: false/
+);
+assert.match(
+  adminMockApi,
+  /cutoverPacketMutationPerformed: false/
 );
 assert.doesNotMatch(
   rssImportScript,
