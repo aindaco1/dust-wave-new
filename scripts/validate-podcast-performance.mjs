@@ -150,6 +150,7 @@ const scriptBudgets = new Map([
   ["src/js/podcast-admin-rss-import.js", 35_000],
   ["src/js/podcast-admin-rss-reconciliation.js", 18_000],
   ["src/js/podcast-admin-rss-cutover.js", 9_000],
+  ["src/js/podcast-admin-rss-activation-approval.js", 6_000],
   ["src/js/podcast-member.js", 30_000],
   ["src/js/podcast-checkout.js", 25_000],
   ["src/js/podcast-clips.js", 15_000]

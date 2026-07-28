@@ -1,3 +1,7 @@
+import {
+  createRssImportActivationApprovalController
+} from "./podcast-admin-rss-activation-approval.js";
+
 export function createRssImportCutoverController({
   client,
   text,
@@ -12,6 +16,17 @@ export function createRssImportCutoverController({
   confirmationCheckbox,
   callout
 }) {
+  const activationApproval =
+    createRssImportActivationApprovalController({
+      client,
+      text,
+      isSuperAdmin,
+      friendlyError,
+      setStatus,
+      statusRoot,
+      confirmationCheckbox,
+      callout
+    });
   return { render };
 
   function render(plan, boundary, state, onPayload) {
@@ -87,6 +102,9 @@ export function createRssImportCutoverController({
     }
     root.append(items);
     if (cutover.packet) root.append(renderPacket(cutover.packet));
+    root.append(
+      activationApproval.render(plan, boundary, state, onPayload)
+    );
     appendBlockers(root, cutover.blockers);
     if (cutover.readyForPacket && isSuperAdmin()) {
       root.append(renderForm(plan, boundary, state, onPayload));
@@ -197,4 +215,5 @@ export function createRssImportCutoverController({
       : `${Date.now()}_${Math.random().toString(36).slice(2)}`;
     return `rss_cutover_packet_${suffix}`;
   }
+
 }
