@@ -255,6 +255,14 @@ assert.match(
 );
 assert.match(
   rssImportReconciliationScript,
+  /\/rss-import\/plans\/\$\{[\s\S]+\/redirect-attestation/
+);
+assert.match(
+  rssImportReconciliationScript,
+  /attestationId:[\s\S]+expectedReconciliationEvidenceSha256:[\s\S]+ownerControlConfirmed: true[\s\S]+permanenceAcknowledged: true[\s\S]+noActivationConfirmed: true/
+);
+assert.match(
+  rssImportReconciliationScript,
   /state\.oldHostRedirectChecklist[\s\S]+ownerRedirectAttested/
 );
 assert.doesNotMatch(
@@ -312,15 +320,23 @@ assert.match(
 );
 assert.match(
   adminMockApi,
+  /rss-import\\\/plans\\\/\(\[A-Za-z0-9_-\]\+\)\\\/redirect-attestation/
+);
+assert.match(
+  adminMockApi,
   /executionAvailable: true[\s\S]+publicationMutationPerformed: false[\s\S]+redirectMutationPerformed: false[\s\S]+providerContactPerformed: false/
 );
 assert.match(
   adminMockApi,
-  /reconciliationAvailable: true[\s\S]+activationAvailable: false[\s\S]+ownerRedirectAttested: false/
+  /reconciliationAvailable: true[\s\S]+activationAvailable: false[\s\S]+ownerRedirectAttested: Boolean/
 );
 assert.match(
   adminMockApi,
   /r2MutationPerformed: false[\s\S]+episodeMutationPerformed: false[\s\S]+publicationMutationPerformed: false[\s\S]+redirectMutationPerformed: false[\s\S]+providerContactPerformed: false/
+);
+assert.match(
+  adminMockApi,
+  /redirectAttestationMutationPerformed: false/
 );
 assert.doesNotMatch(
   rssImportScript,

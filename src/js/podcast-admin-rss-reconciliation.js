@@ -50,7 +50,9 @@ export function createRssImportReconciliationController({
       boundary.append(renderApprovalForm(plan, boundary, state));
     }
     boundary.append(renderRedirectChecklist(
-      state.oldHostRedirectChecklist
+      plan,
+      boundary,
+      state
     ));
     const refresh = actionButton("rssImportReconciliationRefresh");
     refresh.addEventListener("click", () =>
@@ -234,7 +236,8 @@ export function createRssImportReconciliationController({
     return form;
   }
 
-  function renderRedirectChecklist(checklist = {}) {
+  function renderRedirectChecklist(plan, boundary, state) {
+    const checklist = state.oldHostRedirectChecklist || {};
     const root = document.createElement("section");
     root.className = "podcast-admin__rss-import-redirect-checklist";
     const heading = document.createElement("h5");
@@ -243,6 +246,11 @@ export function createRssImportReconciliationController({
     intro.textContent = text("rssImportRedirectChecklistIntro");
     const feed = document.createElement("dl");
     feed.className = "podcast-admin__readiness-evidence";
+    appendEvidence(
+      feed,
+      text("rssImportRedirectOldFeed"),
+      checklist.oldFeedDisplayUrl
+    );
     appendEvidence(
       feed,
       text("rssImportRedirectNewFeed"),
@@ -274,9 +282,151 @@ export function createRssImportReconciliationController({
       )
     );
     root.append(heading, intro, feed, checks);
+    if (checklist.attestation) {
+      root.append(renderRedirectAttestation(checklist.attestation));
+    }
+    if (
+      checklist.attestationAvailable
+      && !checklist.attestation?.fresh
+      && isSuperAdmin()
+    ) {
+      root.append(renderRedirectAttestationForm(
+        plan,
+        boundary,
+        state
+      ));
+    }
     appendBlockers(root, checklist.blockers);
     root.append(callout("rssImportRedirectUnavailable"));
     return root;
+  }
+
+  function renderRedirectAttestation(attestation) {
+    const card = document.createElement("div");
+    card.className = "podcast-admin__callout";
+    const heading = document.createElement("h6");
+    heading.textContent = attestation.fresh
+      ? text("rssImportRedirectAttestationCurrent")
+      : text("rssImportRedirectAttestationStale");
+    const method = document.createElement("p");
+    method.textContent = text(
+      "rssImportRedirectAttestationMethod",
+      {
+        method: text(
+          `rssImportRedirectMethod_${attestation.redirectMethod}`,
+          String(attestation.redirectMethod || "").replaceAll("_", " ")
+        )
+      }
+    );
+    card.append(heading, method);
+    return card;
+  }
+
+  function renderRedirectAttestationForm(plan, boundary, state) {
+    const form = document.createElement("form");
+    form.className = "podcast-admin__form";
+    form.dataset.podcastRssImportRedirectAttestationForm = "";
+    const feedLabel = document.createElement("label");
+    feedLabel.textContent = text("rssImportRedirectAttestationFeedUrl");
+    const feedInput = document.createElement("input");
+    feedInput.type = "url";
+    feedInput.inputMode = "url";
+    feedInput.autocomplete = "off";
+    feedInput.required = true;
+    feedInput.name = "feedUrl";
+    feedLabel.append(feedInput);
+    const methodLabel = document.createElement("label");
+    methodLabel.textContent = text("rssImportRedirectAttestationMethodLabel");
+    const method = document.createElement("select");
+    method.name = "redirectMethod";
+    method.append(
+      new Option(
+        text("rssImportRedirectMethod_provider_managed_redirect"),
+        "provider_managed_redirect"
+      ),
+      new Option(
+        text("rssImportRedirectMethod_self_managed_http_301"),
+        "self_managed_http_301"
+      )
+    );
+    methodLabel.append(method);
+    const ownerControl = confirmationCheckbox(
+      "ownerControlConfirmed",
+      "rssImportRedirectAttestationOwnerControl"
+    );
+    const permanence = confirmationCheckbox(
+      "permanenceAcknowledged",
+      "rssImportRedirectAttestationPermanence"
+    );
+    const noActivation = confirmationCheckbox(
+      "noActivationConfirmed",
+      "rssImportRedirectAttestationNoActivation"
+    );
+    const notice = callout("rssImportRedirectAttestationBoundary");
+    const button = document.createElement("button");
+    button.className = "btn btn-danger";
+    button.type = "submit";
+    button.textContent = text("rssImportRedirectAttest");
+    form.append(
+      feedLabel,
+      methodLabel,
+      ownerControl,
+      permanence,
+      noActivation,
+      notice,
+      button
+    );
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+      if (!globalThis.confirm(
+        text("rssImportRedirectAttestationFinalConfirmation")
+      )) {
+        return;
+      }
+      button.disabled = true;
+      setStatus(statusRoot, text("rssImportRedirectAttesting"));
+      try {
+        const payload = await client.request(
+          `/v1/admin/rss-import/plans/${
+            encodeURIComponent(plan.id)
+          }/redirect-attestation`,
+          {
+            method: "POST",
+            body: {
+              attestationId: newAttestationId(),
+              feedUrl: feedInput.value,
+              expectedReconciliationEvidenceSha256:
+                state.readiness.evidenceSha256,
+              redirectMethod: method.value,
+              ownerControlConfirmed: true,
+              permanenceAcknowledged: true,
+              noActivationConfirmed: true
+            }
+          }
+        );
+        states.set(plan.id, payload);
+        boundary.replaceWith(renderBoundary(plan));
+        setStatus(statusRoot, text("rssImportRedirectAttestationComplete"));
+      } catch (error) {
+        setStatus(statusRoot, friendlyError(error), true);
+        button.disabled = false;
+      }
+    });
+    return form;
+  }
+
+  function confirmationCheckbox(name, textKey) {
+    const label = document.createElement("label");
+    label.className = "podcast-admin__checkbox";
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.name = name;
+    checkbox.required = true;
+    const labelText = document.createElement("span");
+    labelText.textContent = text(textKey);
+    label.append(checkbox, labelText);
+    return label;
   }
 
   function checkItem(labelKey, passed) {
@@ -335,5 +485,12 @@ export function createRssImportReconciliationController({
       ? globalThis.crypto.randomUUID().replaceAll("-", "_")
       : `${Date.now()}_${Math.random().toString(36).slice(2)}`;
     return `rss_reconciliation_${suffix}`;
+  }
+
+  function newAttestationId() {
+    const suffix = globalThis.crypto?.randomUUID
+      ? globalThis.crypto.randomUUID().replaceAll("-", "_")
+      : `${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    return `rss_redirect_attestation_${suffix}`;
   }
 }

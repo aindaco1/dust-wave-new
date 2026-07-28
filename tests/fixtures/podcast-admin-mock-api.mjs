@@ -106,6 +106,7 @@ let rssImportPlans = [{
 }];
 let rssImportExecution = null;
 let rssImportReconciliation = null;
+let rssImportRedirectAttestation = null;
 
 function completeRssImportExecution() {
   if (!rssImportExecution || rssImportExecution.status !== "queued") return;
@@ -136,6 +137,12 @@ function rssImportReconciliationPayload(plan) {
     ? {
         ...rssImportReconciliation,
         fresh: copyReady
+      }
+    : null;
+  const attestation = rssImportRedirectAttestation
+    ? {
+        ...rssImportRedirectAttestation,
+        fresh: copyReady && Boolean(approval)
       }
     : null;
   return {
@@ -172,8 +179,11 @@ function rssImportReconciliationPayload(plan) {
     oldHostRedirectChecklist: {
       activationAvailable: false,
       ready: false,
+      attestationAvailable: copyReady && Boolean(approval),
+      oldFeedDisplayUrl: "https://podcast.example.org/feed.xml",
       newFeedUrl:
         "https://feeds.dustwave.xyz/opera-en-la-selva/rss.xml",
+      attestation,
       blockers: [
         ...(approval
           ? []
@@ -181,17 +191,21 @@ function rssImportReconciliationPayload(plan) {
         "rss_import_imported_episodes_unpublished",
         "rss_import_canonical_feed_not_revalidated",
         "rss_import_directory_reobservation_required",
-        "rss_import_old_host_attestation_required"
+        ...(attestation
+          ? []
+          : ["rss_import_old_host_attestation_required"]),
+        "rss_import_redirect_activation_unavailable"
       ],
       checks: {
         ownerReconciliationApproved: Boolean(approval),
         importedEpisodesPublic: false,
         canonicalFeedRevalidated: false,
         directoryCertificationReady: false,
-        ownerRedirectAttested: false
+        ownerRedirectAttested: Boolean(attestation?.fresh)
       }
     },
     idempotent: null,
+    redirectAttestationMutationPerformed: false,
     r2MutationPerformed: false,
     episodeMutationPerformed: false,
     publicationMutationPerformed: false,
@@ -1069,6 +1083,7 @@ function responseFor(request) {
       return json({ error: "rss_import_plan_not_reviewed" }, 409);
     }
     rssImportReconciliation = null;
+    rssImportRedirectAttestation = null;
     rssImportExecution = {
       id: "rss_execution_browser_fixture",
       planId: plan.id,
@@ -1152,6 +1167,41 @@ function responseFor(request) {
       payload,
       request.method === "POST" && !idempotent ? 201 : 200
     );
+  }
+  const rssImportRedirectAttestationMatch = path.match(
+    /^\/v1\/admin\/rss-import\/plans\/([A-Za-z0-9_-]+)\/redirect-attestation$/u
+  );
+  if (
+    request.method === "POST"
+    && rssImportRedirectAttestationMatch
+  ) {
+    const plan = rssImportPlans.find(
+      ({ id }) => id === rssImportRedirectAttestationMatch[1]
+    );
+    if (
+      !plan
+      || !rssImportExecution
+      || rssImportExecution.planId !== plan.id
+      || rssImportExecution.status !== "succeeded"
+      || !rssImportReconciliation
+    ) {
+      return json(
+        { error: "rss_import_redirect_attestation_not_ready" },
+        409
+      );
+    }
+    const idempotent = Boolean(rssImportRedirectAttestation);
+    if (!rssImportRedirectAttestation) {
+      rssImportRedirectAttestation = {
+        id: "rss_redirect_attestation_browser_fixture",
+        redirectMethod: "provider_managed_redirect",
+        attestedAt: "2026-07-28T12:03:00.000Z"
+      };
+    }
+    const payload = rssImportReconciliationPayload(plan);
+    payload.idempotent = idempotent;
+    payload.redirectAttestationMutationPerformed = !idempotent;
+    return json(payload, idempotent ? 200 : 201);
   }
   const rssImportReviewMatch = path.match(
     /^\/v1\/admin\/rss-import\/plans\/([A-Za-z0-9_-]+)\/review$/u

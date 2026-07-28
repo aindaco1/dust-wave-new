@@ -1155,6 +1155,18 @@
   padding-top: var(--dw-admin-space-md);
 }
 
+.podcast-admin__rss-import-redirect-checklist
+  > .podcast-admin__callout {
+  display: grid;
+  gap: var(--dw-admin-space-xs);
+}
+
+.podcast-admin__rss-import-redirect-checklist
+  > .podcast-admin__callout
+  > * {
+  margin: 0;
+}
+
 .podcast-admin__readiness-groups,
 .podcast-admin__readiness-list,
 .podcast-admin__audio-qc-results,
