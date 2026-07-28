@@ -63,6 +63,26 @@ assert.match(
   /disableTypekit: true/,
   "Podcast Admin must not block first paint on its unused brand font"
 );
+assert.match(
+  member,
+  /disableFontAwesome: true/,
+  "Podcast member auth must not load its unused external icon font"
+);
+assert.match(
+  member,
+  /disableTypekit: true/,
+  "Podcast member auth must not load its unused external brand font"
+);
+assert.match(
+  memberLayout,
+  /snippets\/podcast-auth-footer\.njk/,
+  "Podcast member auth must use the lightweight bilingual auth footer"
+);
+assert.doesNotMatch(
+  memberLayout,
+  /snippets\/footer1\.njk/,
+  "Podcast member auth must not load the public footer's legacy scripts"
+);
 for (const [name, template] of [
   ["show", show],
   ["admin", admin],
@@ -186,6 +206,21 @@ assert.match(
   tracer,
   /Emulation\.setDeviceMetricsOverride[\s\S]+observed\?\.innerWidth !== viewport\.width[\s\S]+observed\?\.innerHeight !== viewport\.height[\s\S]+observed\?\.scrollWidth > viewport\.width/,
   "performance traces must verify the exact CSS viewport and horizontal fit"
+);
+assert.match(
+  tracer,
+  /securitypolicyviolation/,
+  "performance traces must listen for CSP violations before navigation"
+);
+assert.match(
+  tracer,
+  /Page\.addScriptToEvaluateOnNewDocument[\s\S]+source: CSP_VIOLATION_PROBE/,
+  "performance traces must install the CSP probe before navigation"
+);
+assert.match(
+  tracer,
+  /securityPolicyViolations[\s\S]+enforcedViolations\.length > 0/,
+  "performance traces must fail closed on enforced CSP violations"
 );
 assert.match(
   tracer,

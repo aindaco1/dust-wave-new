@@ -42,6 +42,18 @@ const SAFE_CHROME_STARTUP_DOCUMENTS = new Set([
   "chrome://newtab/",
   "chrome://webui-toolbar.top-chrome/"
 ]);
+const CSP_VIOLATION_PROBE = `(() => {
+  globalThis.__dustWaveCspViolations = [];
+  document.addEventListener("securitypolicyviolation", (event) => {
+    globalThis.__dustWaveCspViolations.push({
+      blockedUrl: event.blockedURI,
+      disposition: event.disposition,
+      effectiveDirective: event.effectiveDirective,
+      lineNumber: event.lineNumber,
+      sourceFile: event.sourceFile
+    });
+  });
+})();`;
 
 function usage() {
   return `Capture an isolated Chrome performance trace for Podcast Admin.
@@ -413,6 +425,9 @@ async function captureTrace({
   const mobile = viewport.width < 768;
   await cdp.send("Page.enable");
   await cdp.send("Runtime.enable");
+  await cdp.send("Page.addScriptToEvaluateOnNewDocument", {
+    source: CSP_VIOLATION_PROBE
+  });
   await cdp.send("Emulation.setDeviceMetricsOverride", {
     width: viewport.width,
     height: viewport.height,
@@ -441,10 +456,26 @@ async function captureTrace({
   const measured = await cdp.send("Runtime.evaluate", {
     expression:
       "({ innerWidth, innerHeight, "
-      + "scrollWidth: document.documentElement.scrollWidth })",
+      + "scrollWidth: document.documentElement.scrollWidth, "
+      + "securityPolicyViolations: "
+      + "globalThis.__dustWaveCspViolations ?? null })",
     returnByValue: true
   });
   const observed = measured.result?.value;
+  if (!Array.isArray(observed?.securityPolicyViolations)) {
+    throw new Error(
+      "Chrome did not install the CSP violation probe before navigation."
+    );
+  }
+  const enforcedViolations = observed.securityPolicyViolations.filter(
+    (violation) => violation?.disposition !== "report"
+  );
+  if (enforcedViolations.length > 0) {
+    throw new Error(
+      "The page triggered enforced Content Security Policy violations: "
+      + JSON.stringify(enforcedViolations)
+    );
+  }
   if (
     observed?.innerWidth !== viewport.width
     || observed?.innerHeight !== viewport.height
