@@ -35,6 +35,14 @@ Push to `main` branch → GitHub Actions builds and deploys via GitHub Pages art
 
 You can also trigger a manual deploy from the Actions tab → "Build and Deploy" → "Run workflow".
 
+The build runs `npm run check:podcasts`, which scans tracked text through the
+shared Dust Wave credential-leak gate, fails on high-severity dependency
+advisories, and then validates the bilingual Podcast surfaces. GitHub Actions
+are pinned to immutable commits. The post-deploy Cloudflare purge calls the
+official API directly so no third-party action receives credentials. Prefer a
+zone-scoped `CLOUDFLARE_CACHE_PURGE_TOKEN` with Cache Purge permission; the
+existing email/global-key pair is a temporary compatibility fallback.
+
 ### Podcast UI configuration
 
 The Pages build reads the following GitHub Actions repository variables:
