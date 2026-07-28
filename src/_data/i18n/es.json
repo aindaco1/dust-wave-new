@@ -1312,6 +1312,8 @@
       "analyticsNoData": "No hubo actividad calificada en este período.",
       "analyticsQualifiedShort": "Descargas calificadas",
       "analyticsEngagedShort": "Reproducciones con interacción",
+      "analyticsDatatypeNote": "Resumen con Datatype: %{days} valores diarios normalizados según el día más alto de ambas series. A continuación se muestran los valores exactos localizados.",
+      "analyticsLatest": "Último valor: %{value}",
       "analyticsNoEpisodes": "No hubo actividad de episodios en este período.",
       "analyticsNoCompletion": "No hubo actividad calificada de finalización en el reproductor web durante este período.",
       "analyticsEpisode": "Episodio",

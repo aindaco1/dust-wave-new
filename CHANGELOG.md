@@ -10,6 +10,10 @@
   `@dustwave/admin-shell` boundary, with passwordless session exchange, show
   settings, episode drafts, multipart media upload, idempotent publication,
   directory status, and fail-closed premium readiness.
+- Added a self-hosted, checksum-pinned Datatype 1.2.2 pilot to Podcast audience
+  analytics. Its English/Spanish, font-ready summary uses shared normalization,
+  compact container axes, a text-only narrow state, and the existing exact
+  trend as the accessible font-failure fallback.
 - Added a Sponsors tab that previews show-scoped house/direct sponsor decisions
   against episode, position, date, device, and app context while keeping public
   playback full-file-only and leaving decision/impression state untouched.

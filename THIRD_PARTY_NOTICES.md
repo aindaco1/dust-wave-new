@@ -1,5 +1,21 @@
 # Third-party notices
 
+## Datatype 1.2.2
+
+SIL Open Font License 1.1
+
+Copyright 2026 The Datatype Project Authors
+(https://github.com/franktisellano/datatype)
+
+Datatype includes glyphs from IBM Plex™ Mono:
+Copyright 2017 IBM Corp. with Reserved Font Name "Plex"
+
+Dust Wave redistributes an unmodified WOFF2 pinned to upstream release v1.2.2
+and commit `04e189f3222ab436fb7f84a20c62c48a1a7689f7`. The complete copyright
+notice and license are shipped in
+`src/fonts/datatype-OFL-1.1.txt`; integrity and source details are recorded in
+`src/fonts/datatype-v1.2.2-PROVENANCE.txt`.
+
 ## wavesurfer.js 7.12.11
 
 BSD 3-Clause License

@@ -3,6 +3,8 @@ import {
   triggerBlobDownload
 } from "./dust-wave-admin-shell/credentialed-download.js?v=0.7.0";
 
+let datatypeChartModule;
+
 export function mountPodcastAnalytics({
   root,
   client,
@@ -159,8 +161,8 @@ export function mountPodcastAnalytics({
     const maximum = Math.max(
       1,
       ...recent.flatMap((row) => [
-        Number(row.qualifiedDownloads || 0),
-        Number(row.engagedPlays || 0)
+        analyticsCount(row.qualifiedDownloads),
+        analyticsCount(row.engagedPlays)
       ])
     );
     if (!recent.length) {
@@ -191,7 +193,44 @@ export function mountPodcastAnalytics({
       item.append(date, bars);
       list.append(item);
     }
+    const qualifiedValues = recent.map(
+      (row) => analyticsCount(row.qualifiedDownloads)
+    );
+    const engagedValues = recent.map(
+      (row) => analyticsCount(row.engagedPlays)
+    );
+    const summaryOptions = {
+      note: text("analyticsDatatypeNote", {
+        days: formatInteger(recent.length)
+      }),
+      maximum,
+      series: [
+        {
+          className: "podcast-admin__datatype-card--qualified",
+          label: text("analyticsQualifiedShort"),
+          latest: text("analyticsLatest", {
+            value: formatInteger(qualifiedValues.at(-1))
+          }),
+          values: qualifiedValues
+        },
+        {
+          className: "podcast-admin__datatype-card--engaged",
+          label: text("analyticsEngagedShort"),
+          latest: text("analyticsLatest", {
+            value: formatInteger(engagedValues.at(-1))
+          }),
+          values: engagedValues
+        }
+      ]
+    };
     trend.append(list);
+    loadDatatypeChart().then((module) => {
+      if (!module || !list.isConnected || list.parentElement !== trend) return;
+      trend.insertBefore(
+        module.createDatatypeTrendSummary(summaryOptions),
+        list
+      );
+    });
   }
 
   function renderEpisodes(rows) {
@@ -512,7 +551,7 @@ function table(headings, rows, captionText) {
 }
 
 function trendBar(value, maximum, label) {
-  const count = Number(value || 0);
+  const count = analyticsCount(value);
   const bar = document.createElement("span");
   bar.className = "podcast-admin__analytics-bar";
   bar.style.setProperty("--analytics-ratio", String(count / maximum));
@@ -521,6 +560,16 @@ function trendBar(value, maximum, label) {
   valueLabel.textContent = formatInteger(count);
   bar.append(valueLabel);
   return bar;
+}
+
+function analyticsCount(value) {
+  const count = Number(value || 0);
+  return Number.isFinite(count) && count >= 0 ? count : 0;
+}
+
+function loadDatatypeChart() {
+  datatypeChartModule ||= import("./datatype-chart.js").catch(() => null);
+  return datatypeChartModule;
 }
 
 function empty(message) {

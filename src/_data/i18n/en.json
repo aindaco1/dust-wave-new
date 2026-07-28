@@ -1312,6 +1312,8 @@
       "analyticsNoData": "No qualifying activity in this period.",
       "analyticsQualifiedShort": "Qualified downloads",
       "analyticsEngagedShort": "Engaged plays",
+      "analyticsDatatypeNote": "Datatype overview: %{days} daily values normalized to the highest day across both series. Exact localized values follow.",
+      "analyticsLatest": "Latest: %{value}",
       "analyticsNoEpisodes": "No episode activity in this period.",
       "analyticsNoCompletion": "No qualified web-player completion activity in this period.",
       "analyticsEpisode": "Episode",

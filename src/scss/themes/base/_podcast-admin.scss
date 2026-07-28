@@ -1,3 +1,14 @@
+@font-face {
+  font-display: swap;
+  font-family: "Dust Wave Datatype";
+  font-stretch: 50% 150%;
+  font-style: normal;
+  font-weight: 100 900;
+  src:
+    url("/fonts/datatype-v1.2.2-b7bd0abb.woff2")
+    format("woff2-variations");
+}
+
 .podcast-admin-page {
   // Match the 8px admin rhythm shared by Pool and Store.
   --dw-admin-space-xxs: 0.25rem;
@@ -1479,6 +1490,88 @@
   min-width: 0;
 }
 
+.podcast-admin__analytics-trend-region {
+  container: podcast-datatype-trend / inline-size;
+  display: grid;
+  gap: var(--dw-admin-space-md);
+  min-width: 0;
+}
+
+.podcast-admin__datatype-summary {
+  background: #1c1c1c;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 0.75rem;
+  display: grid;
+  gap: var(--dw-admin-space-md);
+  padding: var(--dw-admin-space-md);
+}
+
+.podcast-admin__datatype-summary[hidden] {
+  display: none;
+}
+
+.podcast-admin__datatype-note,
+.podcast-admin__datatype-card :is(h4, p) {
+  margin: 0;
+}
+
+.podcast-admin__datatype-note {
+  color: #c7c2bb;
+}
+
+.podcast-admin__datatype-cards {
+  display: grid;
+  gap: var(--dw-admin-space-md);
+  grid-template-columns:
+    repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+}
+
+.podcast-admin__datatype-card {
+  background: #111;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.5rem;
+  display: grid;
+  gap: var(--dw-admin-space-xs);
+  min-width: 0;
+  overflow: hidden;
+  padding: var(--dw-admin-space-md);
+}
+
+.podcast-admin__datatype-card h4 {
+  font-size: 1rem;
+}
+
+.podcast-admin__datatype-latest {
+  color: #c7c2bb;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.podcast-admin__datatype-chart {
+  color: #ff5964;
+  direction: ltr;
+  display: block;
+  font-family: "Dust Wave Datatype";
+  font-feature-settings: "liga" 1, "calt" 1;
+  font-size: clamp(3rem, 11cqi, 6.5rem);
+  font-stretch: 100%;
+  font-style: normal;
+  font-synthesis: none;
+  font-variant-ligatures: common-ligatures contextual;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1;
+  max-width: 100%;
+  overflow: hidden;
+  text-align: center;
+  unicode-bidi: isolate;
+  white-space: nowrap;
+}
+
+.podcast-admin__datatype-card--engaged .podcast-admin__datatype-chart {
+  color: #ffd54d;
+}
+
 .podcast-admin__analytics-trend {
   display: grid;
   gap: var(--dw-admin-item-gap);
@@ -1535,6 +1628,18 @@
   font-size: 0.8rem;
   font-variant-numeric: tabular-nums;
   font-weight: 700;
+}
+
+@container podcast-datatype-trend (max-width: 34rem) {
+  .podcast-admin__datatype-chart {
+    font-stretch: 75%;
+  }
+}
+
+@container podcast-datatype-trend (max-width: 18rem) {
+  .podcast-admin__datatype-chart {
+    display: none;
+  }
 }
 
 .podcast-admin__table--compact {
