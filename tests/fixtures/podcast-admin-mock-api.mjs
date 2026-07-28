@@ -717,7 +717,8 @@ function responseFor(request) {
           status: "valid",
           feedUrl:
             "https://feeds.dustwave.xyz/opera-en-la-selva/rss.xml",
-          validatorVersion: "dustwave-public-rss-validator-v1",
+          validatorVersion: "dustwave-rss-launch-v2",
+          currentValidator: true,
           sha256: sha("f"),
           itemCount: 1,
           failureCode: null,

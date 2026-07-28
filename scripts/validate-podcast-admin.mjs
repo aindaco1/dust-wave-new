@@ -659,6 +659,16 @@ assert.match(
 );
 assert.match(distributionCertificationScript, /requiredDestinations/);
 assert.match(distributionCertificationScript, /failureRecoveryVerified/);
+assert.match(
+  distributionCertificationScript,
+  /feed\.status === "valid" && feed\.currentValidator === false/,
+  'A legacy valid feed result must render as stale instead of launch-ready'
+);
+assert.match(englishRuntime.feedValidationStale, /older validation contract/);
+assert.match(
+  spanishRuntime.feedValidationStale,
+  /contrato de validación anterior/
+);
 assert.match(adminScript, /function renderReleaseChannels/);
 assert.match(adminScript, /function releaseStatusLabel/);
 assert.match(

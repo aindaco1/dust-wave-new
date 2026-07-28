@@ -1117,6 +1117,7 @@
       "launchClaimReadySummary": "%{count} directories have all four required proofs. The claim gate is ready for owner review.",
       "launchClaimPendingSummary": "%{certified} of %{required} required directories are certified; %{remaining} remain.",
       "feedValidationSummary": "The exact canonical feed passed validation on %{date} with %{items} public items.",
+      "feedValidationStale": "The feed passed an older validation contract (%{version}). Publish or retry RSS validation before launch certification.",
       "feedValidationFailed": "The latest canonical feed validation failed safely (%{code}).",
       "feedValidationPending": "Publish an eligible episode to validate and fingerprint the exact canonical feed.",
       "launchCertification": "Launch certification evidence",

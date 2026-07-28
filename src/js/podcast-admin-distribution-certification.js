@@ -54,7 +54,12 @@ export function renderDistributionLaunchClaim({
   const feed = launchClaim.feedValidation || {};
   const feedStatus = document.createElement("p");
   feedStatus.className = "podcast-admin__directory-details";
-  if (feed.status === "valid") {
+  if (feed.status === "valid" && feed.currentValidator === false) {
+    feedStatus.classList.add("podcast-admin__status", "is-error");
+    feedStatus.textContent = text("feedValidationStale", {
+      version: String(feed.validatorVersion || "unknown")
+    });
+  } else if (feed.status === "valid") {
     feedStatus.textContent = text("feedValidationSummary", {
       date: formatDate(feed.validatedAt),
       items: formatInteger(Math.max(0, Number(feed.itemCount) || 0))
