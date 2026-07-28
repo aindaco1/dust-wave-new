@@ -1,6 +1,13 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
+import {
+  AUTHENTICATED_ROUTE_PATTERNS,
+  buildCloudflareResponseHeaderRule,
+  CLOUDFLARE_RULE_PHASE,
+  CLOUDFLARE_RULE_REF
+} from "./cloudflare-response-headers.mjs";
+
 const [headers, gulpfile] = await Promise.all([
   readFile(new URL("../_headers", import.meta.url), "utf8"),
   readFile(new URL("../gulpfile.js", import.meta.url), "utf8")
@@ -37,12 +44,7 @@ function headerBlockFor(route) {
   return headers.slice(start, nextRule === -1 ? undefined : nextRule);
 }
 
-for (const route of [
-  "/admin/*",
-  "/es/admin/*",
-  "/podcasts/account/*",
-  "/es/podcasts/account/*"
-]) {
+for (const route of AUTHENTICATED_ROUTE_PATTERNS) {
   const block = headerBlockFor(route);
   for (const expected of requiredPrivateHeaders) {
     assert.match(block, expected, `${route} is missing ${expected}`);
@@ -87,6 +89,24 @@ assert.match(headers, /https:\/\/:project\.pages\.dev\/\*/);
 assert.match(headers, /https:\/\/:version\.:project\.pages\.dev\/\*/);
 assert.doesNotMatch(headers, /\/news\/podcasts\/embed/);
 assert.doesNotMatch(headers, /Access-Control-Allow-Origin/);
+const cloudflareRule = buildCloudflareResponseHeaderRule(headers);
+assert.equal(CLOUDFLARE_RULE_PHASE, "http_response_headers_transform");
+assert.equal(
+  cloudflareRule.ref,
+  CLOUDFLARE_RULE_REF,
+  "the production rule must keep a stable Cloudflare ref"
+);
+assert.equal(
+  cloudflareRule.action_parameters.headers["Access-Control-Allow-Origin"]
+    .operation,
+  "remove",
+  "authenticated production shells must not inherit GitHub Pages wildcard CORS"
+);
+assert.doesNotMatch(
+  cloudflareRule.expression,
+  /embed|\/news\//,
+  "public Podcast pages and embeds must remain outside the production rule"
+);
 assert.equal(
   (headers.match(/^  Content-Security-Policy:/gm) || []).length,
   4,

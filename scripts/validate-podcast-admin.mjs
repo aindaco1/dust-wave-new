@@ -129,6 +129,8 @@ const staticRuntimeKeys = [
   ...catalogScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...rssImportScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...rssImportReconciliationScript.matchAll(/text\(\s*"([^"]+)"/g),
+  ...rssImportCutoverScript.matchAll(/text\(\s*"([^"]+)"/g),
+  ...rssImportActivationApprovalScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...youtubeAudioRenditionScript.matchAll(/text\(\s*"([^"]+)"/g)
 ].map((match) => match[1]);
 for (const key of new Set(staticRuntimeKeys)) {
