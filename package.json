@@ -14,6 +14,7 @@
   "scripts": {
     "build": "npm run clean && npm run clean-prod && ELEVENTY_ENV=production eleventy && gulp sass && gulp minify-css && gulp dist-assets && gulp prod-copy && gulp inject-min-css && gulp purgecss && gulp minify-html && gulp copy-CNAME && npm run build:podcast-cards && npm run build:og",
     "build:ci": "USE_WEBP=true npm run build && npm run build:webp",
+    "build:podcast-staging": "node scripts/build-podcast-staging.mjs",
     "build:webp": "node webp.mjs",
     "build-dev": "ELEVENTY_ENV=development eleventy && gulp dist-assets && gulp sass && npm run build:podcast-cards -- --dev-only",
     "build-assets": "gulp dist-assets && gulp sass",

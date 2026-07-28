@@ -66,6 +66,22 @@ has a Checkout Turnstile site key. Subscriber billing controls appear only
 when the authenticated, non-secret session projection reports a show-scoped
 Stripe billing source.
 
+Build the isolated Cloudflare Pages staging artifact with:
+
+```bash
+PODCAST_STAGING_TURNSTILE_SITE_KEY="<public staging site key>" \
+  npm run build:podcast-staging
+```
+
+That command deliberately overrides the public, member, Admin, and Checkout
+API origins with
+`https://dust-wave-podcast-staging.jogo.workers.dev`. Do not substitute
+`feeds.dustwave.xyz` or `media.dustwave.xyz`: those names remain reserved for
+the future production Worker routes and may not have DNS records during
+staging. The command contains no secret; the Turnstile site key is public, but
+it is supplied explicitly so a production widget is never selected by
+accident.
+
 Canonical podcast News pages progressively fetch the episode's approved
 English/Spanish transcript URL from the immutable publication snapshot. The
 browser validates the bounded response again, builds the transcript only with

@@ -10,6 +10,7 @@ const [
   adminLayout,
   memberLayout,
   tracer,
+  stagingBuild,
   packageJson,
   gitignore
 ] = await Promise.all([
@@ -27,6 +28,10 @@ const [
   ),
   readFile(
     new URL("scripts/trace-podcast-admin-performance.mjs", repositoryRoot),
+    "utf8"
+  ),
+  readFile(
+    new URL("scripts/build-podcast-staging.mjs", repositoryRoot),
     "utf8"
   ),
   readFile(new URL("package.json", repositoryRoot), "utf8"),
@@ -124,6 +129,43 @@ assert.match(
   packageJson,
   /"perf:podcast-admin:trace": "node scripts\/trace-podcast-admin-performance\.mjs"/,
   "Podcast Admin must expose its repeatable Chrome trace command"
+);
+assert.match(
+  packageJson,
+  /"build:podcast-staging": "node scripts\/build-podcast-staging\.mjs"/,
+  "the isolated Podcast staging artifact must have a repeatable build command"
+);
+assert.match(
+  stagingBuild,
+  /https:\/\/dust-wave-podcast-staging\.jogo\.workers\.dev/,
+  "the staging build must target only the isolated Podcast Worker"
+);
+for (const environmentName of [
+  "PODCAST_ADMIN_API_ORIGIN",
+  "PODCAST_MEMBER_API_ORIGIN",
+  "PODCAST_PUBLIC_API_ORIGIN"
+]) {
+  assert.match(
+    stagingBuild,
+    new RegExp(`${environmentName}: STAGING_API_ORIGIN`),
+    `${environmentName} must be pinned by the isolated staging build`
+  );
+}
+for (const environmentName of [
+  "PODCAST_ADMIN_TURNSTILE_SITE_KEY",
+  "PODCAST_CHECKOUT_TURNSTILE_SITE_KEY",
+  "PODCAST_MEMBER_TURNSTILE_SITE_KEY"
+]) {
+  assert.match(
+    stagingBuild,
+    new RegExp(`${environmentName}: turnstileSiteKey`),
+    `${environmentName} must use the explicit staging Turnstile site key`
+  );
+}
+assert.doesNotMatch(
+  stagingBuild,
+  /feeds\.dustwave\.xyz|media\.dustwave\.xyz/,
+  "the isolated staging artifact must not depend on reserved production DNS"
 );
 assert.match(
   tracer,
