@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
 import { readFile, stat } from "node:fs/promises";
+import {
+  versionModuleImports
+} from "./version-module-imports.mjs";
 
 const repositoryRoot = new URL("../", import.meta.url);
 const [
@@ -168,6 +171,30 @@ assert.match(
   packageJson,
   /"build:podcast-staging": "node scripts\/build-podcast-staging\.mjs"/,
   "the isolated Podcast staging artifact must have a repeatable build command"
+);
+assert.match(
+  packageJson,
+  /gulp prod-copy && npm run version:module-imports && gulp inject-min-css/,
+  "production builds must version local module edges before HTML finalization"
+);
+const moduleRevision = "a".repeat(40);
+assert.equal(
+  versionModuleImports(
+    [
+      'import { one } from "./one.js";',
+      'const two = import("./two.js");',
+      'import "./three.js";',
+      'import { fixed } from "./fixed.js?v=0.7.0";'
+    ].join("\n"),
+    moduleRevision
+  ),
+  [
+    `import { one } from "./one.js?v=${moduleRevision}";`,
+    `const two = import("./two.js?v=${moduleRevision}");`,
+    `import "./three.js?v=${moduleRevision}";`,
+    'import { fixed } from "./fixed.js?v=0.7.0";'
+  ].join("\n"),
+  "local static, dynamic, and side-effect imports must share one revision"
 );
 assert.match(
   stagingBuild,
