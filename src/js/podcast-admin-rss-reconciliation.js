@@ -297,6 +297,10 @@ export function createRssImportReconciliationController({
       checkItem(
         "rssImportRedirectOwnerAttestation",
         values.ownerRedirectAttested
+      ),
+      checkItem(
+        "rssImportRedirectFinalApproval",
+        values.finalActivationApproved
       )
     );
     root.append(heading, intro, feed, checks);

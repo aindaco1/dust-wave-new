@@ -110,6 +110,7 @@ let rssImportExecution = null;
 let rssImportReconciliation = null;
 let rssImportRedirectAttestation = null;
 let rssImportCutoverPacket = null;
+let rssImportRedirectActivationApproval = null;
 
 function completeRssImportExecution() {
   if (!rssImportExecution || rssImportExecution.status !== "queued") return;
@@ -149,6 +150,14 @@ function rssImportReconciliationPayload(plan) {
       }
     : null;
   const cutoverReady = Boolean(attestation && approval);
+  const activationApproval =
+    rssImportRedirectActivationApproval
+    && rssImportCutoverPacket
+      ? {
+          ...rssImportRedirectActivationApproval,
+          fresh: true
+        }
+      : null;
   return {
     reconciliationAvailable: true,
     executionId: rssImportExecution?.id || null,
@@ -240,10 +249,18 @@ function rssImportReconciliationPayload(plan) {
       activationAvailable: false,
       ready: false,
       attestationAvailable: copyReady && Boolean(approval),
+      activationApprovalAvailable: Boolean(
+        rssImportCutoverPacket
+      ),
+      readyForActivationApproval: Boolean(
+        rssImportCutoverPacket && !activationApproval
+      ),
+      manualActivationReady: Boolean(activationApproval),
       oldFeedDisplayUrl: "https://podcast.example.org/feed.xml",
       newFeedUrl:
         "https://feeds.dustwave.xyz/opera-en-la-selva/rss.xml",
       attestation,
+      activationApproval,
       blockers: [
         ...(approval
           ? []
@@ -258,6 +275,9 @@ function rssImportReconciliationPayload(plan) {
         ...(attestation
           ? []
           : ["rss_import_old_host_attestation_required"]),
+        ...(activationApproval
+          ? ["rss_import_redirect_manual_owner_action_required"]
+          : ["rss_import_redirect_activation_approval_required"]),
         "rss_import_redirect_activation_unavailable"
       ],
       checks: {
@@ -265,12 +285,14 @@ function rssImportReconciliationPayload(plan) {
         importedEpisodesPublic: cutoverReady,
         canonicalFeedRevalidated: cutoverReady,
         directoryCertificationReady: cutoverReady,
-        ownerRedirectAttested: Boolean(attestation?.fresh)
+        ownerRedirectAttested: Boolean(attestation?.fresh),
+        finalActivationApproved: Boolean(activationApproval)
       }
     },
     idempotent: null,
     redirectAttestationMutationPerformed: false,
     cutoverPacketMutationPerformed: false,
+    redirectActivationApprovalMutationPerformed: false,
     r2MutationPerformed: false,
     episodeMutationPerformed: false,
     publicationMutationPerformed: false,
@@ -1188,6 +1210,7 @@ function responseFor(request) {
     rssImportReconciliation = null;
     rssImportRedirectAttestation = null;
     rssImportCutoverPacket = null;
+    rssImportRedirectActivationApproval = null;
     rssImportExecution = {
       id: "rss_execution_browser_fixture",
       planId: plan.id,
@@ -1336,6 +1359,50 @@ function responseFor(request) {
     const payload = rssImportReconciliationPayload(plan);
     payload.idempotent = idempotent;
     payload.cutoverPacketMutationPerformed = !idempotent;
+    return json(payload, idempotent ? 200 : 201);
+  }
+  const rssImportRedirectActivationApprovalMatch = path.match(
+    /^\/v1\/admin\/rss-import\/plans\/([A-Za-z0-9_-]+)\/redirect-activation-approval$/u
+  );
+  if (
+    request.method === "POST"
+    && rssImportRedirectActivationApprovalMatch
+  ) {
+    const plan = rssImportPlans.find(
+      ({ id }) => id
+        === rssImportRedirectActivationApprovalMatch[1]
+    );
+    if (
+      !plan
+      || !rssImportExecution
+      || rssImportExecution.planId !== plan.id
+      || !rssImportReconciliation
+      || !rssImportRedirectAttestation
+      || !rssImportCutoverPacket
+    ) {
+      return json(
+        { error: "rss_import_redirect_activation_approval_not_ready" },
+        409
+      );
+    }
+    const idempotent = Boolean(
+      rssImportRedirectActivationApproval
+    );
+    if (!rssImportRedirectActivationApproval) {
+      rssImportRedirectActivationApproval = {
+        id: "rss_redirect_activation_approval_browser_fixture",
+        cutoverPacketId: rssImportCutoverPacket.id,
+        cutoverEvidenceSha256:
+          rssImportCutoverPacket.evidenceSha256,
+        redirectMethod:
+          rssImportRedirectAttestation.redirectMethod,
+        approvedAt: "2026-07-28T12:06:00.000Z"
+      };
+    }
+    const payload = rssImportReconciliationPayload(plan);
+    payload.idempotent = idempotent;
+    payload.redirectActivationApprovalMutationPerformed =
+      !idempotent;
     return json(payload, idempotent ? 200 : 201);
   }
   const rssImportReviewMatch = path.match(

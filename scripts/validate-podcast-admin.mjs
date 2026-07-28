@@ -63,6 +63,13 @@ const rssImportCutoverScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-rss-cutover.js'),
   'utf8'
 );
+const rssImportActivationApprovalScript = await readFile(
+  path.join(
+    repositoryRoot,
+    'src/js/podcast-admin-rss-activation-approval.js'
+  ),
+  'utf8'
+);
 const catalogScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-catalog.js'),
   'utf8'
@@ -302,6 +309,18 @@ assert.match(
   rssImportCutoverScript,
   /packetId:[\s\S]+expectedEvidenceSha256:[\s\S]+ownerReviewConfirmed: true[\s\S]+noActivationConfirmed: true/
 );
+assert.match(
+  rssImportCutoverScript,
+  /createRssImportActivationApprovalController/
+);
+assert.match(
+  rssImportActivationApprovalScript,
+  /\/rss-import\/plans\/\$\{[\s\S]+\/redirect-activation-approval/
+);
+assert.match(
+  rssImportActivationApprovalScript,
+  /approvalId:[\s\S]+expectedPacketId:[\s\S]+expectedEvidenceSha256:[\s\S]+finalReviewConfirmed: true[\s\S]+manualActionAcknowledged: true[\s\S]+rollbackPlanConfirmed: true[\s\S]+noActivationPerformedConfirmed: true/
+);
 assert.doesNotMatch(
   rssImportReconciliationScript,
   /innerHTML/,
@@ -311,6 +330,11 @@ assert.doesNotMatch(
   rssImportCutoverScript,
   /innerHTML/,
   "Untrusted cutover evidence must use DOM text nodes"
+);
+assert.doesNotMatch(
+  rssImportActivationApprovalScript,
+  /innerHTML/,
+  "Untrusted activation-approval evidence must use DOM text nodes"
 );
 assert.match(
   englishRuntime.rssImportExecutionNoPublish,
@@ -343,6 +367,14 @@ assert.match(
 assert.match(
   spanishRuntime.rssImportCutoverNoActivation,
   /No puede contactar el host anterior[\s\S]+activar una etiqueta de nuevo feed o HTTP 301/
+);
+assert.match(
+  englishRuntime.rssImportActivationApprovalBoundary,
+  /manual owner handoff[\s\S]+Automatic activation remains unavailable/
+);
+assert.match(
+  spanishRuntime.rssImportActivationApprovalBoundary,
+  /entrega manual[\s\S]+activación automática no está disponible/
 );
 assert.match(
   englishWorkbench.overview.importPlansZeroCopy,
@@ -388,6 +420,10 @@ assert.match(
 );
 assert.match(
   adminMockApi,
+  /rss-import\\\/plans\\\/\(\[A-Za-z0-9_-\]\+\)\\\/redirect-activation-approval/
+);
+assert.match(
+  adminMockApi,
   /executionAvailable: true[\s\S]+publicationMutationPerformed: false[\s\S]+redirectMutationPerformed: false[\s\S]+providerContactPerformed: false/
 );
 assert.match(
@@ -405,6 +441,10 @@ assert.match(
 assert.match(
   adminMockApi,
   /cutoverPacketMutationPerformed: false/
+);
+assert.match(
+  adminMockApi,
+  /redirectActivationApprovalMutationPerformed: false/
 );
 assert.doesNotMatch(
   rssImportScript,
