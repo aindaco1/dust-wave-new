@@ -32,7 +32,8 @@ export function renderEpisodeCatalog({
   localizedCode,
   escapeHtml,
   escapeAttribute,
-  formatDate
+  formatDate,
+  canEdit = false
 }) {
   if (!episodes.length) {
     const empty = document.createElement("p");
@@ -44,7 +45,6 @@ export function renderEpisodeCatalog({
   target.replaceChildren(...episodes.map((episode) => {
     const row = document.createElement("article");
     row.className = "podcast-admin__episode";
-    const publishable = episode.mediaStatus === "ready";
     row.innerHTML = `
       <div>
         <p class="podcast-admin__pill">${escapeHtml(localizedCode("episodeStatus", episode.status))} · ${escapeHtml(localizedCode("episodeAccess", episode.access))}</p>
@@ -54,8 +54,9 @@ export function renderEpisodeCatalog({
         <p>${escapeHtml(text("sourceLanguageLabel"))}: ${escapeHtml(localizedCode("language", episode.sourceLanguage || "not_set"))} · ${escapeHtml(text("revisionLabel"))}: ${Number(episode.publicationRevision || 0)} · ${escapeHtml(text("publicLabel"))}: ${escapeHtml(formatDate(episode.publicAt))}</p>
       </div>
       <div class="podcast-admin__episode-actions">
+        ${canEdit ? `<button class="btn btn-outline-light" type="button" data-edit-episode="${escapeAttribute(episode.id)}">${escapeHtml(text("editEpisode"))}</button>` : ""}
         <a class="btn btn-outline-light" href="${escapeAttribute(episode.canonicalUrl)}">${escapeHtml(text("page"))}</a>
-        <button class="btn btn-danger" type="button" data-publish-episode="${escapeAttribute(episode.id)}" ${publishable ? "" : "disabled"}>${escapeHtml(text("publish"))}</button>
+        <button class="btn btn-danger" type="button" data-review-episode="${escapeAttribute(episode.id)}">${escapeHtml(text("reviewAndPublish"))}</button>
       </div>`;
     return row;
   }));

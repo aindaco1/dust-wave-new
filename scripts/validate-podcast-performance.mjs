@@ -14,6 +14,8 @@ const [
   memberLayout,
   tracer,
   stagingBuild,
+  webpBuild,
+  publicStyles,
   packageJson,
   gitignore
 ] = await Promise.all([
@@ -35,6 +37,11 @@ const [
   ),
   readFile(
     new URL("scripts/build-podcast-staging.mjs", repositoryRoot),
+    "utf8"
+  ),
+  readFile(new URL("webp.mjs", repositoryRoot), "utf8"),
+  readFile(
+    new URL("src/scss/themes/base/_style-theme.scss", repositoryRoot),
     "utf8"
   ),
   readFile(new URL("package.json", repositoryRoot), "utf8"),
@@ -63,8 +70,13 @@ assert.match(
 );
 assert.match(
   admin,
+  /customFont: true/,
+  "Podcast Admin must load the existing first-party Inter font bundle"
+);
+assert.doesNotMatch(
+  admin,
   /disableTypekit: true/,
-  "Podcast Admin must not block first paint on its unused brand font"
+  "Podcast Admin must retain the licensed Gambado display font used by its headings"
 );
 assert.match(
   member,
@@ -128,6 +140,26 @@ assert.doesNotMatch(
   /loading="lazy"/,
   "above-the-fold artwork must not be lazy loaded"
 );
+assert.match(
+  publicStyles,
+  /\.podcast-show__actions \.btn\s*\{[\s\S]{0,180}min-height:\s*44px/,
+  "public show actions must retain 44px targets"
+);
+assert.match(
+  publicStyles,
+  /\.podcast-show__actions \.btn-light\s*\{[\s\S]{0,100}color:\s*#151515 !important/,
+  "the light hero action must override the legacy white-link rule"
+);
+assert.match(
+  publicStyles,
+  /\.podcast-tier-card__label\s*\{[\s\S]{0,100}color:\s*#8c170f/,
+  "tier labels must retain AA contrast on the light card"
+);
+assert.match(
+  publicStyles,
+  /\.podcast-tier-card--premium a\s*\{[\s\S]{0,120}color:\s*#8c170f !important/,
+  "the account link must override the legacy white-link rule"
+);
 
 for (const [name, layout] of [
   ["admin", adminLayout],
@@ -141,10 +173,35 @@ for (const [name, layout] of [
 }
 
 const scriptBudgets = new Map([
-  ["src/js/podcast-admin.js", 302_000],
+  ["src/js/podcast-admin.js", 304_000],
+  ["src/js/podcast-admin-show-settings.js", 4_000],
+  ["src/js/podcast-admin-show-prices.js", 8_000],
+  ["src/js/podcast-admin-transcript-review.js", 12_000],
+  ["src/js/podcast-admin-transcript-diagnostic-navigation.js", 7_000],
+  ["src/js/podcast-admin-transcript-speaker-range.js", 7_000],
+  ["src/js/podcast-admin-transcript-import.js", 12_000],
+  ["src/js/podcast-admin-transcript-search.js", 7_000],
+  ["src/js/podcast-admin-unsaved-changes.js", 1_000],
+  ["src/js/podcast-admin-unsaved-changes-core.js", 5_000],
+  ["src/js/podcast-admin-dirty-controls.js", 1_000],
+  ["src/js/podcast-admin-dirty-controls-core.js", 1_000],
+  ["src/js/podcast-admin-text.js", 1_000],
+  ["src/js/podcast-admin-constants.js", 1_000],
+  ["src/js/podcast-admin-publish-workflow.js", 8_000],
+  ["src/js/podcast-admin-publish-workflow-core.js", 5_000],
+  ["src/js/podcast-admin-progressive-sections.js", 5_000],
+  ["src/js/podcast-admin-tool-disclosure.js", 3_000],
+  ["src/js/podcast-admin-publication.js", 5_000],
+  ["src/js/podcast-admin-workflow-navigation.js", 3_000],
   ["src/js/podcast-admin-clip-publications.js", 10_000],
   ["src/js/podcast-admin-distribution-certification.js", 5_000],
   ["src/js/podcast-admin-catalog.js", 8_000],
+  ["src/js/podcast-admin-episode-editor.js", 8_000],
+  ["src/js/podcast-admin-show-notes.js", 9_000],
+  ["src/js/podcast-admin-chapter-draft.js", 9_000],
+  ["src/js/podcast-admin-clip-draft.js", 13_000],
+  ["src/js/podcast-admin-clip-preview.js", 5_000],
+  ["src/js/podcast-admin-download-actions.js", 3_000],
   ["src/js/podcast-admin-episode-youtube.js", 10_000],
   ["src/js/podcast-admin-analytics.js", 20_000],
   ["src/js/podcast-admin-rss-import.js", 35_000],
@@ -214,6 +271,21 @@ assert.match(
 );
 assert.match(
   stagingBuild,
+  /spawnSync\(npmCommand, \["run", "build:ci"\]/,
+  "staging must reuse the production CI asset pipeline"
+);
+assert.match(
+  stagingBuild,
+  /PODCAST_STAGING_BUILD: "true"/,
+  "staging must explicitly authorize generated responsive images"
+);
+assert.match(
+  webpBuild,
+  /process\.env\.GITHUB_ACTIONS === 'true'[\s\S]+process\.env\.PODCAST_STAGING_BUILD === 'true'/,
+  "WebP generation must remain restricted to CI or the isolated staging build"
+);
+assert.match(
+  stagingBuild,
   /\(\?:\[A-Fa-f0-9\]\{40\}\|\[A-Fa-f0-9\]\{64\}\)/,
   "staging asset revisions must be exact Git SHA-1 or SHA-256 values"
 );
@@ -229,7 +301,6 @@ for (const environmentName of [
   );
 }
 for (const environmentName of [
-  "PODCAST_ADMIN_TURNSTILE_SITE_KEY",
   "PODCAST_CHECKOUT_TURNSTILE_SITE_KEY",
   "PODCAST_MEMBER_TURNSTILE_SITE_KEY"
 ]) {
@@ -239,6 +310,11 @@ for (const environmentName of [
     `${environmentName} must use the explicit staging Turnstile site key`
   );
 }
+assert.match(
+  stagingBuild,
+  /PODCAST_ADMIN_TURNSTILE_SITE_KEY: ""/,
+  "isolated staging must omit only the Admin Turnstile widget"
+);
 assert.doesNotMatch(
   stagingBuild,
   /feeds\.dustwave\.xyz|media\.dustwave\.xyz/,
@@ -263,6 +339,11 @@ assert.match(
   tracer,
   /Emulation\.setDeviceMetricsOverride[\s\S]+observed\?\.innerWidth !== viewport\.width[\s\S]+observed\?\.innerHeight !== viewport\.height[\s\S]+observed\?\.scrollWidth > viewport\.width/,
   "performance traces must verify the exact CSS viewport and horizontal fit"
+);
+assert.match(
+  tracer,
+  /ADMIN_TABS[\s\S]+dustwave-podcast-admin-tab[\s\S]+observed\?\.activeTab !== adminTab/,
+  "performance traces must support and verify a bounded admin-tab fixture"
 );
 assert.match(
   tracer,

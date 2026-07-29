@@ -1,110 +1,76 @@
-import { AdminApiClient, AdminApiError } from "./dust-wave-admin-shell/api-client.js?v=0.7.0";
+import { AdminApiClient, AdminApiError } from "./dust-wave-admin-shell/api-client.js?v=0.9.0";
+import { AdminDownloadError, requestCredentialedBlob, triggerBlobDownload } from "./dust-wave-admin-shell/credentialed-download.js?v=0.9.0";
+import { mountConfirmationDialog } from "./dust-wave-admin-shell/confirmation-dialog.js?v=0.9.0";
+import { mountRichTextEditor } from "./dust-wave-admin-shell/editor.js?v=0.9.0";
+import { markdownToEditorHtml } from "./dust-wave-admin-shell/editor-codec.js?v=0.9.0";
 import {
-  AdminDownloadError,
-  requestCredentialedBlob,
-  triggerBlobDownload
-} from "./dust-wave-admin-shell/credentialed-download.js?v=0.7.0";
-import { mountRichTextEditor } from "./dust-wave-admin-shell/editor.js?v=0.7.0";
+  clipCueSummary,
+  emptyTranscript,
+  millisecondsToTimestamp,
+  navigateToTranscriptReviewCue,
+  newTranscriptCue,
+} from "./podcast-admin-transcript-review.js";
 import {
-  markdownToEditorHtml
-} from "./dust-wave-admin-shell/editor-codec.js?v=0.7.0";
+  clearTranscriptReviewDiagnostics as clearQa,
+  renderTranscriptReviewDiagnostics
+} from "./podcast-admin-transcript-diagnostic-navigation.js";
 import {
   buildTaggedMarketingUrl,
   createMarketingQr,
   drawQrCanvas,
   qrSvgMarkup,
   safeMarketingFilename
-} from "./dust-wave-admin-shell/marketing-assets.js?v=0.7.0";
+} from "./dust-wave-admin-shell/marketing-assets.js?v=0.9.0";
+import { mountSavedMarketingLinks } from "./podcast-admin-marketing-links.js";
+import { renderEpisodeCatalog, renderShowCatalog } from "./podcast-admin-catalog.js";
+import { mountEpisodePublishWorkflow } from "./podcast-admin-publish-workflow.js";
+import { mountProgressiveSections } from "./podcast-admin-progressive-sections.js";
 import {
-  mountSavedMarketingLinks
-} from "./podcast-admin-marketing-links.js";
+  mountPodcastAdminToolDisclosure
+} from "./podcast-admin-tool-disclosure.js";
+import { createEpisodePublisher } from "./podcast-admin-publication.js";
 import {
-  renderEpisodeCatalog,
-  renderShowCatalog
-} from "./podcast-admin-catalog.js";
+  createEpisodeWorkflowNavigator
+} from "./podcast-admin-workflow-navigation.js";
+import { mountEpisodeEditor } from "./podcast-admin-episode-editor.js";
+import { mountShowNotesAssistant } from "./podcast-admin-show-notes.js";
+import { mountChapterDraftAssistant } from "./podcast-admin-chapter-draft.js";
+import { clipDurationLabel, mountClipDraftAssistant, resolveClipCueRange } from "./podcast-admin-clip-draft.js";
+import { renderClipRecipePreview } from "./podcast-admin-clip-preview.js";
+import { clipDownloadActionMarkup, mountTranscriptDownloads } from "./podcast-admin-download-actions.js";
+import { mountTranscriptCaptionImport } from "./podcast-admin-transcript-import.js";
+import { mountTranscriptSearch } from "./podcast-admin-transcript-search.js";
+import { mountPodcastReviewDraftGuard } from "./podcast-admin-unsaved-changes.js";
+import { syncReviewDraftButton } from "./podcast-admin-dirty-controls.js";
+import { adminText, editorLabels } from "./podcast-admin-text.js";
+import { ALIGNMENT_WORKFLOW, AUDIO_QC_POLICY_FIELDS, MAXIMUM_ALIGNMENT_BENCHMARK_BYTES, TRANSCRIPTION_CHUNK_WORKFLOW, TRANSCRIPT_CUES_PER_PAGE } from "./podcast-admin-constants.js";
 import {
-  mountRssImportWorkbench
-} from "./podcast-admin-rss-import.js";
-import {
-  buildEpisodeYouTubeControls,
-  handleEpisodeYouTubeApproval,
-  handleEpisodeYouTubeSubmit
-} from "./podcast-admin-episode-youtube.js";
-import {
-  mountYouTubeAudioRenditions
-} from "./podcast-admin-youtube-audio-renditions.js";
-import {
-  mountAudioEnhancementDerivatives
-} from "./podcast-admin-audio-derivatives.js";
-import {
-  mountDeliveryAudio
-} from "./podcast-admin-delivery-audio.js";
-import {
-  mountPodcastAnalytics
-} from "./podcast-admin-analytics.js";
-import {
-  mountClipPublications
-} from "./podcast-admin-clip-publications.js";
+  mountShowSiteProjection,
+  needsShowArchiveConfirmation,
+  populateShowSettingsForm,
+  readShowSettingsPayload
+} from "./podcast-admin-show-settings.js";
+import { mountRssImportWorkbench } from "./podcast-admin-rss-import.js";
+import { buildEpisodeYouTubeControls, handleEpisodeYouTubeApproval, handleEpisodeYouTubeSubmit } from "./podcast-admin-episode-youtube.js";
+import { mountYouTubeAudioRenditions } from "./podcast-admin-youtube-audio-renditions.js";
+import { mountAudioEnhancementDerivatives } from "./podcast-admin-audio-derivatives.js";
+import { mountDeliveryAudio } from "./podcast-admin-delivery-audio.js";
+import { mountPodcastAnalytics } from "./podcast-admin-analytics.js";
+import { mountClipPublications } from "./podcast-admin-clip-publications.js";
 import {
   distributionCertificationList,
   renderDistributionLaunchClaim
 } from "./podcast-admin-distribution-certification.js";
-import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js?v=0.7.0";
-import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js?v=0.7.0";
-import {
-  responsiveTurnstileSize
-} from "./dust-wave-admin-shell/turnstile.js?v=0.7.0";
-
-const TRANSCRIPT_CUES_PER_PAGE = 100;
-const MAXIMUM_ALIGNMENT_BENCHMARK_BYTES = 8 * 1024 * 1024;
-const TRANSCRIPTION_CHUNK_WORKFLOW = "process-transcription-chunks.yml";
-const ALIGNMENT_WORKFLOW = "process-alignment.yml";
-const AUDIO_QC_POLICY_FIELDS = [
-  "monoIntegratedLufs",
-  "stereoIntegratedLufs",
-  "integratedLufsTolerance",
-  "maximumTruePeakDbtp",
-  "maximumDcOffset",
-  "maximumChannelImbalanceLu",
-  "maximumLeadingSilenceMs",
-  "maximumTrailingSilenceMs",
-  "maximumInternalSilenceMs",
-  "silenceThresholdDb"
-];
+import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js?v=0.9.0";
+import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js?v=0.9.0";
+import { responsiveTurnstileSize } from "./dust-wave-admin-shell/turnstile.js?v=0.9.0";
 
 const root = document.querySelector("[data-podcast-admin]");
 if (root) startPodcastAdmin(root);
 
-function adminText(key, fallbackOrVariables = {}, variables = {}) {
-  const fallback = typeof fallbackOrVariables === "string"
-    ? fallbackOrVariables
-    : "";
-  const replacements = (
-    fallbackOrVariables
-    && typeof fallbackOrVariables === "object"
-  )
-    ? fallbackOrVariables
-    : variables;
-  const translated = window.DustWaveI18n?.t(`admin.${key}`, replacements);
-  return translated && !translated.startsWith("[missing:")
-    ? translated
-    : fallback || `[missing: admin.${key}]`;
-}
-
-function editorLabels(label) {
-  return {
-    formatting: adminText("editorFormatting", { label }),
-    bold: adminText("editorBold"),
-    italic: adminText("editorItalic"),
-    heading: adminText("editorHeading"),
-    list: adminText("editorList"),
-    link: adminText("editorLink"),
-    linkPrompt: adminText("editorLinkPrompt")
-  };
-}
-
 function startPodcastAdmin(root) {
   const apiOrigin = root.dataset.apiOrigin;
+  const transcriptDownloads = mountTranscriptDownloads(root, adminText);
   const client = new AdminApiClient({
     baseUrl: apiOrigin,
     csrfHeader: "x-podcast-csrf"
@@ -119,7 +85,9 @@ function startPodcastAdmin(root) {
   const showCards = root.querySelector("[data-podcast-show-cards]");
   const showForm = root.querySelector("[data-podcast-show-form]");
   const showStatus = root.querySelector("[data-podcast-show-status]");
-  const showSelect = root.querySelector("[data-podcast-show-select]");
+  const showSelects = Array.from(
+    root.querySelectorAll("[data-podcast-show-select]")
+  );
   const episodeForm = root.querySelector("[data-podcast-episode-form]");
   const episodeStatus = root.querySelector("[data-podcast-episode-status]");
   const episodeList = root.querySelector("[data-podcast-episode-list]");
@@ -496,10 +464,59 @@ function startPodcastAdmin(root) {
   let latestAnnouncementReview = null;
   let announcementHistoryRequestId = 0;
   let latestProcessorManifest = null;
+  let episodeProgressiveTools = null;
   let turnstileToken = "";
   let turnstileWidgetId;
   let turnstileInitialization;
 
+  const transcriptImport = mountTranscriptCaptionImport({
+    root,
+    text: adminText,
+    canEdit: () => canEditTranscripts && Boolean(transcript),
+    hasExistingContent: () => Boolean(
+      transcriptDirty
+      || Number(transcript?.revision || 0) > 0
+      || transcript?.cues?.some(({ textMarkdown }) =>
+        String(textMarkdown || "").trim()
+      )
+    ),
+    getLanguage: () => transcriptLanguageSelect?.value || "es",
+    getMaximumEndMs: () => transcriptDurationSeconds === null
+      ? null
+      : Math.round(transcriptDurationSeconds * 1_000),
+    getContextKey: () => [
+      transcriptEpisodeSelect?.value,
+      transcriptLanguageSelect?.value,
+      transcriptRequestId
+    ].join(":"),
+    applyImport({ cues }) {
+      if (!transcript || !canEditTranscripts) return;
+      transcript.cues = cues;
+      transcriptPage = 0;
+      transcriptDirty = true;
+      renderTranscript();
+    }
+  });
+  const transcriptSearch = mountTranscriptSearch({
+    root,
+    text: adminText,
+    getCues: () => transcript
+      ? syncVisibleTranscriptCues({ requireText: false })
+      : [],
+    getLanguage: () => transcriptLanguageSelect?.value || "es",
+    onOpenCue: openTranscriptCue,
+    formatError: transcriptInputError
+  });
+  const reviewDraftGuard = mountPodcastReviewDraftGuard({
+    showSelects, transcriptEpisodeSelect, transcriptLanguageSelect,
+    chapterEpisodeSelect, logoutButton,
+    hasTranscriptChanges: () => transcriptDirty,
+    hasChapterChanges: () => chapterDirty,
+    discardTranscriptChanges: () => { transcriptDirty = false; },
+    discardChapterChanges: () => { chapterDirty = false; },
+    loadTranscript, loadChapters,
+    message: () => adminText("discardUnsavedReviewChanges")
+  });
   const rssImport = mountRssImportWorkbench({
     root,
     client,
@@ -536,6 +553,64 @@ function startPodcastAdmin(root) {
       labels: editorLabels(notesEditorLabel)
     }
   );
+  const showNotesAssistant = mountShowNotesAssistant({
+    root: root.querySelector("[data-podcast-show-notes]"),
+    notesEditor,
+    client,
+    text: adminText,
+    setStatus,
+    friendlyError
+  });
+  const chapterDraftAssistant = mountChapterDraftAssistant({
+    root: root.querySelector("[data-podcast-chapter-draft]"),
+    client,
+    text: adminText,
+    setStatus,
+    friendlyError,
+    hasExistingChapters: () => Boolean(
+      chapterDirty
+      || Number(chapterSet?.revision || 0) > 0
+      || chapterSet?.chapters?.some(({ title }) => String(title || "").trim())
+    ),
+    applyChapters(chapters) {
+      if (!chapterSet || !canEditChapters) return;
+      chapterSet.chapters = chapters;
+      chapterDirty = true;
+      renderChapters();
+    }
+  });
+  const clipDraftAssistant = mountClipDraftAssistant({
+    root: root.querySelector("[data-podcast-clip-draft]"),
+    client,
+    text: adminText,
+    setStatus,
+    friendlyError,
+    form: clipForm,
+    selectedRecipeId: () => selectedClipId,
+    clearSelectedRecipe: () => { selectedClipId = ""; },
+    fillCueSelects: fillClipCueSelects,
+    refreshRecipe: refreshClipRecipe
+  });
+  const episodeEditor = mountEpisodeEditor({
+    form: episodeForm,
+    list: episodeList,
+    notesEditor,
+    client,
+    text: adminText,
+    setStatus,
+    friendlyError,
+    getSelectedShowId: () => selectedShowId,
+    getShows: () => shows,
+    canEdit: () => canManageCreatives,
+    onModeChange({ episodeId, sourceLanguage }) {
+      showNotesAssistant.setEpisode(episodeId, sourceLanguage);
+      if (episodeId) episodeProgressiveTools?.openFor(episodeForm);
+    },
+    onPermissionsChange({ editable }) {
+      showNotesAssistant.setEditable(editable);
+    },
+    onSaved: loadShows
+  });
   const announcementEditorLabel = adminText("editorAnnouncementContent");
   const announcementEditor = mountRichTextEditor(
     root.querySelector("[data-podcast-announcement-editor]"),
@@ -604,7 +679,7 @@ function startPodcastAdmin(root) {
     localizeCode: localizedCode,
     canQueue: () => canRunAudioEnhancements,
     canApprove: () => canApproveAudioMasters,
-    onApproved: async (episodeId) => {
+    onDecided: async (episodeId) => {
       await Promise.all([
         loadAudioMaster(),
         loadProductionReviews(),
@@ -621,38 +696,123 @@ function startPodcastAdmin(root) {
     setStatus,
     friendlyError
   });
-  mountAccessibleTabs(root.querySelector("[data-podcast-tabs]"), {
-    responsiveSelect: {
-      id: "podcast-admin-mobile-tabs"
+  const showSiteProjection = mountShowSiteProjection({
+    root,
+    client,
+    text: adminText,
+    setStatus,
+    friendlyError,
+    canPublish: () => (adminIdentity?.roles || []).some(
+      ({ role }) => role === "super_admin"
+    )
+  });
+  const confirmationDialog = mountConfirmationDialog(root, {
+    cancelLabel: adminText("dialogCancel"),
+    confirmLabel: adminText("dialogConfirm"),
+    requiredMessage: adminText("dialogRequired")
+  });
+  const publishEpisode = createEpisodePublisher({
+    client,
+    confirmationDialog,
+    text: adminText,
+    nodeLabel: localizedReadinessNodeLabel,
+    operationId,
+    report(message, error = false) {
+      setStatus(episodeStatus, message, error);
     },
-    storageKey: "dustwave-podcast-admin-tab",
-    onSelect(tab) {
-      if (tab !== "production") pauseClipMediaPlayers(clipList);
-      if (tab !== "marketing") pauseClipMediaPlayers(clipLibrary);
-      if (tab === "production") {
-        loadAudioQcPolicy();
-        loadAudioQc();
-        loadAudioMaster();
-        loadTranscript();
-        loadAlignmentBenchmarks();
-        loadChapters();
-        loadProductionReviews();
-        deliveryAudio.refresh();
-        youtubeAudioRenditions.refresh();
+    friendlyError,
+    humanizeCode,
+    onReadiness(episodeId, readiness) {
+      if (episodeId !== reviewEpisodeSelect?.value) return;
+      publicationReadiness = readiness;
+      renderPublicationReadiness();
+    },
+    async onPublished(episodeId) {
+      await loadEpisodes();
+      if (distributionFilter) {
+        distributionFilter.elements.episodeId.value = episodeId;
       }
-      if (tab === "distribution") loadDistribution();
-      if (tab === "marketing") {
-        updateMarketingTools();
-        loadClipLibrary({ reset: true });
-        loadAnnouncementHistory();
-        savedMarketingLinks.load({ reset: true });
-      }
-      if (tab === "subscribers") loadSubscribers({ reset: true });
-      if (tab === "billing") loadBilling();
-      if (tab === "sponsors") loadCampaigns();
-      if (tab === "analytics") podcastAnalytics.load();
+      await loadDistribution(episodeId);
     }
   });
+  const adminTabs = mountAccessibleTabs(
+    root.querySelector("[data-podcast-tabs]"),
+    {
+      responsiveSelect: {
+        id: "podcast-admin-mobile-tabs"
+      },
+      storageKey: "dustwave-podcast-admin-tab",
+      onSelect(tab) {
+        if (tab !== "production") pauseClipMediaPlayers(clipList);
+        if (tab !== "marketing") pauseClipMediaPlayers(clipLibrary);
+        if (tab === "production") {
+          loadAudioQcPolicy();
+          loadAudioQc();
+          loadAudioMaster();
+          loadTranscript();
+          loadAlignmentBenchmarks();
+          loadChapters();
+          loadProductionReviews();
+          deliveryAudio.refresh();
+          youtubeAudioRenditions.refresh();
+        }
+        if (tab === "distribution") loadDistribution();
+        if (tab === "marketing") {
+          updateMarketingTools();
+          loadClipLibrary({ reset: true });
+          loadAnnouncementHistory();
+          savedMarketingLinks.load({ reset: true });
+        }
+        if (tab === "subscribers") loadSubscribers({ reset: true });
+        if (tab === "billing") loadBilling();
+        if (tab === "sponsors") loadCampaigns();
+        if (tab === "analytics") podcastAnalytics.load();
+      }
+    }
+  );
+  episodeProgressiveTools = mountPodcastAdminToolDisclosure({
+    root,
+    text: adminText,
+    episodeForm,
+    uploadForm,
+    adPlanForm,
+    adPlanResult,
+    audioQcPolicyForm,
+    marketingLinkForm,
+    embedForm,
+    shareCardForm,
+    announcementForm,
+    announcementHistory,
+    campaignForm,
+    creativeForm
+  });
+  const navigateEpisodeWorkflow = createEpisodeWorkflowNavigator({
+    root,
+    tabs: adminTabs,
+    episodeList,
+    episodeForm,
+    adPlanForm,
+    audioQcEpisodeSelect,
+    audioMasterEpisodeSelect,
+    transcriptEpisodeSelect,
+    chapterEpisodeSelect,
+    transcriptWorkbench,
+    reviewEpisodeSelect,
+    loadProductionReviews,
+    loadPublicationReadiness
+  });
+  const episodePublishWorkflow = mountEpisodePublishWorkflow({
+    root: root.querySelector("[data-podcast-publish-workflow]"),
+    client,
+    text: adminText,
+    nodeLabel: localizedReadinessNodeLabel,
+    onNavigate: navigateEpisodeWorkflow,
+    onPublish: publishEpisode
+  });
+  mountProgressiveSections(
+    root.querySelector("#podcast-panel-production"),
+    { label: adminText("productionSectionsAria") }
+  );
 
   root.querySelector("[data-podcast-refresh]")?.addEventListener("click", loadShows);
   billingRefresh?.addEventListener("click", loadBilling);
@@ -701,60 +861,52 @@ function startPodcastAdmin(root) {
   );
   root.querySelector("[data-podcast-login-form]")?.addEventListener("submit", startLogin);
   logoutButton?.addEventListener("click", logout);
-  showSelect?.addEventListener("change", async () => {
-    selectedShowId = showSelect.value;
-    if (distributionFilter) {
-      distributionFilter.elements.episodeId.value = "";
-    }
-    clipPublications.close();
-    closeClipYouTubeForm();
-    clearClipLibraryState();
-    rssImport.reset({ form: true });
-    fillShowForm();
-    updateMarketingTools({ showChanged: true });
-    await Promise.all([loadEpisodes(), loadCampaigns()]);
-    const marketingPanel = root.querySelector("#podcast-panel-marketing");
-    if (marketingPanel && !marketingPanel.hidden) {
-      await Promise.all([
-        loadClipLibrary({ reset: true }),
-        loadAnnouncementHistory(),
-        savedMarketingLinks.load({ reset: true })
-      ]);
-    }
-    const analyticsPanel = root.querySelector("#podcast-panel-analytics");
-    if (analyticsPanel && !analyticsPanel.hidden) {
-      await podcastAnalytics.load();
-    }
-    const distributionPanel = root.querySelector(
-      "#podcast-panel-distribution"
-    );
-    if (distributionPanel && !distributionPanel.hidden) {
-      await loadDistribution();
-    }
-    const billingPanel = root.querySelector("#podcast-panel-billing");
-    if (billingPanel && !billingPanel.hidden) {
-      await loadBilling();
-    }
-    const subscribersPanel = root.querySelector(
-      "#podcast-panel-subscribers"
-    );
-    if (subscribersPanel && !subscribersPanel.hidden) {
-      await loadSubscribers({ reset: true });
-    }
-  });
+  for (const showSelect of showSelects) {
+    showSelect.addEventListener("change", async () => {
+      selectedShowId = showSelect.value;
+      fillShowSelect();
+      if (distributionFilter) {
+        distributionFilter.elements.episodeId.value = "";
+      }
+      clipPublications.close();
+      closeClipYouTubeForm();
+      clearClipLibraryState();
+      rssImport.reset({ form: true });
+      fillShowForm();
+      updateMarketingTools({ showChanged: true });
+      await Promise.all([loadEpisodes(), loadCampaigns()]);
+      const marketingPanel = root.querySelector("#podcast-panel-marketing");
+      if (marketingPanel && !marketingPanel.hidden) {
+        await Promise.all([
+          loadClipLibrary({ reset: true }),
+          loadAnnouncementHistory(),
+          savedMarketingLinks.load({ reset: true })
+        ]);
+      }
+      const analyticsPanel = root.querySelector("#podcast-panel-analytics");
+      if (analyticsPanel && !analyticsPanel.hidden) {
+        await podcastAnalytics.load();
+      }
+      const distributionPanel = root.querySelector(
+        "#podcast-panel-distribution"
+      );
+      if (distributionPanel && !distributionPanel.hidden) {
+        await loadDistribution();
+      }
+      const billingPanel = root.querySelector("#podcast-panel-billing");
+      if (billingPanel && !billingPanel.hidden) {
+        await loadBilling();
+      }
+      const subscribersPanel = root.querySelector(
+        "#podcast-panel-subscribers"
+      );
+      if (subscribersPanel && !subscribersPanel.hidden) {
+        await loadSubscribers({ reset: true });
+      }
+    });
+  }
   showForm?.addEventListener("submit", saveShow);
-  episodeForm?.addEventListener("submit", createEpisode);
-  episodeForm?.elements.title?.addEventListener("input", () => {
-    if (!episodeForm.elements.slug.dataset.edited) {
-      episodeForm.elements.slug.value = slugify(episodeForm.elements.title.value);
-    }
-  });
-  episodeForm?.elements.slug?.addEventListener("input", () => {
-    episodeForm.elements.slug.dataset.edited = "true";
-  });
   uploadForm?.addEventListener("submit", uploadMedia);
-  transcriptEpisodeSelect?.addEventListener("change", loadTranscript);
-  transcriptLanguageSelect?.addEventListener("change", loadTranscript);
   transcriptionQueueButton?.addEventListener(
     "click",
     queueTranscription
@@ -784,7 +936,6 @@ function startPodcastAdmin(root) {
   transcriptNextButton?.addEventListener("click", () =>
     moveTranscriptPage(1)
   );
-  chapterEpisodeSelect?.addEventListener("change", loadChapters);
   chapterAddButton?.addEventListener("click", addChapter);
   chapterSaveButton?.addEventListener("click", saveChapters);
   chapterApproveButton?.addEventListener("click", approveChapters);
@@ -915,6 +1066,11 @@ function startPodcastAdmin(root) {
   creativeForm?.addEventListener("submit", uploadCreative);
   campaignList?.addEventListener("click", handleCampaignAction);
   episodeList?.addEventListener("click", async (event) => {
+    const review = event.target.closest("[data-review-episode]");
+    if (review) {
+      episodePublishWorkflow.selectEpisode(review.dataset.reviewEpisode);
+      return;
+    }
     const button = event.target.closest("[data-publish-episode]");
     if (!button) return;
     await publishEpisode(button.dataset.publishEpisode, button);
@@ -1028,6 +1184,9 @@ function startPodcastAdmin(root) {
     if (alignmentBenchmarkForm) {
       alignmentBenchmarkForm.hidden = !canImportAlignmentBenchmarks;
     }
+    episodeEditor.refreshPermissions();
+    chapterDraftAssistant.setEditable(canEditChapters);
+    clipDraftAssistant.setEditable(canEditTranscripts);
     root.querySelector("[data-podcast-session-summary]").textContent =
       adminText("authenticated", { roles: roles ? ` — ${roles}` : "" });
   }
@@ -1038,6 +1197,8 @@ function startPodcastAdmin(root) {
     logoutButton.hidden = true;
     shows = [];
     episodes = [];
+    episodeEditor.setEpisodes([]);
+    episodeEditor.setShow("");
     adminIdentity = null;
     campaigns = [];
     podcastAnalytics.reset();
@@ -1064,6 +1225,10 @@ function startPodcastAdmin(root) {
     canRunAudioEnhancements = false;
     canApproveClipYouTube = false;
     canImportAlignmentBenchmarks = false;
+    chapterDraftAssistant.setEditable(false);
+    chapterDraftAssistant.setEpisode("");
+    clipDraftAssistant.setEditable(false);
+    clipDraftAssistant.setTranscript("", null);
     rssImport.reset({ form: true });
     rssImport.setShow(false);
     initializeTurnstile();
@@ -1086,7 +1251,10 @@ function startPodcastAdmin(root) {
     transcriptPage = 0;
     transcriptRequestId += 1;
     transcriptEditors.clear();
+    transcriptSearch.reset();
+    transcriptSearch.setState({ available: false });
     transcriptCuesRoot?.replaceChildren();
+    clearQa(root);
     transcriptMeta?.replaceChildren();
     transcriptionSummary?.replaceChildren();
     transcriptionJobsRoot?.replaceChildren();
@@ -1216,27 +1384,21 @@ function startPodcastAdmin(root) {
   }
 
   function fillShowSelect() {
-    showSelect.replaceChildren(...shows.map((show) =>
-      new Option(show.title, show.id, false, show.id === selectedShowId)
-    ));
+    for (const showSelect of showSelects) {
+      showSelect.replaceChildren(...shows.map((show) =>
+        new Option(show.title, show.id, false, show.id === selectedShowId)
+      ));
+    }
   }
 
   function fillShowForm() {
     const show = shows.find(({ id }) => id === selectedShowId);
     showForm.hidden = !show;
+    showSiteProjection.setShow(show);
     rssImport.setShow(Boolean(show));
+    episodeEditor.setShow(selectedShowId);
     if (!show) return;
-    for (const field of [
-      "title", "description", "descriptionEn", "earlyAccessDays", "youtubeChannelUrl"
-    ]) {
-      showForm.elements[field].value = show[field] ?? "";
-    }
-    showForm.elements.premiumEnabled.checked = show.premiumEnabled;
-    showForm.elements.freeMiniEpisodeEnabled.checked = show.freeMiniEpisodeEnabled;
-    if (episodeForm?.elements.sourceLanguage) {
-      episodeForm.elements.sourceLanguage.value =
-        show.language === "en" ? "en" : "es";
-    }
+    populateShowSettingsForm(showForm, show);
   }
 
   function updateMarketingTools({ showChanged = false } = {}) {
@@ -1794,21 +1956,23 @@ function startPodcastAdmin(root) {
 
   async function saveShow(event) {
     event.preventDefault();
+    const currentShow = shows.find(({ id }) => id === selectedShowId);
+    const payload = readShowSettingsPayload(showForm);
+    if (
+      needsShowArchiveConfirmation(currentShow, payload.status)
+      && !window.confirm(adminText("archiveShowConfirm", {
+        title: currentShow?.title || showForm.elements.title.value
+      }))
+    ) {
+      return;
+    }
     const button = showForm.querySelector('button[type="submit"]');
     button.disabled = true;
     setStatus(showStatus, adminText("saving"));
     try {
       await client.request(`/v1/admin/shows/${encodeURIComponent(selectedShowId)}`, {
         method: "PATCH",
-        body: {
-          title: showForm.elements.title.value,
-          description: showForm.elements.description.value,
-          descriptionEn: showForm.elements.descriptionEn.value,
-          earlyAccessDays: Number(showForm.elements.earlyAccessDays.value || 0),
-          youtubeChannelUrl: showForm.elements.youtubeChannelUrl.value,
-          premiumEnabled: showForm.elements.premiumEnabled.checked,
-          freeMiniEpisodeEnabled: showForm.elements.freeMiniEpisodeEnabled.checked
-        }
+        body: payload
       });
       setStatus(showStatus, adminText("showSaved"));
       await loadShows();
@@ -1826,6 +1990,7 @@ function startPodcastAdmin(root) {
         `/v1/admin/shows/${encodeURIComponent(selectedShowId)}/episodes`
       );
       episodes = payload.episodes || [];
+      episodeEditor.setEpisodes(episodes);
       renderEpisodes();
       fillEpisodeSelects();
       await loadAdPlan();
@@ -1845,51 +2010,6 @@ function startPodcastAdmin(root) {
     }
   }
 
-  async function createEpisode(event) {
-    event.preventDefault();
-    const button = episodeForm.querySelector('button[type="submit"]');
-    button.disabled = true;
-    setStatus(
-      episodeStatus,
-      adminText("creatingDraft")
-    );
-    try {
-      await client.request(
-        `/v1/admin/shows/${encodeURIComponent(selectedShowId)}/episodes`,
-        {
-          method: "POST",
-          body: {
-            title: episodeForm.elements.title.value,
-            slug: episodeForm.elements.slug.value,
-            summary: episodeForm.elements.summary.value,
-            contentHtml: notesEditor.getHtml(),
-            access: episodeForm.elements.access.value,
-            sourceLanguage: episodeForm.elements.sourceLanguage.value,
-            premiumAt: isoOrNull(episodeForm.elements.premiumAt.value),
-            publicAt: isoOrNull(episodeForm.elements.publicAt.value)
-          }
-        }
-      );
-      episodeForm.reset();
-      const show = shows.find(({ id }) => id === selectedShowId);
-      episodeForm.elements.sourceLanguage.value =
-        show?.language === "en" ? "en" : "es";
-      episodeForm.elements.slug.dataset.edited = "";
-      notesEditor.setValue("");
-      setStatus(
-        episodeStatus,
-        adminText(
-          "draftCreated"
-        )
-      );
-      await loadShows();
-    } catch (error) {
-      setStatus(episodeStatus, friendlyError(error), true);
-    } finally {
-      button.disabled = false;
-    }
-  }
-
   function renderEpisodes() {
     renderEpisodeCatalog({
       target: episodeList,
@@ -1898,8 +2018,11 @@ function startPodcastAdmin(root) {
       localizedCode,
       escapeHtml,
       escapeAttribute,
-      formatDate
+      formatDate,
+      canEdit: canManageCreatives
     });
+    episodeProgressiveTools?.setOpen(episodeForm, episodes.length === 0);
+    episodePublishWorkflow.setEpisodes(episodes);
   }
 
   function fillEpisodeSelects() {
@@ -1925,6 +2048,7 @@ function startPodcastAdmin(root) {
         )
       ));
     }
+    reviewDraftGuard.syncContexts();
     const campaignEpisodeSelect = campaignForm?.elements.episodeId;
     if (campaignEpisodeSelect) {
       const previousValue = campaignEpisodeSelect.value;
@@ -1966,12 +2090,14 @@ function startPodcastAdmin(root) {
       sponsorResult?.replaceChildren();
       adPlanResult?.replaceChildren();
       transcript = null;
+      transcriptDownloads.render("", null);
       transcriptionState = null;
       transcriptionRequestId += 1;
       alignmentState = null;
       alignmentRequestId += 1;
       transcriptEditors.clear();
       transcriptCuesRoot?.replaceChildren();
+      clearQa(root);
       transcriptionJobsRoot?.replaceChildren();
       alignmentJobsRoot?.replaceChildren();
       if (transcriptionSummary) {
@@ -1995,6 +2121,7 @@ function startPodcastAdmin(root) {
           );
       }
       chapterSet = null;
+      chapterDraftAssistant.setEpisode("");
       chapterRowsRoot?.replaceChildren();
       if (chapterMeta) {
         chapterMeta.textContent =
@@ -2455,11 +2582,15 @@ function startPodcastAdmin(root) {
   async function loadTranscript() {
     const episodeId = transcriptEpisodeSelect?.value;
     const language = transcriptLanguageSelect?.value || "es";
+    transcriptImport.reset();
+    transcriptImport.setState({ available: false, editable: false });
+    transcriptSearch.setState({ available: false });
     transcriptRequestId += 1;
     const requestId = transcriptRequestId;
     transcriptPage = 0;
     transcriptEditors.clear();
     transcriptCuesRoot?.replaceChildren();
+    clearQa(root);
     if (!episodeId) {
       transcript = null;
       alignmentState = null;
@@ -2510,6 +2641,7 @@ function startPodcastAdmin(root) {
       transcript = null;
       transcriptEditors.clear();
       transcriptCuesRoot?.replaceChildren();
+      clearQa(root);
       if (transcriptPages) transcriptPages.hidden = true;
       clips = [];
       selectedClipId = "";
@@ -3303,6 +3435,19 @@ function startPodcastAdmin(root) {
 
   function renderTranscript() {
     if (!transcript || !transcriptCuesRoot) return;
+    transcriptImport.setState({
+      available: true,
+      editable: canEditTranscripts
+    });
+    transcriptSearch.setState({
+      available: true,
+      contextKey: [
+        transcriptEpisodeSelect?.value,
+        transcriptLanguageSelect?.value,
+        transcriptRequestId
+      ].join(":")
+    });
+    transcriptDownloads.render(transcriptEpisodeSelect.value, transcript);
     const episode = episodes.find(
       ({ id }) => id === transcriptEpisodeSelect?.value
     );
@@ -3335,6 +3480,7 @@ function startPodcastAdmin(root) {
       ? transcript.cues
       : [newTranscriptCue()];
     transcript.cues = cues;
+    renderTranscriptReviewDiagnostics(root, cues, adminText, openTranscriptCue);
     const pageCount = Math.max(
       1,
       Math.ceil(cues.length / TRANSCRIPT_CUES_PER_PAGE)
@@ -3368,6 +3514,7 @@ function startPodcastAdmin(root) {
       const row = document.createElement("article");
       row.className = "podcast-admin__transcript-cue";
       row.dataset.transcriptCueId = cue.id;
+      row.dataset.transcriptCueNumber = String(index + 1);
       row.innerHTML = `
         <div class="podcast-admin__transcript-cue-heading">
           <h3>${escapeHtml(adminText(
@@ -3412,9 +3559,26 @@ function startPodcastAdmin(root) {
       end.value = millisecondsToSeconds(cue.endsAtMs);
       speaker.value = cue.speakerLabel || "";
       confirmed.checked = cue.speakerConfirmed === true;
+      start.setAttribute("aria-label", adminText("cueFieldLabel", {
+        field: adminText("startSeconds"),
+        number: formatInteger(index + 1)
+      }));
+      end.setAttribute("aria-label", adminText("cueFieldLabel", {
+        field: adminText("endSeconds"),
+        number: formatInteger(index + 1)
+      }));
+      speaker.setAttribute("aria-label", adminText("cueFieldLabel", {
+        field: adminText("publicSpeakerLabel"),
+        number: formatInteger(index + 1)
+      }));
+      confirmed.setAttribute("aria-label", adminText(
+        "cueSpeakerConfirmed",
+        { number: formatInteger(index + 1) }
+      ));
       confirmed.disabled = !canEditTranscripts || !speaker.value;
       speaker.addEventListener("input", () => {
         transcriptDirty = true;
+        syncReviewDraftButton(transcriptSaveButton, true, adminText);
         confirmed.disabled = !canEditTranscripts || !speaker.value.trim();
         if (!speaker.value.trim()) confirmed.checked = false;
         transcriptApproveButton.disabled = true;
@@ -3423,6 +3587,7 @@ function startPodcastAdmin(root) {
       for (const control of [start, end, confirmed]) {
         control.addEventListener("input", () => {
           transcriptDirty = true;
+          syncReviewDraftButton(transcriptSaveButton, true, adminText);
           transcriptApproveButton.disabled = true;
           updateClipAvailability();
         });
@@ -3432,6 +3597,10 @@ function startPodcastAdmin(root) {
       }
       const remove = row.querySelector("[data-podcast-transcript-remove]");
       remove.disabled = !canEditTranscripts || cues.length === 1;
+      remove.setAttribute("aria-label", adminText(
+        "removeCue",
+        { number: formatInteger(index + 1) }
+      ));
       const cueLabel = adminText(
         "cueCaption",
         { number: formatInteger(index + 1) }
@@ -3445,6 +3614,7 @@ function startPodcastAdmin(root) {
           labels: editorLabels(cueLabel),
           onChange() {
             transcriptDirty = true;
+            syncReviewDraftButton(transcriptSaveButton, true, adminText);
             transcriptApproveButton.disabled = true;
             updateClipAvailability();
           }
@@ -3456,12 +3626,19 @@ function startPodcastAdmin(root) {
           button.disabled = true;
         });
       }
+      row.querySelectorAll(".dw-editor__toolbar button").forEach((button) => {
+        button.setAttribute("aria-label", adminText("cueFormatAction", {
+          action: button.textContent.trim(),
+          number: formatInteger(index + 1)
+        }));
+      });
       transcriptEditors.set(cue.id, editor);
       return row;
     });
     transcriptCuesRoot.replaceChildren(...rows);
     transcriptAddButton.hidden = !canEditTranscripts;
     transcriptSaveButton.hidden = !canEditTranscripts;
+    syncReviewDraftButton(transcriptSaveButton, transcriptDirty, adminText);
     transcriptApproveButton.hidden = !canApproveTranscripts;
     transcriptApproveButton.disabled = !canApproveTranscripts
       || Number(transcript.revision || 0) < 1
@@ -3570,7 +3747,7 @@ function startPodcastAdmin(root) {
         true
       );
     } finally {
-      transcriptSaveButton.disabled = false;
+      syncReviewDraftButton(transcriptSaveButton, transcriptDirty, adminText);
       transcriptAddButton.disabled = false;
     }
   }
@@ -3639,6 +3816,25 @@ function startPodcastAdmin(root) {
         Math.min(pageCount - 1, transcriptPage + offset)
       );
       renderTranscript();
+    } catch (error) {
+      setStatus(transcriptStatus, transcriptInputError(error), true);
+    }
+  }
+
+  function openTranscriptCue(cueIndex) {
+    try {
+      navigateToTranscriptReviewCue({
+        cueIndex,
+        cues: transcript?.cues,
+        cuesPerPage: TRANSCRIPT_CUES_PER_PAGE,
+        syncVisibleCues: () =>
+          syncVisibleTranscriptCues({ requireText: false }),
+        showPage: (page) => {
+          transcriptPage = page;
+          renderTranscript();
+        },
+        cuesRoot: transcriptCuesRoot
+      });
     } catch (error) {
       setStatus(transcriptStatus, transcriptInputError(error), true);
     }
@@ -3721,6 +3917,11 @@ function startPodcastAdmin(root) {
 
   async function loadChapters() {
     const episodeId = chapterEpisodeSelect?.value;
+    const episode = episodes.find(({ id }) => id === episodeId);
+    chapterDraftAssistant.setEpisode(
+      episodeId,
+      episode?.sourceLanguage === "en" ? "en" : "es"
+    );
     const requestId = ++chapterRequestId;
     chapterRowsRoot?.replaceChildren();
     chapterDirty = false;
@@ -3845,6 +4046,7 @@ function startPodcastAdmin(root) {
     chapterRowsRoot.replaceChildren(...rows);
     chapterAddButton.hidden = !canEditChapters;
     chapterSaveButton.hidden = !canEditChapters;
+    syncReviewDraftButton(chapterSaveButton, chapterDirty, adminText);
     chapterApproveButton.hidden = !canApproveChapters;
     chapterApproveButton.disabled = !canApproveChapters
       || Number(chapterSet.revision || 0) < 1
@@ -3855,6 +4057,7 @@ function startPodcastAdmin(root) {
   function markChaptersDirty() {
     if (!chapterSet || !canEditChapters) return;
     chapterDirty = true;
+    syncReviewDraftButton(chapterSaveButton, true, adminText);
     if (chapterApproveButton) chapterApproveButton.disabled = true;
   }
 
@@ -4017,7 +4220,7 @@ function startPodcastAdmin(root) {
         true
       );
     } finally {
-      chapterSaveButton.disabled = false;
+      syncReviewDraftButton(chapterSaveButton, chapterDirty, adminText);
       chapterAddButton.disabled = false;
     }
   }
@@ -5733,11 +5936,14 @@ function startPodcastAdmin(root) {
           });
     const mediaUrl = adminApiUrl(render?.mediaPath);
     const downloadUrl = adminApiUrl(render?.downloadPath);
+    const captionsUrl = adminApiUrl(render?.captionsPath);
+    const subtitlesUrl = adminApiUrl(render?.subtitlesPath);
     const ready = render
       && render.clipRevision === clip.revision
       && render.status === "ready"
       && mediaUrl
-      && downloadUrl;
+      && downloadUrl
+      && captionsUrl;
     if (!ready) {
       return {
         renderLabel,
@@ -5768,6 +5974,10 @@ function startPodcastAdmin(root) {
             : adminText("prepareYoutubeTest"))}
         </button>`
       : "";
+    const downloadActions = clipDownloadActionMarkup(
+      [downloadUrl, captionsUrl, subtitlesUrl],
+      adminText
+    );
     return {
       renderLabel,
       details: `
@@ -5788,12 +5998,7 @@ function startPodcastAdmin(root) {
           data-media-path="${escapeAttribute(render.mediaPath)}">
           ${escapeHtml(adminText("previewRender"))}
         </button>
-        <a
-          class="btn btn-outline-light"
-          href="${escapeAttribute(downloadUrl)}"
-          download>
-          ${escapeHtml(adminText("downloadMp4"))}
-        </a>
+        ${downloadActions}
         ${publicAction}
         ${youtubeAction}`,
       container: `<div
@@ -6091,7 +6296,7 @@ function startPodcastAdmin(root) {
 
   function adminApiUrl(path) {
     if (
-      !/^\/v1\/admin\/clip-renders\/[A-Za-z0-9_-]+\/media(?:\?download=1)?$/
+      !/^\/v1\/admin\/clip-renders\/[A-Za-z0-9_-]+\/(?:media(?:\?download=1)?|captions\.(?:vtt|srt))$/
         .test(path || "")
     ) {
       return "";
@@ -6170,6 +6375,8 @@ function startPodcastAdmin(root) {
 
   function updateClipAvailability() {
     if (!clipForm) return;
+    clipDraftAssistant.setTranscript(
+      transcriptEpisodeSelect?.value, transcript, transcriptDirty);
     const selected = clips.find(({ id }) => id === selectedClipId);
     const transcriptApproved = transcript
       && transcript.status === "approved"
@@ -6206,63 +6413,37 @@ function startPodcastAdmin(root) {
           && selected.render?.status === "ready"
         );
     }
-    if (!transcriptApproved) {
-      if (clipPreview) {
-        clipPreview.textContent = transcriptDirty
-          ? adminText("approveTranscriptForClipDirty")
-          : adminText("approveTranscriptForClip");
-      }
-    }
   }
 
   function refreshClipRecipe() {
-    updateClipPreview();
     updateClipAvailability();
+    updateClipPreview();
   }
 
   function selectedClipCueRange() {
-    if (!clipForm) return null;
-    const cues = transcript?.cues || [];
-    const startIndex = cues.findIndex(
-      ({ id }) => id === clipForm.elements.startCueId.value
+    return resolveClipCueRange(
+      transcript?.cues, clipForm?.elements.startCueId.value,
+      clipForm?.elements.endCueId.value
     );
-    const endIndex = cues.findIndex(
-      ({ id }) => id === clipForm.elements.endCueId.value
-    );
-    if (startIndex < 0 || endIndex < startIndex) return null;
-    const startsAtMs = Number(cues[startIndex].startsAtMs);
-    const endsAtMs = Number(cues[endIndex].endsAtMs);
-    return {
-      startsAtMs,
-      endsAtMs,
-      durationMs: endsAtMs - startsAtMs
-    };
   }
 
   function updateClipPreview() {
     if (!clipForm || !clipPreview) return;
     const selection = selectedClipCueRange();
-    if (!selection) {
-      clipPreview.textContent = adminText("chooseClipEndCue");
-      return;
-    }
-    const { startsAtMs, endsAtMs, durationMs } = selection;
-    if (durationMs < 1_000 || durationMs > 180_000) {
-      clipPreview.textContent = adminText("clipRangeLimit");
-      return;
-    }
-    const dimensions = clipForm.elements.aspectRatio.value === "9:16"
-      ? "1080×1920"
-      : clipForm.elements.aspectRatio.value === "1:1"
-        ? "1080×1080"
-        : "1920×1080";
-    clipPreview.textContent = [
-      `${millisecondsToTimestamp(startsAtMs)}–${millisecondsToTimestamp(endsAtMs)}`,
-      formatClipDuration(durationMs),
-      dimensions,
-      adminText("highContrastCaptions"),
-      adminText("captionSafeArea")
-    ].join(" · ");
+    const startCue = transcript?.cues?.find(
+      ({ id }) => id === clipForm.elements.startCueId.value
+    );
+    renderClipRecipePreview({
+      target: clipPreview,
+      aspectRatio: clipForm.elements.aspectRatio.value,
+      transcript,
+      transcriptDirty,
+      selection,
+      startCue,
+      text: adminText,
+      formatTimestamp: millisecondsToTimestamp,
+      formatDuration: formatClipDuration
+    });
   }
 
   async function saveClipRecipe(event) {
@@ -6522,180 +6703,6 @@ function startPodcastAdmin(root) {
     }
   }
 
-  async function publishEpisode(episodeId, button) {
-    button.disabled = true;
-    setStatus(
-      episodeStatus,
-      adminText(
-        "refreshingPublicationEvidence"
-      )
-    );
-    try {
-      const readiness = await client.request(
-        `/v1/admin/episodes/${encodeURIComponent(episodeId)}/readiness`
-      );
-      if (episodeId === reviewEpisodeSelect?.value) {
-        publicationReadiness = readiness;
-        renderPublicationReadiness();
-      }
-      const mode = String(readiness.publicationGateMode || "legacy");
-      const candidate = readiness.candidateGate || {};
-      const body = mode === "legacy"
-        ? {}
-        : {
-            snapshotDigest: String(readiness.snapshotDigest || ""),
-            basePublicationRevision: Number(
-              readiness.publicationRevision || 0
-            )
-          };
-      if (mode === "enforce" && !candidate.ready) {
-        if (!candidate.overrideAvailable) {
-          throw new AdminApiError(
-            adminText(
-              "resolvePublicationBlockers"
-            ),
-            {
-              status: 409,
-              code: "publication_not_ready",
-              details: readiness
-            }
-          );
-        }
-        const blockerLabels = (readiness.nodes || [])
-          .filter((node) =>
-            node.severity === "blocker"
-            && !["ready", "not_applicable"].includes(node.status)
-          )
-          .map((node) => localizedReadinessNodeLabel(node));
-        const reason = globalThis.prompt(
-          [
-            adminText(
-              "publicationBlockersRemain",
-              {
-                count: blockerLabels.length,
-                blockers: blockerLabels.length === 1
-                  ? adminText("blockerSingular")
-                  : adminText("blockerPlural"),
-                remain: blockerLabels.length === 1
-                  ? adminText("remainsSingular")
-                  : adminText("remainPlural")
-              }
-            ),
-            blockerLabels.join("; "),
-            "",
-            adminText(
-              "enterOverrideReason"
-            )
-          ].join("\n")
-        );
-        if (reason === null) {
-          setStatus(
-            episodeStatus,
-            adminText(
-              "publicationOverrideCanceled"
-            )
-          );
-          return;
-        }
-        const normalizedReason = reason
-          .normalize("NFKC")
-          .replace(/\s+/g, " ")
-          .trim();
-        if (!normalizedReason || normalizedReason.length > 500) {
-          throw new AdminApiError(
-            adminText(
-              "overrideReasonInvalid"
-            ),
-            { status: 400, code: "publication_override_reason_invalid" }
-          );
-        }
-        const confirmed = globalThis.confirm(
-          adminText(
-            "overrideConfirm",
-            "Publish this exact snapshot with unresolved blockers? "
-              + "Your identity, reason hash, and evidence counts will be audited."
-          )
-        );
-        if (!confirmed) {
-          setStatus(
-            episodeStatus,
-            adminText(
-              "publicationOverrideCanceled"
-            )
-          );
-          return;
-        }
-        body.override = {
-          id: operationId("publication_override"),
-          reason: normalizedReason,
-          confirmation: "PUBLISH_WITH_BLOCKERS"
-        };
-      }
-      setStatus(
-        episodeStatus,
-        mode === "enforce"
-          ? adminText(
-              "publishingEnforcedSnapshot"
-            )
-          : mode === "shadow"
-            ? adminText(
-                "publishingShadowSnapshot"
-              )
-            : adminText(
-                "publishingLegacyChecks"
-              )
-      );
-      const result = await client.request(
-        `/v1/admin/episodes/${encodeURIComponent(episodeId)}/publish`,
-        { method: "POST", body }
-      );
-      const gate = result.publicationGate || {};
-      setStatus(
-        episodeStatus,
-        result.idempotent
-          ? adminText(
-              "alreadyPublishedRevision",
-              { revision: result.publicationRevision }
-            )
-          : [
-              adminText(
-                "revisionStatus",
-                {
-                  revision: result.publicationRevision,
-                  status: humanizeCode(result.status)
-                }
-              ),
-              adminText(
-                "directoryStatesCreated",
-                { count: result.distributionTargets }
-              ),
-              gate.overridden
-                ? adminText(
-                    "candidateBlockersOverridden"
-                  )
-                : gate.mode === "shadow"
-                  ? gate.snapshotMatched
-                    ? adminText(
-                        "shadowSnapshotMatched"
-                      )
-                    : adminText(
-                        "shadowSnapshotMismatch"
-                      )
-                  : ""
-            ].filter(Boolean).join(" ")
-      );
-      await loadEpisodes();
-      if (distributionFilter) {
-        distributionFilter.elements.episodeId.value = episodeId;
-      }
-      await loadDistribution(episodeId);
-    } catch (error) {
-      setStatus(episodeStatus, friendlyError(error), true);
-    } finally {
-      button.disabled = false;
-    }
-  }
-
   async function loadDistribution(episodeId) {
     if (!distributionRoot || !selectedShowId) return;
     const selectedEpisodeId = episodeId
@@ -6783,7 +6790,7 @@ function startPodcastAdmin(root) {
 
     const feed = document.createElement("div");
     feed.className = "podcast-admin__distribution-feed";
-    const feedText = document.createElement("div");
+    const feedText = document.createElement("label");
     const feedLabel = document.createElement("strong");
     feedLabel.textContent = adminText(
       "canonicalRssFeed"
@@ -7014,9 +7021,21 @@ function startPodcastAdmin(root) {
   }
 
   function distributionDestinationCard(destination, { episodeId }) {
-    const card = document.createElement("article");
+    const card = document.createElement("details");
+    card.className = "podcast-admin__directory-card";
     card.dataset.destinationId = String(destination.id || "");
+    card.open = Boolean(
+      destination.ownerSetupStatus !== "verified"
+      || destination.setupError
+      || destination.publicationError
+      || destination.publicationStatus === "failed"
+      || (
+        destination.certification
+        && !destination.certification.certified
+      )
+    );
 
+    const summary = document.createElement("summary");
     const heading = document.createElement("div");
     heading.className = "podcast-admin__directory-heading";
     const titleGroup = document.createElement("div");
@@ -7059,7 +7078,8 @@ function startPodcastAdmin(root) {
       );
     }
     heading.append(titleGroup, badges);
-    card.append(heading);
+    summary.append(heading);
+    card.append(summary);
 
     const details = document.createElement("p");
     details.className = "podcast-admin__directory-details";
@@ -7129,6 +7149,20 @@ function startPodcastAdmin(root) {
       destination.submissionEvidenceUrl,
       adminText("openSubmissionEvidence")
     );
+    const destinationName = String(
+      destination.name || adminText("directoryFallback")
+    );
+    for (const link of [
+      setupLink,
+      listingLink,
+      evidenceLink,
+      submissionEvidenceLink
+    ].filter(Boolean)) {
+      link.setAttribute("aria-label", adminText("directoryActionLabel", {
+        action: link.textContent,
+        directory: destinationName
+      }));
+    }
     if (setupLink) links.append(setupLink);
     if (submissionEvidenceLink) links.append(submissionEvidenceLink);
     if (listingLink) links.append(listingLink);
@@ -7148,6 +7182,9 @@ function startPodcastAdmin(root) {
     if (canManageSelectedShowDistribution()) {
       const form = document.createElement("form");
       form.className = "podcast-admin__distribution-form";
+      form.setAttribute("aria-label", adminText("directorySetupFormLabel", {
+        directory: destinationName
+      }));
       form.dataset.podcastDistributionForm = "";
       form.dataset.destinationId = String(destination.id || "");
       form.dataset.episodeId = episodeId;
@@ -7256,6 +7293,10 @@ function startPodcastAdmin(root) {
       save.className = "btn btn-outline-light";
       save.type = "submit";
       save.textContent = adminText("saveSetup");
+      save.setAttribute("aria-label", adminText("directoryActionLabel", {
+        action: adminText("saveSetup"),
+        directory: destinationName
+      }));
       const formStatus = document.createElement("p");
       formStatus.className = "podcast-admin__status";
       formStatus.dataset.podcastDistributionStatus = "";
@@ -8768,40 +8809,6 @@ function setStatus(element, message, error = false) {
   element.classList.toggle("is-error", error);
 }
 
-function emptyTranscript(language) {
-  return {
-    id: null,
-    language,
-    source: "editor",
-    status: "new",
-    revision: 0,
-    speakerLabelsConfirmed: true,
-    approvedRevision: null,
-    approvedAt: null,
-    cues: [newTranscriptCue()],
-    alignment: {
-      id: null,
-      status: "not_run",
-      adapter: null,
-      model: null,
-      completedAt: null,
-      alignedWordCount: 0,
-      wordControlsEnabled: false
-    }
-  };
-}
-
-function newTranscriptCue(startsAtMs = 0, endsAtMs = 5_000) {
-  return {
-    id: operationId("cue"),
-    startsAtMs,
-    endsAtMs,
-    speakerLabel: "",
-    speakerConfirmed: false,
-    textMarkdown: ""
-  };
-}
-
 function emptyChapterSet(episodeId) {
   return {
     episodeId,
@@ -8834,34 +8841,8 @@ function millisecondsToSeconds(value) {
   return (Number(value || 0) / 1_000).toFixed(3).replace(/\.?0+$/, "");
 }
 
-function millisecondsToTimestamp(value) {
-  const totalMilliseconds = Math.max(0, Math.round(Number(value || 0)));
-  const minutes = Math.floor(totalMilliseconds / 60_000);
-  const seconds = Math.floor((totalMilliseconds % 60_000) / 1_000);
-  const milliseconds = totalMilliseconds % 1_000;
-  return `${minutes}:${String(seconds).padStart(2, "0")}.${String(milliseconds).padStart(3, "0")}`;
-}
-
-function formatClipDuration(value) {
-  const seconds = Number(value || 0) / 1_000;
-  return adminText(
-    "secondsCount",
-    {
-      count: new Intl.NumberFormat(document.documentElement.lang || "en", {
-        maximumFractionDigits: seconds < 10 ? 1 : 0
-      }).format(seconds)
-    }
-  );
-}
-
-function clipCueSummary(value) {
-  const summary = String(value || "")
-    .replace(/<[^>]*>/g, " ")
-    .replace(/[*_~`[\]()>#+=-]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-  return summary.length > 72 ? `${summary.slice(0, 69)}…` : summary;
-}
+const formatClipDuration = (value) =>
+  clipDurationLabel(value, adminText, document.documentElement.lang);
 
 function secondsToMilliseconds(value, label) {
   const seconds = Number(value);
@@ -8986,16 +8967,6 @@ function integerOrNull(value) {
 
 function moneyToCents(value) {
   return value === "" ? null : Math.round(Number(value) * 100);
-}
-
-function slugify(value) {
-  return String(value || "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 120);
 }
 
 function formatDate(value) {

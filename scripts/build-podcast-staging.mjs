@@ -34,12 +34,13 @@ if (!/^[A-Za-z0-9_-]{1,128}$/.test(turnstileSiteKey)) {
 }
 
 const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
-const result = spawnSync(npmCommand, ["run", "build"], {
+const result = spawnSync(npmCommand, ["run", "build:ci"], {
   env: {
     ...process.env,
+    PODCAST_STAGING_BUILD: "true",
     DUST_WAVE_ASSET_VERSION: assetRevision,
     PODCAST_ADMIN_API_ORIGIN: STAGING_API_ORIGIN,
-    PODCAST_ADMIN_TURNSTILE_SITE_KEY: turnstileSiteKey,
+    PODCAST_ADMIN_TURNSTILE_SITE_KEY: "",
     PODCAST_CHECKOUT_TURNSTILE_SITE_KEY: turnstileSiteKey,
     PODCAST_MEMBER_API_ORIGIN: STAGING_API_ORIGIN,
     PODCAST_MEMBER_TURNSTILE_SITE_KEY: turnstileSiteKey,

@@ -122,9 +122,16 @@
   .podcast-clips__actions {
     align-items: stretch;
     flex-direction: column;
+    flex-wrap: nowrap;
   }
 
   .podcast-clips .podcast-clips__action {
+    width: 100%;
+  }
+
+  .podcast-clips__copy-input,
+  .podcast-clips__copy-status {
+    flex-basis: auto;
     width: 100%;
   }
 }

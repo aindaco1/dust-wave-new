@@ -26,6 +26,39 @@ const adminScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin.js'),
   'utf8'
 );
+const showSettingsScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-show-settings.js'),
+  'utf8'
+);
+const showProjectionScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-show-projection.js'),
+  'utf8'
+);
+const showPricesScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-show-prices.js'),
+  'utf8'
+);
+const transcriptDiagnosticsScript = await readFile(
+  path.join(
+    repositoryRoot,
+    'src/js/podcast-admin-transcript-review.js'
+  ),
+  'utf8'
+);
+const transcriptDiagnosticNavigationScript = await readFile(
+  path.join(
+    repositoryRoot,
+    'src/js/podcast-admin-transcript-diagnostic-navigation.js'
+  ),
+  'utf8'
+);
+const transcriptSpeakerRangeScript = await readFile(
+  path.join(
+    repositoryRoot,
+    'src/js/podcast-admin-transcript-speaker-range.js'
+  ),
+  'utf8'
+);
 const clipPublicationScript = await readFile(
   path.join(
     repositoryRoot,
@@ -74,6 +107,54 @@ const catalogScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-catalog.js'),
   'utf8'
 );
+const episodeEditorScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-episode-editor.js'),
+  'utf8'
+);
+const showNotesScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-show-notes.js'),
+  'utf8'
+);
+const chapterDraftScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-chapter-draft.js'),
+  'utf8'
+);
+const clipDraftScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-clip-draft.js'),
+  'utf8'
+);
+const clipPreviewScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-clip-preview.js'),
+  'utf8'
+);
+const downloadActionsScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-download-actions.js'),
+  'utf8'
+);
+const transcriptImportScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-transcript-import.js'),
+  'utf8'
+);
+const transcriptSearchScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-transcript-search.js'),
+  'utf8'
+);
+const unsavedChangesScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-unsaved-changes.js'),
+  'utf8'
+);
+const unsavedChangesCoreScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-unsaved-changes-core.js'),
+  'utf8'
+);
+const adminConstantsScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-constants.js'),
+  'utf8'
+);
+const publicationScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-publication.js'),
+  'utf8'
+);
 const analyticsScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-analytics.js'),
   'utf8'
@@ -120,6 +201,28 @@ const englishWorkbenchText = JSON.stringify(englishWorkbench);
 const englishRuntime = englishI18n.runtime.admin;
 const spanishRuntime = spanishI18n.runtime.admin;
 const englishRuntimeText = JSON.stringify(englishRuntime);
+const controlledYoutubeErrorCodes = [
+  'youtube_controlled_test_not_configured',
+  'youtube_not_configured',
+  'youtube_oauth_failed',
+  'youtube_channel_verification_failed',
+  'youtube_queue_failed'
+];
+for (const code of controlledYoutubeErrorCodes) {
+  const key = `error_${code}`;
+  assert.equal(
+    typeof englishRuntime[key],
+    'string',
+    `English admin translation is missing controlled YouTube error: ${code}`
+  );
+  assert.equal(
+    typeof spanishRuntime[key],
+    'string',
+    `Spanish admin translation is missing controlled YouTube error: ${code}`
+  );
+  assert.match(englishRuntime[key], /No upload/);
+  assert.match(spanishRuntime[key], /No se /);
+}
 const staticRuntimeKeys = [
   ...adminScript.matchAll(/adminText\(\s*"([^"]+)"/g),
   ...distributionCertificationScript.matchAll(/text\(\s*"([^"]+)"/g),
@@ -131,7 +234,11 @@ const staticRuntimeKeys = [
   ...rssImportReconciliationScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...rssImportCutoverScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...rssImportActivationApprovalScript.matchAll(/text\(\s*"([^"]+)"/g),
-  ...youtubeAudioRenditionScript.matchAll(/text\(\s*"([^"]+)"/g)
+  ...youtubeAudioRenditionScript.matchAll(/text\(\s*"([^"]+)"/g),
+  ...showPricesScript.matchAll(/text\(\s*"([^"]+)"/g),
+  ...transcriptDiagnosticsScript.matchAll(/text\(\s*"([^"]+)"/g),
+  ...transcriptDiagnosticNavigationScript.matchAll(/text\(\s*"([^"]+)"/g),
+  ...transcriptSearchScript.matchAll(/text\(\s*"([^"]+)"/g)
 ].map((match) => match[1]);
 for (const key of new Set(staticRuntimeKeys)) {
   assert.equal(
@@ -192,6 +299,10 @@ assert.match(adminLayout, /noindex,nofollow,noarchive/);
 assert.match(adminLayout, /snippets\/podcast-auth-footer\.njk/);
 assert.match(authFooter, /snippets\/language-switcher\.njk/);
 assert.match(adminLayout, /type="module" src="\/js\/podcast-admin\.js\?v=\{\{ assets\.version/);
+assert.match(
+  adminLayout,
+  /type="module" src="\/js\/podcast-admin-transcript-speaker-range\.js\?v=\{\{ assets\.version/
+);
 assert.match(adminLayout, /src="\/js\/audio-player\.js\?v=\{\{ assets\.version/);
 assert.doesNotMatch(
   adminLayout,
@@ -213,7 +324,301 @@ assert.match(podcastApiConfig, /https:\/\/feeds\.dustwave\.xyz/);
 assert.doesNotMatch(adminConfig, /workers\.dev/);
 assert.doesNotMatch(podcastApiConfig, /workers\.dev/);
 assert.match(adminTemplate, /data-podcast-auth/);
+assert.match(adminTemplate, /data-tab="settings"/);
+assert.match(adminTemplate, /id="podcast-panel-settings"/);
+assert.equal(
+  [...adminTemplate.matchAll(/data-podcast-show-form/g)].length,
+  1,
+  'Show settings must keep one DRY save form'
+);
+for (const field of [
+  "language",
+  "status",
+  "authorName",
+  "category",
+  "artworkUrl",
+  "canonicalUrl",
+  "feedUrl",
+  "explicit"
+]) {
+  assert.match(adminTemplate, new RegExp(`name="${field}"`));
+}
+assert.match(adminTemplate, /name="canonicalUrl"[^>]+readonly/);
+assert.match(adminTemplate, /name="feedUrl"[^>]+readonly/);
+assert.match(
+  adminTemplate,
+  /name="artworkUrl"[\s\S]{0,180}pattern="https:\/\/\.\*"/
+);
+assert.match(
+  adminTemplate,
+  /name="youtubeChannelUrl"[\s\S]{0,260}pattern="https:\/\/\(www\\\.\|m\\\.\)\?youtube\\\.com\//
+);
+assert.match(
+  showSettingsScript,
+  /language: form\.elements\.language\.value[\s\S]+explicit: form\.elements\.explicit\.checked/
+);
+assert.match(adminScript, /archiveShowConfirm/);
+assert.match(adminScript, /readShowSettingsPayload\(showForm\)/);
+assert.match(adminTemplate, /data-podcast-site-projection-preview/);
+assert.match(adminTemplate, /data-podcast-site-projection-summary/);
+assert.match(adminTemplate, /data-podcast-site-projection-confirmation-hint/);
+assert.match(adminTemplate, /data-podcast-site-projection-form/);
+assert.match(
+  showProjectionScript,
+  /\/v1\/admin\/shows\/\$\{encodeURIComponent\(showId\)\}\/site-projection/
+);
+assert.match(
+  showProjectionScript,
+  /expectedCatalogSha: preview\.catalogSha,[\s\S]+confirmation/
+);
+assert.match(
+  showProjectionScript,
+  /PUBLISH_SHOW_CATALOG \$\{show\.id\}/
+);
+assert.doesNotMatch(showProjectionScript, /innerHTML|insertAdjacentHTML/);
+assert.match(adminTemplate, /data-podcast-show-prices-summary/);
+assert.match(adminTemplate, /data-podcast-show-prices-blockers/);
+assert.match(adminTemplate, /data-podcast-show-prices-form/);
+assert.match(adminTemplate, /name="monthlyDollars"[^>]+step="0\.01"/);
+assert.match(adminTemplate, /name="annualDollars"[^>]+step="0\.01"/);
+assert.match(
+  showPricesScript,
+  /\/v1\/admin\/shows\/\$\{encodeURIComponent\(showId\)\}\/premium-prices/
+);
+assert.match(
+  showPricesScript,
+  /expectedMonthlyCents: configuration\.monthlyCents,[\s\S]+expectedAnnualCents: configuration\.annualCents/
+);
+assert.match(
+  showPricesScript,
+  /CONFIGURE_SHOW_PRICES/
+);
+assert.doesNotMatch(showPricesScript, /innerHTML|insertAdjacentHTML/);
+assert.match(adminScript, /showSiteProjection\.setShow\(show\)/);
+assert.match(
+  englishWorkbench.overview.siteProjectionIntro,
+  /preserving local artwork variants/
+);
+assert.match(
+  spanishWorkbench.overview.siteProjectionIntro,
+  /conserva las variantes locales/
+);
+assert.equal(englishRuntime.siteProjectionTargetLabel, 'Target');
+assert.equal(spanishRuntime.siteProjectionTargetLabel, 'Destino');
+assert.equal(englishI18n.podcast.admin.tabs.settings, 'Settings');
+assert.equal(spanishI18n.podcast.admin.tabs.settings, 'Configuración');
+assert.match(
+  adminScript,
+  /const showSelects = Array\.from\([\s\S]+for \(const showSelect of showSelects\)/
+);
 assert.match(adminTemplate, /data-podcast-episode-form/);
+assert.match(adminTemplate, /data-podcast-episode-form-heading/);
+assert.match(adminTemplate, /data-podcast-episode-edit-cancel/);
+assert.match(adminTemplate, /data-podcast-episode-slug-help/);
+assert.match(adminTemplate, /data-podcast-show-notes/);
+assert.match(adminTemplate, /data-podcast-show-notes-review/);
+assert.match(
+  showNotesScript,
+  /reviewRequired !== true[\s\S]+value\.saved !== false/,
+  'AI show-notes responses must prove review-only, unsaved semantics'
+);
+assert.match(
+  showNotesScript,
+  /notesEditor\.setValue\(result\.draft\.showNotesMarkdown\)/,
+  'AI show notes may enter only the existing sanitized editor'
+);
+assert.doesNotMatch(
+  showNotesScript,
+  /innerHTML|insertAdjacentHTML/,
+  'AI show-notes evidence and drafts must render without HTML sinks'
+);
+assert.match(adminTemplate, /data-podcast-chapter-draft/);
+assert.match(adminTemplate, /data-podcast-chapter-draft-review/);
+assert.match(
+  chapterDraftScript,
+  /includedCueCount !== totalCueCount[\s\S]+source\.truncated !== false/,
+  'AI chapter proposals must prove complete transcript coverage'
+);
+assert.match(
+  chapterDraftScript,
+  /applyChapters\(result\.draft\.chapters\.map/,
+  'AI chapter proposals may enter only the unsaved chapter editor'
+);
+assert.doesNotMatch(
+  chapterDraftScript,
+  /innerHTML|insertAdjacentHTML/,
+  'AI chapter evidence and proposals must render without HTML sinks'
+);
+assert.match(adminTemplate, /data-podcast-clip-draft/);
+assert.match(adminTemplate, /data-podcast-clip-draft-review/);
+assert.match(
+  clipDraftScript,
+  /includedCueCount !== totalCueCount[\s\S]+source\.truncated !== false/,
+  'AI clip candidates must prove complete transcript coverage'
+);
+assert.match(
+  clipDraftScript,
+  /form\.reset\(\)[\s\S]+fillCueSelects\(candidate\)[\s\S]+refreshRecipe\(\)/,
+  'AI clip candidates may enter only a new unsaved clip recipe'
+);
+assert.doesNotMatch(
+  clipDraftScript,
+  /innerHTML|insertAdjacentHTML/,
+  'AI clip evidence and candidates must render without HTML sinks'
+);
+assert.match(adminTemplate, /data-podcast-clip-preview[\s\S]+aria-atomic="true"/);
+assert.match(
+  clipPreviewScript,
+  /renderClipLayoutPreview\([\s\S]+caption:[\s\S]+clipCueSummary/,
+  'clip recipe preview must derive its caption from the selected approved cue'
+);
+assert.match(
+  clipPreviewScript,
+  /dataset\.aspectRatio = normalizedAspect/,
+  'clip recipe preview must expose its normalized responsive aspect ratio'
+);
+assert.doesNotMatch(
+  clipPreviewScript,
+  /innerHTML|insertAdjacentHTML/,
+  'clip recipe preview must render transcript content without HTML sinks'
+);
+assert.match(
+  adminScript,
+  /captionsUrl = adminApiUrl\(render\?\.captionsPath\)[\s\S]+subtitlesUrl = adminApiUrl\(render\?\.subtitlesPath\)[\s\S]+clipDownloadActionMarkup/,
+  'ready Production and Marketing clips must reuse authenticated caption paths'
+);
+assert.match(
+  downloadActionsScript,
+  /downloadMp4[\s\S]+downloadVtt[\s\S]+downloadSrt/,
+  'MP4, VTT, and SRT must share one download-action renderer'
+);
+assert.match(
+  adminMockApi,
+  /captionsPath:[\s\S]+clip_render_browser_fixture\/captions\.vtt[\s\S]+subtitlesPath:[\s\S]+clip_render_browser_fixture\/captions\.srt/,
+  'browser QA must expose deterministic private VTT and SRT sidecars'
+);
+assert.match(
+  adminTemplate,
+  /data-podcast-transcript-downloads/,
+  'saved transcript exports must stay in the existing Production workbench'
+);
+assert.match(
+  downloadActionsScript,
+  /transcripts\/\$\{language\}\/captions\.\$\{format\}/,
+  'saved transcript downloads must build exact first-party caption paths'
+);
+assert.match(
+  downloadActionsScript,
+  /createElement\("a"\)[\s\S]+replaceChildren\(\.\.\.links\)/,
+  'saved transcript download actions must use DOM APIs'
+);
+assert.doesNotMatch(
+  downloadActionsScript,
+  /innerHTML|insertAdjacentHTML/,
+  'saved transcript labels and URLs must not use DOM HTML sinks'
+);
+assert.match(
+  adminMockApi,
+  /transcriptCaptionMatch[\s\S]+application\/x-subrip/,
+  'browser QA must expose deterministic saved transcript VTT/SRT responses'
+);
+for (const selector of [
+  "data-podcast-transcript-import",
+  "data-podcast-transcript-import-form",
+  "data-podcast-transcript-import-file",
+  "data-podcast-transcript-import-submit",
+  "data-podcast-transcript-import-status"
+]) {
+  assert.match(
+    adminTemplate,
+    new RegExp(selector),
+    `caption import must expose ${selector}`
+  );
+}
+assert.match(
+  adminTemplate,
+  /accept="\.vtt,\.srt,text\/vtt,application\/x-subrip,application\/srt,text\/srt"/,
+  'caption import must be explicitly bounded to WebVTT and SubRip'
+);
+assert.match(
+  transcriptImportScript,
+  /MAXIMUM_FILE_BYTES = 1_000_000[\s\S]+MAXIMUM_CUES = 10_000[\s\S]+MAXIMUM_CUE_DURATION_MS = 120_000/,
+  'caption import must mirror the bounded transcript review limits'
+);
+assert.match(
+  transcriptImportScript,
+  /speakerConfirmed: false[\s\S]+hasExistingContent\(\)[\s\S]+confirmReplace/,
+  'caption import must keep voice labels unconfirmed and protect existing work'
+);
+assert.doesNotMatch(
+  transcriptImportScript,
+  /\bfetch\s*\(|AdminApiClient|innerHTML|insertAdjacentHTML/,
+  'caption import must remain browser-local and avoid HTML sinks'
+);
+assert.match(
+  adminScript,
+  /mountTranscriptCaptionImport\([\s\S]+transcript\.cues = cues[\s\S]+transcriptDirty = true[\s\S]+renderTranscript\(\)/,
+  'caption import must reuse the existing unsaved transcript editor and save path'
+);
+for (const selector of [
+  "data-podcast-transcript-search",
+  "data-podcast-transcript-search-form",
+  "data-podcast-transcript-search-input",
+  "data-podcast-transcript-search-previous",
+  "data-podcast-transcript-search-next",
+  "data-podcast-transcript-search-status"
+]) {
+  assert.match(
+    adminTemplate,
+    new RegExp(selector),
+    `transcript search must expose ${selector}`
+  );
+}
+assert.match(
+  adminTemplate,
+  /data-podcast-transcript-search-form[\s\S]+role="search"[\s\S]+type="search"[\s\S]+maxlength="160"[\s\S]+aria-controls="podcast-transcript-cues"[\s\S]+aria-describedby="podcast-transcript-search-status"[\s\S]+role="status"[\s\S]+aria-live="polite"[\s\S]+id="podcast-transcript-cues"/,
+  'transcript search must expose bounded semantic search and live results'
+);
+assert.match(
+  transcriptSearchScript,
+  /maximumQueryCharacters:\s*160[\s\S]+maximumCues:\s*10_000/,
+  'transcript search must stay within the loaded review bounds'
+);
+assert.match(
+  transcriptSearchScript,
+  /transcriptCuePlainText[\s\S]+normalizedSearchText[\s\S]+normalize\("NFKD"\)/,
+  'transcript search must reuse normalized visible cue text'
+);
+assert.match(
+  transcriptSearchScript,
+  /onOpenCue\(currentCueIndex\)/,
+  'transcript search must reuse the existing cue navigator'
+);
+assert.doesNotMatch(
+  transcriptSearchScript,
+  /\bfetch\s*\(|AdminApiClient|innerHTML|insertAdjacentHTML|localStorage|sessionStorage/,
+  'transcript search must remain browser-local and avoid persistence or HTML sinks'
+);
+assert.match(
+  adminScript,
+  /mountTranscriptSearch\([\s\S]+syncVisibleTranscriptCues\(\{ requireText: false \}\)[\s\S]+onOpenCue: openTranscriptCue/,
+  'transcript search must reuse the current unsaved cue state and pagination'
+);
+assert.match(
+  adminScript,
+  /mountPodcastReviewDraftGuard\([\s\S]+hasTranscriptChanges:\s*\(\) => transcriptDirty[\s\S]+hasChapterChanges:\s*\(\) => chapterDirty/,
+  'review drafts must expose consumer-owned dirty state to the shared guard'
+);
+assert.match(
+  unsavedChangesCoreScript,
+  /mountUnsavedChangesGuard[\s\S]+stopImmediatePropagation[\s\S]+discardTranscriptChanges[\s\S]+discardChapterChanges/,
+  'review draft transitions must cancel before consumer loaders and reuse the shared lifecycle guard'
+);
+assert.doesNotMatch(
+  unsavedChangesCoreScript,
+  /\bfetch\s*\(|innerHTML|insertAdjacentHTML|localStorage|sessionStorage/,
+  'the review draft guard must remain browser-local without persistence or HTML sinks'
+);
 assert.match(adminTemplate, /data-podcast-upload-form/);
 assert.match(adminTemplate, /data-podcast-rss-import-form/);
 assert.match(adminTemplate, /data-podcast-rss-import-preview/);
@@ -473,8 +878,56 @@ assert.match(
   catalogScript,
   /localizedCode\("language", episode\.sourceLanguage \|\| "not_set"\)/
 );
+assert.match(catalogScript, /data-edit-episode=/);
 assert.match(adminScript, /renderShowCatalog\(\{/);
 assert.match(adminScript, /renderEpisodeCatalog\(\{/);
+assert.match(adminScript, /mountEpisodeEditor\(\{/);
+assert.match(adminScript, /canEdit: canManageCreatives/);
+assert.match(
+  episodeEditorScript,
+  /findEditableEpisode\(episodes, episodeId\)/
+);
+assert.match(
+  episodeEditorScript,
+  /method: updating \? "PATCH" : "POST"/
+);
+assert.match(
+  episodeEditorScript,
+  /includeSlug: !updating/,
+  'Episode updates must never mutate the canonical URL slug'
+);
+assert.match(
+  episodeEditorScript,
+  /notesEditor\.setHtml\(episode\.contentHtml \|\| ""\)/,
+  'Stored episode notes must re-enter the shared sanitized editor boundary'
+);
+assert.doesNotMatch(
+  episodeEditorScript,
+  /innerHTML|localStorage|sessionStorage/,
+  'Episode editing must not bypass the shared sanitizer or persist drafts locally'
+);
+assert.match(
+  adminMockApi,
+  /method === "PATCH"[\s\S]+\/v1\/admin\/episodes\/\$\{episode\.id\}/
+);
+for (const runtime of [englishRuntime, spanishRuntime]) {
+  for (const key of [
+    'newEpisode',
+    'createDraft',
+    'editEpisode',
+    'updateDraft',
+    'updatingDraft',
+    'draftUpdated',
+    'editingEpisode',
+    'episodeEditCanceled'
+  ]) {
+    assert.equal(
+      typeof runtime[key],
+      'string',
+      `Podcast episode editor translation is missing: ${key}`
+    );
+  }
+}
 assert.equal(spanishRuntime.showStatus_active, "Activo");
 assert.equal(spanishRuntime.episodeStatus_draft, "Borrador");
 assert.equal(spanishRuntime.episodeAccess_early_access, "Acceso anticipado");
@@ -554,6 +1007,62 @@ assert.match(englishWorkbenchText, /Source-language transcription/);
 assert.match(adminTemplate, /name="sourceLanguage"/);
 assert.match(adminTemplate, /data-podcast-transcript-cues/);
 assert.match(adminTemplate, /data-podcast-transcript-pages/);
+assert.match(adminTemplate, /data-podcast-transcript-diagnostics/);
+assert.match(adminTemplate, /data-podcast-transcript-diagnostics-list/);
+assert.match(adminTemplate, /data-podcast-transcript-speaker-range/);
+assert.match(adminTemplate, /data-podcast-transcript-speaker-range-start/);
+assert.match(adminTemplate, /data-podcast-transcript-speaker-range-end/);
+assert.match(adminTemplate, /data-podcast-transcript-speaker-range-label/);
+assert.match(
+  englishWorkbenchText,
+  /Caption text and timing stay unchanged/
+);
+assert.match(
+  adminScript,
+  /renderTranscriptReviewDiagnostics\(root, cues, adminText, openTranscriptCue\)/
+);
+assert.match(
+  adminScript,
+  /dataset\.transcriptCueNumber = String\(index \+ 1\)/
+);
+assert.match(
+  transcriptSpeakerRangeScript,
+  /applyTranscriptSpeakerRange\([\s\S]+new Event\("input", \{ bubbles: true \}\)/
+);
+assert.match(
+  transcriptDiagnosticsScript,
+  /minimumCueDurationMs:\s*500[\s\S]+maximumCueDurationMs:\s*10_000/
+);
+assert.match(
+  transcriptDiagnosticsScript,
+  /changedCueCount[\s\S]+speakerLabel[\s\S]+speakerConfirmed/
+);
+assert.match(
+  transcriptDiagnosticsScript,
+  /maximumCharactersPerSecond:\s*25/
+);
+assert.match(
+  transcriptDiagnosticNavigationScript,
+  /role", "group"[\s\S]+aria-labelledby/
+);
+assert.match(
+  transcriptDiagnosticNavigationScript,
+  /stepTranscriptDiagnosticPosition[\s\S]+onOpenCue\(update\(\)\)/
+);
+assert.match(
+  adminStyles,
+  /podcast-admin__transcript-diagnostic-button[\s\S]+min-height:\s*2\.75rem/
+);
+assert.match(
+  adminMockApi,
+  /PODCAST_ADMIN_MOCK_TRANSCRIPT_CUES[\s\S]+maximum:\s*10_000[\s\S]+transcriptFixture/,
+  "browser QA must provide a bounded opt-in large-transcript fixture"
+);
+assert.match(
+  adminMockApi,
+  /PODCAST_ADMIN_MOCK_PUBLIC_CLIPS[\s\S]+ready[\s\S]+empty[\s\S]+missing/,
+  "browser QA must provide controlled public clip visibility states"
+);
 assert.match(englishWorkbenchText, /Word timing gated/);
 assert.match(adminTemplate, /data-podcast-alignment/);
 assert.match(adminTemplate, /data-podcast-alignment-adapter/);
@@ -724,6 +1233,16 @@ assert.match(
   /<div class="podcast-admin__field">[\s\S]+workbench\.episodes\.notes[\s\S]+data-podcast-notes-editor/,
   'Standalone rich-text labels and editors must share one field wrapper'
 );
+assert.match(
+  adminStyles,
+  /\.podcast-admin__form-actions \{[\s\S]+gap: var\(--dw-admin-space-sm\);/,
+  'Episode create/edit actions must keep the shared Pool/Store spacing rhythm'
+);
+assert.match(
+  adminStyles,
+  /@media \(max-width: 760px\)[\s\S]+\.podcast-admin__form-actions \.btn/,
+  'Episode create/edit actions must expand to touch-friendly mobile controls'
+);
 assert.match(adminScript, /\/v1\/admin\/distribution\?showId=/);
 assert.match(adminScript, /function renderDistribution/);
 assert.match(
@@ -884,11 +1403,11 @@ assert.match(adminScript, /`readinessSummary_\$\{status\}`/);
 assert.match(adminScript, /localizedCode\("readinessStatus", status\)/);
 assert.match(adminScript, /localizedCode\("readinessSeverity", severity\)/);
 assert.match(adminScript, /publicationGateMode/);
-assert.match(adminScript, /PUBLISH_WITH_BLOCKERS/);
-assert.match(adminScript, /publication_override/);
-assert.match(adminScript, /basePublicationRevision/);
-assert.match(adminScript, /mode === "enforce"/);
-assert.match(adminScript, /mode === "shadow"/);
+assert.match(publicationScript, /PUBLISH_WITH_BLOCKERS/);
+assert.match(publicationScript, /publication_override/);
+assert.match(publicationScript, /basePublicationRevision/);
+assert.match(publicationScript, /mode === "enforce"/);
+assert.match(publicationScript, /mode === "shadow"/);
 assert.match(
   adminStyles,
   /\.podcast-admin \.btn[\s\S]*min-height: var\(--dw-admin-control-min-height\)/
@@ -904,7 +1423,7 @@ assert.match(
 assert.match(adminScript, /expectedWorkingMasterId/);
 assert.match(adminScript, /directProcessingEligible/);
 assert.match(adminScript, /chunk_processor_required/);
-assert.match(adminScript, /process-transcription-chunks\.yml/);
+assert.match(adminConstantsScript, /process-transcription-chunks\.yml/);
 assert.match(englishRuntimeText, /word timing not created/);
 assert.match(adminScript, /baseRevision: Number\(transcript\.revision/);
 assert.match(adminScript, /expectedRevision: Number\(transcript\.revision\)/);
@@ -915,7 +1434,7 @@ assert.match(adminScript, /function queueAlignment/);
 assert.match(adminScript, /function approveAlignment/);
 assert.match(adminScript, /function loadAlignmentBenchmarks/);
 assert.match(adminScript, /function importAlignmentBenchmark/);
-assert.match(adminScript, /process-alignment\.yml/);
+assert.match(adminConstantsScript, /process-alignment\.yml/);
 assert.match(adminScript, /\/v1\/admin\/alignment-benchmarks/);
 assert.match(adminScript, /MAXIMUM_ALIGNMENT_BENCHMARK_BYTES/);
 assert.match(
@@ -926,7 +1445,7 @@ assert.match(adminScript, /expectedTranscriptRevision/);
 assert.match(adminScript, /structurallyEligible/);
 assert.match(adminScript, /benchmark\?\.passedRunId/);
 assert.match(adminStyles, /\.podcast-admin__benchmark-list/);
-assert.match(adminScript, /TRANSCRIPT_CUES_PER_PAGE = 100/);
+assert.match(adminConstantsScript, /TRANSCRIPT_CUES_PER_PAGE = 10/);
 assert.match(adminScript, /syncVisibleTranscriptCues/);
 assert.match(
   adminScript,
@@ -1051,7 +1570,11 @@ assert.doesNotMatch(
 assert.match(gulpfile, /copySharedAdminShell/);
 assert.equal(sharedPackage.name, '@dustwave/admin-shell');
 assert.match(sharedPackage.version, /^\d+\.\d+\.\d+$/);
-const sharedConsumerImports = [adminScript, analyticsScript].flatMap(
+const sharedConsumerImports = [
+  adminScript,
+  analyticsScript,
+  unsavedChangesScript
+].flatMap(
   (source) => [...source.matchAll(
     /from "\.\/dust-wave-admin-shell\/([^"]+)"/g
   )].map((match) => match[1])
@@ -1088,6 +1611,12 @@ await access(path.join(
   'vendor',
   'qrcode-generator.js'
 ));
+await access(path.join(sharedRoot, 'src', 'unsaved-changes.js'));
+await access(path.join(sharedRoot, 'src', 'unsaved-changes-browser.js'));
+assert.match(
+  unsavedChangesScript,
+  /dust-wave-admin-shell\/unsaved-changes\.js/
+);
 for (const source of sharedSources.filter((source) => source !== 'editor-codec.js')) {
   assert.match(
     adminScript,

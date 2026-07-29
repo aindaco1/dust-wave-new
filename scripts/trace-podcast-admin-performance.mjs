@@ -17,6 +17,18 @@ const DEFAULT_URL =
   "https://dust-wave-website-staging.pages.dev/admin/podcasts/";
 const DEFAULT_DURATION_SECONDS = 8;
 const DEFAULT_VIEWPORT = "1440x900";
+const ADMIN_TABS = new Set([
+  "overview",
+  "episodes",
+  "production",
+  "distribution",
+  "marketing",
+  "sponsors",
+  "analytics",
+  "subscribers",
+  "billing",
+  "settings"
+]);
 const SUPPORTED_EXECUTABLE_NAMES = new Set([
   "chrome",
   "chrome.exe",
@@ -67,6 +79,7 @@ Options:
   --duration <seconds>    Recording time, 3-60 (default: ${DEFAULT_DURATION_SECONDS})
   --viewport <WIDTHxHEIGHT>
                           Browser viewport (default: ${DEFAULT_VIEWPORT})
+  --admin-tab <name>      Open a specific admin tab before recording
   --chrome <path>         Chrome/Chromium executable
   --help                  Show this help
 
@@ -125,6 +138,16 @@ function validateViewport(value) {
     throw new Error("Viewport must be between 320x568 and 3840x2160.");
   }
   return { width, height };
+}
+
+function validateAdminTab(value) {
+  const tab = String(value || "").trim();
+  if (tab && !ADMIN_TABS.has(tab)) {
+    throw new Error(
+      `Admin tab must be one of: ${[...ADMIN_TABS].join(", ")}.`
+    );
+  }
+  return tab;
 }
 
 function assertSupportedExecutable(candidate) {
@@ -416,6 +439,7 @@ class CdpSession {
 }
 
 async function captureTrace({
+  adminTab,
   cdp,
   durationSeconds,
   outputPath,
@@ -428,6 +452,14 @@ async function captureTrace({
   await cdp.send("Page.addScriptToEvaluateOnNewDocument", {
     source: CSP_VIOLATION_PROBE
   });
+  if (adminTab) {
+    await cdp.send("Page.addScriptToEvaluateOnNewDocument", {
+      source:
+        `sessionStorage.setItem("dustwave-podcast-admin-tab", ${
+          JSON.stringify(adminTab)
+        });`
+    });
+  }
   await cdp.send("Emulation.setDeviceMetricsOverride", {
     width: viewport.width,
     height: viewport.height,
@@ -458,7 +490,10 @@ async function captureTrace({
       "({ innerWidth, innerHeight, "
       + "scrollWidth: document.documentElement.scrollWidth, "
       + "securityPolicyViolations: "
-      + "globalThis.__dustWaveCspViolations ?? null })",
+      + "globalThis.__dustWaveCspViolations ?? null, "
+      + "activeTab: document.querySelector("
+      + "'[role=\"tab\"][aria-selected=\"true\"]'"
+      + ")?.dataset.tab ?? null })",
     returnByValue: true
   });
   const observed = measured.result?.value;
@@ -488,6 +523,12 @@ async function captureTrace({
       + `${observed?.innerWidth ?? "unknown"}x`
       + `${observed?.innerHeight ?? "unknown"} with `
       + `${observed?.scrollWidth ?? "unknown"}px document width.`
+    );
+  }
+  if (adminTab && observed?.activeTab !== adminTab) {
+    throw new Error(
+      `Chrome did not activate the requested admin tab "${adminTab}". `
+      + `Observed: "${observed?.activeTab ?? "none"}".`
     );
   }
   const tracingComplete = cdp.waitForEvent(
@@ -593,6 +634,7 @@ async function main() {
   const viewport = validateViewport(
     argumentsMap.get("viewport") || DEFAULT_VIEWPORT
   );
+  const adminTab = validateAdminTab(argumentsMap.get("admin-tab"));
   const chromePath = await findChrome(argumentsMap.get("chrome"));
   const timestamp = new Date().toISOString().replaceAll(":", "-");
   const outputPath = resolve(
@@ -653,6 +695,7 @@ async function main() {
       () => launchError
     );
     const observed = await captureTrace({
+      adminTab,
       cdp,
       durationSeconds,
       outputPath,
@@ -670,6 +713,7 @@ async function main() {
         `Viewport: ${viewport.width}x${viewport.height}`,
         `Verified CSS viewport: ${observed.innerWidth}x${observed.innerHeight}`,
         `Document width: ${observed.scrollWidth}px`,
+        `Active admin tab: ${observed.activeTab || "not detected"}`,
         `Duration: ${durationSeconds}s`,
         `Trace: ${outputPath}`,
         `Size: ${traceDetails.size.toLocaleString("en-US")} bytes`,

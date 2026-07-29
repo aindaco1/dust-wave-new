@@ -55,6 +55,11 @@ assert.doesNotMatch(
 assert.match(clipStyles, /aspect-ratio: var\(--podcast-clip-aspect/);
 assert.match(clipStyles, /min-height: 44px/);
 assert.match(clipStyles, /@media \(max-width: 540px\)/);
+assert.match(
+  clipStyles,
+  /\.podcast-clips__copy-input,[\s\S]+\.podcast-clips__copy-status[\s\S]+flex-basis: auto/
+);
+assert.match(clipStyles, /flex-direction: column;[\s\S]+flex-wrap: nowrap/);
 assert.match(clipStyles, /focus-visible/);
 assert.match(themeStyles, /@import "themes\/base\/podcast-clips"/);
 assert.match(template, /data-podcast-clips/);

@@ -93,8 +93,10 @@ the future production Worker routes and may not have DNS records during
 staging. It also resolves the exact current Git commit and uses that SHA for
 every browser asset cache key; CI uses `GITHUB_SHA`, and an explicit
 `DUST_WAVE_ASSET_VERSION` must likewise be a full Git SHA-1 or SHA-256. The
-command contains no secret; the Turnstile site key is public, but it is
-supplied explicitly so a production widget is never selected by accident.
+command contains no secret. The Turnstile site key is public and remains
+explicitly applied to member and Checkout surfaces, while the owner-approved
+isolated staging build deliberately leaves the Admin widget absent. Production
+builds continue to use `PODCAST_ADMIN_TURNSTILE_SITE_KEY`.
 
 Canonical podcast News pages progressively fetch the episode's approved
 English/Spanish transcript URL from the immutable publication snapshot. The
@@ -126,6 +128,16 @@ Worker's exact current audio, transcript, chapter, clip, and ad-plan revisions.
 It renders review text only through DOM text nodes, distinguishes current from
 historical targets, exposes resolve/reopen and role-gated approval state, and
 labels readiness as non-enforcing until the later publication dependency gate.
+Producer+ transcript review can read a WebVTT or SubRip file locally into that
+same unsaved editor. The bounded parser performs no upload or API call, caps
+the normalized review at 1 MB and 10,000 ordered non-overlapping cues, keeps
+VTT voice labels unconfirmed, preserves ambiguous SRT prefixes as caption
+text, and requires confirmation before replacing existing work. The existing
+versioned Save action remains the only persistence path. A companion local
+search navigator scans at most those same 10,000 loaded cues, folds
+English/Spanish case and accents, excludes hidden Markdown link destinations,
+and opens ordered caption or speaker matches through the existing paginated
+cue focus path. It stores nothing and makes no request.
 
 ## Roadmap
 
@@ -291,9 +303,43 @@ npm run perf:podcast-admin:trace -- \
   --url https://dust-wave-website-staging.pages.dev/es/admin/podcasts/
 ```
 
+Use `--admin-tab production` with the repository mock API to capture the
+transcript workbench directly. For a bounded large-transcript regression,
+build once and run the next two server commands in separate terminals:
+
+```bash
+PODCAST_ADMIN_API_ORIGIN=http://127.0.0.1:4174 \
+  PODCAST_PUBLIC_API_ORIGIN=http://127.0.0.1:4174 \
+  PODCAST_MEMBER_API_ORIGIN=http://127.0.0.1:4174 \
+  npm run build-dev
+python3 -m http.server 4173 --bind 127.0.0.1 --directory dev
+PODCAST_ADMIN_MOCK_TRANSCRIPT_CUES=1300 npm run qa:podcast-admin:mock-api
+npm run perf:podcast-admin:trace -- \
+  --url http://127.0.0.1:4173/admin/podcasts/ \
+  --admin-tab production
+```
+
+Use `--admin-tab settings` to measure the bilingual show form and the
+dry-run-first public-page projection controls at 320 px or desktop width.
+
 Load the resulting JSON from Chrome DevTools **Performance → Load profile**.
 Trace files contain visited URLs and page metadata, so review them before
 sharing. Run `npm run perf:podcast-admin:trace -- --help` for all options.
+
+The mock API also exposes a deterministic public clip response for the
+canonical News-page consumer. `ready` is the default; use `empty` or `missing`
+to exercise withdrawal/concealment without publishing an episode or media:
+
+```bash
+PODCAST_ADMIN_MOCK_PUBLIC_CLIPS=empty npm run qa:podcast-admin:mock-api
+node --test tests/podcast-clips-dom.test.mjs
+```
+
+The fixture endpoint is
+`/v1/shows/opera-en-la-selva/episodes/episodio-de-prueba/clips`. Keep it local;
+the browser contract validates Spanish/English labels, canonical sharing,
+safe text-only rendering, MP4 download URLs, and complete concealment when no
+approved selection remains.
 
 ### WebP Images
 

@@ -691,6 +691,16 @@ li p { margin-bottom: 0; }
   margin-top: 2rem;
 }
 
+.podcast-show__actions .btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.podcast-show__actions .btn-light {
+  color: #151515 !important;
+}
+
 .podcast-show__membership,
 .podcast-show__episodes {
   padding: clamp(3rem, 7vw, 6rem) 0;
@@ -708,13 +718,17 @@ li p { margin-bottom: 0; }
   background: #fffdf7;
 }
 
+.podcast-tier-card__label {
+  color: #8c170f;
+}
+
 .podcast-tier-card--premium {
   border-color: rgba(205, 31, 17, .5);
   box-shadow: 0 1rem 3rem rgba(107, 20, 11, .12);
 }
 
 .podcast-tier-card--premium a {
-  color: #8c170f;
+  color: #8c170f !important;
   font-weight: 700;
 }
 

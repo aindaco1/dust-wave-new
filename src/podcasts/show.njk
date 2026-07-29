@@ -395,11 +395,19 @@ eleventyComputed:
   "url": {{ (metadata.url + showPage.path) | safeJsonLd | safe }},
   "image": {{ (metadata.url + show.artwork) | safeJsonLd | safe }},
   "inLanguage": {{ show.language | safeJsonLd | safe }},
+  "author": {
+    "@type": "Person",
+    "name": {{ show.authorName | safeJsonLd | safe }}
+  },
+  "genre": {{ show.category | safeJsonLd | safe }},
+  "isFamilyFriendly": {{ "false" if show.explicit else "true" }},
   "publisher": {
     "@type": "Organization",
     "name": "Dust Wave",
     "url": {{ metadata.url | safeJsonLd | safe }}
-  }
+  }{% if show.youtubeChannel %},
+  "sameAs": [{{ show.youtubeChannel | safeJsonLd | safe }}]
+  {% endif %}
 }
 </script>
 {% if show.premium.enabled %}

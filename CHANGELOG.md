@@ -1,5 +1,29 @@
 # Changelog
 
+## v1.3.0 - Unreleased
+
+- Reframed episode publishing as one bilingual, six-step workflow across
+  details, media, transcript and chapters, monetization, review, and publish.
+  The workflow derives its state from the existing immutable readiness
+  response, exposes every blocker with a direct repair path, and keeps draft
+  episodes reviewable before their media is ready.
+- Advanced the independently versioned `@dustwave/admin-shell` boundary to
+  0.9.0 with reusable accessible workflow-progress and confirmation-dialog
+  primitives. Podcast retains its publication policy and audit payloads while
+  native dialog semantics, focus restoration, validation, and status
+  presentation remain shared with future Pool and Store consumers.
+- Replaced browser prompts and confirms on the final publication path with a
+  responsive, keyboard-safe review dialog. Normal releases summarize their
+  News, RSS, and eligible YouTube effects; readiness overrides continue to
+  require an explicit, audited reason.
+- Reduced Production and Distribution overload with progressive disclosure,
+  smaller transcript pages, contextual transcript-control labels, and
+  collapsed directory details. Advanced import and migration tools are also
+  hidden by default without changing their underlying behavior.
+- Restored contextual audio-speed and distribution-form labels, corrected the
+  YouTube rendition heading order, and added responsive/focus-visible styling
+  for the new workflow and dialogs.
+
 ## v1.2.0 - Unreleased
 
 - Added the pinned `aindaco1/dust-wave-platform` submodule and recursive CI checkout as the independently versioned shared-code boundary for Dust Wave, Pool, Store, and Podcast.
@@ -10,6 +34,40 @@
   `@dustwave/admin-shell` boundary, with passwordless session exchange, show
   settings, episode drafts, multipart media upload, idempotent publication,
   directory status, and fail-closed premium readiness.
+- Advanced `@dustwave/admin-shell` to 0.8.0 and added one bilingual,
+  fail-closed review-draft guard. Unsaved transcript and chapter edits now
+  survive canceled show, episode, language, chapter, and logout transitions,
+  while browser exit uses the native warning and accepted discards remain
+  explicitly browser-local.
+- Added one bilingual create/edit episode form with immutable URL slugs,
+  role-scoped edit controls, local release-time restoration, and responsive
+  Pool/Store action spacing. Stored notes re-enter the editor only through the
+  new shared `@dustwave/admin-shell` 0.7.1 sanitizer boundary; update payloads
+  never send the canonical slug.
+- Added an English/Spanish, current-page speaker-range review aid for long
+  transcripts. Producer+ editors can apply an optional explicitly confirmed
+  public name to a bounded set of visible cues without changing caption text,
+  timing, or server state; the existing versioned Save action remains the only
+  persistence path and approval stays disabled after changes.
+- Expanded the browser-local transcript quality panel from one first-cue jump
+  into a complete English/Spanish issue navigator. Each speaker, timing,
+  duration, and reading-speed category now has accessible previous/open/next
+  controls, preserves its bounded position across 100-cue pages, and reuses the
+  existing editor focus path without adding storage, requests, saves, or
+  approval behavior.
+- Made the isolated Podcast staging build reuse the exact production CI image
+  pipeline. Responsive show artwork and wordmarks are now generated before a
+  Pages upload instead of leaving supported browsers with missing WebP
+  sources, while direct WebP generation remains limited to CI and the explicit
+  staging entrypoint.
+- Advanced `@dustwave/admin-shell` to 0.8.2 and configured the public Podcast
+  checkout client to omit cookies across origins. Admin and member clients
+  retain the shared credentialed default, while the public show/quote/checkout
+  flow now matches the Worker's credential-free CORS contract.
+- Corrected the public show's light-surface color overrides so the Episodes
+  action, tier labels, and member-account link meet WCAG AA contrast despite
+  the site's legacy global white-link rule. Hero actions now also retain a
+  44-pixel minimum target.
 - Added a self-hosted, checksum-pinned Datatype 1.2.2 pilot to Podcast audience
   analytics. Its English/Spanish, font-ready summary uses shared normalization,
   compact container axes, a text-only narrow state, and the existing exact

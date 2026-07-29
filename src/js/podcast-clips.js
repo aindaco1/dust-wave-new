@@ -56,7 +56,13 @@
       } finally {
         clearTimeout(timeout);
       }
-      if (!response.ok) return;
+      if (!response.ok) {
+        concealClips(root, status, content);
+        root.dataset.state = response.status === 404
+          ? "empty"
+          : "unavailable";
+        return;
+      }
       const raw = await response.text();
       if (raw.length > 100_000) {
         throw new Error("Clip response is too large");
@@ -67,15 +73,27 @@
         showSlug,
         episodeSlug
       );
-      if (!payload.clips.length) return;
+      if (!payload.clips.length) {
+        concealClips(root, status, content);
+        root.dataset.state = "empty";
+        return;
+      }
       renderClips(content, payload.clips, labels);
       status.hidden = true;
       content.hidden = false;
       root.hidden = false;
       root.dataset.state = "ready";
     } catch {
+      concealClips(root, status, content);
       root.dataset.state = "unavailable";
     }
+  }
+
+  function concealClips(root, status, content) {
+    content.replaceChildren();
+    content.hidden = true;
+    status.hidden = false;
+    root.hidden = true;
   }
 
   function renderClips(container, clips, labels) {

@@ -38,6 +38,11 @@ assert.match(script, sharedAdminShellImportPattern("api-client"));
 assert.match(script, sharedAdminShellImportPattern("turnstile"));
 assert.match(
   script,
+  /new PodcastApiClient\(\{[\s\S]+baseUrl: apiOrigin,[\s\S]+credentials: "omit"[\s\S]+\}\)/,
+  "public checkout must not send admin credentials across origins"
+);
+assert.match(
+  script,
   /size: responsiveTurnstileSize\(turnstileContainer\)/
 );
 

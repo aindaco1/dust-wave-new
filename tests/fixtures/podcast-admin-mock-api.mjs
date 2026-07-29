@@ -8,6 +8,17 @@ const adminRole =
   process.env.PODCAST_ADMIN_MOCK_ROLE === "producer"
     ? "producer"
     : "super_admin";
+const transcriptCueCount = boundedInteger(
+  process.env.PODCAST_ADMIN_MOCK_TRANSCRIPT_CUES,
+  { minimum: 0, maximum: 10_000, fallback: 0 }
+);
+const transcriptApproved =
+  process.env.PODCAST_ADMIN_MOCK_TRANSCRIPT_APPROVED === "true";
+const publicClipMode = ["ready", "empty", "missing"].includes(
+  process.env.PODCAST_ADMIN_MOCK_PUBLIC_CLIPS
+)
+  ? process.env.PODCAST_ADMIN_MOCK_PUBLIC_CLIPS
+  : "ready";
 const sha = (character) => character.repeat(64);
 
 const show = {
@@ -18,12 +29,17 @@ const show = {
   descriptionEn: "Conversations from the rainforest, in Spanish and English.",
   language: "es",
   status: "active",
+  authorName: "Jay Renteria",
+  category: "Arts",
+  artworkUrl: "https://dustwave.xyz/img/podcasts/opera-en-la-selva/artwork.png",
+  explicit: false,
   episodeCount: 1,
   earlyAccessDays: 7,
   premiumEnabled: true,
   freeMiniEpisodeEnabled: true,
   youtubeChannelUrl: "https://www.youtube.com/@dustwavecollective",
   canonicalUrl: "https://dustwave.xyz/podcasts/opera-en-la-selva/",
+  feedUrl: "https://feeds.dustwave.xyz/opera-en-la-selva/rss.xml",
   podcastGuid: "d21642df-1816-55c8-b308-6209066e9ef6"
 };
 
@@ -33,16 +49,76 @@ const episode = {
   slug: "episodio-de-prueba",
   title: "Episodio de prueba / Test episode",
   summary: "A controlled browser-QA fixture.",
+  contentHtml:
+    "<h2>Notas del episodio</h2><p>Contenido revisable y seguro.</p>",
   status: "draft",
   access: "public",
   mediaStatus: "ready",
   sourceLanguage: "es",
   audioFilename: "episode-source.wav",
   publicationRevision: 0,
+  premiumAt: null,
   publicAt: null,
   canonicalUrl:
     "https://dustwave.xyz/news/podcasts/opera-en-la-selva/episodio-de-prueba/"
 };
+
+const transcriptCues = Array.from(
+  { length: transcriptCueCount },
+  (_, index) => {
+    const startsAtMs = index * 3_000;
+    const durationMs = index % 97 === 0
+      ? 0
+      : index % 29 === 0
+        ? 11_000
+        : index % 11 === 0
+          ? 400
+          : 2_500;
+    return {
+      id: `cue_browser_${String(index + 1).padStart(5, "0")}`,
+      startsAtMs,
+      endsAtMs: startsAtMs + durationMs,
+      speakerLabel: transcriptApproved
+        ? index % 2 === 0 ? "Jay" : "Guest"
+        : index % 7 === 0
+        ? ""
+        : index % 2 === 0
+          ? "Jay"
+          : "Guest",
+      speakerConfirmed: transcriptApproved || index % 13 !== 0,
+      textMarkdown: index % 17 === 0
+        ? "Una línea sintética deliberadamente rápida para revisar."
+        : "Texto sintético de control."
+    };
+  }
+);
+const transcriptDurationSeconds = transcriptCues.length
+  ? Math.ceil(transcriptCues.at(-1).endsAtMs / 1_000)
+  : 180;
+const transcriptFixture = transcriptCues.length
+  ? {
+      id: "transcript_browser_fixture",
+      episodeId: episode.id,
+      language: "es",
+      source: "transcription",
+      status: transcriptApproved ? "approved" : "needs_review",
+      revision: 1,
+      speakerLabelsConfirmed: transcriptApproved,
+      approvedRevision: transcriptApproved ? 1 : null,
+      approvedAt: transcriptApproved ? "2026-07-29T06:00:00.000Z" : null,
+      contentSha256: sha("3"),
+      cues: transcriptCues,
+      alignment: {
+        id: null,
+        status: "not_run",
+        adapter: null,
+        model: null,
+        completedAt: null,
+        alignedWordCount: 0,
+        wordControlsEnabled: false
+      }
+    }
+  : null;
 
 const clip = {
   id: "clip_browser_fixture",
@@ -66,7 +142,11 @@ const clip = {
     mediaPath:
       "/v1/admin/clip-renders/clip_render_browser_fixture/media",
     downloadPath:
-      "/v1/admin/clip-renders/clip_render_browser_fixture/media?download=1"
+      "/v1/admin/clip-renders/clip_render_browser_fixture/media?download=1",
+    captionsPath:
+      "/v1/admin/clip-renders/clip_render_browser_fixture/captions.vtt",
+    subtitlesPath:
+      "/v1/admin/clip-renders/clip_render_browser_fixture/captions.srt"
   },
   youtubePublication: null
 };
@@ -535,6 +615,7 @@ let audioEnhancementDerivatives = [
       completedAt: "2026-07-26T12:05:00.000Z"
     },
     approvable: true,
+    rejectable: true,
     processorVersion:
       "dustwave-audio-enhancement-derivative-1 (ffmpeg fixture)",
     processorReportSha256: sha("8"),
@@ -544,6 +625,8 @@ let audioEnhancementDerivatives = [
     requestedAt: "2026-07-26T12:00:00.000Z",
     completedAt: "2026-07-26T12:04:00.000Z",
     approvedAt: null,
+    rejectionReason: null,
+    rejectedAt: null,
     processor: null,
     environment: "staging"
   }
@@ -653,9 +736,60 @@ function json(response, status = 200) {
   };
 }
 
+function boundedInteger(value, {
+  minimum,
+  maximum,
+  fallback
+}) {
+  const parsed = Number(value);
+  return Number.isSafeInteger(parsed)
+    && parsed >= minimum
+    && parsed <= maximum
+    ? parsed
+    : fallback;
+}
+
 function responseFor(request) {
   const url = new URL(request.url, `http://${request.headers.host}`);
   const path = url.pathname;
+  const publicClipPath =
+    `/v1/shows/${show.slug}/episodes/episodio-de-prueba/clips`;
+  if (request.method === "GET" && path === publicClipPath) {
+    if (publicClipMode === "missing") {
+      return json({ error: "clip_not_found" }, 404);
+    }
+    const canonicalUrl =
+      `https://dustwave.xyz/news/podcasts/${show.slug}/`
+      + "episodio-de-prueba/";
+    return json({
+      schemaVersion: 1,
+      episode: {
+        showSlug: show.slug,
+        slug: "episodio-de-prueba",
+        canonicalUrl
+      },
+      clips: publicClipMode === "empty"
+        ? []
+        : [{
+            slug: "momento-de-lanzamiento",
+            title: "Un momento en la selva",
+            description: "Un audiograma subtitulado de control.",
+            aspectRatio: "9:16",
+            width: 1_080,
+            height: 1_920,
+            durationMs: 24_000,
+            captionLanguage: "es",
+            mediaUrl:
+              `http://${host}:${port}${publicClipPath}`
+              + "/momento-de-lanzamiento.mp4",
+            downloadUrl:
+              `http://${host}:${port}${publicClipPath}`
+              + "/momento-de-lanzamiento.mp4?download=1",
+            canonicalUrl
+          }],
+      truncated: false
+    });
+  }
   if (request.method === "GET" && path === "/v1/member/session") {
     return json({
       identity: {
@@ -712,6 +846,99 @@ function responseFor(request) {
   }
   if (request.method === "GET" && path === "/v1/admin/shows") {
     return json({ shows: [show] });
+  }
+  if (
+    request.method === "PATCH"
+    && path === `/v1/admin/shows/${show.id}`
+  ) {
+    return json({ updated: true, showId: show.id });
+  }
+  if (
+    request.method === "GET"
+    && path === `/v1/admin/shows/${show.id}/premium-prices`
+  ) {
+    return json({
+      showId: show.id,
+      currency: "USD",
+      monthlyCents: 500,
+      annualCents: 5_000,
+      providerMode: "test",
+      providerReady: true,
+      providerProvisioningRequired: false,
+      checkoutEnabled: false,
+      configurationLocked: false,
+      blockers: [],
+      history: { subscriptions: 0, checkoutAttempts: 0 },
+      confirmation: `CONFIGURE_SHOW_PRICES ${show.id}`
+    });
+  }
+  if (
+    request.method === "PATCH"
+    && path === `/v1/admin/shows/${show.id}/premium-prices`
+  ) {
+    return json({
+      showId: show.id,
+      currency: "USD",
+      monthlyCents: 500,
+      annualCents: 5_000,
+      providerMode: "test",
+      providerReady: false,
+      providerProvisioningRequired: true,
+      checkoutEnabled: false,
+      configurationLocked: false,
+      blockers: [],
+      history: { subscriptions: 0, checkoutAttempts: 0 },
+      confirmation: `CONFIGURE_SHOW_PRICES ${show.id}`,
+      updated: true,
+      idempotent: false
+    });
+  }
+  if (
+    request.method === "GET"
+    && path === `/v1/admin/shows/${show.id}/site-projection`
+  ) {
+    return json({
+      target: {
+        owner: "aindaco1",
+        repository: "dust-wave-new",
+        ref: "release/1.2.0-youtube-preflight",
+        path: "src/_data/podcastShows.json"
+      },
+      mode: "dry_run",
+      showId: show.id,
+      catalogSha: sha("a"),
+      changed: true,
+      changedFields: [
+        "canonicalUrl",
+        "feedArtworkUrl",
+        "authorName",
+        "category",
+        "explicit"
+      ],
+      blockers: []
+    });
+  }
+  if (
+    request.method === "POST"
+    && path === `/v1/admin/shows/${show.id}/site-projection`
+  ) {
+    return json({
+      target: {
+        owner: "aindaco1",
+        repository: "dust-wave-new",
+        ref: "release/1.2.0-youtube-preflight",
+        path: "src/_data/podcastShows.json"
+      },
+      mode: "dry_run",
+      showId: show.id,
+      catalogSha: sha("a"),
+      changed: true,
+      changedFields: ["canonicalUrl", "feedArtworkUrl"],
+      blockers: [],
+      published: false,
+      dryRun: true,
+      idempotent: false
+    });
   }
   if (
     request.method === "GET"
@@ -1463,6 +1690,127 @@ function responseFor(request) {
     return json({ episodes: [episode] });
   }
   if (
+    request.method === "PATCH"
+    && path === `/v1/admin/episodes/${episode.id}`
+  ) {
+    return json({ updated: true, episodeId: episode.id });
+  }
+  if (
+    request.method === "POST"
+    && path === `/v1/admin/episodes/${episode.id}/show-notes/draft`
+  ) {
+    return json({
+      draft: {
+        summary:
+          "Una conversación sobre cine, colaboración y trabajo creativo.",
+        showNotesMarkdown:
+          "## En este episodio\n\n"
+          + "- Una conversación basada en la transcripción aprobada\n"
+          + "- Cine, colaboración y proceso creativo",
+        keywords: ["cine", "colaboración", "proceso creativo"]
+      },
+      source: {
+        language: "es",
+        revision: 1,
+        contentSha256: sha("3"),
+        approvedAt: "2026-07-29T06:00:00.000Z",
+        includedCueCount: 24,
+        totalCueCount: 24,
+        truncated: false
+      },
+      outputLanguage: "es",
+      model: "@cf/meta/llama-3.2-3b-instruct",
+      reviewRequired: true,
+      saved: false
+    });
+  }
+  if (
+    request.method === "POST"
+    && path === `/v1/admin/episodes/${episode.id}/chapters/draft`
+  ) {
+    return json({
+      draft: {
+        chapters: [
+          {
+            id: "chapter_ai_111111111111111111111111",
+            startsAtMs: 0,
+            title: "El origen de la conversación",
+            url: "",
+            imageUrl: "",
+            toc: true
+          },
+          {
+            id: "chapter_ai_222222222222222222222222",
+            startsAtMs: 90_000,
+            title: "Cine y colaboración",
+            url: "",
+            imageUrl: "",
+            toc: true
+          }
+        ]
+      },
+      source: {
+        language: "es",
+        revision: 1,
+        contentSha256: sha("3"),
+        approvedAt: "2026-07-29T06:00:00.000Z",
+        includedCueCount: 24,
+        totalCueCount: 24,
+        truncated: false
+      },
+      outputLanguage: "es",
+      model: "@cf/meta/llama-3.2-3b-instruct",
+      reviewRequired: true,
+      saved: false
+    });
+  }
+  if (
+    request.method === "POST"
+    && path === `/v1/admin/episodes/${episode.id}/clips/draft`
+  ) {
+    return json({
+      draft: {
+        candidates: [
+          {
+            id: "clip_candidate_111111111111111111111111",
+            title: "La selva también escucha",
+            reason:
+              "Un momento autosuficiente con una entrada clara y visual.",
+            startCueId: "cue_browser_00001",
+            endCueId: "cue_browser_00010",
+            startsAtMs: 0,
+            endsAtMs: 29_500,
+            durationMs: 29_500
+          },
+          {
+            id: "clip_candidate_222222222222222222222222",
+            title: "Crear en colaboración",
+            reason:
+              "Una explicación práctica que funciona fuera del episodio.",
+            startCueId: "cue_browser_00011",
+            endCueId: "cue_browser_00020",
+            startsAtMs: 30_000,
+            endsAtMs: 59_500,
+            durationMs: 29_500
+          }
+        ]
+      },
+      source: {
+        language: "es",
+        revision: 1,
+        contentSha256: sha("3"),
+        approvedAt: "2026-07-29T06:00:00.000Z",
+        includedCueCount: transcriptCueCount,
+        totalCueCount: transcriptCueCount,
+        truncated: false
+      },
+      outputLanguage: "es",
+      model: "@cf/meta/llama-3.2-3b-instruct",
+      reviewRequired: true,
+      saved: false
+    });
+  }
+  if (
     request.method === "GET"
     && path
       === `/v1/admin/shows/${show.id}/marketing/announcements`
@@ -1635,6 +1983,7 @@ function responseFor(request) {
       output: null,
       qualityControl: null,
       approvable: false,
+      rejectable: false,
       processorVersion: null,
       processorReportSha256: null,
       requestedAt: new Date().toISOString(),
@@ -1667,6 +2016,7 @@ function responseFor(request) {
             ...derivative,
             status: "approved",
             approvable: false,
+            rejectable: false,
             approvedAt: new Date().toISOString()
           }
         : derivative
@@ -1687,6 +2037,32 @@ function responseFor(request) {
     };
     return json({
       master: audioMasterPayload.current
+    });
+  }
+  if (
+    request.method === "POST"
+    && path
+      === "/v1/admin/audio-enhancement-derivatives/"
+        + "derivative_browser_fixture/reject"
+  ) {
+    audioEnhancementDerivatives = audioEnhancementDerivatives.map(
+      (derivative) => derivative.id === "derivative_browser_fixture"
+        ? {
+            ...derivative,
+            status: "rejected",
+            approvable: false,
+            rejectable: false,
+            rejectionReason:
+              "The original master is the stronger editorial choice.",
+            rejectedAt: new Date().toISOString()
+          }
+        : derivative
+    );
+    return json({
+      derivative: audioEnhancementDerivatives.find(
+        ({ id }) => id === "derivative_browser_fixture"
+      ),
+      idempotent: false
     });
   }
   if (
@@ -1811,7 +2187,47 @@ function responseFor(request) {
     request.method === "GET"
     && path === `/v1/admin/episodes/${episode.id}/transcripts`
   ) {
-    return json({ durationSeconds: 180, transcripts: [] });
+    return json({
+      durationSeconds: transcriptDurationSeconds,
+      transcripts: transcriptFixture ? [transcriptFixture] : []
+    });
+  }
+  const transcriptCaptionMatch = path.match(
+    new RegExp(
+      `^/v1/admin/episodes/${episode.id}/transcripts/(en|es)/`
+      + "captions\\.(vtt|srt)$"
+    )
+  );
+  if (request.method === "GET" && transcriptCaptionMatch) {
+    const [, language, format] = transcriptCaptionMatch;
+    const webVtt = format === "vtt";
+    return {
+      status: 200,
+      contentType: webVtt
+        ? "text/vtt; charset=utf-8"
+        : "application/x-subrip; charset=utf-8",
+      headers: {
+        "content-disposition":
+          `attachment; filename="transcript-${language}-revision-1.${format}"`,
+        "content-language": language,
+        "x-podcast-transcript-revision": "1"
+      },
+      body: webVtt
+        ? [
+            "WEBVTT",
+            "",
+            "1",
+            "00:00:00.000 --> 00:00:02.500",
+            "<v Jay>Texto sintético de control.</v>",
+            ""
+          ].join("\n")
+        : [
+            "1",
+            "00:00:00,000 --> 00:00:02,500",
+            "Jay: Texto sintético de control.",
+            ""
+          ].join("\n")
+    };
   }
   if (
     request.method === "GET"
@@ -1990,6 +2406,48 @@ function responseFor(request) {
   }
   if (
     request.method === "GET"
+    && path === `/v1/admin/clip-renders/${clip.render.id}/captions.vtt`
+  ) {
+    return {
+      status: 200,
+      contentType: "text/vtt; charset=utf-8",
+      headers: {
+        "content-disposition":
+          'attachment; filename="mock-clip-render.vtt"',
+        "content-language": "es"
+      },
+      body: [
+        "WEBVTT",
+        "",
+        "1",
+        "00:00:00.000 --> 00:00:24.000",
+        "<v Jay>Un audiograma subtitulado de control.</v>",
+        ""
+      ].join("\n")
+    };
+  }
+  if (
+    request.method === "GET"
+    && path === `/v1/admin/clip-renders/${clip.render.id}/captions.srt`
+  ) {
+    return {
+      status: 200,
+      contentType: "application/x-subrip; charset=utf-8",
+      headers: {
+        "content-disposition":
+          'attachment; filename="mock-clip-render.srt"',
+        "content-language": "es"
+      },
+      body: [
+        "1",
+        "00:00:00,000 --> 00:00:24,000",
+        "Jay: Un audiograma subtitulado de control.",
+        ""
+      ].join("\n")
+    };
+  }
+  if (
+    request.method === "GET"
     && path === "/v1/admin/ads/campaigns"
   ) {
     return json({ campaigns: [] });
@@ -2092,6 +2550,8 @@ const server = createServer((request, response) => {
 
 server.listen(port, host, () => {
   process.stdout.write(
-    `Podcast admin mock API listening on http://${host}:${port}\n`
+    `Podcast admin mock API listening on http://${host}:${port}`
+      + ` (${transcriptCueCount} transcript cues, `
+      + `${publicClipMode} public clips)\n`
   );
 });

@@ -173,7 +173,7 @@ export function mountYouTubeAudioRenditions({
           ? "failed"
           : "pending"
     }`;
-    const heading = document.createElement("h4");
+    const heading = document.createElement("h3");
     heading.textContent = text("youtubeAudioRenditionLabel", {
       status: humanize(rendition.status)
     });
