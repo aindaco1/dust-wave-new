@@ -10,6 +10,11 @@
   `@dustwave/admin-shell` boundary, with passwordless session exchange, show
   settings, episode drafts, multipart media upload, idempotent publication,
   directory status, and fail-closed premium readiness.
+- Advanced `@dustwave/admin-shell` to 0.8.0 and added one bilingual,
+  fail-closed review-draft guard. Unsaved transcript and chapter edits now
+  survive canceled show, episode, language, chapter, and logout transitions,
+  while browser exit uses the native warning and accepted discards remain
+  explicitly browser-local.
 - Added one bilingual create/edit episode form with immutable URL slugs,
   role-scoped edit controls, local release-time restoration, and responsive
   Pool/Store action spacing. Stored notes re-enter the editor only through the

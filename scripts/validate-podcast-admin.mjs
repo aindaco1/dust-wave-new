@@ -132,6 +132,18 @@ const transcriptSearchScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-transcript-search.js'),
   'utf8'
 );
+const unsavedChangesScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-unsaved-changes.js'),
+  'utf8'
+);
+const unsavedChangesCoreScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-unsaved-changes-core.js'),
+  'utf8'
+);
+const adminConstantsScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-constants.js'),
+  'utf8'
+);
 const analyticsScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-analytics.js'),
   'utf8'
@@ -579,6 +591,21 @@ assert.match(
   adminScript,
   /mountTranscriptSearch\([\s\S]+syncVisibleTranscriptCues\(\{ requireText: false \}\)[\s\S]+onOpenCue: openTranscriptCue/,
   'transcript search must reuse the current unsaved cue state and pagination'
+);
+assert.match(
+  adminScript,
+  /mountPodcastReviewDraftGuard\([\s\S]+hasTranscriptChanges:\s*\(\) => transcriptDirty[\s\S]+hasChapterChanges:\s*\(\) => chapterDirty/,
+  'review drafts must expose consumer-owned dirty state to the shared guard'
+);
+assert.match(
+  unsavedChangesCoreScript,
+  /mountUnsavedChangesGuard[\s\S]+stopImmediatePropagation[\s\S]+discardTranscriptChanges[\s\S]+discardChapterChanges/,
+  'review draft transitions must cancel before consumer loaders and reuse the shared lifecycle guard'
+);
+assert.doesNotMatch(
+  unsavedChangesCoreScript,
+  /\bfetch\s*\(|innerHTML|insertAdjacentHTML|localStorage|sessionStorage/,
+  'the review draft guard must remain browser-local without persistence or HTML sinks'
 );
 assert.match(adminTemplate, /data-podcast-upload-form/);
 assert.match(adminTemplate, /data-podcast-rss-import-form/);
@@ -1372,7 +1399,7 @@ assert.match(
 assert.match(adminScript, /expectedWorkingMasterId/);
 assert.match(adminScript, /directProcessingEligible/);
 assert.match(adminScript, /chunk_processor_required/);
-assert.match(adminScript, /process-transcription-chunks\.yml/);
+assert.match(adminConstantsScript, /process-transcription-chunks\.yml/);
 assert.match(englishRuntimeText, /word timing not created/);
 assert.match(adminScript, /baseRevision: Number\(transcript\.revision/);
 assert.match(adminScript, /expectedRevision: Number\(transcript\.revision\)/);
@@ -1383,7 +1410,7 @@ assert.match(adminScript, /function queueAlignment/);
 assert.match(adminScript, /function approveAlignment/);
 assert.match(adminScript, /function loadAlignmentBenchmarks/);
 assert.match(adminScript, /function importAlignmentBenchmark/);
-assert.match(adminScript, /process-alignment\.yml/);
+assert.match(adminConstantsScript, /process-alignment\.yml/);
 assert.match(adminScript, /\/v1\/admin\/alignment-benchmarks/);
 assert.match(adminScript, /MAXIMUM_ALIGNMENT_BENCHMARK_BYTES/);
 assert.match(
@@ -1394,7 +1421,7 @@ assert.match(adminScript, /expectedTranscriptRevision/);
 assert.match(adminScript, /structurallyEligible/);
 assert.match(adminScript, /benchmark\?\.passedRunId/);
 assert.match(adminStyles, /\.podcast-admin__benchmark-list/);
-assert.match(adminScript, /TRANSCRIPT_CUES_PER_PAGE = 100/);
+assert.match(adminConstantsScript, /TRANSCRIPT_CUES_PER_PAGE = 100/);
 assert.match(adminScript, /syncVisibleTranscriptCues/);
 assert.match(
   adminScript,
@@ -1519,7 +1546,11 @@ assert.doesNotMatch(
 assert.match(gulpfile, /copySharedAdminShell/);
 assert.equal(sharedPackage.name, '@dustwave/admin-shell');
 assert.match(sharedPackage.version, /^\d+\.\d+\.\d+$/);
-const sharedConsumerImports = [adminScript, analyticsScript].flatMap(
+const sharedConsumerImports = [
+  adminScript,
+  analyticsScript,
+  unsavedChangesScript
+].flatMap(
   (source) => [...source.matchAll(
     /from "\.\/dust-wave-admin-shell\/([^"]+)"/g
   )].map((match) => match[1])
@@ -1556,6 +1587,12 @@ await access(path.join(
   'vendor',
   'qrcode-generator.js'
 ));
+await access(path.join(sharedRoot, 'src', 'unsaved-changes.js'));
+await access(path.join(sharedRoot, 'src', 'unsaved-changes-browser.js'));
+assert.match(
+  unsavedChangesScript,
+  /dust-wave-admin-shell\/unsaved-changes\.js/
+);
 for (const source of sharedSources.filter((source) => source !== 'editor-codec.js')) {
   assert.match(
     adminScript,

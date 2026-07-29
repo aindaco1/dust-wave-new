@@ -1,13 +1,7 @@
-import { AdminApiClient, AdminApiError } from "./dust-wave-admin-shell/api-client.js?v=0.7.1";
-import {
-  AdminDownloadError,
-  requestCredentialedBlob,
-  triggerBlobDownload
-} from "./dust-wave-admin-shell/credentialed-download.js?v=0.7.1";
-import { mountRichTextEditor } from "./dust-wave-admin-shell/editor.js?v=0.7.1";
-import {
-  markdownToEditorHtml
-} from "./dust-wave-admin-shell/editor-codec.js?v=0.7.1";
+import { AdminApiClient, AdminApiError } from "./dust-wave-admin-shell/api-client.js?v=0.8.0";
+import { AdminDownloadError, requestCredentialedBlob, triggerBlobDownload } from "./dust-wave-admin-shell/credentialed-download.js?v=0.8.0";
+import { mountRichTextEditor } from "./dust-wave-admin-shell/editor.js?v=0.8.0";
+import { markdownToEditorHtml } from "./dust-wave-admin-shell/editor-codec.js?v=0.8.0";
 import {
   clipCueSummary,
   clearTranscriptReviewDiagnostics as clearQa,
@@ -23,92 +17,39 @@ import {
   drawQrCanvas,
   qrSvgMarkup,
   safeMarketingFilename
-} from "./dust-wave-admin-shell/marketing-assets.js?v=0.7.1";
-import {
-  mountSavedMarketingLinks
-} from "./podcast-admin-marketing-links.js";
-import {
-  renderEpisodeCatalog,
-  renderShowCatalog
-} from "./podcast-admin-catalog.js";
-import {
-  mountEpisodeEditor
-} from "./podcast-admin-episode-editor.js";
-import {
-  mountShowNotesAssistant
-} from "./podcast-admin-show-notes.js";
-import {
-  mountChapterDraftAssistant
-} from "./podcast-admin-chapter-draft.js";
+} from "./dust-wave-admin-shell/marketing-assets.js?v=0.8.0";
+import { mountSavedMarketingLinks } from "./podcast-admin-marketing-links.js";
+import { renderEpisodeCatalog, renderShowCatalog } from "./podcast-admin-catalog.js";
+import { mountEpisodeEditor } from "./podcast-admin-episode-editor.js";
+import { mountShowNotesAssistant } from "./podcast-admin-show-notes.js";
+import { mountChapterDraftAssistant } from "./podcast-admin-chapter-draft.js";
 import { clipDurationLabel, mountClipDraftAssistant, resolveClipCueRange } from "./podcast-admin-clip-draft.js";
-import {
-  renderClipRecipePreview
-} from "./podcast-admin-clip-preview.js";
-import {
-  clipDownloadActionMarkup,
-  mountTranscriptDownloads
-} from "./podcast-admin-download-actions.js";
-import {
-  mountTranscriptCaptionImport
-} from "./podcast-admin-transcript-import.js";
-import {
-  mountTranscriptSearch
-} from "./podcast-admin-transcript-search.js";
+import { renderClipRecipePreview } from "./podcast-admin-clip-preview.js";
+import { clipDownloadActionMarkup, mountTranscriptDownloads } from "./podcast-admin-download-actions.js";
+import { mountTranscriptCaptionImport } from "./podcast-admin-transcript-import.js";
+import { mountTranscriptSearch } from "./podcast-admin-transcript-search.js";
+import { mountPodcastReviewDraftGuard } from "./podcast-admin-unsaved-changes.js";
+import { ALIGNMENT_WORKFLOW, AUDIO_QC_POLICY_FIELDS, MAXIMUM_ALIGNMENT_BENCHMARK_BYTES, TRANSCRIPTION_CHUNK_WORKFLOW, TRANSCRIPT_CUES_PER_PAGE } from "./podcast-admin-constants.js";
 import {
   mountShowSiteProjection,
   needsShowArchiveConfirmation,
   populateShowSettingsForm,
   readShowSettingsPayload
 } from "./podcast-admin-show-settings.js";
-import {
-  mountRssImportWorkbench
-} from "./podcast-admin-rss-import.js";
-import {
-  buildEpisodeYouTubeControls,
-  handleEpisodeYouTubeApproval,
-  handleEpisodeYouTubeSubmit
-} from "./podcast-admin-episode-youtube.js";
-import {
-  mountYouTubeAudioRenditions
-} from "./podcast-admin-youtube-audio-renditions.js";
-import {
-  mountAudioEnhancementDerivatives
-} from "./podcast-admin-audio-derivatives.js";
-import {
-  mountDeliveryAudio
-} from "./podcast-admin-delivery-audio.js";
-import {
-  mountPodcastAnalytics
-} from "./podcast-admin-analytics.js";
-import {
-  mountClipPublications
-} from "./podcast-admin-clip-publications.js";
+import { mountRssImportWorkbench } from "./podcast-admin-rss-import.js";
+import { buildEpisodeYouTubeControls, handleEpisodeYouTubeApproval, handleEpisodeYouTubeSubmit } from "./podcast-admin-episode-youtube.js";
+import { mountYouTubeAudioRenditions } from "./podcast-admin-youtube-audio-renditions.js";
+import { mountAudioEnhancementDerivatives } from "./podcast-admin-audio-derivatives.js";
+import { mountDeliveryAudio } from "./podcast-admin-delivery-audio.js";
+import { mountPodcastAnalytics } from "./podcast-admin-analytics.js";
+import { mountClipPublications } from "./podcast-admin-clip-publications.js";
 import {
   distributionCertificationList,
   renderDistributionLaunchClaim
 } from "./podcast-admin-distribution-certification.js";
-import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js?v=0.7.1";
-import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js?v=0.7.1";
-import {
-  responsiveTurnstileSize
-} from "./dust-wave-admin-shell/turnstile.js?v=0.7.1";
-
-const TRANSCRIPT_CUES_PER_PAGE = 100;
-const MAXIMUM_ALIGNMENT_BENCHMARK_BYTES = 8 * 1024 * 1024;
-const TRANSCRIPTION_CHUNK_WORKFLOW = "process-transcription-chunks.yml";
-const ALIGNMENT_WORKFLOW = "process-alignment.yml";
-const AUDIO_QC_POLICY_FIELDS = [
-  "monoIntegratedLufs",
-  "stereoIntegratedLufs",
-  "integratedLufsTolerance",
-  "maximumTruePeakDbtp",
-  "maximumDcOffset",
-  "maximumChannelImbalanceLu",
-  "maximumLeadingSilenceMs",
-  "maximumTrailingSilenceMs",
-  "maximumInternalSilenceMs",
-  "silenceThresholdDb"
-];
+import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js?v=0.8.0";
+import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js?v=0.8.0";
+import { responsiveTurnstileSize } from "./dust-wave-admin-shell/turnstile.js?v=0.8.0";
 
 const root = document.querySelector("[data-podcast-admin]");
 if (root) startPodcastAdmin(root);
@@ -579,6 +520,16 @@ function startPodcastAdmin(root) {
     onOpenCue: openTranscriptCue,
     formatError: transcriptInputError
   });
+  const reviewDraftGuard = mountPodcastReviewDraftGuard({
+    showSelects, transcriptEpisodeSelect, transcriptLanguageSelect,
+    chapterEpisodeSelect, logoutButton,
+    hasTranscriptChanges: () => transcriptDirty,
+    hasChapterChanges: () => chapterDirty,
+    discardTranscriptChanges: () => { transcriptDirty = false; },
+    discardChapterChanges: () => { chapterDirty = false; },
+    loadTranscript, loadChapters,
+    message: () => adminText("discardUnsavedReviewChanges")
+  });
   const rssImport = mountRssImportWorkbench({
     root,
     client,
@@ -893,8 +844,6 @@ function startPodcastAdmin(root) {
   }
   showForm?.addEventListener("submit", saveShow);
   uploadForm?.addEventListener("submit", uploadMedia);
-  transcriptEpisodeSelect?.addEventListener("change", loadTranscript);
-  transcriptLanguageSelect?.addEventListener("change", loadTranscript);
   transcriptionQueueButton?.addEventListener(
     "click",
     queueTranscription
@@ -924,7 +873,6 @@ function startPodcastAdmin(root) {
   transcriptNextButton?.addEventListener("click", () =>
     moveTranscriptPage(1)
   );
-  chapterEpisodeSelect?.addEventListener("change", loadChapters);
   chapterAddButton?.addEventListener("click", addChapter);
   chapterSaveButton?.addEventListener("click", saveChapters);
   chapterApproveButton?.addEventListener("click", approveChapters);
@@ -2030,6 +1978,7 @@ function startPodcastAdmin(root) {
         )
       ));
     }
+    reviewDraftGuard.syncContexts();
     const campaignEpisodeSelect = campaignForm?.elements.episodeId;
     if (campaignEpisodeSelect) {
       const previousValue = campaignEpisodeSelect.value;

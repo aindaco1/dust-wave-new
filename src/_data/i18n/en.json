@@ -1673,6 +1673,7 @@
       "savingTranscriptDraft": "Saving versioned transcript draft…",
       "transcriptDraftSaved": "Transcript draft saved. Approval and word-alignment are independent gates.",
       "saveCueEditsFirst": "Save the current cue edits before approving this revision.",
+      "discardUnsavedReviewChanges": "Discard the unsaved transcript or chapter review changes?",
       "approvingTranscript": "Approving reviewed transcript revision…",
       "transcriptApprovedAligned": "Transcript approved; matching word alignment is available.",
       "transcriptApprovedLocked": "Transcript approved; word controls remain locked until matching alignment passes.",
