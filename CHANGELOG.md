@@ -36,6 +36,10 @@
   Pages upload instead of leaving supported browsers with missing WebP
   sources, while direct WebP generation remains limited to CI and the explicit
   staging entrypoint.
+- Advanced `@dustwave/admin-shell` to 0.8.2 and configured the public Podcast
+  checkout client to omit cookies across origins. Admin and member clients
+  retain the shared credentialed default, while the public show/quote/checkout
+  flow now matches the Worker's credential-free CORS contract.
 - Added a self-hosted, checksum-pinned Datatype 1.2.2 pilot to Podcast audience
   analytics. Its English/Spanish, font-ready summary uses shared normalization,
   compact container axes, a text-only narrow state, and the existing exact

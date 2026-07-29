@@ -1,7 +1,7 @@
 import {
   requestCredentialedBlob,
   triggerBlobDownload
-} from "./dust-wave-admin-shell/credentialed-download.js?v=0.8.1";
+} from "./dust-wave-admin-shell/credentialed-download.js?v=0.8.2";
 
 let datatypeChartModule;
 
