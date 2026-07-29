@@ -34,6 +34,10 @@ const showProjectionScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-show-projection.js'),
   'utf8'
 );
+const showPricesScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-show-prices.js'),
+  'utf8'
+);
 const transcriptDiagnosticsScript = await readFile(
   path.join(
     repositoryRoot,
@@ -169,6 +173,7 @@ const staticRuntimeKeys = [
   ...rssImportCutoverScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...rssImportActivationApprovalScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...youtubeAudioRenditionScript.matchAll(/text\(\s*"([^"]+)"/g),
+  ...showPricesScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...transcriptDiagnosticsScript.matchAll(/text\(\s*"([^"]+)"/g)
 ].map((match) => match[1]);
 for (const key of new Set(staticRuntimeKeys)) {
@@ -303,6 +308,24 @@ assert.match(
   /PUBLISH_SHOW_CATALOG \$\{show\.id\}/
 );
 assert.doesNotMatch(showProjectionScript, /innerHTML|insertAdjacentHTML/);
+assert.match(adminTemplate, /data-podcast-show-prices-summary/);
+assert.match(adminTemplate, /data-podcast-show-prices-blockers/);
+assert.match(adminTemplate, /data-podcast-show-prices-form/);
+assert.match(adminTemplate, /name="monthlyDollars"[^>]+step="0\.01"/);
+assert.match(adminTemplate, /name="annualDollars"[^>]+step="0\.01"/);
+assert.match(
+  showPricesScript,
+  /\/v1\/admin\/shows\/\$\{encodeURIComponent\(showId\)\}\/premium-prices/
+);
+assert.match(
+  showPricesScript,
+  /expectedMonthlyCents: configuration\.monthlyCents,[\s\S]+expectedAnnualCents: configuration\.annualCents/
+);
+assert.match(
+  showPricesScript,
+  /CONFIGURE_SHOW_PRICES/
+);
+assert.doesNotMatch(showPricesScript, /innerHTML|insertAdjacentHTML/);
 assert.match(adminScript, /showSiteProjection\.setShow\(show\)/);
 assert.match(
   englishWorkbench.overview.siteProjectionIntro,

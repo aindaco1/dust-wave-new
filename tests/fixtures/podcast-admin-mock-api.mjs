@@ -27,7 +27,7 @@ const show = {
   descriptionEn: "Conversations from the rainforest, in Spanish and English.",
   language: "es",
   status: "active",
-  authorName: "Dust Wave",
+  authorName: "Jay Renteria",
   category: "Arts",
   artworkUrl: "https://dustwave.xyz/img/podcasts/opera-en-la-selva/artwork.png",
   explicit: false,
@@ -838,6 +838,46 @@ function responseFor(request) {
     && path === `/v1/admin/shows/${show.id}`
   ) {
     return json({ updated: true, showId: show.id });
+  }
+  if (
+    request.method === "GET"
+    && path === `/v1/admin/shows/${show.id}/premium-prices`
+  ) {
+    return json({
+      showId: show.id,
+      currency: "USD",
+      monthlyCents: 500,
+      annualCents: 5_000,
+      providerMode: "test",
+      providerReady: true,
+      providerProvisioningRequired: false,
+      checkoutEnabled: false,
+      configurationLocked: false,
+      blockers: [],
+      history: { subscriptions: 0, checkoutAttempts: 0 },
+      confirmation: `CONFIGURE_SHOW_PRICES ${show.id}`
+    });
+  }
+  if (
+    request.method === "PATCH"
+    && path === `/v1/admin/shows/${show.id}/premium-prices`
+  ) {
+    return json({
+      showId: show.id,
+      currency: "USD",
+      monthlyCents: 500,
+      annualCents: 5_000,
+      providerMode: "test",
+      providerReady: false,
+      providerProvisioningRequired: true,
+      checkoutEnabled: false,
+      configurationLocked: false,
+      blockers: [],
+      history: { subscriptions: 0, checkoutAttempts: 0 },
+      confirmation: `CONFIGURE_SHOW_PRICES ${show.id}`,
+      updated: true,
+      idempotent: false
+    });
   }
   if (
     request.method === "GET"

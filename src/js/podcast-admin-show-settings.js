@@ -1,6 +1,28 @@
-export {
-  mountShowSiteProjection
+import {
+  mountShowSiteProjection as mountProjection
 } from "./podcast-admin-show-projection.js";
+import {
+  mountShowPremiumPrices
+} from "./podcast-admin-show-prices.js";
+
+export function mountShowSiteProjection(options) {
+  const projection = mountProjection(options);
+  let show = null;
+  const prices = mountShowPremiumPrices({
+    ...options,
+    canConfigure: options.canPublish,
+    onSaved() {
+      projection.setShow(show);
+    }
+  });
+  return {
+    setShow(nextShow) {
+      show = nextShow || null;
+      prices.setShow(show);
+      projection.setShow(show);
+    }
+  };
+}
 
 const SHOW_TEXT_FIELDS = [
   "title",

@@ -1338,6 +1338,69 @@ eleventyComputed:
           </form>
           <section
             class="podcast-admin__form podcast-admin__form--settings"
+            data-podcast-show-prices
+            hidden>
+            <h3>{{ workbench.overview.priceSettingsHeading }}</h3>
+            <p>{{ workbench.overview.priceSettingsIntro }}</p>
+            <dl
+              class="podcast-admin__readiness-evidence"
+              data-podcast-show-prices-summary></dl>
+            <ul
+              class="podcast-admin__certification-list"
+              data-podcast-show-prices-blockers
+              hidden></ul>
+            <form
+              class="podcast-admin__callout"
+              data-podcast-show-prices-form
+              hidden>
+              <div class="podcast-admin__field-grid">
+                <label>{{ workbench.overview.monthlyPriceUsd }}
+                  <input
+                    name="monthlyDollars"
+                    type="number"
+                    inputmode="decimal"
+                    min="1"
+                    max="10000"
+                    step="0.01"
+                    autocomplete="off"
+                    required>
+                </label>
+                <label>{{ workbench.overview.annualPriceUsd }}
+                  <input
+                    name="annualDollars"
+                    type="number"
+                    inputmode="decimal"
+                    min="1"
+                    max="10000"
+                    step="0.01"
+                    autocomplete="off"
+                    required>
+                </label>
+              </div>
+              <p>{{ workbench.overview.priceSettingsSafety }}</p>
+              <p data-podcast-show-prices-confirmation-hint></p>
+              <label>{{ workbench.overview.priceSettingsConfirmation }}
+                <input
+                  name="confirmation"
+                  type="text"
+                  autocomplete="off"
+                  maxlength="140"
+                  required>
+              </label>
+              <div class="podcast-admin__billing-actions">
+                <button class="btn btn-danger" type="submit">
+                  {{ workbench.overview.priceSettingsSave }}
+                </button>
+              </div>
+            </form>
+            <p
+              class="podcast-admin__status"
+              data-podcast-show-prices-status
+              role="status"
+              aria-live="polite"></p>
+          </section>
+          <section
+            class="podcast-admin__form podcast-admin__form--settings"
             data-podcast-site-projection
             hidden>
             <h3>{{ workbench.overview.siteProjectionHeading }}</h3>
