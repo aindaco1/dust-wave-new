@@ -40,6 +40,7 @@ import {
 import {
   mountChapterDraftAssistant
 } from "./podcast-admin-chapter-draft.js";
+import { clipDurationLabel, mountClipDraftAssistant, resolveClipCueRange } from "./podcast-admin-clip-draft.js";
 import {
   mountShowSiteProjection,
   needsShowArchiveConfirmation,
@@ -588,6 +589,18 @@ function startPodcastAdmin(root) {
       renderChapters();
     }
   });
+  const clipDraftAssistant = mountClipDraftAssistant({
+    root: root.querySelector("[data-podcast-clip-draft]"),
+    client,
+    text: adminText,
+    setStatus,
+    friendlyError,
+    form: clipForm,
+    selectedRecipeId: () => selectedClipId,
+    clearSelectedRecipe: () => { selectedClipId = ""; },
+    fillCueSelects: fillClipCueSelects,
+    refreshRecipe: refreshClipRecipe
+  });
   const episodeEditor = mountEpisodeEditor({
     form: episodeForm,
     list: episodeList,
@@ -1105,6 +1118,7 @@ function startPodcastAdmin(root) {
     }
     episodeEditor.refreshPermissions();
     chapterDraftAssistant.setEditable(canEditChapters);
+    clipDraftAssistant.setEditable(canEditTranscripts);
     root.querySelector("[data-podcast-session-summary]").textContent =
       adminText("authenticated", { roles: roles ? ` — ${roles}` : "" });
   }
@@ -1145,6 +1159,8 @@ function startPodcastAdmin(root) {
     canImportAlignmentBenchmarks = false;
     chapterDraftAssistant.setEditable(false);
     chapterDraftAssistant.setEpisode("");
+    clipDraftAssistant.setEditable(false);
+    clipDraftAssistant.setTranscript("", null);
     rssImport.reset({ form: true });
     rssImport.setShow(false);
     initializeTurnstile();
@@ -6235,6 +6251,8 @@ function startPodcastAdmin(root) {
 
   function updateClipAvailability() {
     if (!clipForm) return;
+    clipDraftAssistant.setTranscript(
+      transcriptEpisodeSelect?.value, transcript, transcriptDirty);
     const selected = clips.find(({ id }) => id === selectedClipId);
     const transcriptApproved = transcript
       && transcript.status === "approved"
@@ -6286,22 +6304,10 @@ function startPodcastAdmin(root) {
   }
 
   function selectedClipCueRange() {
-    if (!clipForm) return null;
-    const cues = transcript?.cues || [];
-    const startIndex = cues.findIndex(
-      ({ id }) => id === clipForm.elements.startCueId.value
+    return resolveClipCueRange(
+      transcript?.cues, clipForm?.elements.startCueId.value,
+      clipForm?.elements.endCueId.value
     );
-    const endIndex = cues.findIndex(
-      ({ id }) => id === clipForm.elements.endCueId.value
-    );
-    if (startIndex < 0 || endIndex < startIndex) return null;
-    const startsAtMs = Number(cues[startIndex].startsAtMs);
-    const endsAtMs = Number(cues[endIndex].endsAtMs);
-    return {
-      startsAtMs,
-      endsAtMs,
-      durationMs: endsAtMs - startsAtMs
-    };
   }
 
   function updateClipPreview() {
@@ -8865,17 +8871,8 @@ function millisecondsToSeconds(value) {
   return (Number(value || 0) / 1_000).toFixed(3).replace(/\.?0+$/, "");
 }
 
-function formatClipDuration(value) {
-  const seconds = Number(value || 0) / 1_000;
-  return adminText(
-    "secondsCount",
-    {
-      count: new Intl.NumberFormat(document.documentElement.lang || "en", {
-        maximumFractionDigits: seconds < 10 ? 1 : 0
-      }).format(seconds)
-    }
-  );
-}
+const formatClipDuration = (value) =>
+  clipDurationLabel(value, adminText, document.documentElement.lang);
 
 function secondsToMilliseconds(value, label) {
   const seconds = Number(value);

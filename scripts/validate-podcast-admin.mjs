@@ -112,6 +112,10 @@ const chapterDraftScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-chapter-draft.js'),
   'utf8'
 );
+const clipDraftScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-clip-draft.js'),
+  'utf8'
+);
 const analyticsScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-analytics.js'),
   'utf8'
@@ -403,6 +407,23 @@ assert.doesNotMatch(
   chapterDraftScript,
   /innerHTML|insertAdjacentHTML/,
   'AI chapter evidence and proposals must render without HTML sinks'
+);
+assert.match(adminTemplate, /data-podcast-clip-draft/);
+assert.match(adminTemplate, /data-podcast-clip-draft-review/);
+assert.match(
+  clipDraftScript,
+  /includedCueCount !== totalCueCount[\s\S]+source\.truncated !== false/,
+  'AI clip candidates must prove complete transcript coverage'
+);
+assert.match(
+  clipDraftScript,
+  /form\.reset\(\)[\s\S]+fillCueSelects\(candidate\)[\s\S]+refreshRecipe\(\)/,
+  'AI clip candidates may enter only a new unsaved clip recipe'
+);
+assert.doesNotMatch(
+  clipDraftScript,
+  /innerHTML|insertAdjacentHTML/,
+  'AI clip evidence and candidates must render without HTML sinks'
 );
 assert.match(adminTemplate, /data-podcast-upload-form/);
 assert.match(adminTemplate, /data-podcast-rss-import-form/);

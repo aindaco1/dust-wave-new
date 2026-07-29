@@ -200,6 +200,31 @@
   font-variant-numeric: tabular-nums;
 }
 
+.podcast-admin__clip-draft-list {
+  display: grid;
+  gap: var(--dw-admin-space-md);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.podcast-admin__clip-draft-list li {
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  display: grid;
+  gap: var(--dw-admin-space-sm);
+  min-width: 0;
+  overflow-wrap: anywhere;
+  padding-top: var(--dw-admin-space-md);
+}
+
+.podcast-admin__clip-draft-list :is(h5, p) {
+  margin: 0;
+}
+
+.podcast-admin__clip-draft-list .btn {
+  justify-self: start;
+}
+
 .podcast-admin__form > .btn {
   justify-self: start;
 }

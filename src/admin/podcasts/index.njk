@@ -763,6 +763,58 @@ eleventyComputed:
           <div class="podcast-admin__callout">
             <p>{{ workbench.production.clipsCallout }}</p>
           </div>
+          <section
+            class="podcast-admin__callout podcast-admin__clip-draft"
+            data-podcast-clip-draft
+            hidden>
+            <h3>{{ workbench.production.clipDraftHeading }}</h3>
+            <p>{{ workbench.production.clipDraftIntro }}</p>
+            <p class="podcast-admin__help">{{ workbench.production.clipDraftReviewNotice }}</p>
+            <div class="podcast-admin__field-grid">
+              <label>{{ workbench.production.clipDraftSourceLanguage }}
+                <select data-podcast-clip-draft-source-language disabled>
+                  <option value="es">{{ workbench.common.spanish }}</option>
+                  <option value="en">{{ workbench.common.english }}</option>
+                </select>
+              </label>
+              <label>{{ workbench.production.clipDraftOutputLanguage }}
+                <select data-podcast-clip-draft-output-language>
+                  <option value="es">{{ workbench.common.spanish }}</option>
+                  <option value="en">{{ workbench.common.english }}</option>
+                </select>
+              </label>
+            </div>
+            <div class="podcast-admin__form-actions">
+              <button
+                class="btn btn-outline-light"
+                type="button"
+                data-podcast-clip-draft-generate>{{ workbench.production.clipDraftGenerate }}</button>
+            </div>
+            <p
+              class="podcast-admin__status"
+              data-podcast-clip-draft-status
+              role="status"
+              aria-live="polite"></p>
+            <section
+              class="podcast-admin__show-notes-review"
+              data-podcast-clip-draft-review
+              aria-labelledby="podcast-clip-draft-review-heading"
+              hidden>
+              <h4 id="podcast-clip-draft-review-heading">{{ workbench.production.clipDraftReviewHeading }}</h4>
+              <p
+                class="podcast-admin__review-evidence"
+                data-podcast-clip-draft-evidence></p>
+              <ol
+                class="podcast-admin__clip-draft-list"
+                data-podcast-clip-draft-list></ol>
+              <div class="podcast-admin__form-actions">
+                <button
+                  class="btn btn-outline-light"
+                  type="button"
+                  data-podcast-clip-draft-dismiss>{{ workbench.production.clipDraftDismiss }}</button>
+              </div>
+            </section>
+          </section>
           <form class="podcast-admin__form" data-podcast-clip-form>
             <div class="podcast-admin__field-grid">
               <label>{{ workbench.production.clipTitle }}

@@ -12,6 +12,8 @@ const transcriptCueCount = boundedInteger(
   process.env.PODCAST_ADMIN_MOCK_TRANSCRIPT_CUES,
   { minimum: 0, maximum: 10_000, fallback: 0 }
 );
+const transcriptApproved =
+  process.env.PODCAST_ADMIN_MOCK_TRANSCRIPT_APPROVED === "true";
 const publicClipMode = ["ready", "empty", "missing"].includes(
   process.env.PODCAST_ADMIN_MOCK_PUBLIC_CLIPS
 )
@@ -76,12 +78,14 @@ const transcriptCues = Array.from(
       id: `cue_browser_${String(index + 1).padStart(5, "0")}`,
       startsAtMs,
       endsAtMs: startsAtMs + durationMs,
-      speakerLabel: index % 7 === 0
+      speakerLabel: transcriptApproved
+        ? index % 2 === 0 ? "Jay" : "Guest"
+        : index % 7 === 0
         ? ""
         : index % 2 === 0
           ? "Jay"
           : "Guest",
-      speakerConfirmed: index % 13 !== 0,
+      speakerConfirmed: transcriptApproved || index % 13 !== 0,
       textMarkdown: index % 17 === 0
         ? "Una línea sintética deliberadamente rápida para revisar."
         : "Texto sintético de control."
@@ -97,11 +101,11 @@ const transcriptFixture = transcriptCues.length
       episodeId: episode.id,
       language: "es",
       source: "transcription",
-      status: "needs_review",
+      status: transcriptApproved ? "approved" : "needs_review",
       revision: 1,
-      speakerLabelsConfirmed: false,
-      approvedRevision: null,
-      approvedAt: null,
+      speakerLabelsConfirmed: transcriptApproved,
+      approvedRevision: transcriptApproved ? 1 : null,
+      approvedAt: transcriptApproved ? "2026-07-29T06:00:00.000Z" : null,
       contentSha256: sha("3"),
       cues: transcriptCues,
       alignment: {
@@ -1745,6 +1749,52 @@ function responseFor(request) {
         approvedAt: "2026-07-29T06:00:00.000Z",
         includedCueCount: 24,
         totalCueCount: 24,
+        truncated: false
+      },
+      outputLanguage: "es",
+      model: "@cf/meta/llama-3.2-3b-instruct",
+      reviewRequired: true,
+      saved: false
+    });
+  }
+  if (
+    request.method === "POST"
+    && path === `/v1/admin/episodes/${episode.id}/clips/draft`
+  ) {
+    return json({
+      draft: {
+        candidates: [
+          {
+            id: "clip_candidate_111111111111111111111111",
+            title: "La selva también escucha",
+            reason:
+              "Un momento autosuficiente con una entrada clara y visual.",
+            startCueId: "cue_browser_00001",
+            endCueId: "cue_browser_00010",
+            startsAtMs: 0,
+            endsAtMs: 29_500,
+            durationMs: 29_500
+          },
+          {
+            id: "clip_candidate_222222222222222222222222",
+            title: "Crear en colaboración",
+            reason:
+              "Una explicación práctica que funciona fuera del episodio.",
+            startCueId: "cue_browser_00011",
+            endCueId: "cue_browser_00020",
+            startsAtMs: 30_000,
+            endsAtMs: 59_500,
+            durationMs: 29_500
+          }
+        ]
+      },
+      source: {
+        language: "es",
+        revision: 1,
+        contentSha256: sha("3"),
+        approvedAt: "2026-07-29T06:00:00.000Z",
+        includedCueCount: transcriptCueCount,
+        totalCueCount: transcriptCueCount,
         truncated: false
       },
       outputLanguage: "es",
