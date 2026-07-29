@@ -1672,6 +1672,7 @@
       "transcriptNeedsCue": "A transcript must keep at least one cue.",
       "savingTranscriptDraft": "Saving versioned transcript draft…",
       "transcriptDraftSaved": "Transcript draft saved. Approval and word-alignment are independent gates.",
+      "saveReviewDraft": "Save review draft",
       "saveCueEditsFirst": "Save the current cue edits before approving this revision.",
       "discardUnsavedReviewChanges": "Discard the unsaved transcript or chapter review changes?",
       "approvingTranscript": "Approving reviewed transcript revision…",

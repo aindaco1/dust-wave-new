@@ -1672,6 +1672,7 @@
       "transcriptNeedsCue": "La transcripción debe conservar al menos un fragmento.",
       "savingTranscriptDraft": "Guardando el borrador versionado de la transcripción…",
       "transcriptDraftSaved": "Borrador de transcripción guardado. La aprobación y la alineación por palabra son controles independientes.",
+      "saveReviewDraft": "Guardar borrador de revisión",
       "saveCueEditsFirst": "Guarda los cambios de los fragmentos antes de aprobar esta revisión.",
       "discardUnsavedReviewChanges": "¿Descartar los cambios sin guardar de la revisión de transcripción o capítulos?",
       "approvingTranscript": "Aprobando la revisión de transcripción revisada…",
