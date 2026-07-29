@@ -40,6 +40,10 @@
   checkout client to omit cookies across origins. Admin and member clients
   retain the shared credentialed default, while the public show/quote/checkout
   flow now matches the Worker's credential-free CORS contract.
+- Corrected the public show's light-surface color overrides so the Episodes
+  action, tier labels, and member-account link meet WCAG AA contrast despite
+  the site's legacy global white-link rule. Hero actions now also retain a
+  44-pixel minimum target.
 - Added a self-hosted, checksum-pinned Datatype 1.2.2 pilot to Podcast audience
   analytics. Its English/Spanish, font-ready summary uses shared normalization,
   compact container axes, a text-only narrow state, and the existing exact

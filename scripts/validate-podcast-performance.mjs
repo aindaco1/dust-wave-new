@@ -15,6 +15,7 @@ const [
   tracer,
   stagingBuild,
   webpBuild,
+  publicStyles,
   packageJson,
   gitignore
 ] = await Promise.all([
@@ -39,6 +40,10 @@ const [
     "utf8"
   ),
   readFile(new URL("webp.mjs", repositoryRoot), "utf8"),
+  readFile(
+    new URL("src/scss/themes/base/_style-theme.scss", repositoryRoot),
+    "utf8"
+  ),
   readFile(new URL("package.json", repositoryRoot), "utf8"),
   readFile(new URL(".gitignore", repositoryRoot), "utf8")
 ]);
@@ -129,6 +134,26 @@ assert.doesNotMatch(
   show.match(/<img[\s\S]+?class="podcast-show__artwork"[\s\S]+?>/)?.[0] ?? "",
   /loading="lazy"/,
   "above-the-fold artwork must not be lazy loaded"
+);
+assert.match(
+  publicStyles,
+  /\.podcast-show__actions \.btn\s*\{[\s\S]{0,180}min-height:\s*44px/,
+  "public show actions must retain 44px targets"
+);
+assert.match(
+  publicStyles,
+  /\.podcast-show__actions \.btn-light\s*\{[\s\S]{0,100}color:\s*#151515 !important/,
+  "the light hero action must override the legacy white-link rule"
+);
+assert.match(
+  publicStyles,
+  /\.podcast-tier-card__label\s*\{[\s\S]{0,100}color:\s*#8c170f/,
+  "tier labels must retain AA contrast on the light card"
+);
+assert.match(
+  publicStyles,
+  /\.podcast-tier-card--premium a\s*\{[\s\S]{0,120}color:\s*#8c170f !important/,
+  "the account link must override the legacy white-link rule"
 );
 
 for (const [name, layout] of [
