@@ -1912,6 +1912,8 @@
       "downloadMp4": "Descargar MP4",
       "downloadVtt": "Descargar subtítulos (VTT)",
       "downloadSrt": "Descargar subtítulos (SRT)",
+      "downloadSavedVtt": "Descargar VTT guardado",
+      "downloadSavedSrt": "Descargar SRT guardado",
       "invalidPrivateRenderUrl": "La URL del render privado no es válida.",
       "privateClipPreview": "Vista previa privada del clip subtitulado",
       "privateRenderFailed": "No se pudo cargar el render privado. Actualiza la sesión y verifica la evidencia del render.",

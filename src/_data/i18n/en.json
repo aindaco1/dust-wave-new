@@ -1912,6 +1912,8 @@
       "downloadMp4": "Download MP4",
       "downloadVtt": "Download captions (VTT)",
       "downloadSrt": "Download captions (SRT)",
+      "downloadSavedVtt": "Download saved VTT",
+      "downloadSavedSrt": "Download saved SRT",
       "invalidPrivateRenderUrl": "The private render URL is invalid.",
       "privateClipPreview": "Private captioned clip preview",
       "privateRenderFailed": "The private render could not be loaded. Refresh your session and verify the render evidence.",

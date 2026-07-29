@@ -2161,6 +2161,43 @@ function responseFor(request) {
       transcripts: transcriptFixture ? [transcriptFixture] : []
     });
   }
+  const transcriptCaptionMatch = path.match(
+    new RegExp(
+      `^/v1/admin/episodes/${episode.id}/transcripts/(en|es)/`
+      + "captions\\.(vtt|srt)$"
+    )
+  );
+  if (request.method === "GET" && transcriptCaptionMatch) {
+    const [, language, format] = transcriptCaptionMatch;
+    const webVtt = format === "vtt";
+    return {
+      status: 200,
+      contentType: webVtt
+        ? "text/vtt; charset=utf-8"
+        : "application/x-subrip; charset=utf-8",
+      headers: {
+        "content-disposition":
+          `attachment; filename="transcript-${language}-revision-1.${format}"`,
+        "content-language": language,
+        "x-podcast-transcript-revision": "1"
+      },
+      body: webVtt
+        ? [
+            "WEBVTT",
+            "",
+            "1",
+            "00:00:00.000 --> 00:00:02.500",
+            "<v Jay>Texto sintético de control.</v>",
+            ""
+          ].join("\n")
+        : [
+            "1",
+            "00:00:00,000 --> 00:00:02,500",
+            "Jay: Texto sintético de control.",
+            ""
+          ].join("\n")
+    };
+  }
   if (
     request.method === "GET"
     && path === `/v1/admin/episodes/${episode.id}/transcription-jobs`

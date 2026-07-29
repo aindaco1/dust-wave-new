@@ -45,6 +45,10 @@ import {
   renderClipRecipePreview
 } from "./podcast-admin-clip-preview.js";
 import {
+  clipDownloadActionMarkup,
+  mountTranscriptDownloads
+} from "./podcast-admin-download-actions.js";
+import {
   mountShowSiteProjection,
   needsShowArchiveConfirmation,
   populateShowSettingsForm,
@@ -133,6 +137,7 @@ function editorLabels(label) {
 
 function startPodcastAdmin(root) {
   const apiOrigin = root.dataset.apiOrigin;
+  const transcriptDownloads = mountTranscriptDownloads(root, adminText);
   const client = new AdminApiClient({
     baseUrl: apiOrigin,
     csrfHeader: "x-podcast-csrf"
@@ -2020,6 +2025,7 @@ function startPodcastAdmin(root) {
       sponsorResult?.replaceChildren();
       adPlanResult?.replaceChildren();
       transcript = null;
+      transcriptDownloads.render("", null);
       transcriptionState = null;
       transcriptionRequestId += 1;
       alignmentState = null;
@@ -3361,6 +3367,7 @@ function startPodcastAdmin(root) {
 
   function renderTranscript() {
     if (!transcript || !transcriptCuesRoot) return;
+    transcriptDownloads.render(transcriptEpisodeSelect.value, transcript);
     const episode = episodes.find(
       ({ id }) => id === transcriptEpisodeSelect?.value
     );
@@ -5855,17 +5862,10 @@ function startPodcastAdmin(root) {
             : adminText("prepareYoutubeTest"))}
         </button>`
       : "";
-    const downloadActions = [
-      [downloadUrl, "downloadMp4"],
-      [captionsUrl, "downloadVtt"],
-      [subtitlesUrl, "downloadSrt"]
-    ].filter(([url]) => url).map(([url, label]) => `
-        <a
-          class="btn btn-outline-light"
-          href="${escapeAttribute(url)}"
-          download>
-          ${escapeHtml(adminText(label))}
-        </a>`).join("");
+    const downloadActions = clipDownloadActionMarkup(
+      [downloadUrl, captionsUrl, subtitlesUrl],
+      adminText
+    );
     return {
       renderLabel,
       details: `

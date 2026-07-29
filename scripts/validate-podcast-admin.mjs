@@ -120,6 +120,10 @@ const clipPreviewScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-clip-preview.js'),
   'utf8'
 );
+const downloadActionsScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-download-actions.js'),
+  'utf8'
+);
 const analyticsScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-analytics.js'),
   'utf8'
@@ -447,13 +451,43 @@ assert.doesNotMatch(
 );
 assert.match(
   adminScript,
-  /captionsUrl = adminApiUrl\(render\?\.captionsPath\)[\s\S]+subtitlesUrl = adminApiUrl\(render\?\.subtitlesPath\)[\s\S]+downloadVtt[\s\S]+downloadSrt/,
-  'ready Production and Marketing clips must reuse authenticated VTT and SRT paths'
+  /captionsUrl = adminApiUrl\(render\?\.captionsPath\)[\s\S]+subtitlesUrl = adminApiUrl\(render\?\.subtitlesPath\)[\s\S]+clipDownloadActionMarkup/,
+  'ready Production and Marketing clips must reuse authenticated caption paths'
+);
+assert.match(
+  downloadActionsScript,
+  /downloadMp4[\s\S]+downloadVtt[\s\S]+downloadSrt/,
+  'MP4, VTT, and SRT must share one download-action renderer'
 );
 assert.match(
   adminMockApi,
   /captionsPath:[\s\S]+clip_render_browser_fixture\/captions\.vtt[\s\S]+subtitlesPath:[\s\S]+clip_render_browser_fixture\/captions\.srt/,
   'browser QA must expose deterministic private VTT and SRT sidecars'
+);
+assert.match(
+  adminTemplate,
+  /data-podcast-transcript-downloads/,
+  'saved transcript exports must stay in the existing Production workbench'
+);
+assert.match(
+  downloadActionsScript,
+  /transcripts\/\$\{language\}\/captions\.\$\{format\}/,
+  'saved transcript downloads must build exact first-party caption paths'
+);
+assert.match(
+  downloadActionsScript,
+  /createElement\("a"\)[\s\S]+replaceChildren\(\.\.\.links\)/,
+  'saved transcript download actions must use DOM APIs'
+);
+assert.doesNotMatch(
+  downloadActionsScript,
+  /innerHTML|insertAdjacentHTML/,
+  'saved transcript labels and URLs must not use DOM HTML sinks'
+);
+assert.match(
+  adminMockApi,
+  /transcriptCaptionMatch[\s\S]+application\/x-subrip/,
+  'browser QA must expose deterministic saved transcript VTT/SRT responses'
 );
 assert.match(adminTemplate, /data-podcast-upload-form/);
 assert.match(adminTemplate, /data-podcast-rss-import-form/);
