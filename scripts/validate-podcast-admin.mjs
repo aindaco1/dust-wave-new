@@ -447,13 +447,13 @@ assert.doesNotMatch(
 );
 assert.match(
   adminScript,
-  /captionsUrl = adminApiUrl\(render\?\.captionsPath\)[\s\S]+downloadVtt/,
-  'ready Production and Marketing clips must reuse the authenticated VTT path'
+  /captionsUrl = adminApiUrl\(render\?\.captionsPath\)[\s\S]+subtitlesUrl = adminApiUrl\(render\?\.subtitlesPath\)[\s\S]+downloadVtt[\s\S]+downloadSrt/,
+  'ready Production and Marketing clips must reuse authenticated VTT and SRT paths'
 );
 assert.match(
   adminMockApi,
-  /captionsPath:[\s\S]+clip_render_browser_fixture\/captions\.vtt/,
-  'browser QA must expose one deterministic private VTT sidecar'
+  /captionsPath:[\s\S]+clip_render_browser_fixture\/captions\.vtt[\s\S]+subtitlesPath:[\s\S]+clip_render_browser_fixture\/captions\.srt/,
+  'browser QA must expose deterministic private VTT and SRT sidecars'
 );
 assert.match(adminTemplate, /data-podcast-upload-form/);
 assert.match(adminTemplate, /data-podcast-rss-import-form/);

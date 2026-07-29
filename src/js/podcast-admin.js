@@ -5818,6 +5818,7 @@ function startPodcastAdmin(root) {
     const mediaUrl = adminApiUrl(render?.mediaPath);
     const downloadUrl = adminApiUrl(render?.downloadPath);
     const captionsUrl = adminApiUrl(render?.captionsPath);
+    const subtitlesUrl = adminApiUrl(render?.subtitlesPath);
     const ready = render
       && render.clipRevision === clip.revision
       && render.status === "ready"
@@ -5854,6 +5855,17 @@ function startPodcastAdmin(root) {
             : adminText("prepareYoutubeTest"))}
         </button>`
       : "";
+    const downloadActions = [
+      [downloadUrl, "downloadMp4"],
+      [captionsUrl, "downloadVtt"],
+      [subtitlesUrl, "downloadSrt"]
+    ].filter(([url]) => url).map(([url, label]) => `
+        <a
+          class="btn btn-outline-light"
+          href="${escapeAttribute(url)}"
+          download>
+          ${escapeHtml(adminText(label))}
+        </a>`).join("");
     return {
       renderLabel,
       details: `
@@ -5874,18 +5886,7 @@ function startPodcastAdmin(root) {
           data-media-path="${escapeAttribute(render.mediaPath)}">
           ${escapeHtml(adminText("previewRender"))}
         </button>
-        <a
-          class="btn btn-outline-light"
-          href="${escapeAttribute(downloadUrl)}"
-          download>
-          ${escapeHtml(adminText("downloadMp4"))}
-        </a>
-        <a
-          class="btn btn-outline-light"
-          href="${escapeAttribute(captionsUrl)}"
-          download>
-          ${escapeHtml(adminText("downloadVtt"))}
-        </a>
+        ${downloadActions}
         ${publicAction}
         ${youtubeAction}`,
       container: `<div
@@ -6183,7 +6184,7 @@ function startPodcastAdmin(root) {
 
   function adminApiUrl(path) {
     if (
-      !/^\/v1\/admin\/clip-renders\/[A-Za-z0-9_-]+\/(?:media(?:\?download=1)?|captions\.vtt)$/
+      !/^\/v1\/admin\/clip-renders\/[A-Za-z0-9_-]+\/(?:media(?:\?download=1)?|captions\.(?:vtt|srt))$/
         .test(path || "")
     ) {
       return "";

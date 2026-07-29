@@ -144,7 +144,9 @@ const clip = {
     downloadPath:
       "/v1/admin/clip-renders/clip_render_browser_fixture/media?download=1",
     captionsPath:
-      "/v1/admin/clip-renders/clip_render_browser_fixture/captions.vtt"
+      "/v1/admin/clip-renders/clip_render_browser_fixture/captions.vtt",
+    subtitlesPath:
+      "/v1/admin/clip-renders/clip_render_browser_fixture/captions.srt"
   },
   youtubePublication: null
 };
@@ -2352,6 +2354,26 @@ function responseFor(request) {
         "1",
         "00:00:00.000 --> 00:00:24.000",
         "<v Jay>Un audiograma subtitulado de control.</v>",
+        ""
+      ].join("\n")
+    };
+  }
+  if (
+    request.method === "GET"
+    && path === `/v1/admin/clip-renders/${clip.render.id}/captions.srt`
+  ) {
+    return {
+      status: 200,
+      contentType: "application/x-subrip; charset=utf-8",
+      headers: {
+        "content-disposition":
+          'attachment; filename="mock-clip-render.srt"',
+        "content-language": "es"
+      },
+      body: [
+        "1",
+        "00:00:00,000 --> 00:00:24,000",
+        "Jay: Un audiograma subtitulado de control.",
         ""
       ].join("\n")
     };
