@@ -615,6 +615,7 @@ let audioEnhancementDerivatives = [
       completedAt: "2026-07-26T12:05:00.000Z"
     },
     approvable: true,
+    rejectable: true,
     processorVersion:
       "dustwave-audio-enhancement-derivative-1 (ffmpeg fixture)",
     processorReportSha256: sha("8"),
@@ -624,6 +625,8 @@ let audioEnhancementDerivatives = [
     requestedAt: "2026-07-26T12:00:00.000Z",
     completedAt: "2026-07-26T12:04:00.000Z",
     approvedAt: null,
+    rejectionReason: null,
+    rejectedAt: null,
     processor: null,
     environment: "staging"
   }
@@ -1980,6 +1983,7 @@ function responseFor(request) {
       output: null,
       qualityControl: null,
       approvable: false,
+      rejectable: false,
       processorVersion: null,
       processorReportSha256: null,
       requestedAt: new Date().toISOString(),
@@ -2012,6 +2016,7 @@ function responseFor(request) {
             ...derivative,
             status: "approved",
             approvable: false,
+            rejectable: false,
             approvedAt: new Date().toISOString()
           }
         : derivative
@@ -2032,6 +2037,32 @@ function responseFor(request) {
     };
     return json({
       master: audioMasterPayload.current
+    });
+  }
+  if (
+    request.method === "POST"
+    && path
+      === "/v1/admin/audio-enhancement-derivatives/"
+        + "derivative_browser_fixture/reject"
+  ) {
+    audioEnhancementDerivatives = audioEnhancementDerivatives.map(
+      (derivative) => derivative.id === "derivative_browser_fixture"
+        ? {
+            ...derivative,
+            status: "rejected",
+            approvable: false,
+            rejectable: false,
+            rejectionReason:
+              "The original master is the stronger editorial choice.",
+            rejectedAt: new Date().toISOString()
+          }
+        : derivative
+    );
+    return json({
+      derivative: audioEnhancementDerivatives.find(
+        ({ id }) => id === "derivative_browser_fixture"
+      ),
+      idempotent: false
     });
   }
   if (

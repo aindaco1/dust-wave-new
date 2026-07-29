@@ -1579,6 +1579,20 @@
   margin-top: var(--dw-admin-space-md);
 }
 
+.podcast-admin__audio-derivative-decisions {
+  display: grid;
+  gap: var(--dw-admin-space-md);
+  grid-template-columns:
+    repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  margin-top: var(--dw-admin-space-md);
+}
+
+.podcast-admin__audio-derivative-decisions
+  > .podcast-admin__form {
+  align-content: start;
+  margin-top: 0;
+}
+
 .podcast-admin__audio-enhancement-comparison {
   display: grid;
   gap: var(--dw-admin-space-md);

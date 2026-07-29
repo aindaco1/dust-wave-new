@@ -12,7 +12,7 @@ export function mountAudioEnhancementDerivatives({
   localizeCode,
   canQueue,
   canApprove,
-  onApproved
+  onDecided
 }) {
   const statusRoot = root.querySelector(
     "[data-podcast-audio-derivative-status]"
@@ -160,11 +160,20 @@ export function mountAudioEnhancementDerivatives({
     appendQualityControl(article, derivative);
     appendStateDetail(article, derivative, derivativeStatus);
     if (
-      derivative.approvable
+      (derivative.approvable || derivative.rejectable)
       && canApprove()
       && derivativeStatus === "ready"
     ) {
-      article.append(buildApprovalForm(derivative));
+      const decisions = document.createElement("div");
+      decisions.className =
+        "podcast-admin__audio-derivative-decisions";
+      if (derivative.approvable) {
+        decisions.append(buildApprovalForm(derivative));
+      }
+      if (derivative.rejectable) {
+        decisions.append(buildRejectionForm(derivative));
+      }
+      article.append(decisions);
     }
     return article;
   }
@@ -221,6 +230,10 @@ export function mountAudioEnhancementDerivatives({
       detail.textContent = text("derivativeQcFailed");
     } else if (derivativeStatus === "stale") {
       detail.textContent = text("derivativeStale");
+    } else if (derivativeStatus === "rejected") {
+      detail.textContent = text("derivativeRejected", {
+        reason: String(derivative.rejectionReason || "")
+      });
     } else {
       return;
     }
@@ -274,6 +287,55 @@ export function mountAudioEnhancementDerivatives({
     return form;
   }
 
+  function buildRejectionForm(derivative) {
+    const form = document.createElement("form");
+    form.className =
+      "podcast-admin__form podcast-admin__audio-master-rejection";
+    const heading = document.createElement("h4");
+    heading.textContent = text("rejectDerivativeHeading");
+    const intro = document.createElement("p");
+    intro.textContent = text("rejectDerivativeIntro");
+    const reasonLabel = document.createElement("label");
+    reasonLabel.textContent = text("rejectionReason");
+    const reason = document.createElement("textarea");
+    reason.name = "rejectionReason";
+    reason.rows = 3;
+    reason.minLength = 10;
+    reason.maxLength = 500;
+    reason.required = true;
+    reasonLabel.append(reason);
+    const acknowledgeLabel = document.createElement("label");
+    acknowledgeLabel.className = "podcast-admin__checkbox";
+    const acknowledge = document.createElement("input");
+    acknowledge.type = "checkbox";
+    acknowledge.name = "acknowledgeExactDerivative";
+    acknowledge.required = true;
+    acknowledgeLabel.append(
+      acknowledge,
+      document.createTextNode(` ${text("rejectDerivativeAck")}`)
+    );
+    const button = document.createElement("button");
+    button.className = "btn btn-outline-light";
+    button.type = "submit";
+    button.textContent = text("rejectEnhancedCandidate");
+    const formStatus = document.createElement("p");
+    formStatus.className = "podcast-admin__status";
+    formStatus.setAttribute("role", "status");
+    formStatus.setAttribute("aria-live", "polite");
+    form.append(
+      heading,
+      intro,
+      reasonLabel,
+      acknowledgeLabel,
+      button,
+      formStatus
+    );
+    form.addEventListener("submit", (event) =>
+      reject(event, derivative, form, formStatus)
+    );
+    return form;
+  }
+
   async function approve(event, derivative, form, formStatus) {
     event.preventDefault();
     if (
@@ -298,10 +360,44 @@ export function mountAudioEnhancementDerivatives({
           }
         }
       );
-      await onApproved(episodeId);
+      await onDecided(episodeId);
       setStatus(statusRoot, text("enhancedMasterApproved", {
         revision: formatInteger(payload.master?.revision)
       }));
+    } catch (error) {
+      setStatus(formStatus, friendlyError(error), true);
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  async function reject(event, derivative, form, formStatus) {
+    event.preventDefault();
+    if (
+      !episodeId
+      || !derivative?.id
+      || !derivative.rejectable
+      || !canApprove()
+    ) return;
+    const button = form.querySelector('button[type="submit"]');
+    button.disabled = true;
+    setStatus(formStatus, text("rejectingEnhancedCandidate"));
+    try {
+      await client.request(
+        `/v1/admin/audio-enhancement-derivatives/`
+          + `${encodeURIComponent(String(derivative.id))}/reject`,
+        {
+          method: "POST",
+          body: {
+            baseRevision,
+            rejectionReason: form.elements.rejectionReason.value,
+            acknowledgeExactDerivative:
+              form.elements.acknowledgeExactDerivative.checked
+          }
+        }
+      );
+      await onDecided(episodeId);
+      setStatus(statusRoot, text("enhancedCandidateRejected"));
     } catch (error) {
       setStatus(formStatus, friendlyError(error), true);
     } finally {
@@ -353,7 +449,12 @@ function emptyMessage(value) {
 function cardStatus(status) {
   if (["succeeded", "ready", "approved"].includes(status)) return "ready";
   if (
-    ["failed", "quality_control_failed", "stale"].includes(status)
+    [
+      "failed",
+      "quality_control_failed",
+      "rejected",
+      "stale"
+    ].includes(status)
   ) return "failed";
   return "pending";
 }

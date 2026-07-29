@@ -667,7 +667,7 @@ function startPodcastAdmin(root) {
     localizeCode: localizedCode,
     canQueue: () => canRunAudioEnhancements,
     canApprove: () => canApproveAudioMasters,
-    onApproved: async (episodeId) => {
+    onDecided: async (episodeId) => {
       await Promise.all([
         loadAudioMaster(),
         loadProductionReviews(),
