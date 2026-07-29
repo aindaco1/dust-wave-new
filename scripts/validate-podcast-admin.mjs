@@ -124,6 +124,10 @@ const downloadActionsScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-download-actions.js'),
   'utf8'
 );
+const transcriptImportScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-transcript-import.js'),
+  'utf8'
+);
 const analyticsScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-analytics.js'),
   'utf8'
@@ -488,6 +492,44 @@ assert.match(
   adminMockApi,
   /transcriptCaptionMatch[\s\S]+application\/x-subrip/,
   'browser QA must expose deterministic saved transcript VTT/SRT responses'
+);
+for (const selector of [
+  "data-podcast-transcript-import",
+  "data-podcast-transcript-import-form",
+  "data-podcast-transcript-import-file",
+  "data-podcast-transcript-import-submit",
+  "data-podcast-transcript-import-status"
+]) {
+  assert.match(
+    adminTemplate,
+    new RegExp(selector),
+    `caption import must expose ${selector}`
+  );
+}
+assert.match(
+  adminTemplate,
+  /accept="\.vtt,\.srt,text\/vtt,application\/x-subrip,application\/srt,text\/srt"/,
+  'caption import must be explicitly bounded to WebVTT and SubRip'
+);
+assert.match(
+  transcriptImportScript,
+  /MAXIMUM_FILE_BYTES = 1_000_000[\s\S]+MAXIMUM_CUES = 10_000[\s\S]+MAXIMUM_CUE_DURATION_MS = 120_000/,
+  'caption import must mirror the bounded transcript review limits'
+);
+assert.match(
+  transcriptImportScript,
+  /speakerConfirmed: false[\s\S]+hasExistingContent\(\)[\s\S]+confirmReplace/,
+  'caption import must keep voice labels unconfirmed and protect existing work'
+);
+assert.doesNotMatch(
+  transcriptImportScript,
+  /\bfetch\s*\(|AdminApiClient|innerHTML|insertAdjacentHTML/,
+  'caption import must remain browser-local and avoid HTML sinks'
+);
+assert.match(
+  adminScript,
+  /mountTranscriptCaptionImport\([\s\S]+transcript\.cues = cues[\s\S]+transcriptDirty = true[\s\S]+renderTranscript\(\)/,
+  'caption import must reuse the existing unsaved transcript editor and save path'
 );
 assert.match(adminTemplate, /data-podcast-upload-form/);
 assert.match(adminTemplate, /data-podcast-rss-import-form/);

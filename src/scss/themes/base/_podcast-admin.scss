@@ -1209,7 +1209,8 @@
   grid-column: 1 / -1;
 }
 
-.podcast-admin__transcript-speaker-range {
+.podcast-admin__transcript-speaker-range,
+.podcast-admin__transcript-import {
   background: #101010;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 0.65rem;
@@ -1218,8 +1219,18 @@
 }
 
 .podcast-admin__transcript-speaker-range .podcast-admin__field-grid,
-.podcast-admin__transcript-speaker-range .podcast-admin__transcript-actions {
+.podcast-admin__transcript-speaker-range .podcast-admin__transcript-actions,
+.podcast-admin__transcript-import-form {
   margin-top: var(--dw-admin-space-md);
+}
+
+.podcast-admin__transcript-import-form {
+  display: grid;
+  gap: var(--dw-admin-space-md);
+}
+
+.podcast-admin__transcript-import-form .podcast-admin__transcript-actions {
+  margin-top: 0;
 }
 
 .podcast-admin__transcript-cue {

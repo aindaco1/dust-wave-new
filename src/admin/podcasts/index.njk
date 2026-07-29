@@ -509,6 +509,32 @@ eleventyComputed:
             </div>
             <div class="podcast-admin__transcript-meta" data-podcast-transcript-meta aria-live="polite"></div>
             <section
+              class="podcast-admin__transcript-import"
+              data-podcast-transcript-import
+              aria-labelledby="podcast-transcript-import-heading"
+              hidden>
+              <div class="podcast-admin__panel-heading podcast-admin__section-heading">
+                <div>
+                  <h3 id="podcast-transcript-import-heading">{{ workbench.production.importCaptionsHeading }}</h3>
+                  <p>{{ workbench.production.importCaptionsIntro }}</p>
+                </div>
+                <p class="podcast-admin__pill">{{ workbench.production.localDraftPill }}</p>
+              </div>
+              <form class="podcast-admin__transcript-import-form" data-podcast-transcript-import-form>
+                <label>{{ workbench.production.importCaptionsFile }}
+                  <input
+                    data-podcast-transcript-import-file
+                    type="file"
+                    accept=".vtt,.srt,text/vtt,application/x-subrip,application/srt,text/srt"
+                    required>
+                </label>
+                <div class="podcast-admin__transcript-actions">
+                  <button class="btn btn-outline-light" type="submit" data-podcast-transcript-import-submit>{{ workbench.production.importCaptionsSubmit }}</button>
+                </div>
+                <p class="podcast-admin__status" data-podcast-transcript-import-status role="status" aria-live="polite"></p>
+              </form>
+            </section>
+            <section
               class="podcast-admin__transcript-diagnostics"
               data-podcast-transcript-diagnostics
               aria-labelledby="podcast-transcript-diagnostics-heading"

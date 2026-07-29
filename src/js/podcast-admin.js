@@ -49,6 +49,9 @@ import {
   mountTranscriptDownloads
 } from "./podcast-admin-download-actions.js";
 import {
+  mountTranscriptCaptionImport
+} from "./podcast-admin-transcript-import.js";
+import {
   mountShowSiteProjection,
   needsShowArchiveConfirmation,
   populateShowSettingsForm,
@@ -535,6 +538,34 @@ function startPodcastAdmin(root) {
   let turnstileWidgetId;
   let turnstileInitialization;
 
+  const transcriptImport = mountTranscriptCaptionImport({
+    root,
+    text: adminText,
+    canEdit: () => canEditTranscripts && Boolean(transcript),
+    hasExistingContent: () => Boolean(
+      transcriptDirty
+      || Number(transcript?.revision || 0) > 0
+      || transcript?.cues?.some(({ textMarkdown }) =>
+        String(textMarkdown || "").trim()
+      )
+    ),
+    getLanguage: () => transcriptLanguageSelect?.value || "es",
+    getMaximumEndMs: () => transcriptDurationSeconds === null
+      ? null
+      : Math.round(transcriptDurationSeconds * 1_000),
+    getContextKey: () => [
+      transcriptEpisodeSelect?.value,
+      transcriptLanguageSelect?.value,
+      transcriptRequestId
+    ].join(":"),
+    applyImport({ cues }) {
+      if (!transcript || !canEditTranscripts) return;
+      transcript.cues = cues;
+      transcriptPage = 0;
+      transcriptDirty = true;
+      renderTranscript();
+    }
+  });
   const rssImport = mountRssImportWorkbench({
     root,
     client,
@@ -2517,6 +2548,8 @@ function startPodcastAdmin(root) {
   async function loadTranscript() {
     const episodeId = transcriptEpisodeSelect?.value;
     const language = transcriptLanguageSelect?.value || "es";
+    transcriptImport.reset();
+    transcriptImport.setState({ available: false, editable: false });
     transcriptRequestId += 1;
     const requestId = transcriptRequestId;
     transcriptPage = 0;
@@ -3367,6 +3400,10 @@ function startPodcastAdmin(root) {
 
   function renderTranscript() {
     if (!transcript || !transcriptCuesRoot) return;
+    transcriptImport.setState({
+      available: true,
+      editable: canEditTranscripts
+    });
     transcriptDownloads.render(transcriptEpisodeSelect.value, transcript);
     const episode = episodes.find(
       ({ id }) => id === transcriptEpisodeSelect?.value

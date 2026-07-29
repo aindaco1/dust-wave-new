@@ -126,6 +126,12 @@ Worker's exact current audio, transcript, chapter, clip, and ad-plan revisions.
 It renders review text only through DOM text nodes, distinguishes current from
 historical targets, exposes resolve/reopen and role-gated approval state, and
 labels readiness as non-enforcing until the later publication dependency gate.
+Producer+ transcript review can read a WebVTT or SubRip file locally into that
+same unsaved editor. The bounded parser performs no upload or API call, caps
+the normalized review at 1 MB and 10,000 ordered non-overlapping cues, keeps
+VTT voice labels unconfirmed, preserves ambiguous SRT prefixes as caption
+text, and requires confirmation before replacing existing work. The existing
+versioned Save action remains the only persistence path.
 
 ## Roadmap
 
