@@ -14,7 +14,10 @@ const {
   clipCueSummary,
   millisecondsToTimestamp,
   navigateToTranscriptReviewCue,
+  resolveTranscriptDiagnosticPosition,
+  stepTranscriptDiagnosticPosition,
   summarizeTranscriptReview,
+  transcriptReviewDiagnosticItems,
   transcriptCuePlainText,
   TRANSCRIPT_REVIEW_THRESHOLDS
 } = await import(
@@ -165,15 +168,33 @@ test("summarizes bounded transcript review signals without retaining text", () =
     cueCount: 4,
     unlabeledCueCount: 2,
     firstUnlabeledCueIndex: 2,
+    unlabeledCueIndexes: [2, 3],
     unconfirmedSpeakerCueCount: 1,
     firstUnconfirmedSpeakerCueIndex: 0,
+    unconfirmedSpeakerCueIndexes: [0],
     distinctSpeakerCount: 1,
     reviewCueCount: 4,
     signals: {
-      invalidTiming: { count: 1, firstCueIndex: 3 },
-      shortDuration: { count: 1, firstCueIndex: 0 },
-      longDuration: { count: 1, firstCueIndex: 1 },
-      fastReading: { count: 1, firstCueIndex: 2 }
+      invalidTiming: {
+        count: 1,
+        firstCueIndex: 3,
+        cueIndexes: [3]
+      },
+      shortDuration: {
+        count: 1,
+        firstCueIndex: 0,
+        cueIndexes: [0]
+      },
+      longDuration: {
+        count: 1,
+        firstCueIndex: 1,
+        cueIndexes: [1]
+      },
+      fastReading: {
+        count: 1,
+        firstCueIndex: 2,
+        cueIndexes: [2]
+      }
     }
   });
   assert.equal(JSON.stringify(summary).includes("Short"), false);
@@ -199,15 +220,18 @@ test("uses strict signal boundaries and visible Markdown characters", () => {
   assert.equal(summary.reviewCueCount, 0);
   assert.deepEqual(summary.signals.shortDuration, {
     count: 0,
-    firstCueIndex: null
+    firstCueIndex: null,
+    cueIndexes: []
   });
   assert.deepEqual(summary.signals.longDuration, {
     count: 0,
-    firstCueIndex: null
+    firstCueIndex: null,
+    cueIndexes: []
   });
   assert.deepEqual(summary.signals.fastReading, {
     count: 0,
-    firstCueIndex: null
+    firstCueIndex: null,
+    cueIndexes: []
   });
 });
 
@@ -216,17 +240,81 @@ test("returns an empty, stable contract for missing cues", () => {
     cueCount: 0,
     unlabeledCueCount: 0,
     firstUnlabeledCueIndex: null,
+    unlabeledCueIndexes: [],
     unconfirmedSpeakerCueCount: 0,
     firstUnconfirmedSpeakerCueIndex: null,
+    unconfirmedSpeakerCueIndexes: [],
     distinctSpeakerCount: 0,
     reviewCueCount: 0,
     signals: {
-      invalidTiming: { count: 0, firstCueIndex: null },
-      shortDuration: { count: 0, firstCueIndex: null },
-      longDuration: { count: 0, firstCueIndex: null },
-      fastReading: { count: 0, firstCueIndex: null }
+      invalidTiming: {
+        count: 0,
+        firstCueIndex: null,
+        cueIndexes: []
+      },
+      shortDuration: {
+        count: 0,
+        firstCueIndex: null,
+        cueIndexes: []
+      },
+      longDuration: {
+        count: 0,
+        firstCueIndex: null,
+        cueIndexes: []
+      },
+      fastReading: {
+        count: 0,
+        firstCueIndex: null,
+        cueIndexes: []
+      }
     }
   });
+});
+
+test("keeps every diagnostic cue navigable without retaining cue text", () => {
+  const summary = summarizeTranscriptReview([
+    cue({ endsAtMs: 250, speakerLabel: "Jay" }),
+    cue({ endsAtMs: 300 }),
+    cue({
+      startsAtMs: 400,
+      endsAtMs: 11_000,
+      speakerLabel: "Guest",
+      speakerConfirmed: true
+    }),
+    cue({
+      startsAtMs: 12_000,
+      endsAtMs: 13_000,
+      textMarkdown: "12345678901234567890123456",
+      speakerLabel: "Jay"
+    })
+  ]);
+  const items = transcriptReviewDiagnosticItems(
+    summary,
+    (key) => key
+  );
+  assert.deepEqual(
+    items.map(({ key, cueIndexes }) => ({ key, cueIndexes })),
+    [
+      { key: "speakers", cueIndexes: [0, 1, 3] },
+      { key: "shortDuration", cueIndexes: [0, 1] },
+      { key: "longDuration", cueIndexes: [2] },
+      { key: "fastReading", cueIndexes: [3] }
+    ]
+  );
+  assert.equal(JSON.stringify(items).includes("123456"), false);
+});
+
+test("steps diagnostic navigation without wrapping or leaving bounds", () => {
+  const cues = [2, 7, 11];
+  assert.equal(resolveTranscriptDiagnosticPosition(cues, 7), 1);
+  assert.equal(resolveTranscriptDiagnosticPosition(cues, 99), 0);
+  assert.equal(resolveTranscriptDiagnosticPosition([], 2), -1);
+  assert.equal(stepTranscriptDiagnosticPosition(cues, 1, 1), 2);
+  assert.equal(stepTranscriptDiagnosticPosition(cues, 2, 1), 2);
+  assert.equal(stepTranscriptDiagnosticPosition(cues, 1, -1), 0);
+  assert.equal(stepTranscriptDiagnosticPosition(cues, 0, -1), 0);
+  assert.equal(stepTranscriptDiagnosticPosition(cues, 1, 0), 1);
+  assert.equal(stepTranscriptDiagnosticPosition([], 0, 1), -1);
 });
 
 test("shares stable transcript display helpers with the workbench", () => {

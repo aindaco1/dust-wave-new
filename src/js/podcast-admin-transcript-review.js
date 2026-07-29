@@ -136,8 +136,10 @@ export function summarizeTranscriptReview(cues) {
     cueCount: rows.length,
     unlabeledCueCount: 0,
     firstUnlabeledCueIndex: null,
+    unlabeledCueIndexes: [],
     unconfirmedSpeakerCueCount: 0,
     firstUnconfirmedSpeakerCueIndex: null,
+    unconfirmedSpeakerCueIndexes: [],
     distinctSpeakerCount: 0,
     reviewCueCount: 0,
     signals: {
@@ -153,11 +155,13 @@ export function summarizeTranscriptReview(cues) {
     if (!speakerLabel) {
       summary.unlabeledCueCount += 1;
       summary.firstUnlabeledCueIndex ??= index;
+      summary.unlabeledCueIndexes.push(index);
     } else {
       distinctSpeakers.add(speakerLabel.toLocaleLowerCase());
       if (cue?.speakerConfirmed !== true) {
         summary.unconfirmedSpeakerCueCount += 1;
         summary.firstUnconfirmedSpeakerCueIndex ??= index;
+        summary.unconfirmedSpeakerCueIndexes.push(index);
         reviewCueIndexes.add(index);
       }
     }
@@ -199,70 +203,6 @@ export function summarizeTranscriptReview(cues) {
   return summary;
 }
 
-export function renderTranscriptReviewDiagnostics(
-  container,
-  cues,
-  text,
-  onOpenCue
-) {
-  const diagnostics = container?.querySelector(
-    "[data-podcast-transcript-diagnostics]"
-  );
-  const summaryRoot = container?.querySelector(
-    "[data-podcast-transcript-diagnostics-summary]"
-  );
-  const listRoot = container?.querySelector(
-    "[data-podcast-transcript-diagnostics-list]"
-  );
-  if (!diagnostics || !summaryRoot || !listRoot) return;
-  const summary = summarizeTranscriptReview(cues);
-  diagnostics.hidden = false;
-  summaryRoot.textContent = text("transcriptDiagnosticsSummary", {
-    cues: localizedNumber(summary.cueCount),
-    signals: localizedNumber(summary.reviewCueCount)
-  });
-  const items = diagnosticItems(summary, text);
-  if (!items.length) {
-    const message = document.createElement("li");
-    message.className = "podcast-admin__transcript-diagnostic-empty";
-    message.textContent = text("transcriptDiagnosticsClear");
-    listRoot.replaceChildren(message);
-    return;
-  }
-  listRoot.replaceChildren(
-    ...items.map(({ label, cueIndex }) => {
-      const item = document.createElement("li");
-      const button = document.createElement("button");
-      button.className = "podcast-admin__transcript-diagnostic";
-      button.type = "button";
-      const message = document.createElement("span");
-      message.textContent = label;
-      const action = document.createElement("span");
-      action.className = "podcast-admin__transcript-diagnostic-action";
-      action.textContent = text("transcriptDiagnosticOpenCue", {
-        number: localizedNumber(cueIndex + 1)
-      });
-      button.append(message, action);
-      button.addEventListener("click", () => onOpenCue(cueIndex));
-      item.append(button);
-      return item;
-    })
-  );
-}
-
-export function clearTranscriptReviewDiagnostics(container) {
-  const diagnostics = container?.querySelector(
-    "[data-podcast-transcript-diagnostics]"
-  );
-  if (diagnostics) diagnostics.hidden = true;
-  container?.querySelector(
-    "[data-podcast-transcript-diagnostics-summary]"
-  )?.replaceChildren();
-  container?.querySelector(
-    "[data-podcast-transcript-diagnostics-list]"
-  )?.replaceChildren();
-}
-
 export function navigateToTranscriptReviewCue({
   cueIndex,
   cues,
@@ -292,27 +232,32 @@ export function navigateToTranscriptReviewCue({
   return true;
 }
 
-function diagnosticItems(summary, text) {
+export function transcriptReviewDiagnosticItems(summary, text) {
   const items = [];
   if (
     summary.unlabeledCueCount > 0
     || summary.unconfirmedSpeakerCueCount > 0
   ) {
+    const cueIndexes = [
+      ...summary.unlabeledCueIndexes,
+      ...summary.unconfirmedSpeakerCueIndexes
+    ].sort((left, right) => left - right);
     items.push({
+      key: "speakers",
       label: text("transcriptDiagnosticSpeakers", {
         speakers: localizedNumber(summary.distinctSpeakerCount),
         unlabeled: localizedNumber(summary.unlabeledCueCount),
         unconfirmed: localizedNumber(summary.unconfirmedSpeakerCueCount)
       }),
-      cueIndex: summary.firstUnconfirmedSpeakerCueIndex
-        ?? summary.firstUnlabeledCueIndex
+      cueIndex: cueIndexes[0],
+      cueIndexes
     });
   }
-  addSignal(items, summary.signals.invalidTiming, text(
+  addSignal(items, "invalidTiming", summary.signals.invalidTiming, text(
     "transcriptDiagnosticInvalidTiming",
     { count: localizedNumber(summary.signals.invalidTiming.count) }
   ));
-  addSignal(items, summary.signals.shortDuration, text(
+  addSignal(items, "shortDuration", summary.signals.shortDuration, text(
     "transcriptDiagnosticShort",
     {
       count: localizedNumber(summary.signals.shortDuration.count),
@@ -321,7 +266,7 @@ function diagnosticItems(summary, text) {
       )
     }
   ));
-  addSignal(items, summary.signals.longDuration, text(
+  addSignal(items, "longDuration", summary.signals.longDuration, text(
     "transcriptDiagnosticLong",
     {
       count: localizedNumber(summary.signals.longDuration.count),
@@ -330,7 +275,7 @@ function diagnosticItems(summary, text) {
       )
     }
   ));
-  addSignal(items, summary.signals.fastReading, text(
+  addSignal(items, "fastReading", summary.signals.fastReading, text(
     "transcriptDiagnosticFast",
     {
       count: localizedNumber(summary.signals.fastReading.count),
@@ -342,9 +287,37 @@ function diagnosticItems(summary, text) {
   return items;
 }
 
-function addSignal(items, signal, label) {
+export function resolveTranscriptDiagnosticPosition(
+  cueIndexes,
+  selectedCueIndex
+) {
+  if (!Array.isArray(cueIndexes) || cueIndexes.length === 0) return -1;
+  const position = cueIndexes.indexOf(selectedCueIndex);
+  return position >= 0 ? position : 0;
+}
+
+export function stepTranscriptDiagnosticPosition(
+  cueIndexes,
+  position,
+  direction
+) {
+  if (!Array.isArray(cueIndexes) || cueIndexes.length === 0) return -1;
+  const current = Number.isInteger(position) ? position : 0;
+  const step = direction === -1 ? -1 : direction === 1 ? 1 : 0;
+  return Math.min(
+    cueIndexes.length - 1,
+    Math.max(0, current + step)
+  );
+}
+
+function addSignal(items, key, signal, label) {
   if (signal.count > 0) {
-    items.push({ label, cueIndex: signal.firstCueIndex });
+    items.push({
+      key,
+      label,
+      cueIndex: signal.firstCueIndex,
+      cueIndexes: signal.cueIndexes
+    });
   }
 }
 
@@ -362,12 +335,13 @@ function localizedThreshold(value) {
 }
 
 function emptySignal() {
-  return { count: 0, firstCueIndex: null };
+  return { count: 0, firstCueIndex: null, cueIndexes: [] };
 }
 
 function recordSignal(signal, cueIndex) {
   signal.count += 1;
   signal.firstCueIndex ??= cueIndex;
+  signal.cueIndexes.push(cueIndex);
 }
 
 function captionCharacterCount(value) {

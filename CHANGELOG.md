@@ -25,6 +25,12 @@
   public name to a bounded set of visible cues without changing caption text,
   timing, or server state; the existing versioned Save action remains the only
   persistence path and approval stays disabled after changes.
+- Expanded the browser-local transcript quality panel from one first-cue jump
+  into a complete English/Spanish issue navigator. Each speaker, timing,
+  duration, and reading-speed category now has accessible previous/open/next
+  controls, preserves its bounded position across 100-cue pages, and reuses the
+  existing editor focus path without adding storage, requests, saves, or
+  approval behavior.
 - Added a self-hosted, checksum-pinned Datatype 1.2.2 pilot to Podcast audience
   analytics. Its English/Spanish, font-ready summary uses shared normalization,
   compact container axes, a text-only narrow state, and the existing exact

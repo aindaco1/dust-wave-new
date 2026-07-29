@@ -45,6 +45,13 @@ const transcriptDiagnosticsScript = await readFile(
   ),
   'utf8'
 );
+const transcriptDiagnosticNavigationScript = await readFile(
+  path.join(
+    repositoryRoot,
+    'src/js/podcast-admin-transcript-diagnostic-navigation.js'
+  ),
+  'utf8'
+);
 const transcriptSpeakerRangeScript = await readFile(
   path.join(
     repositoryRoot,
@@ -226,6 +233,7 @@ const staticRuntimeKeys = [
   ...youtubeAudioRenditionScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...showPricesScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...transcriptDiagnosticsScript.matchAll(/text\(\s*"([^"]+)"/g),
+  ...transcriptDiagnosticNavigationScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...transcriptSearchScript.matchAll(/text\(\s*"([^"]+)"/g)
 ].map((match) => match[1]);
 for (const key of new Set(staticRuntimeKeys)) {
@@ -1028,6 +1036,18 @@ assert.match(
 assert.match(
   transcriptDiagnosticsScript,
   /maximumCharactersPerSecond:\s*25/
+);
+assert.match(
+  transcriptDiagnosticNavigationScript,
+  /role", "group"[\s\S]+aria-labelledby/
+);
+assert.match(
+  transcriptDiagnosticNavigationScript,
+  /stepTranscriptDiagnosticPosition[\s\S]+onOpenCue\(update\(\)\)/
+);
+assert.match(
+  adminStyles,
+  /podcast-admin__transcript-diagnostic-button[\s\S]+min-height:\s*2\.75rem/
 );
 assert.match(
   adminMockApi,

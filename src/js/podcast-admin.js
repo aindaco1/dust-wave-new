@@ -4,13 +4,15 @@ import { mountRichTextEditor } from "./dust-wave-admin-shell/editor.js?v=0.8.1";
 import { markdownToEditorHtml } from "./dust-wave-admin-shell/editor-codec.js?v=0.8.1";
 import {
   clipCueSummary,
-  clearTranscriptReviewDiagnostics as clearQa,
   emptyTranscript,
   millisecondsToTimestamp,
   navigateToTranscriptReviewCue,
   newTranscriptCue,
-  renderTranscriptReviewDiagnostics
 } from "./podcast-admin-transcript-review.js";
+import {
+  clearTranscriptReviewDiagnostics as clearQa,
+  renderTranscriptReviewDiagnostics
+} from "./podcast-admin-transcript-diagnostic-navigation.js";
 import {
   buildTaggedMarketingUrl,
   createMarketingQr,
