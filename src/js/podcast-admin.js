@@ -35,6 +35,9 @@ import {
   mountEpisodeEditor
 } from "./podcast-admin-episode-editor.js";
 import {
+  mountShowNotesAssistant
+} from "./podcast-admin-show-notes.js";
+import {
   mountShowSiteProjection,
   needsShowArchiveConfirmation,
   populateShowSettingsForm,
@@ -556,6 +559,14 @@ function startPodcastAdmin(root) {
       labels: editorLabels(notesEditorLabel)
     }
   );
+  const showNotesAssistant = mountShowNotesAssistant({
+    root: root.querySelector("[data-podcast-show-notes]"),
+    notesEditor,
+    client,
+    text: adminText,
+    setStatus,
+    friendlyError
+  });
   const episodeEditor = mountEpisodeEditor({
     form: episodeForm,
     list: episodeList,
@@ -567,6 +578,12 @@ function startPodcastAdmin(root) {
     getSelectedShowId: () => selectedShowId,
     getShows: () => shows,
     canEdit: () => canManageCreatives,
+    onModeChange({ episodeId, sourceLanguage }) {
+      showNotesAssistant.setEpisode(episodeId, sourceLanguage);
+    },
+    onPermissionsChange({ editable }) {
+      showNotesAssistant.setEditable(editable);
+    },
     onSaved: loadShows
   });
   const announcementEditorLabel = adminText("editorAnnouncementContent");

@@ -157,6 +157,29 @@
   margin-top: 0;
 }
 
+.podcast-admin__show-notes-review {
+  background: #101010;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 0.65rem;
+  display: grid;
+  gap: var(--dw-admin-space-sm);
+  min-width: 0;
+  padding: var(--dw-admin-space-md);
+}
+
+.podcast-admin__show-notes-review[hidden] {
+  display: none;
+}
+
+.podcast-admin__show-notes-review > :is(h4, h5, p) {
+  margin: 0;
+}
+
+.podcast-admin__show-notes-copy {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
 .podcast-admin__form > .btn {
   justify-self: start;
 }

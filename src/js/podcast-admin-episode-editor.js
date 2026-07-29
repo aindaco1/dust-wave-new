@@ -54,6 +54,8 @@ export function mountEpisodeEditor({
   getSelectedShowId,
   getShows,
   canEdit,
+  onModeChange = () => {},
+  onPermissionsChange = () => {},
   onSaved
 }) {
   if (!form || !list || !notesEditor) {
@@ -97,6 +99,7 @@ export function mountEpisodeEditor({
     form.hidden = !editable || !showId;
     submit.disabled = submitting || !editable || !showId;
     if (cancel) cancel.disabled = submitting;
+    onPermissionsChange({ editable, showId, submitting });
   }
 
   function reset({ focus = false, clearStatus = true } = {}) {
@@ -114,6 +117,10 @@ export function mountEpisodeEditor({
     const show = getShows().find(({ id }) => id === showId);
     form.elements.sourceLanguage.value =
       show?.language === "en" ? "en" : "es";
+    onModeChange({
+      episodeId: "",
+      sourceLanguage: form.elements.sourceLanguage.value
+    });
     if (clearStatus) setStatus(status, "");
     refreshPermissions();
     if (focus && !form.hidden) title.focus();
@@ -141,6 +148,10 @@ export function mountEpisodeEditor({
     );
     form.elements.publicAt.value = datetimeLocalInputValue(episode.publicAt);
     notesEditor.setHtml(episode.contentHtml || "");
+    onModeChange({
+      episodeId: episode.id,
+      sourceLanguage: form.elements.sourceLanguage.value
+    });
     if (slugHelp) slugHelp.hidden = false;
     if (cancel) cancel.hidden = false;
     if (heading) heading.textContent = text("editEpisode");

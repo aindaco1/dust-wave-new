@@ -104,6 +104,10 @@ const episodeEditorScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-episode-editor.js'),
   'utf8'
 );
+const showNotesScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-show-notes.js'),
+  'utf8'
+);
 const analyticsScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-analytics.js'),
   'utf8'
@@ -362,6 +366,23 @@ assert.match(adminTemplate, /data-podcast-episode-form/);
 assert.match(adminTemplate, /data-podcast-episode-form-heading/);
 assert.match(adminTemplate, /data-podcast-episode-edit-cancel/);
 assert.match(adminTemplate, /data-podcast-episode-slug-help/);
+assert.match(adminTemplate, /data-podcast-show-notes/);
+assert.match(adminTemplate, /data-podcast-show-notes-review/);
+assert.match(
+  showNotesScript,
+  /reviewRequired !== true[\s\S]+value\.saved !== false/,
+  'AI show-notes responses must prove review-only, unsaved semantics'
+);
+assert.match(
+  showNotesScript,
+  /notesEditor\.setValue\(result\.draft\.showNotesMarkdown\)/,
+  'AI show notes may enter only the existing sanitized editor'
+);
+assert.doesNotMatch(
+  showNotesScript,
+  /innerHTML|insertAdjacentHTML/,
+  'AI show-notes evidence and drafts must render without HTML sinks'
+);
 assert.match(adminTemplate, /data-podcast-upload-form/);
 assert.match(adminTemplate, /data-podcast-rss-import-form/);
 assert.match(adminTemplate, /data-podcast-rss-import-preview/);

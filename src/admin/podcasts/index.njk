@@ -139,6 +139,71 @@ eleventyComputed:
               <span class="podcast-admin__field-label">{{ workbench.episodes.notes }}</span>
               <div class="podcast-admin__editor" data-podcast-notes-editor></div>
             </div>
+            <section
+              class="podcast-admin__callout podcast-admin__show-notes"
+              data-podcast-show-notes
+              hidden>
+              <h4>{{ workbench.episodes.showNotesHeading }}</h4>
+              <p>{{ workbench.episodes.showNotesIntro }}</p>
+              <p class="podcast-admin__help">{{ workbench.episodes.showNotesReviewNotice }}</p>
+              <div class="podcast-admin__field-grid">
+                <label>{{ workbench.episodes.showNotesSourceLanguage }}
+                  <select data-podcast-show-notes-source-language>
+                    <option value="es">{{ workbench.common.spanish }}</option>
+                    <option value="en">{{ workbench.common.english }}</option>
+                  </select>
+                </label>
+                <label>{{ workbench.episodes.showNotesOutputLanguage }}
+                  <select data-podcast-show-notes-output-language>
+                    <option value="es">{{ workbench.common.spanish }}</option>
+                    <option value="en">{{ workbench.common.english }}</option>
+                  </select>
+                </label>
+              </div>
+              <div class="podcast-admin__form-actions">
+                <button
+                  class="btn btn-outline-light"
+                  type="button"
+                  data-podcast-show-notes-generate>{{ workbench.episodes.showNotesGenerate }}</button>
+              </div>
+              <p
+                class="podcast-admin__status"
+                data-podcast-show-notes-status
+                role="status"
+                aria-live="polite"></p>
+              <section
+                class="podcast-admin__show-notes-review"
+                data-podcast-show-notes-review
+                aria-labelledby="podcast-show-notes-review-heading"
+                hidden>
+                <h4 id="podcast-show-notes-review-heading">{{ workbench.episodes.showNotesReviewHeading }}</h4>
+                <p
+                  class="podcast-admin__review-evidence"
+                  data-podcast-show-notes-evidence></p>
+                <h5>{{ workbench.episodes.showNotesSuggestedSummary }}</h5>
+                <p
+                  class="podcast-admin__show-notes-copy"
+                  data-podcast-show-notes-summary></p>
+                <h5>{{ workbench.episodes.showNotesDraftLabel }}</h5>
+                <div
+                  class="podcast-admin__show-notes-copy"
+                  data-podcast-show-notes-draft></div>
+                <h5>{{ workbench.episodes.showNotesKeywords }}</h5>
+                <p
+                  class="podcast-admin__show-notes-copy"
+                  data-podcast-show-notes-keywords></p>
+                <div class="podcast-admin__form-actions">
+                  <button
+                    class="btn btn-danger"
+                    type="button"
+                    data-podcast-show-notes-apply>{{ workbench.episodes.showNotesUseDraft }}</button>
+                  <button
+                    class="btn btn-outline-light"
+                    type="button"
+                    data-podcast-show-notes-dismiss>{{ workbench.episodes.showNotesDismiss }}</button>
+                </div>
+              </section>
+            </section>
             <div class="podcast-admin__field-grid podcast-admin__field-grid--three">
               <label>{{ workbench.episodes.access }}
                 <select name="access">

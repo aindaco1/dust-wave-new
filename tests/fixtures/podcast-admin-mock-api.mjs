@@ -1685,6 +1685,35 @@ function responseFor(request) {
     return json({ updated: true, episodeId: episode.id });
   }
   if (
+    request.method === "POST"
+    && path === `/v1/admin/episodes/${episode.id}/show-notes/draft`
+  ) {
+    return json({
+      draft: {
+        summary:
+          "Una conversación sobre cine, colaboración y trabajo creativo.",
+        showNotesMarkdown:
+          "## En este episodio\n\n"
+          + "- Una conversación basada en la transcripción aprobada\n"
+          + "- Cine, colaboración y proceso creativo",
+        keywords: ["cine", "colaboración", "proceso creativo"]
+      },
+      source: {
+        language: "es",
+        revision: 1,
+        contentSha256: sha("3"),
+        approvedAt: "2026-07-29T06:00:00.000Z",
+        includedCueCount: 24,
+        totalCueCount: 24,
+        truncated: false
+      },
+      outputLanguage: "es",
+      model: "@cf/meta/llama-3.2-3b-instruct",
+      reviewRequired: true,
+      saved: false
+    });
+  }
+  if (
     request.method === "GET"
     && path
       === `/v1/admin/shows/${show.id}/marketing/announcements`
