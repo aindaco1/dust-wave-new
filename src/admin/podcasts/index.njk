@@ -845,7 +845,11 @@ eleventyComputed:
                 </select>
               </label>
             </div>
-            <div class="podcast-admin__clip-preview" data-podcast-clip-preview aria-live="polite"></div>
+            <div
+              class="podcast-admin__clip-preview"
+              data-podcast-clip-preview
+              aria-live="polite"
+              aria-atomic="true"></div>
             <div class="podcast-admin__transcript-actions">
               <button class="btn btn-outline-light" type="button" data-podcast-clip-new>{{ workbench.production.newRecipe }}</button>
               <button class="btn btn-danger" type="submit">{{ workbench.production.saveClipRecipe }}</button>

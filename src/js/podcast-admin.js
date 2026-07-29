@@ -42,6 +42,9 @@ import {
 } from "./podcast-admin-chapter-draft.js";
 import { clipDurationLabel, mountClipDraftAssistant, resolveClipCueRange } from "./podcast-admin-clip-draft.js";
 import {
+  renderClipRecipePreview
+} from "./podcast-admin-clip-preview.js";
+import {
   mountShowSiteProjection,
   needsShowArchiveConfirmation,
   populateShowSettingsForm,
@@ -6289,18 +6292,11 @@ function startPodcastAdmin(root) {
           && selected.render?.status === "ready"
         );
     }
-    if (!transcriptApproved) {
-      if (clipPreview) {
-        clipPreview.textContent = transcriptDirty
-          ? adminText("approveTranscriptForClipDirty")
-          : adminText("approveTranscriptForClip");
-      }
-    }
   }
 
   function refreshClipRecipe() {
-    updateClipPreview();
     updateClipAvailability();
+    updateClipPreview();
   }
 
   function selectedClipCueRange() {
@@ -6313,27 +6309,20 @@ function startPodcastAdmin(root) {
   function updateClipPreview() {
     if (!clipForm || !clipPreview) return;
     const selection = selectedClipCueRange();
-    if (!selection) {
-      clipPreview.textContent = adminText("chooseClipEndCue");
-      return;
-    }
-    const { startsAtMs, endsAtMs, durationMs } = selection;
-    if (durationMs < 1_000 || durationMs > 180_000) {
-      clipPreview.textContent = adminText("clipRangeLimit");
-      return;
-    }
-    const dimensions = clipForm.elements.aspectRatio.value === "9:16"
-      ? "1080×1920"
-      : clipForm.elements.aspectRatio.value === "1:1"
-        ? "1080×1080"
-        : "1920×1080";
-    clipPreview.textContent = [
-      `${millisecondsToTimestamp(startsAtMs)}–${millisecondsToTimestamp(endsAtMs)}`,
-      formatClipDuration(durationMs),
-      dimensions,
-      adminText("highContrastCaptions"),
-      adminText("captionSafeArea")
-    ].join(" · ");
+    const startCue = transcript?.cues?.find(
+      ({ id }) => id === clipForm.elements.startCueId.value
+    );
+    renderClipRecipePreview({
+      target: clipPreview,
+      aspectRatio: clipForm.elements.aspectRatio.value,
+      transcript,
+      transcriptDirty,
+      selection,
+      startCue,
+      text: adminText,
+      formatTimestamp: millisecondsToTimestamp,
+      formatDuration: formatClipDuration
+    });
   }
 
   async function saveClipRecipe(event) {

@@ -116,6 +116,10 @@ const clipDraftScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-clip-draft.js'),
   'utf8'
 );
+const clipPreviewScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-clip-preview.js'),
+  'utf8'
+);
 const analyticsScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-analytics.js'),
   'utf8'
@@ -424,6 +428,22 @@ assert.doesNotMatch(
   clipDraftScript,
   /innerHTML|insertAdjacentHTML/,
   'AI clip evidence and candidates must render without HTML sinks'
+);
+assert.match(adminTemplate, /data-podcast-clip-preview[\s\S]+aria-atomic="true"/);
+assert.match(
+  clipPreviewScript,
+  /renderClipLayoutPreview\([\s\S]+caption:[\s\S]+clipCueSummary/,
+  'clip recipe preview must derive its caption from the selected approved cue'
+);
+assert.match(
+  clipPreviewScript,
+  /dataset\.aspectRatio = normalizedAspect/,
+  'clip recipe preview must expose its normalized responsive aspect ratio'
+);
+assert.doesNotMatch(
+  clipPreviewScript,
+  /innerHTML|insertAdjacentHTML/,
+  'clip recipe preview must render transcript content without HTML sinks'
 );
 assert.match(adminTemplate, /data-podcast-upload-form/);
 assert.match(adminTemplate, /data-podcast-rss-import-form/);
