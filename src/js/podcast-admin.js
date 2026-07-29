@@ -3402,6 +3402,7 @@ function startPodcastAdmin(root) {
       const row = document.createElement("article");
       row.className = "podcast-admin__transcript-cue";
       row.dataset.transcriptCueId = cue.id;
+      row.dataset.transcriptCueNumber = String(index + 1);
       row.innerHTML = `
         <div class="podcast-admin__transcript-cue-heading">
           <h3>${escapeHtml(adminText(

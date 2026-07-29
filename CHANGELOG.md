@@ -10,6 +10,11 @@
   `@dustwave/admin-shell` boundary, with passwordless session exchange, show
   settings, episode drafts, multipart media upload, idempotent publication,
   directory status, and fail-closed premium readiness.
+- Added an English/Spanish, current-page speaker-range review aid for long
+  transcripts. Producer+ editors can apply an optional explicitly confirmed
+  public name to a bounded set of visible cues without changing caption text,
+  timing, or server state; the existing versioned Save action remains the only
+  persistence path and approval stays disabled after changes.
 - Added a self-hosted, checksum-pinned Datatype 1.2.2 pilot to Podcast audience
   analytics. Its English/Spanish, font-ready summary uses shared normalization,
   compact container axes, a text-only narrow state, and the existing exact

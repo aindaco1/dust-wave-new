@@ -447,6 +447,37 @@ eleventyComputed:
                 class="podcast-admin__transcript-diagnostic-list"
                 data-podcast-transcript-diagnostics-list></ul>
             </section>
+            <form
+              class="podcast-admin__transcript-speaker-range"
+              data-podcast-transcript-speaker-range
+              aria-labelledby="podcast-transcript-speaker-range-heading"
+              hidden>
+              <div class="podcast-admin__panel-heading podcast-admin__section-heading">
+                <div>
+                  <h3 id="podcast-transcript-speaker-range-heading">{{ workbench.production.speakerRangeHeading }}</h3>
+                  <p>{{ workbench.production.speakerRangeIntro }}</p>
+                </div>
+                <p class="podcast-admin__pill">{{ workbench.production.localDraftPill }}</p>
+              </div>
+              <div class="podcast-admin__field-grid">
+                <label>{{ workbench.production.speakerRangeStart }}
+                  <input data-podcast-transcript-speaker-range-start type="number" min="1" step="1" required>
+                </label>
+                <label>{{ workbench.production.speakerRangeEnd }}
+                  <input data-podcast-transcript-speaker-range-end type="number" min="1" step="1" required>
+                </label>
+                <label>{{ workbench.production.speakerRangeLabel }}
+                  <input data-podcast-transcript-speaker-range-label maxlength="80" autocomplete="off" required>
+                </label>
+                <label class="podcast-admin__checkbox">
+                  <input data-podcast-transcript-speaker-range-confirmed type="checkbox">
+                  {{ workbench.production.speakerRangeConfirmed }}
+                </label>
+              </div>
+              <div class="podcast-admin__transcript-actions">
+                <button class="btn btn-outline-light" type="submit" data-podcast-transcript-speaker-range-apply>{{ workbench.production.applySpeakerRange }}</button>
+              </div>
+            </form>
             <div class="podcast-admin__transcript-cues" data-podcast-transcript-cues></div>
             <nav class="podcast-admin__transcript-pages" data-podcast-transcript-pages aria-label="{{ workbench.production.cuePages }}" hidden>
               <button class="btn btn-outline-light" type="button" data-podcast-transcript-previous>{{ workbench.production.previousCues }}</button>

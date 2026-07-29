@@ -38,6 +38,70 @@ export function newTranscriptCue(startsAtMs = 0, endsAtMs = 5_000) {
   };
 }
 
+export function applyTranscriptSpeakerRange(cues, {
+  startCue,
+  endCue,
+  speakerLabel,
+  speakerConfirmed = false
+} = {}) {
+  const rows = Array.isArray(cues) ? cues : [];
+  const start = Number(startCue);
+  const end = Number(endCue);
+  if (
+    rows.length === 0
+    || !Number.isSafeInteger(start)
+    || !Number.isSafeInteger(end)
+    || start < 1
+    || end < start
+    || end > rows.length
+  ) {
+    return { ok: false, error: "speaker_range_invalid" };
+  }
+  const rawLabel = String(speakerLabel || "");
+  if (/[\u0000-\u001F\u007F]/.test(rawLabel)) {
+    return { ok: false, error: "speaker_range_label_invalid" };
+  }
+  const label = rawLabel
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!label) {
+    return { ok: false, error: "speaker_range_label_required" };
+  }
+  if (
+    Array.from(label).length > 80
+  ) {
+    return { ok: false, error: "speaker_range_label_invalid" };
+  }
+
+  const confirmed = speakerConfirmed === true;
+  let changedCueCount = 0;
+  const updatedCues = rows.map((cue, index) => {
+    if (index < start - 1 || index >= end) return cue;
+    if (
+      cue?.speakerLabel === label
+      && cue?.speakerConfirmed === confirmed
+    ) {
+      return cue;
+    }
+    changedCueCount += 1;
+    return {
+      ...cue,
+      speakerLabel: label,
+      speakerConfirmed: confirmed
+    };
+  });
+  return {
+    ok: true,
+    cues: updatedCues,
+    startCue: start,
+    endCue: end,
+    affectedCueCount: end - start + 1,
+    changedCueCount,
+    speakerLabel: label,
+    speakerConfirmed: confirmed
+  };
+}
+
 export function clipCueSummary(value) {
   const summary = String(value || "")
     .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")

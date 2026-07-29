@@ -10,6 +10,7 @@ const source = await readFile(
   "utf8"
 );
 const {
+  applyTranscriptSpeakerRange,
   clipCueSummary,
   millisecondsToTimestamp,
   navigateToTranscriptReviewCue,
@@ -18,6 +19,119 @@ const {
 } = await import(
   `data:text/javascript;base64,${Buffer.from(source).toString("base64")}`
 );
+
+test("applies one reviewed speaker label without changing cue content", () => {
+  const cues = [
+    cue({
+      id: "cue_1",
+      startsAtMs: 100,
+      endsAtMs: 900,
+      textMarkdown: "First caption."
+    }),
+    cue({
+      id: "cue_2",
+      startsAtMs: 1_000,
+      endsAtMs: 2_000,
+      textMarkdown: "Second caption."
+    }),
+    cue({
+      id: "cue_3",
+      startsAtMs: 2_100,
+      endsAtMs: 3_000,
+      textMarkdown: "Third caption."
+    })
+  ];
+  const result = applyTranscriptSpeakerRange(cues, {
+    startCue: "1",
+    endCue: "2",
+    speakerLabel: "  Jay   Renteria  ",
+    speakerConfirmed: true
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.affectedCueCount, 2);
+  assert.equal(result.changedCueCount, 2);
+  assert.equal(result.speakerLabel, "Jay Renteria");
+  assert.deepEqual(
+    result.cues.map(({ speakerLabel, speakerConfirmed }) => ({
+      speakerLabel,
+      speakerConfirmed
+    })),
+    [
+      { speakerLabel: "Jay Renteria", speakerConfirmed: true },
+      { speakerLabel: "Jay Renteria", speakerConfirmed: true },
+      { speakerLabel: "", speakerConfirmed: false }
+    ]
+  );
+  assert.deepEqual(
+    result.cues.map(({ id, startsAtMs, endsAtMs, textMarkdown }) => ({
+      id,
+      startsAtMs,
+      endsAtMs,
+      textMarkdown
+    })),
+    cues.map(({ id, startsAtMs, endsAtMs, textMarkdown }) => ({
+      id,
+      startsAtMs,
+      endsAtMs,
+      textMarkdown
+    }))
+  );
+  assert.equal(cues[0].speakerLabel, "");
+  assert.equal(cues[0].speakerConfirmed, false);
+});
+
+test("keeps speaker-range edits bounded, explicit, and replay-safe", () => {
+  const cues = [
+    cue({ speakerLabel: "Jay Renteria", speakerConfirmed: true }),
+    cue()
+  ];
+  const replay = applyTranscriptSpeakerRange(cues, {
+    startCue: 1,
+    endCue: 1,
+    speakerLabel: "Jay Renteria",
+    speakerConfirmed: true
+  });
+  assert.equal(replay.ok, true);
+  assert.equal(replay.changedCueCount, 0);
+  assert.equal(replay.cues[0], cues[0]);
+
+  for (const input of [
+    { startCue: 0, endCue: 1, speakerLabel: "Jay" },
+    { startCue: 2, endCue: 1, speakerLabel: "Jay" },
+    { startCue: 1, endCue: 3, speakerLabel: "Jay" },
+    { startCue: 1.5, endCue: 2, speakerLabel: "Jay" }
+  ]) {
+    assert.deepEqual(
+      applyTranscriptSpeakerRange(cues, input),
+      { ok: false, error: "speaker_range_invalid" }
+    );
+  }
+  assert.deepEqual(
+    applyTranscriptSpeakerRange(cues, {
+      startCue: 1,
+      endCue: 2,
+      speakerLabel: " "
+    }),
+    { ok: false, error: "speaker_range_label_required" }
+  );
+  assert.deepEqual(
+    applyTranscriptSpeakerRange(cues, {
+      startCue: 1,
+      endCue: 2,
+      speakerLabel: `Jay${String.fromCharCode(10)}Renteria`
+    }),
+    { ok: false, error: "speaker_range_label_invalid" }
+  );
+  assert.deepEqual(
+    applyTranscriptSpeakerRange(cues, {
+      startCue: 1,
+      endCue: 2,
+      speakerLabel: "x".repeat(81)
+    }),
+    { ok: false, error: "speaker_range_label_invalid" }
+  );
+});
 
 test("summarizes bounded transcript review signals without retaining text", () => {
   const summary = summarizeTranscriptReview([

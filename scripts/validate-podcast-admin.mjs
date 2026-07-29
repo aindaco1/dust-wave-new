@@ -45,6 +45,13 @@ const transcriptDiagnosticsScript = await readFile(
   ),
   'utf8'
 );
+const transcriptSpeakerRangeScript = await readFile(
+  path.join(
+    repositoryRoot,
+    'src/js/podcast-admin-transcript-speaker-range.js'
+  ),
+  'utf8'
+);
 const clipPublicationScript = await readFile(
   path.join(
     repositoryRoot,
@@ -235,6 +242,10 @@ assert.match(adminLayout, /noindex,nofollow,noarchive/);
 assert.match(adminLayout, /snippets\/podcast-auth-footer\.njk/);
 assert.match(authFooter, /snippets\/language-switcher\.njk/);
 assert.match(adminLayout, /type="module" src="\/js\/podcast-admin\.js\?v=\{\{ assets\.version/);
+assert.match(
+  adminLayout,
+  /type="module" src="\/js\/podcast-admin-transcript-speaker-range\.js\?v=\{\{ assets\.version/
+);
 assert.match(adminLayout, /src="\/js\/audio-player\.js\?v=\{\{ assets\.version/);
 assert.doesNotMatch(
   adminLayout,
@@ -686,13 +697,33 @@ assert.match(adminTemplate, /data-podcast-transcript-cues/);
 assert.match(adminTemplate, /data-podcast-transcript-pages/);
 assert.match(adminTemplate, /data-podcast-transcript-diagnostics/);
 assert.match(adminTemplate, /data-podcast-transcript-diagnostics-list/);
+assert.match(adminTemplate, /data-podcast-transcript-speaker-range/);
+assert.match(adminTemplate, /data-podcast-transcript-speaker-range-start/);
+assert.match(adminTemplate, /data-podcast-transcript-speaker-range-end/);
+assert.match(adminTemplate, /data-podcast-transcript-speaker-range-label/);
+assert.match(
+  englishWorkbenchText,
+  /Caption text and timing stay unchanged/
+);
 assert.match(
   adminScript,
   /renderTranscriptReviewDiagnostics\(root, cues, adminText, openTranscriptCue\)/
 );
 assert.match(
+  adminScript,
+  /dataset\.transcriptCueNumber = String\(index \+ 1\)/
+);
+assert.match(
+  transcriptSpeakerRangeScript,
+  /applyTranscriptSpeakerRange\([\s\S]+new Event\("input", \{ bubbles: true \}\)/
+);
+assert.match(
   transcriptDiagnosticsScript,
   /minimumCueDurationMs:\s*500[\s\S]+maximumCueDurationMs:\s*10_000/
+);
+assert.match(
+  transcriptDiagnosticsScript,
+  /changedCueCount[\s\S]+speakerLabel[\s\S]+speakerConfirmed/
 );
 assert.match(
   transcriptDiagnosticsScript,

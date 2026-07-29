@@ -1004,6 +1004,19 @@
   grid-column: 1 / -1;
 }
 
+.podcast-admin__transcript-speaker-range {
+  background: #101010;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 0.65rem;
+  margin-top: var(--dw-admin-space-lg);
+  padding: var(--dw-admin-space-md);
+}
+
+.podcast-admin__transcript-speaker-range .podcast-admin__field-grid,
+.podcast-admin__transcript-speaker-range .podcast-admin__transcript-actions {
+  margin-top: var(--dw-admin-space-md);
+}
+
 .podcast-admin__transcript-cue {
   background: #101010;
   border: 1px solid rgba(255, 255, 255, 0.16);
