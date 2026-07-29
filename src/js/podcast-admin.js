@@ -128,7 +128,9 @@ function startPodcastAdmin(root) {
   const showCards = root.querySelector("[data-podcast-show-cards]");
   const showForm = root.querySelector("[data-podcast-show-form]");
   const showStatus = root.querySelector("[data-podcast-show-status]");
-  const showSelect = root.querySelector("[data-podcast-show-select]");
+  const showSelects = Array.from(
+    root.querySelectorAll("[data-podcast-show-select]")
+  );
   const episodeForm = root.querySelector("[data-podcast-episode-form]");
   const episodeStatus = root.querySelector("[data-podcast-episode-status]");
   const episodeList = root.querySelector("[data-podcast-episode-list]");
@@ -710,47 +712,50 @@ function startPodcastAdmin(root) {
   );
   root.querySelector("[data-podcast-login-form]")?.addEventListener("submit", startLogin);
   logoutButton?.addEventListener("click", logout);
-  showSelect?.addEventListener("change", async () => {
-    selectedShowId = showSelect.value;
-    if (distributionFilter) {
-      distributionFilter.elements.episodeId.value = "";
-    }
-    clipPublications.close();
-    closeClipYouTubeForm();
-    clearClipLibraryState();
-    rssImport.reset({ form: true });
-    fillShowForm();
-    updateMarketingTools({ showChanged: true });
-    await Promise.all([loadEpisodes(), loadCampaigns()]);
-    const marketingPanel = root.querySelector("#podcast-panel-marketing");
-    if (marketingPanel && !marketingPanel.hidden) {
-      await Promise.all([
-        loadClipLibrary({ reset: true }),
-        loadAnnouncementHistory(),
-        savedMarketingLinks.load({ reset: true })
-      ]);
-    }
-    const analyticsPanel = root.querySelector("#podcast-panel-analytics");
-    if (analyticsPanel && !analyticsPanel.hidden) {
-      await podcastAnalytics.load();
-    }
-    const distributionPanel = root.querySelector(
-      "#podcast-panel-distribution"
-    );
-    if (distributionPanel && !distributionPanel.hidden) {
-      await loadDistribution();
-    }
-    const billingPanel = root.querySelector("#podcast-panel-billing");
-    if (billingPanel && !billingPanel.hidden) {
-      await loadBilling();
-    }
-    const subscribersPanel = root.querySelector(
-      "#podcast-panel-subscribers"
-    );
-    if (subscribersPanel && !subscribersPanel.hidden) {
-      await loadSubscribers({ reset: true });
-    }
-  });
+  for (const showSelect of showSelects) {
+    showSelect.addEventListener("change", async () => {
+      selectedShowId = showSelect.value;
+      fillShowSelect();
+      if (distributionFilter) {
+        distributionFilter.elements.episodeId.value = "";
+      }
+      clipPublications.close();
+      closeClipYouTubeForm();
+      clearClipLibraryState();
+      rssImport.reset({ form: true });
+      fillShowForm();
+      updateMarketingTools({ showChanged: true });
+      await Promise.all([loadEpisodes(), loadCampaigns()]);
+      const marketingPanel = root.querySelector("#podcast-panel-marketing");
+      if (marketingPanel && !marketingPanel.hidden) {
+        await Promise.all([
+          loadClipLibrary({ reset: true }),
+          loadAnnouncementHistory(),
+          savedMarketingLinks.load({ reset: true })
+        ]);
+      }
+      const analyticsPanel = root.querySelector("#podcast-panel-analytics");
+      if (analyticsPanel && !analyticsPanel.hidden) {
+        await podcastAnalytics.load();
+      }
+      const distributionPanel = root.querySelector(
+        "#podcast-panel-distribution"
+      );
+      if (distributionPanel && !distributionPanel.hidden) {
+        await loadDistribution();
+      }
+      const billingPanel = root.querySelector("#podcast-panel-billing");
+      if (billingPanel && !billingPanel.hidden) {
+        await loadBilling();
+      }
+      const subscribersPanel = root.querySelector(
+        "#podcast-panel-subscribers"
+      );
+      if (subscribersPanel && !subscribersPanel.hidden) {
+        await loadSubscribers({ reset: true });
+      }
+    });
+  }
   showForm?.addEventListener("submit", saveShow);
   episodeForm?.addEventListener("submit", createEpisode);
   episodeForm?.elements.title?.addEventListener("input", () => {
@@ -1226,9 +1231,11 @@ function startPodcastAdmin(root) {
   }
 
   function fillShowSelect() {
-    showSelect.replaceChildren(...shows.map((show) =>
-      new Option(show.title, show.id, false, show.id === selectedShowId)
-    ));
+    for (const showSelect of showSelects) {
+      showSelect.replaceChildren(...shows.map((show) =>
+        new Option(show.title, show.id, false, show.id === selectedShowId)
+      ));
+    }
   }
 
   function fillShowForm() {

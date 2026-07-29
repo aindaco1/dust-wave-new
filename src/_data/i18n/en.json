@@ -203,7 +203,8 @@
         "sponsors": "Sponsors",
         "analytics": "Analytics",
         "subscribers": "Subscribers",
-        "premium": "Premium"
+        "premium": "Premium",
+        "settings": "Settings"
       },
       "workbench": {
         "common": {
@@ -221,6 +222,7 @@
           "shows": "Shows",
           "intro": "Single-show launch interface; the API and data model support more shows.",
           "settings": "Show settings",
+          "settingsIntro": "Manage the selected show’s public identity, launch benefits, and YouTube destination.",
           "descriptionSpanish": "Description (Spanish)",
           "descriptionEnglish": "Description (English)",
           "earlyAccessDays": "Early access days",

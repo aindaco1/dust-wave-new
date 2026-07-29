@@ -203,7 +203,8 @@
         "sponsors": "Patrocinadores",
         "analytics": "Analítica",
         "subscribers": "Suscriptores",
-        "premium": "Premium"
+        "premium": "Premium",
+        "settings": "Configuración"
       },
       "workbench": {
         "common": {
@@ -221,6 +222,7 @@
           "shows": "Programas",
           "intro": "Interfaz de lanzamiento para un solo programa; la API y el modelo de datos admiten más programas.",
           "settings": "Configuración del programa",
+          "settingsIntro": "Administra la identidad pública, los beneficios de lanzamiento y el destino de YouTube del programa seleccionado.",
           "descriptionSpanish": "Descripción (español)",
           "descriptionEnglish": "Descripción (inglés)",
           "earlyAccessDays": "Días de acceso anticipado",

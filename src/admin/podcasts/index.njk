@@ -67,6 +67,7 @@ eleventyComputed:
         <button id="podcast-tab-analytics" type="button" role="tab" data-tab="analytics" aria-controls="podcast-panel-analytics">{{ i18n | t(language, "podcast.admin.tabs.analytics") }}</button>
         <button id="podcast-tab-subscribers" type="button" role="tab" data-tab="subscribers" aria-controls="podcast-panel-subscribers">{{ i18n | t(language, "podcast.admin.tabs.subscribers") }}</button>
         <button id="podcast-tab-billing" type="button" role="tab" data-tab="billing" aria-controls="podcast-panel-billing">{{ i18n | t(language, "podcast.admin.tabs.premium") }}</button>
+        <button id="podcast-tab-settings" type="button" role="tab" data-tab="settings" aria-controls="podcast-panel-settings">{{ i18n | t(language, "podcast.admin.tabs.settings") }}</button>
       </div>
 
       <div id="podcast-admin-content">
@@ -79,35 +80,6 @@ eleventyComputed:
             <button class="btn btn-outline-light" type="button" data-podcast-refresh>{{ workbench.common.refresh }}</button>
           </div>
           <div class="podcast-admin__cards" data-podcast-show-cards></div>
-
-          <form class="podcast-admin__form podcast-admin__form--settings" data-podcast-show-form hidden>
-            <h3>{{ workbench.overview.settings }}</h3>
-            <label>{{ workbench.common.title }}
-              <input id="podcast-show-title" name="title" required>
-            </label>
-            <label>{{ workbench.overview.descriptionSpanish }}
-              <textarea id="podcast-show-description" name="description" rows="4"></textarea>
-            </label>
-            <label>{{ workbench.overview.descriptionEnglish }}
-              <textarea id="podcast-show-description-en" name="descriptionEn" rows="4"></textarea>
-            </label>
-            <div class="podcast-admin__field-grid">
-              <label>{{ workbench.overview.earlyAccessDays }}
-                <input name="earlyAccessDays" type="number" min="0" max="365">
-              </label>
-              <label>{{ workbench.overview.youtubeChannel }}
-                <input name="youtubeChannelUrl" type="url">
-              </label>
-            </div>
-            <label class="podcast-admin__checkbox">
-              <input name="premiumEnabled" type="checkbox"> {{ workbench.overview.premiumEnabled }}
-            </label>
-            <label class="podcast-admin__checkbox">
-              <input name="freeMiniEpisodeEnabled" type="checkbox"> {{ workbench.overview.freeMiniEnabled }}
-            </label>
-            <button class="btn btn-danger" type="submit">{{ workbench.overview.save }}</button>
-            <p class="podcast-admin__status" data-podcast-show-status role="status" aria-live="polite"></p>
-          </form>
 
           <form class="podcast-admin__form podcast-admin__form--settings" data-podcast-rss-import-form hidden>
             <h3>{{ workbench.overview.importHeading }}</h3>
@@ -1275,6 +1247,43 @@ eleventyComputed:
           </div>
           <p class="podcast-admin__status" data-podcast-billing-status role="status" aria-live="polite"></p>
           <div data-podcast-billing></div>
+        </section>
+
+        <section id="podcast-panel-settings" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-settings" hidden>
+          <div class="podcast-admin__panel-heading">
+            <div>
+              <h2>{{ workbench.overview.settings }}</h2>
+              <p>{{ workbench.overview.settingsIntro }}</p>
+            </div>
+            <select data-podcast-show-select aria-label="{{ workbench.common.show }}"></select>
+          </div>
+          <form class="podcast-admin__form podcast-admin__form--settings" data-podcast-show-form hidden>
+            <label>{{ workbench.common.title }}
+              <input id="podcast-show-title" name="title" required>
+            </label>
+            <label>{{ workbench.overview.descriptionSpanish }}
+              <textarea id="podcast-show-description" name="description" rows="4"></textarea>
+            </label>
+            <label>{{ workbench.overview.descriptionEnglish }}
+              <textarea id="podcast-show-description-en" name="descriptionEn" rows="4"></textarea>
+            </label>
+            <div class="podcast-admin__field-grid">
+              <label>{{ workbench.overview.earlyAccessDays }}
+                <input name="earlyAccessDays" type="number" min="0" max="365">
+              </label>
+              <label>{{ workbench.overview.youtubeChannel }}
+                <input name="youtubeChannelUrl" type="url">
+              </label>
+            </div>
+            <label class="podcast-admin__checkbox">
+              <input name="premiumEnabled" type="checkbox"> {{ workbench.overview.premiumEnabled }}
+            </label>
+            <label class="podcast-admin__checkbox">
+              <input name="freeMiniEpisodeEnabled" type="checkbox"> {{ workbench.overview.freeMiniEnabled }}
+            </label>
+            <button class="btn btn-danger" type="submit">{{ workbench.overview.save }}</button>
+            <p class="podcast-admin__status" data-podcast-show-status role="status" aria-live="polite"></p>
+          </form>
         </section>
       </div>
     </div>

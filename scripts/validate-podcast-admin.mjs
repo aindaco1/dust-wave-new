@@ -243,6 +243,19 @@ assert.match(podcastApiConfig, /https:\/\/feeds\.dustwave\.xyz/);
 assert.doesNotMatch(adminConfig, /workers\.dev/);
 assert.doesNotMatch(podcastApiConfig, /workers\.dev/);
 assert.match(adminTemplate, /data-podcast-auth/);
+assert.match(adminTemplate, /data-tab="settings"/);
+assert.match(adminTemplate, /id="podcast-panel-settings"/);
+assert.equal(
+  [...adminTemplate.matchAll(/data-podcast-show-form/g)].length,
+  1,
+  'Show settings must keep one DRY save form'
+);
+assert.equal(englishI18n.podcast.admin.tabs.settings, 'Settings');
+assert.equal(spanishI18n.podcast.admin.tabs.settings, 'Configuración');
+assert.match(
+  adminScript,
+  /const showSelects = Array\.from\([\s\S]+for \(const showSelect of showSelects\)/
+);
 assert.match(adminTemplate, /data-podcast-episode-form/);
 assert.match(adminTemplate, /data-podcast-upload-form/);
 assert.match(adminTemplate, /data-podcast-rss-import-form/);
