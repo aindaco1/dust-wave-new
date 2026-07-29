@@ -1910,6 +1910,7 @@
       "prepareYoutubeTest": "Preparar prueba de YouTube",
       "previewRender": "Ver render",
       "downloadMp4": "Descargar MP4",
+      "downloadVtt": "Descargar subtítulos (VTT)",
       "invalidPrivateRenderUrl": "La URL del render privado no es válida.",
       "privateClipPreview": "Vista previa privada del clip subtitulado",
       "privateRenderFailed": "No se pudo cargar el render privado. Actualiza la sesión y verifica la evidencia del render.",

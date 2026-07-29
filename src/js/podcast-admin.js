@@ -5817,11 +5817,13 @@ function startPodcastAdmin(root) {
           });
     const mediaUrl = adminApiUrl(render?.mediaPath);
     const downloadUrl = adminApiUrl(render?.downloadPath);
+    const captionsUrl = adminApiUrl(render?.captionsPath);
     const ready = render
       && render.clipRevision === clip.revision
       && render.status === "ready"
       && mediaUrl
-      && downloadUrl;
+      && downloadUrl
+      && captionsUrl;
     if (!ready) {
       return {
         renderLabel,
@@ -5877,6 +5879,12 @@ function startPodcastAdmin(root) {
           href="${escapeAttribute(downloadUrl)}"
           download>
           ${escapeHtml(adminText("downloadMp4"))}
+        </a>
+        <a
+          class="btn btn-outline-light"
+          href="${escapeAttribute(captionsUrl)}"
+          download>
+          ${escapeHtml(adminText("downloadVtt"))}
         </a>
         ${publicAction}
         ${youtubeAction}`,
@@ -6175,7 +6183,7 @@ function startPodcastAdmin(root) {
 
   function adminApiUrl(path) {
     if (
-      !/^\/v1\/admin\/clip-renders\/[A-Za-z0-9_-]+\/media(?:\?download=1)?$/
+      !/^\/v1\/admin\/clip-renders\/[A-Za-z0-9_-]+\/(?:media(?:\?download=1)?|captions\.vtt)$/
         .test(path || "")
     ) {
       return "";

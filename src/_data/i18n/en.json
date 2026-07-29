@@ -1910,6 +1910,7 @@
       "prepareYoutubeTest": "Prepare YouTube test",
       "previewRender": "Preview render",
       "downloadMp4": "Download MP4",
+      "downloadVtt": "Download captions (VTT)",
       "invalidPrivateRenderUrl": "The private render URL is invalid.",
       "privateClipPreview": "Private captioned clip preview",
       "privateRenderFailed": "The private render could not be loaded. Refresh your session and verify the render evidence.",

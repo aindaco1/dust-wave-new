@@ -445,6 +445,16 @@ assert.doesNotMatch(
   /innerHTML|insertAdjacentHTML/,
   'clip recipe preview must render transcript content without HTML sinks'
 );
+assert.match(
+  adminScript,
+  /captionsUrl = adminApiUrl\(render\?\.captionsPath\)[\s\S]+downloadVtt/,
+  'ready Production and Marketing clips must reuse the authenticated VTT path'
+);
+assert.match(
+  adminMockApi,
+  /captionsPath:[\s\S]+clip_render_browser_fixture\/captions\.vtt/,
+  'browser QA must expose one deterministic private VTT sidecar'
+);
 assert.match(adminTemplate, /data-podcast-upload-form/);
 assert.match(adminTemplate, /data-podcast-rss-import-form/);
 assert.match(adminTemplate, /data-podcast-rss-import-preview/);

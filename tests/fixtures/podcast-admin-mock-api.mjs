@@ -142,7 +142,9 @@ const clip = {
     mediaPath:
       "/v1/admin/clip-renders/clip_render_browser_fixture/media",
     downloadPath:
-      "/v1/admin/clip-renders/clip_render_browser_fixture/media?download=1"
+      "/v1/admin/clip-renders/clip_render_browser_fixture/media?download=1",
+    captionsPath:
+      "/v1/admin/clip-renders/clip_render_browser_fixture/captions.vtt"
   },
   youtubePublication: null
 };
@@ -2331,6 +2333,28 @@ function responseFor(request) {
     return json({
       clips: [{ ...clip, publicPublication: clipPublication }]
     });
+  }
+  if (
+    request.method === "GET"
+    && path === `/v1/admin/clip-renders/${clip.render.id}/captions.vtt`
+  ) {
+    return {
+      status: 200,
+      contentType: "text/vtt; charset=utf-8",
+      headers: {
+        "content-disposition":
+          'attachment; filename="mock-clip-render.vtt"',
+        "content-language": "es"
+      },
+      body: [
+        "WEBVTT",
+        "",
+        "1",
+        "00:00:00.000 --> 00:00:24.000",
+        "<v Jay>Un audiograma subtitulado de control.</v>",
+        ""
+      ].join("\n")
+    };
   }
   if (
     request.method === "GET"
