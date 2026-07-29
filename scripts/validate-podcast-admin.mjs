@@ -26,6 +26,10 @@ const adminScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin.js'),
   'utf8'
 );
+const showSettingsScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-show-settings.js'),
+  'utf8'
+);
 const transcriptDiagnosticsScript = await readFile(
   path.join(
     repositoryRoot,
@@ -250,6 +254,26 @@ assert.equal(
   1,
   'Show settings must keep one DRY save form'
 );
+for (const field of [
+  "language",
+  "status",
+  "authorName",
+  "category",
+  "artworkUrl",
+  "canonicalUrl",
+  "feedUrl",
+  "explicit"
+]) {
+  assert.match(adminTemplate, new RegExp(`name="${field}"`));
+}
+assert.match(adminTemplate, /name="canonicalUrl"[^>]+readonly/);
+assert.match(adminTemplate, /name="feedUrl"[^>]+readonly/);
+assert.match(
+  showSettingsScript,
+  /language: form\.elements\.language\.value[\s\S]+explicit: form\.elements\.explicit\.checked/
+);
+assert.match(adminScript, /archiveShowConfirm/);
+assert.match(adminScript, /readShowSettingsPayload\(showForm\)/);
 assert.equal(englishI18n.podcast.admin.tabs.settings, 'Settings');
 assert.equal(spanishI18n.podcast.admin.tabs.settings, 'Configuración');
 assert.match(

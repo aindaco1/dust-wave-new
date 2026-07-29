@@ -1261,12 +1261,49 @@ eleventyComputed:
             <label>{{ workbench.common.title }}
               <input id="podcast-show-title" name="title" required>
             </label>
+            <div class="podcast-admin__field-grid">
+              <label>{{ workbench.overview.primaryLanguage }}
+                <select name="language" required>
+                  <option value="es">{{ workbench.common.spanish }}</option>
+                  <option value="en">{{ workbench.common.english }}</option>
+                </select>
+              </label>
+              <label>{{ workbench.overview.showStatus }}
+                <select name="status" required>
+                  <option value="coming_soon">{{ workbench.overview.statusComingSoon }}</option>
+                  <option value="active">{{ workbench.overview.statusActive }}</option>
+                  <option value="archived">{{ workbench.overview.statusArchived }}</option>
+                </select>
+              </label>
+            </div>
+            <div class="podcast-admin__field-grid">
+              <label>{{ workbench.overview.authorName }}
+                <input name="authorName" maxlength="200">
+              </label>
+              <label>{{ workbench.overview.category }}
+                <input name="category" maxlength="200">
+              </label>
+            </div>
             <label>{{ workbench.overview.descriptionSpanish }}
               <textarea id="podcast-show-description" name="description" rows="4"></textarea>
             </label>
             <label>{{ workbench.overview.descriptionEnglish }}
               <textarea id="podcast-show-description-en" name="descriptionEn" rows="4"></textarea>
             </label>
+            <label>{{ workbench.overview.artworkUrl }}
+              <input name="artworkUrl" type="url" maxlength="2000">
+            </label>
+            <div class="podcast-admin__callout">
+              <p>{{ workbench.overview.permanentDestinationsHelp }}</p>
+              <div class="podcast-admin__field-grid">
+                <label>{{ workbench.overview.canonicalPage }}
+                  <input name="canonicalUrl" type="url" readonly>
+                </label>
+                <label>{{ workbench.overview.rssFeed }}
+                  <input name="feedUrl" type="url" readonly>
+                </label>
+              </div>
+            </div>
             <div class="podcast-admin__field-grid">
               <label>{{ workbench.overview.earlyAccessDays }}
                 <input name="earlyAccessDays" type="number" min="0" max="365">
@@ -1280,6 +1317,9 @@ eleventyComputed:
             </label>
             <label class="podcast-admin__checkbox">
               <input name="freeMiniEpisodeEnabled" type="checkbox"> {{ workbench.overview.freeMiniEnabled }}
+            </label>
+            <label class="podcast-admin__checkbox">
+              <input name="explicit" type="checkbox"> {{ workbench.overview.explicit }}
             </label>
             <button class="btn btn-danger" type="submit">{{ workbench.overview.save }}</button>
             <p class="podcast-admin__status" data-podcast-show-status role="status" aria-live="polite"></p>

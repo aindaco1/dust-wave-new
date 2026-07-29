@@ -32,6 +32,11 @@ import {
   renderShowCatalog
 } from "./podcast-admin-catalog.js";
 import {
+  needsShowArchiveConfirmation,
+  populateShowSettingsForm,
+  readShowSettingsPayload
+} from "./podcast-admin-show-settings.js";
+import {
   mountRssImportWorkbench
 } from "./podcast-admin-rss-import.js";
 import {
@@ -1243,13 +1248,7 @@ function startPodcastAdmin(root) {
     showForm.hidden = !show;
     rssImport.setShow(Boolean(show));
     if (!show) return;
-    for (const field of [
-      "title", "description", "descriptionEn", "earlyAccessDays", "youtubeChannelUrl"
-    ]) {
-      showForm.elements[field].value = show[field] ?? "";
-    }
-    showForm.elements.premiumEnabled.checked = show.premiumEnabled;
-    showForm.elements.freeMiniEpisodeEnabled.checked = show.freeMiniEpisodeEnabled;
+    populateShowSettingsForm(showForm, show);
     if (episodeForm?.elements.sourceLanguage) {
       episodeForm.elements.sourceLanguage.value =
         show.language === "en" ? "en" : "es";
@@ -1811,21 +1810,23 @@ function startPodcastAdmin(root) {
 
   async function saveShow(event) {
     event.preventDefault();
+    const currentShow = shows.find(({ id }) => id === selectedShowId);
+    const payload = readShowSettingsPayload(showForm);
+    if (
+      needsShowArchiveConfirmation(currentShow, payload.status)
+      && !window.confirm(adminText("archiveShowConfirm", {
+        title: currentShow?.title || showForm.elements.title.value
+      }))
+    ) {
+      return;
+    }
     const button = showForm.querySelector('button[type="submit"]');
     button.disabled = true;
     setStatus(showStatus, adminText("saving"));
     try {
       await client.request(`/v1/admin/shows/${encodeURIComponent(selectedShowId)}`, {
         method: "PATCH",
-        body: {
-          title: showForm.elements.title.value,
-          description: showForm.elements.description.value,
-          descriptionEn: showForm.elements.descriptionEn.value,
-          earlyAccessDays: Number(showForm.elements.earlyAccessDays.value || 0),
-          youtubeChannelUrl: showForm.elements.youtubeChannelUrl.value,
-          premiumEnabled: showForm.elements.premiumEnabled.checked,
-          freeMiniEpisodeEnabled: showForm.elements.freeMiniEpisodeEnabled.checked
-        }
+        body: payload
       });
       setStatus(showStatus, adminText("showSaved"));
       await loadShows();

@@ -27,12 +27,17 @@ const show = {
   descriptionEn: "Conversations from the rainforest, in Spanish and English.",
   language: "es",
   status: "active",
+  authorName: "Dust Wave",
+  category: "Arts",
+  artworkUrl: "https://dustwave.xyz/img/podcasts/opera-en-la-selva/artwork.png",
+  explicit: false,
   episodeCount: 1,
   earlyAccessDays: 7,
   premiumEnabled: true,
   freeMiniEpisodeEnabled: true,
   youtubeChannelUrl: "https://www.youtube.com/@dustwavecollective",
   canonicalUrl: "https://dustwave.xyz/podcasts/opera-en-la-selva/",
+  feedUrl: "https://feeds.dustwave.xyz/opera-en-la-selva/rss.xml",
   podcastGuid: "d21642df-1816-55c8-b308-6209066e9ef6"
 };
 
@@ -827,6 +832,12 @@ function responseFor(request) {
   }
   if (request.method === "GET" && path === "/v1/admin/shows") {
     return json({ shows: [show] });
+  }
+  if (
+    request.method === "PATCH"
+    && path === `/v1/admin/shows/${show.id}`
+  ) {
+    return json({ updated: true, showId: show.id });
   }
   if (
     request.method === "GET"
