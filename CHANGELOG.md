@@ -10,6 +10,11 @@
   `@dustwave/admin-shell` boundary, with passwordless session exchange, show
   settings, episode drafts, multipart media upload, idempotent publication,
   directory status, and fail-closed premium readiness.
+- Added one bilingual create/edit episode form with immutable URL slugs,
+  role-scoped edit controls, local release-time restoration, and responsive
+  Pool/Store action spacing. Stored notes re-enter the editor only through the
+  new shared `@dustwave/admin-shell` 0.7.1 sanitizer boundary; update payloads
+  never send the canonical slug.
 - Added an English/Spanish, current-page speaker-range review aid for long
   transcripts. Producer+ editors can apply an optional explicitly confirmed
   public name to a bounded set of visible cues without changing caption text,

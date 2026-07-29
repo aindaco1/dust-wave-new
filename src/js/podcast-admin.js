@@ -1,13 +1,13 @@
-import { AdminApiClient, AdminApiError } from "./dust-wave-admin-shell/api-client.js?v=0.7.0";
+import { AdminApiClient, AdminApiError } from "./dust-wave-admin-shell/api-client.js?v=0.7.1";
 import {
   AdminDownloadError,
   requestCredentialedBlob,
   triggerBlobDownload
-} from "./dust-wave-admin-shell/credentialed-download.js?v=0.7.0";
-import { mountRichTextEditor } from "./dust-wave-admin-shell/editor.js?v=0.7.0";
+} from "./dust-wave-admin-shell/credentialed-download.js?v=0.7.1";
+import { mountRichTextEditor } from "./dust-wave-admin-shell/editor.js?v=0.7.1";
 import {
   markdownToEditorHtml
-} from "./dust-wave-admin-shell/editor-codec.js?v=0.7.0";
+} from "./dust-wave-admin-shell/editor-codec.js?v=0.7.1";
 import {
   clipCueSummary,
   clearTranscriptReviewDiagnostics as clearQa,
@@ -23,7 +23,7 @@ import {
   drawQrCanvas,
   qrSvgMarkup,
   safeMarketingFilename
-} from "./dust-wave-admin-shell/marketing-assets.js?v=0.7.0";
+} from "./dust-wave-admin-shell/marketing-assets.js?v=0.7.1";
 import {
   mountSavedMarketingLinks
 } from "./podcast-admin-marketing-links.js";
@@ -31,6 +31,9 @@ import {
   renderEpisodeCatalog,
   renderShowCatalog
 } from "./podcast-admin-catalog.js";
+import {
+  mountEpisodeEditor
+} from "./podcast-admin-episode-editor.js";
 import {
   mountShowSiteProjection,
   needsShowArchiveConfirmation,
@@ -64,11 +67,11 @@ import {
   distributionCertificationList,
   renderDistributionLaunchClaim
 } from "./podcast-admin-distribution-certification.js";
-import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js?v=0.7.0";
-import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js?v=0.7.0";
+import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js?v=0.7.1";
+import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js?v=0.7.1";
 import {
   responsiveTurnstileSize
-} from "./dust-wave-admin-shell/turnstile.js?v=0.7.0";
+} from "./dust-wave-admin-shell/turnstile.js?v=0.7.1";
 
 const TRANSCRIPT_CUES_PER_PAGE = 100;
 const MAXIMUM_ALIGNMENT_BENCHMARK_BYTES = 8 * 1024 * 1024;
@@ -553,6 +556,19 @@ function startPodcastAdmin(root) {
       labels: editorLabels(notesEditorLabel)
     }
   );
+  const episodeEditor = mountEpisodeEditor({
+    form: episodeForm,
+    list: episodeList,
+    notesEditor,
+    client,
+    text: adminText,
+    setStatus,
+    friendlyError,
+    getSelectedShowId: () => selectedShowId,
+    getShows: () => shows,
+    canEdit: () => canManageCreatives,
+    onSaved: loadShows
+  });
   const announcementEditorLabel = adminText("editorAnnouncementContent");
   const announcementEditor = mountRichTextEditor(
     root.querySelector("[data-podcast-announcement-editor]"),
@@ -773,15 +789,6 @@ function startPodcastAdmin(root) {
     });
   }
   showForm?.addEventListener("submit", saveShow);
-  episodeForm?.addEventListener("submit", createEpisode);
-  episodeForm?.elements.title?.addEventListener("input", () => {
-    if (!episodeForm.elements.slug.dataset.edited) {
-      episodeForm.elements.slug.value = slugify(episodeForm.elements.title.value);
-    }
-  });
-  episodeForm?.elements.slug?.addEventListener("input", () => {
-    episodeForm.elements.slug.dataset.edited = "true";
-  });
   uploadForm?.addEventListener("submit", uploadMedia);
   transcriptEpisodeSelect?.addEventListener("change", loadTranscript);
   transcriptLanguageSelect?.addEventListener("change", loadTranscript);
@@ -1058,6 +1065,7 @@ function startPodcastAdmin(root) {
     if (alignmentBenchmarkForm) {
       alignmentBenchmarkForm.hidden = !canImportAlignmentBenchmarks;
     }
+    episodeEditor.refreshPermissions();
     root.querySelector("[data-podcast-session-summary]").textContent =
       adminText("authenticated", { roles: roles ? ` — ${roles}` : "" });
   }
@@ -1068,6 +1076,8 @@ function startPodcastAdmin(root) {
     logoutButton.hidden = true;
     shows = [];
     episodes = [];
+    episodeEditor.setEpisodes([]);
+    episodeEditor.setShow("");
     adminIdentity = null;
     campaigns = [];
     podcastAnalytics.reset();
@@ -1259,12 +1269,9 @@ function startPodcastAdmin(root) {
     showForm.hidden = !show;
     showSiteProjection.setShow(show);
     rssImport.setShow(Boolean(show));
+    episodeEditor.setShow(selectedShowId);
     if (!show) return;
     populateShowSettingsForm(showForm, show);
-    if (episodeForm?.elements.sourceLanguage) {
-      episodeForm.elements.sourceLanguage.value =
-        show.language === "en" ? "en" : "es";
-    }
   }
 
   function updateMarketingTools({ showChanged = false } = {}) {
@@ -1856,6 +1863,7 @@ function startPodcastAdmin(root) {
         `/v1/admin/shows/${encodeURIComponent(selectedShowId)}/episodes`
       );
       episodes = payload.episodes || [];
+      episodeEditor.setEpisodes(episodes);
       renderEpisodes();
       fillEpisodeSelects();
       await loadAdPlan();
@@ -1875,51 +1883,6 @@ function startPodcastAdmin(root) {
     }
   }
 
-  async function createEpisode(event) {
-    event.preventDefault();
-    const button = episodeForm.querySelector('button[type="submit"]');
-    button.disabled = true;
-    setStatus(
-      episodeStatus,
-      adminText("creatingDraft")
-    );
-    try {
-      await client.request(
-        `/v1/admin/shows/${encodeURIComponent(selectedShowId)}/episodes`,
-        {
-          method: "POST",
-          body: {
-            title: episodeForm.elements.title.value,
-            slug: episodeForm.elements.slug.value,
-            summary: episodeForm.elements.summary.value,
-            contentHtml: notesEditor.getHtml(),
-            access: episodeForm.elements.access.value,
-            sourceLanguage: episodeForm.elements.sourceLanguage.value,
-            premiumAt: isoOrNull(episodeForm.elements.premiumAt.value),
-            publicAt: isoOrNull(episodeForm.elements.publicAt.value)
-          }
-        }
-      );
-      episodeForm.reset();
-      const show = shows.find(({ id }) => id === selectedShowId);
-      episodeForm.elements.sourceLanguage.value =
-        show?.language === "en" ? "en" : "es";
-      episodeForm.elements.slug.dataset.edited = "";
-      notesEditor.setValue("");
-      setStatus(
-        episodeStatus,
-        adminText(
-          "draftCreated"
-        )
-      );
-      await loadShows();
-    } catch (error) {
-      setStatus(episodeStatus, friendlyError(error), true);
-    } finally {
-      button.disabled = false;
-    }
-  }
-
   function renderEpisodes() {
     renderEpisodeCatalog({
       target: episodeList,
@@ -1928,7 +1891,8 @@ function startPodcastAdmin(root) {
       localizedCode,
       escapeHtml,
       escapeAttribute,
-      formatDate
+      formatDate,
+      canEdit: canManageCreatives
     });
   }
 
@@ -8989,16 +8953,6 @@ function integerOrNull(value) {
 
 function moneyToCents(value) {
   return value === "" ? null : Math.round(Number(value) * 100);
-}
-
-function slugify(value) {
-  return String(value || "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 120);
 }
 
 function formatDate(value) {

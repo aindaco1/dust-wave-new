@@ -100,6 +100,10 @@ const catalogScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-catalog.js'),
   'utf8'
 );
+const episodeEditorScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-episode-editor.js'),
+  'utf8'
+);
 const analyticsScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-analytics.js'),
   'utf8'
@@ -355,6 +359,9 @@ assert.match(
   /const showSelects = Array\.from\([\s\S]+for \(const showSelect of showSelects\)/
 );
 assert.match(adminTemplate, /data-podcast-episode-form/);
+assert.match(adminTemplate, /data-podcast-episode-form-heading/);
+assert.match(adminTemplate, /data-podcast-episode-edit-cancel/);
+assert.match(adminTemplate, /data-podcast-episode-slug-help/);
 assert.match(adminTemplate, /data-podcast-upload-form/);
 assert.match(adminTemplate, /data-podcast-rss-import-form/);
 assert.match(adminTemplate, /data-podcast-rss-import-preview/);
@@ -614,8 +621,56 @@ assert.match(
   catalogScript,
   /localizedCode\("language", episode\.sourceLanguage \|\| "not_set"\)/
 );
+assert.match(catalogScript, /data-edit-episode=/);
 assert.match(adminScript, /renderShowCatalog\(\{/);
 assert.match(adminScript, /renderEpisodeCatalog\(\{/);
+assert.match(adminScript, /mountEpisodeEditor\(\{/);
+assert.match(adminScript, /canEdit: canManageCreatives/);
+assert.match(
+  episodeEditorScript,
+  /findEditableEpisode\(episodes, episodeId\)/
+);
+assert.match(
+  episodeEditorScript,
+  /method: updating \? "PATCH" : "POST"/
+);
+assert.match(
+  episodeEditorScript,
+  /includeSlug: !updating/,
+  'Episode updates must never mutate the canonical URL slug'
+);
+assert.match(
+  episodeEditorScript,
+  /notesEditor\.setHtml\(episode\.contentHtml \|\| ""\)/,
+  'Stored episode notes must re-enter the shared sanitized editor boundary'
+);
+assert.doesNotMatch(
+  episodeEditorScript,
+  /innerHTML|localStorage|sessionStorage/,
+  'Episode editing must not bypass the shared sanitizer or persist drafts locally'
+);
+assert.match(
+  adminMockApi,
+  /method === "PATCH"[\s\S]+\/v1\/admin\/episodes\/\$\{episode\.id\}/
+);
+for (const runtime of [englishRuntime, spanishRuntime]) {
+  for (const key of [
+    'newEpisode',
+    'createDraft',
+    'editEpisode',
+    'updateDraft',
+    'updatingDraft',
+    'draftUpdated',
+    'editingEpisode',
+    'episodeEditCanceled'
+  ]) {
+    assert.equal(
+      typeof runtime[key],
+      'string',
+      `Podcast episode editor translation is missing: ${key}`
+    );
+  }
+}
 assert.equal(spanishRuntime.showStatus_active, "Activo");
 assert.equal(spanishRuntime.episodeStatus_draft, "Borrador");
 assert.equal(spanishRuntime.episodeAccess_early_access, "Acceso anticipado");
@@ -908,6 +963,16 @@ assert.match(
   adminTemplate,
   /<div class="podcast-admin__field">[\s\S]+workbench\.episodes\.notes[\s\S]+data-podcast-notes-editor/,
   'Standalone rich-text labels and editors must share one field wrapper'
+);
+assert.match(
+  adminStyles,
+  /\.podcast-admin__form-actions \{[\s\S]+gap: var\(--dw-admin-space-sm\);/,
+  'Episode create/edit actions must keep the shared Pool/Store spacing rhythm'
+);
+assert.match(
+  adminStyles,
+  /@media \(max-width: 760px\)[\s\S]+\.podcast-admin__form-actions \.btn/,
+  'Episode create/edit actions must expand to touch-friendly mobile controls'
 );
 assert.match(adminScript, /\/v1\/admin\/distribution\?showId=/);
 assert.match(adminScript, /function renderDistribution/);

@@ -161,6 +161,13 @@
   justify-self: start;
 }
 
+.podcast-admin__form-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--dw-admin-space-sm);
+}
+
 .podcast-admin__header > .btn,
 .podcast-admin__panel-heading > :is(.btn, .podcast-admin__pill, select) {
   flex: 0 0 auto;
@@ -1885,6 +1892,8 @@
   .podcast-admin__transcript-pages .btn,
   .podcast-admin__chapter-row .btn,
   .podcast-admin__form > .btn,
+  .podcast-admin__form-actions,
+  .podcast-admin__form-actions .btn,
   .podcast-admin__rss-import-execution > .btn,
   .podcast-admin__rss-import-reconciliation > .btn {
     width: 100%;

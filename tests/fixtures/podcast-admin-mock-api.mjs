@@ -47,12 +47,15 @@ const episode = {
   slug: "episodio-de-prueba",
   title: "Episodio de prueba / Test episode",
   summary: "A controlled browser-QA fixture.",
+  contentHtml:
+    "<h2>Notas del episodio</h2><p>Contenido revisable y seguro.</p>",
   status: "draft",
   access: "public",
   mediaStatus: "ready",
   sourceLanguage: "es",
   audioFilename: "episode-source.wav",
   publicationRevision: 0,
+  premiumAt: null,
   publicAt: null,
   canonicalUrl:
     "https://dustwave.xyz/news/podcasts/opera-en-la-selva/episodio-de-prueba/"
@@ -1674,6 +1677,12 @@ function responseFor(request) {
     && path === `/v1/admin/shows/${show.id}/episodes`
   ) {
     return json({ episodes: [episode] });
+  }
+  if (
+    request.method === "PATCH"
+    && path === `/v1/admin/episodes/${episode.id}`
+  ) {
+    return json({ updated: true, episodeId: episode.id });
   }
   if (
     request.method === "GET"

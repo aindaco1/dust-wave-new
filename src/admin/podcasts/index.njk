@@ -114,13 +114,22 @@ eleventyComputed:
           </div>
 
           <form class="podcast-admin__form" data-podcast-episode-form>
-            <h3>{{ workbench.episodes.new }}</h3>
+            <h3 data-podcast-episode-form-heading>{{ workbench.episodes.new }}</h3>
             <div class="podcast-admin__field-grid">
               <label>{{ workbench.common.title }}
                 <input name="title" required>
               </label>
               <label>{{ workbench.episodes.slug }}
-                <input name="slug" pattern="[a-z0-9]+(?:-[a-z0-9]+)*" required>
+                <input
+                  name="slug"
+                  pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
+                  aria-describedby="podcast-episode-slug-help"
+                  required>
+                <span
+                  id="podcast-episode-slug-help"
+                  class="podcast-admin__help"
+                  data-podcast-episode-slug-help
+                  hidden>{{ workbench.episodes.slugLocked }}</span>
               </label>
             </div>
             <label>{{ workbench.episodes.summary }}
@@ -152,7 +161,14 @@ eleventyComputed:
                 <input name="publicAt" type="datetime-local">
               </label>
             </div>
-            <button class="btn btn-danger" type="submit">{{ workbench.episodes.createDraft }}</button>
+            <div class="podcast-admin__form-actions">
+              <button class="btn btn-danger" type="submit">{{ workbench.episodes.createDraft }}</button>
+              <button
+                class="btn btn-outline-light"
+                type="button"
+                data-podcast-episode-edit-cancel
+                hidden>{{ workbench.episodes.cancelEdit }}</button>
+            </div>
             <p class="podcast-admin__status" data-podcast-episode-status role="status" aria-live="polite"></p>
           </form>
 
