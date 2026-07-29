@@ -1,7 +1,7 @@
-import { AdminApiClient, AdminApiError } from "./dust-wave-admin-shell/api-client.js?v=0.8.0";
-import { AdminDownloadError, requestCredentialedBlob, triggerBlobDownload } from "./dust-wave-admin-shell/credentialed-download.js?v=0.8.0";
-import { mountRichTextEditor } from "./dust-wave-admin-shell/editor.js?v=0.8.0";
-import { markdownToEditorHtml } from "./dust-wave-admin-shell/editor-codec.js?v=0.8.0";
+import { AdminApiClient, AdminApiError } from "./dust-wave-admin-shell/api-client.js?v=0.8.1";
+import { AdminDownloadError, requestCredentialedBlob, triggerBlobDownload } from "./dust-wave-admin-shell/credentialed-download.js?v=0.8.1";
+import { mountRichTextEditor } from "./dust-wave-admin-shell/editor.js?v=0.8.1";
+import { markdownToEditorHtml } from "./dust-wave-admin-shell/editor-codec.js?v=0.8.1";
 import {
   clipCueSummary,
   clearTranscriptReviewDiagnostics as clearQa,
@@ -17,7 +17,7 @@ import {
   drawQrCanvas,
   qrSvgMarkup,
   safeMarketingFilename
-} from "./dust-wave-admin-shell/marketing-assets.js?v=0.8.0";
+} from "./dust-wave-admin-shell/marketing-assets.js?v=0.8.1";
 import { mountSavedMarketingLinks } from "./podcast-admin-marketing-links.js";
 import { renderEpisodeCatalog, renderShowCatalog } from "./podcast-admin-catalog.js";
 import { mountEpisodeEditor } from "./podcast-admin-episode-editor.js";
@@ -29,6 +29,8 @@ import { clipDownloadActionMarkup, mountTranscriptDownloads } from "./podcast-ad
 import { mountTranscriptCaptionImport } from "./podcast-admin-transcript-import.js";
 import { mountTranscriptSearch } from "./podcast-admin-transcript-search.js";
 import { mountPodcastReviewDraftGuard } from "./podcast-admin-unsaved-changes.js";
+import { syncReviewDraftButton } from "./podcast-admin-dirty-controls.js";
+import { adminText, editorLabels } from "./podcast-admin-text.js";
 import { ALIGNMENT_WORKFLOW, AUDIO_QC_POLICY_FIELDS, MAXIMUM_ALIGNMENT_BENCHMARK_BYTES, TRANSCRIPTION_CHUNK_WORKFLOW, TRANSCRIPT_CUES_PER_PAGE } from "./podcast-admin-constants.js";
 import {
   mountShowSiteProjection,
@@ -47,40 +49,12 @@ import {
   distributionCertificationList,
   renderDistributionLaunchClaim
 } from "./podcast-admin-distribution-certification.js";
-import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js?v=0.8.0";
-import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js?v=0.8.0";
-import { responsiveTurnstileSize } from "./dust-wave-admin-shell/turnstile.js?v=0.8.0";
+import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js?v=0.8.1";
+import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js?v=0.8.1";
+import { responsiveTurnstileSize } from "./dust-wave-admin-shell/turnstile.js?v=0.8.1";
 
 const root = document.querySelector("[data-podcast-admin]");
 if (root) startPodcastAdmin(root);
-
-function adminText(key, fallbackOrVariables = {}, variables = {}) {
-  const fallback = typeof fallbackOrVariables === "string"
-    ? fallbackOrVariables
-    : "";
-  const replacements = (
-    fallbackOrVariables
-    && typeof fallbackOrVariables === "object"
-  )
-    ? fallbackOrVariables
-    : variables;
-  const translated = window.DustWaveI18n?.t(`admin.${key}`, replacements);
-  return translated && !translated.startsWith("[missing:")
-    ? translated
-    : fallback || `[missing: admin.${key}]`;
-}
-
-function editorLabels(label) {
-  return {
-    formatting: adminText("editorFormatting", { label }),
-    bold: adminText("editorBold"),
-    italic: adminText("editorItalic"),
-    heading: adminText("editorHeading"),
-    list: adminText("editorList"),
-    link: adminText("editorLink"),
-    linkPrompt: adminText("editorLinkPrompt")
-  };
-}
 
 function startPodcastAdmin(root) {
   const apiOrigin = root.dataset.apiOrigin;
@@ -3492,6 +3466,7 @@ function startPodcastAdmin(root) {
       confirmed.disabled = !canEditTranscripts || !speaker.value;
       speaker.addEventListener("input", () => {
         transcriptDirty = true;
+        syncReviewDraftButton(transcriptSaveButton, true, adminText);
         confirmed.disabled = !canEditTranscripts || !speaker.value.trim();
         if (!speaker.value.trim()) confirmed.checked = false;
         transcriptApproveButton.disabled = true;
@@ -3500,6 +3475,7 @@ function startPodcastAdmin(root) {
       for (const control of [start, end, confirmed]) {
         control.addEventListener("input", () => {
           transcriptDirty = true;
+          syncReviewDraftButton(transcriptSaveButton, true, adminText);
           transcriptApproveButton.disabled = true;
           updateClipAvailability();
         });
@@ -3522,6 +3498,7 @@ function startPodcastAdmin(root) {
           labels: editorLabels(cueLabel),
           onChange() {
             transcriptDirty = true;
+            syncReviewDraftButton(transcriptSaveButton, true, adminText);
             transcriptApproveButton.disabled = true;
             updateClipAvailability();
           }
@@ -3539,6 +3516,7 @@ function startPodcastAdmin(root) {
     transcriptCuesRoot.replaceChildren(...rows);
     transcriptAddButton.hidden = !canEditTranscripts;
     transcriptSaveButton.hidden = !canEditTranscripts;
+    syncReviewDraftButton(transcriptSaveButton, transcriptDirty, adminText);
     transcriptApproveButton.hidden = !canApproveTranscripts;
     transcriptApproveButton.disabled = !canApproveTranscripts
       || Number(transcript.revision || 0) < 1
@@ -3647,7 +3625,7 @@ function startPodcastAdmin(root) {
         true
       );
     } finally {
-      transcriptSaveButton.disabled = false;
+      syncReviewDraftButton(transcriptSaveButton, transcriptDirty, adminText);
       transcriptAddButton.disabled = false;
     }
   }
@@ -3946,6 +3924,7 @@ function startPodcastAdmin(root) {
     chapterRowsRoot.replaceChildren(...rows);
     chapterAddButton.hidden = !canEditChapters;
     chapterSaveButton.hidden = !canEditChapters;
+    syncReviewDraftButton(chapterSaveButton, chapterDirty, adminText);
     chapterApproveButton.hidden = !canApproveChapters;
     chapterApproveButton.disabled = !canApproveChapters
       || Number(chapterSet.revision || 0) < 1
@@ -3956,6 +3935,7 @@ function startPodcastAdmin(root) {
   function markChaptersDirty() {
     if (!chapterSet || !canEditChapters) return;
     chapterDirty = true;
+    syncReviewDraftButton(chapterSaveButton, true, adminText);
     if (chapterApproveButton) chapterApproveButton.disabled = true;
   }
 
@@ -4118,7 +4098,7 @@ function startPodcastAdmin(root) {
         true
       );
     } finally {
-      chapterSaveButton.disabled = false;
+      syncReviewDraftButton(chapterSaveButton, chapterDirty, adminText);
       chapterAddButton.disabled = false;
     }
   }

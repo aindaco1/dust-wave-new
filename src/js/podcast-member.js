@@ -1,13 +1,13 @@
 import {
   AdminApiClient as PodcastApiClient,
   AdminApiError as PodcastApiError
-} from "./dust-wave-admin-shell/api-client.js?v=0.8.0";
+} from "./dust-wave-admin-shell/api-client.js?v=0.8.1";
 import {
   PasswordlessAdminSession as PasswordlessSession
-} from "./dust-wave-admin-shell/passwordless-session.js?v=0.8.0";
+} from "./dust-wave-admin-shell/passwordless-session.js?v=0.8.1";
 import {
   responsiveTurnstileSize
-} from "./dust-wave-admin-shell/turnstile.js?v=0.8.0";
+} from "./dust-wave-admin-shell/turnstile.js?v=0.8.1";
 
 const translate = globalThis.DustWaveI18n?.t || ((key) => key);
 const root = document.querySelector("[data-podcast-member]");

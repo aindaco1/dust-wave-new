@@ -631,7 +631,7 @@ eleventyComputed:
             </nav>
             <div class="podcast-admin__transcript-actions">
               <button class="btn btn-outline-light" type="button" data-podcast-transcript-add>{{ workbench.production.addCue }}</button>
-              <button class="btn btn-danger" type="button" data-podcast-transcript-save>{{ workbench.production.saveReviewDraft }}</button>
+              <button class="btn btn-danger" type="button" data-podcast-transcript-save disabled>{{ workbench.production.saveReviewDraft }}</button>
               <button class="btn btn-outline-light" type="button" data-podcast-transcript-approve>{{ workbench.production.approveRevision }}</button>
               <span class="podcast-admin__transcript-actions" data-podcast-transcript-downloads hidden></span>
             </div>
@@ -755,7 +755,7 @@ eleventyComputed:
             <div class="podcast-admin__chapter-rows" data-podcast-chapter-rows></div>
             <div class="podcast-admin__transcript-actions">
               <button class="btn btn-outline-light" type="button" data-podcast-chapter-add>{{ workbench.production.addChapter }}</button>
-              <button class="btn btn-danger" type="button" data-podcast-chapter-save>{{ workbench.production.saveReviewDraft }}</button>
+              <button class="btn btn-danger" type="button" data-podcast-chapter-save disabled>{{ workbench.production.saveReviewDraft }}</button>
               <button class="btn btn-outline-light" type="button" data-podcast-chapter-approve>{{ workbench.production.approveRevision }}</button>
             </div>
             <p class="podcast-admin__status" data-podcast-chapter-status role="status" aria-live="polite"></p>

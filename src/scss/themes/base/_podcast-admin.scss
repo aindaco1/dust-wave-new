@@ -317,6 +317,10 @@
   min-height: var(--dw-admin-control-min-height);
 }
 
+.podcast-admin .btn.is-dirty {
+  box-shadow: 0 0 0 3px rgba(255, 89, 100, 0.45);
+}
+
 .podcast-admin :is(
   a,
   button,
