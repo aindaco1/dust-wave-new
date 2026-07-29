@@ -1714,6 +1714,46 @@ function responseFor(request) {
     });
   }
   if (
+    request.method === "POST"
+    && path === `/v1/admin/episodes/${episode.id}/chapters/draft`
+  ) {
+    return json({
+      draft: {
+        chapters: [
+          {
+            id: "chapter_ai_111111111111111111111111",
+            startsAtMs: 0,
+            title: "El origen de la conversación",
+            url: "",
+            imageUrl: "",
+            toc: true
+          },
+          {
+            id: "chapter_ai_222222222222222222222222",
+            startsAtMs: 90_000,
+            title: "Cine y colaboración",
+            url: "",
+            imageUrl: "",
+            toc: true
+          }
+        ]
+      },
+      source: {
+        language: "es",
+        revision: 1,
+        contentSha256: sha("3"),
+        approvedAt: "2026-07-29T06:00:00.000Z",
+        includedCueCount: 24,
+        totalCueCount: 24,
+        truncated: false
+      },
+      outputLanguage: "es",
+      model: "@cf/meta/llama-3.2-3b-instruct",
+      reviewRequired: true,
+      saved: false
+    });
+  }
+  if (
     request.method === "GET"
     && path
       === `/v1/admin/shows/${show.id}/marketing/announcements`

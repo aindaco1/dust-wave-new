@@ -180,6 +180,26 @@
   white-space: pre-wrap;
 }
 
+.podcast-admin__chapter-draft-list {
+  display: grid;
+  gap: var(--dw-admin-space-sm);
+  margin: 0;
+  padding-inline-start: 1.5rem;
+}
+
+.podcast-admin__chapter-draft-list li {
+  align-items: baseline;
+  display: grid;
+  gap: var(--dw-admin-space-sm);
+  grid-template-columns: minmax(3.5rem, auto) minmax(0, 1fr);
+  overflow-wrap: anywhere;
+}
+
+.podcast-admin__chapter-draft-list time {
+  color: rgba(255, 255, 255, 0.72);
+  font-variant-numeric: tabular-nums;
+}
+
 .podcast-admin__form > .btn {
   justify-self: start;
 }

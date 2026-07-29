@@ -38,6 +38,9 @@ import {
   mountShowNotesAssistant
 } from "./podcast-admin-show-notes.js";
 import {
+  mountChapterDraftAssistant
+} from "./podcast-admin-chapter-draft.js";
+import {
   mountShowSiteProjection,
   needsShowArchiveConfirmation,
   populateShowSettingsForm,
@@ -567,6 +570,24 @@ function startPodcastAdmin(root) {
     setStatus,
     friendlyError
   });
+  const chapterDraftAssistant = mountChapterDraftAssistant({
+    root: root.querySelector("[data-podcast-chapter-draft]"),
+    client,
+    text: adminText,
+    setStatus,
+    friendlyError,
+    hasExistingChapters: () => Boolean(
+      chapterDirty
+      || Number(chapterSet?.revision || 0) > 0
+      || chapterSet?.chapters?.some(({ title }) => String(title || "").trim())
+    ),
+    applyChapters(chapters) {
+      if (!chapterSet || !canEditChapters) return;
+      chapterSet.chapters = chapters;
+      chapterDirty = true;
+      renderChapters();
+    }
+  });
   const episodeEditor = mountEpisodeEditor({
     form: episodeForm,
     list: episodeList,
@@ -1083,6 +1104,7 @@ function startPodcastAdmin(root) {
       alignmentBenchmarkForm.hidden = !canImportAlignmentBenchmarks;
     }
     episodeEditor.refreshPermissions();
+    chapterDraftAssistant.setEditable(canEditChapters);
     root.querySelector("[data-podcast-session-summary]").textContent =
       adminText("authenticated", { roles: roles ? ` — ${roles}` : "" });
   }
@@ -1121,6 +1143,8 @@ function startPodcastAdmin(root) {
     canRunAudioEnhancements = false;
     canApproveClipYouTube = false;
     canImportAlignmentBenchmarks = false;
+    chapterDraftAssistant.setEditable(false);
+    chapterDraftAssistant.setEpisode("");
     rssImport.reset({ form: true });
     rssImport.setShow(false);
     initializeTurnstile();
@@ -2007,6 +2031,7 @@ function startPodcastAdmin(root) {
           );
       }
       chapterSet = null;
+      chapterDraftAssistant.setEpisode("");
       chapterRowsRoot?.replaceChildren();
       if (chapterMeta) {
         chapterMeta.textContent =
@@ -3756,6 +3781,11 @@ function startPodcastAdmin(root) {
 
   async function loadChapters() {
     const episodeId = chapterEpisodeSelect?.value;
+    const episode = episodes.find(({ id }) => id === episodeId);
+    chapterDraftAssistant.setEpisode(
+      episodeId,
+      episode?.sourceLanguage === "en" ? "en" : "es"
+    );
     const requestId = ++chapterRequestId;
     chapterRowsRoot?.replaceChildren();
     chapterDirty = false;

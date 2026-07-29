@@ -631,6 +631,62 @@ eleventyComputed:
               </label>
             </div>
             <div class="podcast-admin__transcript-meta" data-podcast-chapter-meta aria-live="polite"></div>
+            <section
+              class="podcast-admin__callout podcast-admin__chapter-draft"
+              data-podcast-chapter-draft
+              hidden>
+              <h3>{{ workbench.production.chapterDraftHeading }}</h3>
+              <p>{{ workbench.production.chapterDraftIntro }}</p>
+              <p class="podcast-admin__help">{{ workbench.production.chapterDraftReviewNotice }}</p>
+              <div class="podcast-admin__field-grid">
+                <label>{{ workbench.production.chapterDraftSourceLanguage }}
+                  <select data-podcast-chapter-draft-source-language>
+                    <option value="es">{{ workbench.common.spanish }}</option>
+                    <option value="en">{{ workbench.common.english }}</option>
+                  </select>
+                </label>
+                <label>{{ workbench.production.chapterDraftOutputLanguage }}
+                  <select data-podcast-chapter-draft-output-language>
+                    <option value="es">{{ workbench.common.spanish }}</option>
+                    <option value="en">{{ workbench.common.english }}</option>
+                  </select>
+                </label>
+              </div>
+              <div class="podcast-admin__form-actions">
+                <button
+                  class="btn btn-outline-light"
+                  type="button"
+                  data-podcast-chapter-draft-generate>{{ workbench.production.chapterDraftGenerate }}</button>
+              </div>
+              <p
+                class="podcast-admin__status"
+                data-podcast-chapter-draft-status
+                role="status"
+                aria-live="polite"></p>
+              <section
+                class="podcast-admin__show-notes-review"
+                data-podcast-chapter-draft-review
+                aria-labelledby="podcast-chapter-draft-review-heading"
+                hidden>
+                <h4 id="podcast-chapter-draft-review-heading">{{ workbench.production.chapterDraftReviewHeading }}</h4>
+                <p
+                  class="podcast-admin__review-evidence"
+                  data-podcast-chapter-draft-evidence></p>
+                <ol
+                  class="podcast-admin__chapter-draft-list"
+                  data-podcast-chapter-draft-list></ol>
+                <div class="podcast-admin__form-actions">
+                  <button
+                    class="btn btn-danger"
+                    type="button"
+                    data-podcast-chapter-draft-apply>{{ workbench.production.chapterDraftUse }}</button>
+                  <button
+                    class="btn btn-outline-light"
+                    type="button"
+                    data-podcast-chapter-draft-dismiss>{{ workbench.production.chapterDraftDismiss }}</button>
+                </div>
+              </section>
+            </section>
             <div class="podcast-admin__chapter-rows" data-podcast-chapter-rows></div>
             <div class="podcast-admin__transcript-actions">
               <button class="btn btn-outline-light" type="button" data-podcast-chapter-add>{{ workbench.production.addChapter }}</button>
