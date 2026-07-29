@@ -311,6 +311,21 @@ Load the resulting JSON from Chrome DevTools **Performance → Load profile**.
 Trace files contain visited URLs and page metadata, so review them before
 sharing. Run `npm run perf:podcast-admin:trace -- --help` for all options.
 
+The mock API also exposes a deterministic public clip response for the
+canonical News-page consumer. `ready` is the default; use `empty` or `missing`
+to exercise withdrawal/concealment without publishing an episode or media:
+
+```bash
+PODCAST_ADMIN_MOCK_PUBLIC_CLIPS=empty npm run qa:podcast-admin:mock-api
+node --test tests/podcast-clips-dom.test.mjs
+```
+
+The fixture endpoint is
+`/v1/shows/opera-en-la-selva/episodes/episodio-de-prueba/clips`. Keep it local;
+the browser contract validates Spanish/English labels, canonical sharing,
+safe text-only rendering, MP4 download URLs, and complete concealment when no
+approved selection remains.
+
 ### WebP Images
 
 Local development and `npm run build` use the original JPG/PNG image paths and

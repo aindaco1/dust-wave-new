@@ -12,6 +12,11 @@ const transcriptCueCount = boundedInteger(
   process.env.PODCAST_ADMIN_MOCK_TRANSCRIPT_CUES,
   { minimum: 0, maximum: 10_000, fallback: 0 }
 );
+const publicClipMode = ["ready", "empty", "missing"].includes(
+  process.env.PODCAST_ADMIN_MOCK_PUBLIC_CLIPS
+)
+  ? process.env.PODCAST_ADMIN_MOCK_PUBLIC_CLIPS
+  : "ready";
 const sha = (character) => character.repeat(64);
 
 const show = {
@@ -728,6 +733,44 @@ function boundedInteger(value, {
 function responseFor(request) {
   const url = new URL(request.url, `http://${request.headers.host}`);
   const path = url.pathname;
+  const publicClipPath =
+    `/v1/shows/${show.slug}/episodes/episodio-de-prueba/clips`;
+  if (request.method === "GET" && path === publicClipPath) {
+    if (publicClipMode === "missing") {
+      return json({ error: "clip_not_found" }, 404);
+    }
+    const canonicalUrl =
+      `https://dustwave.xyz/news/podcasts/${show.slug}/`
+      + "episodio-de-prueba/";
+    return json({
+      schemaVersion: 1,
+      episode: {
+        showSlug: show.slug,
+        slug: "episodio-de-prueba",
+        canonicalUrl
+      },
+      clips: publicClipMode === "empty"
+        ? []
+        : [{
+            slug: "momento-de-lanzamiento",
+            title: "Un momento en la selva",
+            description: "Un audiograma subtitulado de control.",
+            aspectRatio: "9:16",
+            width: 1_080,
+            height: 1_920,
+            durationMs: 24_000,
+            captionLanguage: "es",
+            mediaUrl:
+              `http://${host}:${port}${publicClipPath}`
+              + "/momento-de-lanzamiento.mp4",
+            downloadUrl:
+              `http://${host}:${port}${publicClipPath}`
+              + "/momento-de-lanzamiento.mp4?download=1",
+            canonicalUrl
+          }],
+      truncated: false
+    });
+  }
   if (request.method === "GET" && path === "/v1/member/session") {
     return json({
       identity: {
@@ -2168,6 +2211,7 @@ const server = createServer((request, response) => {
 server.listen(port, host, () => {
   process.stdout.write(
     `Podcast admin mock API listening on http://${host}:${port}`
-      + ` (${transcriptCueCount} transcript cues)\n`
+      + ` (${transcriptCueCount} transcript cues, `
+      + `${publicClipMode} public clips)\n`
   );
 });

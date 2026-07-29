@@ -603,6 +603,11 @@ assert.match(
   /PODCAST_ADMIN_MOCK_TRANSCRIPT_CUES[\s\S]+maximum:\s*10_000[\s\S]+transcriptFixture/,
   "browser QA must provide a bounded opt-in large-transcript fixture"
 );
+assert.match(
+  adminMockApi,
+  /PODCAST_ADMIN_MOCK_PUBLIC_CLIPS[\s\S]+ready[\s\S]+empty[\s\S]+missing/,
+  "browser QA must provide controlled public clip visibility states"
+);
 assert.match(englishWorkbenchText, /Word timing gated/);
 assert.match(adminTemplate, /data-podcast-alignment/);
 assert.match(adminTemplate, /data-podcast-alignment-adapter/);
