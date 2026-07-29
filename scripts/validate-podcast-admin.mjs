@@ -120,6 +120,28 @@ const englishWorkbenchText = JSON.stringify(englishWorkbench);
 const englishRuntime = englishI18n.runtime.admin;
 const spanishRuntime = spanishI18n.runtime.admin;
 const englishRuntimeText = JSON.stringify(englishRuntime);
+const controlledYoutubeErrorCodes = [
+  'youtube_controlled_test_not_configured',
+  'youtube_not_configured',
+  'youtube_oauth_failed',
+  'youtube_channel_verification_failed',
+  'youtube_queue_failed'
+];
+for (const code of controlledYoutubeErrorCodes) {
+  const key = `error_${code}`;
+  assert.equal(
+    typeof englishRuntime[key],
+    'string',
+    `English admin translation is missing controlled YouTube error: ${code}`
+  );
+  assert.equal(
+    typeof spanishRuntime[key],
+    'string',
+    `Spanish admin translation is missing controlled YouTube error: ${code}`
+  );
+  assert.match(englishRuntime[key], /No upload/);
+  assert.match(spanishRuntime[key], /No se /);
+}
 const staticRuntimeKeys = [
   ...adminScript.matchAll(/adminText\(\s*"([^"]+)"/g),
   ...distributionCertificationScript.matchAll(/text\(\s*"([^"]+)"/g),
