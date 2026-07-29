@@ -3,8 +3,15 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
-if (process.env.GITHUB_ACTIONS !== 'true') {
-  console.error('WebP generation is restricted to GitHub Actions.');
+const trustedBuild =
+  process.env.GITHUB_ACTIONS === 'true'
+  || process.env.PODCAST_STAGING_BUILD === 'true';
+
+if (!trustedBuild) {
+  console.error(
+    'WebP generation is restricted to GitHub Actions or the isolated '
+    + 'Podcast staging build.'
+  );
   process.exit(1);
 }
 

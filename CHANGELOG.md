@@ -31,6 +31,11 @@
   controls, preserves its bounded position across 100-cue pages, and reuses the
   existing editor focus path without adding storage, requests, saves, or
   approval behavior.
+- Made the isolated Podcast staging build reuse the exact production CI image
+  pipeline. Responsive show artwork and wordmarks are now generated before a
+  Pages upload instead of leaving supported browsers with missing WebP
+  sources, while direct WebP generation remains limited to CI and the explicit
+  staging entrypoint.
 - Added a self-hosted, checksum-pinned Datatype 1.2.2 pilot to Podcast audience
   analytics. Its English/Spanish, font-ready summary uses shared normalization,
   compact container axes, a text-only narrow state, and the existing exact

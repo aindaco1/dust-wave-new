@@ -14,6 +14,7 @@ const [
   memberLayout,
   tracer,
   stagingBuild,
+  webpBuild,
   packageJson,
   gitignore
 ] = await Promise.all([
@@ -37,6 +38,7 @@ const [
     new URL("scripts/build-podcast-staging.mjs", repositoryRoot),
     "utf8"
   ),
+  readFile(new URL("webp.mjs", repositoryRoot), "utf8"),
   readFile(new URL("package.json", repositoryRoot), "utf8"),
   readFile(new URL(".gitignore", repositoryRoot), "utf8")
 ]);
@@ -230,6 +232,21 @@ assert.match(
   stagingBuild,
   /DUST_WAVE_ASSET_VERSION: assetRevision/,
   "staging builds must key browser assets by the exact source revision"
+);
+assert.match(
+  stagingBuild,
+  /spawnSync\(npmCommand, \["run", "build:ci"\]/,
+  "staging must reuse the production CI asset pipeline"
+);
+assert.match(
+  stagingBuild,
+  /PODCAST_STAGING_BUILD: "true"/,
+  "staging must explicitly authorize generated responsive images"
+);
+assert.match(
+  webpBuild,
+  /process\.env\.GITHUB_ACTIONS === 'true'[\s\S]+process\.env\.PODCAST_STAGING_BUILD === 'true'/,
+  "WebP generation must remain restricted to CI or the isolated staging build"
 );
 assert.match(
   stagingBuild,
