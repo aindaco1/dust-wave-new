@@ -1291,7 +1291,13 @@ eleventyComputed:
               <textarea id="podcast-show-description-en" name="descriptionEn" rows="4"></textarea>
             </label>
             <label>{{ workbench.overview.artworkUrl }}
-              <input name="artworkUrl" type="url" maxlength="2000">
+              <input
+                name="artworkUrl"
+                type="url"
+                inputmode="url"
+                autocomplete="url"
+                pattern="https://.*"
+                maxlength="2000">
             </label>
             <div class="podcast-admin__callout">
               <p>{{ workbench.overview.permanentDestinationsHelp }}</p>
@@ -1309,7 +1315,13 @@ eleventyComputed:
                 <input name="earlyAccessDays" type="number" min="0" max="365">
               </label>
               <label>{{ workbench.overview.youtubeChannel }}
-                <input name="youtubeChannelUrl" type="url">
+                <input
+                  name="youtubeChannelUrl"
+                  type="url"
+                  inputmode="url"
+                  autocomplete="url"
+                  pattern="https://(www\.|m\.)?youtube\.com/(?:@|channel/|c/|user/).+"
+                  maxlength="2000">
               </label>
             </div>
             <label class="podcast-admin__checkbox">

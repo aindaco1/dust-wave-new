@@ -269,6 +269,14 @@ for (const field of [
 assert.match(adminTemplate, /name="canonicalUrl"[^>]+readonly/);
 assert.match(adminTemplate, /name="feedUrl"[^>]+readonly/);
 assert.match(
+  adminTemplate,
+  /name="artworkUrl"[\s\S]{0,180}pattern="https:\/\/\.\*"/
+);
+assert.match(
+  adminTemplate,
+  /name="youtubeChannelUrl"[\s\S]{0,260}pattern="https:\/\/\(www\\\.\|m\\\.\)\?youtube\\\.com\//
+);
+assert.match(
   showSettingsScript,
   /language: form\.elements\.language\.value[\s\S]+explicit: form\.elements\.explicit\.checked/
 );
