@@ -171,6 +171,57 @@ test("leaves an identical last rule unchanged", async () => {
   assert.deepEqual(calls, ["GET", "GET"]);
 });
 
+test("updates a stale last rule without sending an invalid position", async () => {
+  let currentRuleset = rulesetWith([
+    deployedRule({
+      action_parameters: {
+        headers: {
+          "X-Frame-Options": { operation: "set", value: "SAMEORIGIN" }
+        }
+      }
+    })
+  ]);
+  const calls = [];
+  const fetchImpl = async (url, options = {}) => {
+    const method = options.method || "GET";
+    const pathname = new URL(url).pathname;
+    calls.push([method, pathname]);
+
+    if (method === "GET") return apiResponse(currentRuleset);
+    if (method === "PATCH") {
+      const body = JSON.parse(options.body);
+      assert.equal("position" in body, false);
+      assert.match(pathname, /\/rules\/managed-rule-id$/);
+      currentRuleset = rulesetWith([
+        { id: "managed-rule-id", ...body }
+      ]);
+      return apiResponse(currentRuleset);
+    }
+    throw new Error(`Unexpected request: ${method} ${pathname}`);
+  };
+
+  const result = await syncCloudflareResponseHeaders({
+    zoneId,
+    authHeaders,
+    headersText,
+    fetchImpl,
+    apiBaseUrl: "https://api.example.test",
+    logger: { log() {} }
+  });
+
+  assert.equal(result.operation, "updated");
+  assert.deepEqual(
+    calls.map(([method]) => method),
+    ["GET", "PATCH", "GET"]
+  );
+  assert(
+    cloudflareRulesMatch(
+      currentRuleset.rules[0],
+      buildCloudflareResponseHeaderRule(headersText)
+    )
+  );
+});
+
 test("patches only the owned rule and moves it after unrelated transforms", async () => {
   const unrelatedRule = {
     id: "unrelated-rule-id",

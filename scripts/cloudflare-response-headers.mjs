@@ -305,7 +305,11 @@ export async function syncCloudflareResponseHeaders({
     } else {
       const isLastRule =
         existingRuleset.rules.at(-1)?.id === existingRule.id;
-      if (!cloudflareRulesMatch(existingRule, desiredRule) || !isLastRule) {
+      const contentChanged = !cloudflareRulesMatch(
+        existingRule,
+        desiredRule
+      );
+      if (contentChanged || !isLastRule) {
         await cloudflareRequest({
           apiBaseUrl,
           authHeaders,
@@ -316,7 +320,7 @@ export async function syncCloudflareResponseHeaders({
             + `/rules/${existingRule.id}`,
           body: {
             ...desiredRule,
-            position: { after: "" }
+            ...(!isLastRule ? { position: { after: "" } } : {})
           }
         });
         operation = "updated";
