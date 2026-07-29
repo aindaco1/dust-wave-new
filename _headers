@@ -30,7 +30,7 @@ https://:version.:project.pages.dev/*
 # unaffected.
 /admin/*
   Cache-Control: private, no-store, max-age=0
-  Content-Security-Policy: default-src 'self'; base-uri 'none'; connect-src 'self' https://challenges.cloudflare.com https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz; font-src 'self'; form-action 'none'; frame-ancestors 'none'; frame-src https://challenges.cloudflare.com; img-src 'self' data: blob: https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz https://media.dustwave.xyz; media-src 'self' blob: https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz https://media.dustwave.xyz; object-src 'none'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:
+  Content-Security-Policy: default-src 'self'; base-uri 'none'; connect-src 'self' https://challenges.cloudflare.com https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz; font-src 'self' https://use.typekit.net https://p.typekit.net; form-action 'none'; frame-ancestors 'none'; frame-src https://challenges.cloudflare.com; img-src 'self' data: blob: https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz https://media.dustwave.xyz; media-src 'self' blob: https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz https://media.dustwave.xyz; object-src 'none'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://use.typekit.net https://p.typekit.net; worker-src 'self' blob:
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Referrer-Policy: no-referrer
@@ -39,7 +39,7 @@ https://:version.:project.pages.dev/*
 
 /es/admin/*
   Cache-Control: private, no-store, max-age=0
-  Content-Security-Policy: default-src 'self'; base-uri 'none'; connect-src 'self' https://challenges.cloudflare.com https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz; font-src 'self'; form-action 'none'; frame-ancestors 'none'; frame-src https://challenges.cloudflare.com; img-src 'self' data: blob: https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz https://media.dustwave.xyz; media-src 'self' blob: https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz https://media.dustwave.xyz; object-src 'none'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:
+  Content-Security-Policy: default-src 'self'; base-uri 'none'; connect-src 'self' https://challenges.cloudflare.com https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz; font-src 'self' https://use.typekit.net https://p.typekit.net; form-action 'none'; frame-ancestors 'none'; frame-src https://challenges.cloudflare.com; img-src 'self' data: blob: https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz https://media.dustwave.xyz; media-src 'self' blob: https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz https://media.dustwave.xyz; object-src 'none'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://use.typekit.net https://p.typekit.net; worker-src 'self' blob:
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Referrer-Policy: no-referrer
@@ -48,7 +48,7 @@ https://:version.:project.pages.dev/*
 
 /podcasts/account/*
   Cache-Control: private, no-store, max-age=0
-  Content-Security-Policy: default-src 'self'; base-uri 'none'; connect-src 'self' https://challenges.cloudflare.com https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz; font-src 'self'; form-action 'none'; frame-ancestors 'none'; frame-src https://challenges.cloudflare.com; img-src 'self' data: blob: https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz https://media.dustwave.xyz; media-src 'self' blob: https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz https://media.dustwave.xyz; object-src 'none'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:
+  Content-Security-Policy: default-src 'self'; base-uri 'none'; connect-src 'self' https://challenges.cloudflare.com https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz; font-src 'self' https://use.typekit.net https://p.typekit.net; form-action 'none'; frame-ancestors 'none'; frame-src https://challenges.cloudflare.com; img-src 'self' data: blob: https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz https://media.dustwave.xyz; media-src 'self' blob: https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz https://media.dustwave.xyz; object-src 'none'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://use.typekit.net https://p.typekit.net; worker-src 'self' blob:
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Referrer-Policy: no-referrer
@@ -57,7 +57,7 @@ https://:version.:project.pages.dev/*
 
 /es/podcasts/account/*
   Cache-Control: private, no-store, max-age=0
-  Content-Security-Policy: default-src 'self'; base-uri 'none'; connect-src 'self' https://challenges.cloudflare.com https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz; font-src 'self'; form-action 'none'; frame-ancestors 'none'; frame-src https://challenges.cloudflare.com; img-src 'self' data: blob: https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz https://media.dustwave.xyz; media-src 'self' blob: https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz https://media.dustwave.xyz; object-src 'none'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:
+  Content-Security-Policy: default-src 'self'; base-uri 'none'; connect-src 'self' https://challenges.cloudflare.com https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz; font-src 'self' https://use.typekit.net https://p.typekit.net; form-action 'none'; frame-ancestors 'none'; frame-src https://challenges.cloudflare.com; img-src 'self' data: blob: https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz https://media.dustwave.xyz; media-src 'self' blob: https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz https://media.dustwave.xyz; object-src 'none'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://use.typekit.net https://p.typekit.net; worker-src 'self' blob:
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Referrer-Policy: no-referrer

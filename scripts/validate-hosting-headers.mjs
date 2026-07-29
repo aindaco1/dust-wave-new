@@ -25,7 +25,7 @@ const requiredCspDirectives = [
   "default-src 'self'",
   "base-uri 'none'",
   "connect-src 'self' https://challenges.cloudflare.com https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz",
-  "font-src 'self'",
+  "font-src 'self' https://use.typekit.net https://p.typekit.net",
   "form-action 'none'",
   "frame-ancestors 'none'",
   "frame-src https://challenges.cloudflare.com",
@@ -33,7 +33,7 @@ const requiredCspDirectives = [
   "media-src 'self' blob: https://dust-wave-podcast-staging.jogo.workers.dev https://feeds.dustwave.xyz https://media.dustwave.xyz",
   "object-src 'none'",
   "script-src 'self' https://challenges.cloudflare.com",
-  "style-src 'self' 'unsafe-inline'",
+  "style-src 'self' 'unsafe-inline' https://use.typekit.net https://p.typekit.net",
   "worker-src 'self' blob:"
 ];
 

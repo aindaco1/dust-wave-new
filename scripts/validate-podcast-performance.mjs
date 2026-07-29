@@ -70,8 +70,13 @@ assert.match(
 );
 assert.match(
   admin,
+  /customFont: true/,
+  "Podcast Admin must load the existing first-party Inter font bundle"
+);
+assert.doesNotMatch(
+  admin,
   /disableTypekit: true/,
-  "Podcast Admin must not block first paint on its unused brand font"
+  "Podcast Admin must retain the licensed Gambado display font used by its headings"
 );
 assert.match(
   member,
