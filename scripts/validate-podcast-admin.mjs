@@ -128,6 +128,10 @@ const transcriptImportScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-transcript-import.js'),
   'utf8'
 );
+const transcriptSearchScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-transcript-search.js'),
+  'utf8'
+);
 const analyticsScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-analytics.js'),
   'utf8'
@@ -209,7 +213,8 @@ const staticRuntimeKeys = [
   ...rssImportActivationApprovalScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...youtubeAudioRenditionScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...showPricesScript.matchAll(/text\(\s*"([^"]+)"/g),
-  ...transcriptDiagnosticsScript.matchAll(/text\(\s*"([^"]+)"/g)
+  ...transcriptDiagnosticsScript.matchAll(/text\(\s*"([^"]+)"/g),
+  ...transcriptSearchScript.matchAll(/text\(\s*"([^"]+)"/g)
 ].map((match) => match[1]);
 for (const key of new Set(staticRuntimeKeys)) {
   assert.equal(
@@ -530,6 +535,50 @@ assert.match(
   adminScript,
   /mountTranscriptCaptionImport\([\s\S]+transcript\.cues = cues[\s\S]+transcriptDirty = true[\s\S]+renderTranscript\(\)/,
   'caption import must reuse the existing unsaved transcript editor and save path'
+);
+for (const selector of [
+  "data-podcast-transcript-search",
+  "data-podcast-transcript-search-form",
+  "data-podcast-transcript-search-input",
+  "data-podcast-transcript-search-previous",
+  "data-podcast-transcript-search-next",
+  "data-podcast-transcript-search-status"
+]) {
+  assert.match(
+    adminTemplate,
+    new RegExp(selector),
+    `transcript search must expose ${selector}`
+  );
+}
+assert.match(
+  adminTemplate,
+  /data-podcast-transcript-search-form[\s\S]+role="search"[\s\S]+type="search"[\s\S]+maxlength="160"[\s\S]+aria-controls="podcast-transcript-cues"[\s\S]+aria-describedby="podcast-transcript-search-status"[\s\S]+role="status"[\s\S]+aria-live="polite"[\s\S]+id="podcast-transcript-cues"/,
+  'transcript search must expose bounded semantic search and live results'
+);
+assert.match(
+  transcriptSearchScript,
+  /maximumQueryCharacters:\s*160[\s\S]+maximumCues:\s*10_000/,
+  'transcript search must stay within the loaded review bounds'
+);
+assert.match(
+  transcriptSearchScript,
+  /transcriptCuePlainText[\s\S]+normalizedSearchText[\s\S]+normalize\("NFKD"\)/,
+  'transcript search must reuse normalized visible cue text'
+);
+assert.match(
+  transcriptSearchScript,
+  /onOpenCue\(currentCueIndex\)/,
+  'transcript search must reuse the existing cue navigator'
+);
+assert.doesNotMatch(
+  transcriptSearchScript,
+  /\bfetch\s*\(|AdminApiClient|innerHTML|insertAdjacentHTML|localStorage|sessionStorage/,
+  'transcript search must remain browser-local and avoid persistence or HTML sinks'
+);
+assert.match(
+  adminScript,
+  /mountTranscriptSearch\([\s\S]+syncVisibleTranscriptCues\(\{ requireText: false \}\)[\s\S]+onOpenCue: openTranscriptCue/,
+  'transcript search must reuse the current unsaved cue state and pagination'
 );
 assert.match(adminTemplate, /data-podcast-upload-form/);
 assert.match(adminTemplate, /data-podcast-rss-import-form/);

@@ -15,6 +15,7 @@ const {
   millisecondsToTimestamp,
   navigateToTranscriptReviewCue,
   summarizeTranscriptReview,
+  transcriptCuePlainText,
   TRANSCRIPT_REVIEW_THRESHOLDS
 } = await import(
   `data:text/javascript;base64,${Buffer.from(source).toString("base64")}`
@@ -229,6 +230,12 @@ test("returns an empty, stable contract for missing cues", () => {
 });
 
 test("shares stable transcript display helpers with the workbench", () => {
+  assert.equal(
+    transcriptCuePlainText(
+      "[Visible words](https://dustwave.xyz/private) with **emphasis**"
+    ),
+    "Visible words with emphasis"
+  );
   assert.equal(
     clipCueSummary(
       "[A very long caption](https://dustwave.xyz) with **visible words** "

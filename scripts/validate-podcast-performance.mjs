@@ -147,6 +147,7 @@ const scriptBudgets = new Map([
   ["src/js/podcast-admin-transcript-review.js", 12_000],
   ["src/js/podcast-admin-transcript-speaker-range.js", 7_000],
   ["src/js/podcast-admin-transcript-import.js", 12_000],
+  ["src/js/podcast-admin-transcript-search.js", 7_000],
   ["src/js/podcast-admin-clip-publications.js", 10_000],
   ["src/js/podcast-admin-distribution-certification.js", 5_000],
   ["src/js/podcast-admin-catalog.js", 8_000],

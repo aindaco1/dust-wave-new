@@ -554,6 +554,44 @@ eleventyComputed:
                 class="podcast-admin__transcript-diagnostic-list"
                 data-podcast-transcript-diagnostics-list></ul>
             </section>
+            <section
+              class="podcast-admin__transcript-search"
+              data-podcast-transcript-search
+              aria-labelledby="podcast-transcript-search-heading"
+              hidden>
+              <div class="podcast-admin__panel-heading podcast-admin__section-heading">
+                <div>
+                  <h3 id="podcast-transcript-search-heading">{{ workbench.production.transcriptSearchHeading }}</h3>
+                  <p>{{ workbench.production.transcriptSearchIntro }}</p>
+                </div>
+                <p class="podcast-admin__pill">{{ workbench.production.localDraftPill }}</p>
+              </div>
+              <form
+                class="podcast-admin__transcript-search-form"
+                data-podcast-transcript-search-form
+                role="search">
+                <label>{{ workbench.production.transcriptSearchLabel }}
+                  <input
+                    data-podcast-transcript-search-input
+                    type="search"
+                    maxlength="160"
+                    aria-controls="podcast-transcript-cues"
+                    aria-describedby="podcast-transcript-search-status"
+                    autocomplete="off">
+                </label>
+                <div class="podcast-admin__transcript-actions">
+                  <button class="btn btn-outline-light" type="submit">{{ workbench.production.transcriptSearchSubmit }}</button>
+                  <button class="btn btn-outline-light" type="button" data-podcast-transcript-search-previous aria-controls="podcast-transcript-cues" disabled>{{ workbench.production.transcriptSearchPrevious }}</button>
+                  <button class="btn btn-outline-light" type="button" data-podcast-transcript-search-next aria-controls="podcast-transcript-cues" disabled>{{ workbench.production.transcriptSearchNext }}</button>
+                </div>
+                <p
+                  id="podcast-transcript-search-status"
+                  class="podcast-admin__status"
+                  data-podcast-transcript-search-status
+                  role="status"
+                  aria-live="polite"></p>
+              </form>
+            </section>
             <form
               class="podcast-admin__transcript-speaker-range"
               data-podcast-transcript-speaker-range
@@ -585,7 +623,7 @@ eleventyComputed:
                 <button class="btn btn-outline-light" type="submit" data-podcast-transcript-speaker-range-apply>{{ workbench.production.applySpeakerRange }}</button>
               </div>
             </form>
-            <div class="podcast-admin__transcript-cues" data-podcast-transcript-cues></div>
+            <div id="podcast-transcript-cues" class="podcast-admin__transcript-cues" data-podcast-transcript-cues></div>
             <nav class="podcast-admin__transcript-pages" data-podcast-transcript-pages aria-label="{{ workbench.production.cuePages }}" hidden>
               <button class="btn btn-outline-light" type="button" data-podcast-transcript-previous>{{ workbench.production.previousCues }}</button>
               <span data-podcast-transcript-page aria-live="polite"></span>

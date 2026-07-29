@@ -52,6 +52,9 @@ import {
   mountTranscriptCaptionImport
 } from "./podcast-admin-transcript-import.js";
 import {
+  mountTranscriptSearch
+} from "./podcast-admin-transcript-search.js";
+import {
   mountShowSiteProjection,
   needsShowArchiveConfirmation,
   populateShowSettingsForm,
@@ -565,6 +568,16 @@ function startPodcastAdmin(root) {
       transcriptDirty = true;
       renderTranscript();
     }
+  });
+  const transcriptSearch = mountTranscriptSearch({
+    root,
+    text: adminText,
+    getCues: () => transcript
+      ? syncVisibleTranscriptCues({ requireText: false })
+      : [],
+    getLanguage: () => transcriptLanguageSelect?.value || "es",
+    onOpenCue: openTranscriptCue,
+    formatError: transcriptInputError
   });
   const rssImport = mountRssImportWorkbench({
     root,
@@ -1222,6 +1235,8 @@ function startPodcastAdmin(root) {
     transcriptPage = 0;
     transcriptRequestId += 1;
     transcriptEditors.clear();
+    transcriptSearch.reset();
+    transcriptSearch.setState({ available: false });
     transcriptCuesRoot?.replaceChildren();
     clearQa(root);
     transcriptMeta?.replaceChildren();
@@ -2550,6 +2565,7 @@ function startPodcastAdmin(root) {
     const language = transcriptLanguageSelect?.value || "es";
     transcriptImport.reset();
     transcriptImport.setState({ available: false, editable: false });
+    transcriptSearch.setState({ available: false });
     transcriptRequestId += 1;
     const requestId = transcriptRequestId;
     transcriptPage = 0;
@@ -3403,6 +3419,14 @@ function startPodcastAdmin(root) {
     transcriptImport.setState({
       available: true,
       editable: canEditTranscripts
+    });
+    transcriptSearch.setState({
+      available: true,
+      contextKey: [
+        transcriptEpisodeSelect?.value,
+        transcriptLanguageSelect?.value,
+        transcriptRequestId
+      ].join(":")
     });
     transcriptDownloads.render(transcriptEpisodeSelect.value, transcript);
     const episode = episodes.find(

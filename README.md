@@ -131,7 +131,11 @@ same unsaved editor. The bounded parser performs no upload or API call, caps
 the normalized review at 1 MB and 10,000 ordered non-overlapping cues, keeps
 VTT voice labels unconfirmed, preserves ambiguous SRT prefixes as caption
 text, and requires confirmation before replacing existing work. The existing
-versioned Save action remains the only persistence path.
+versioned Save action remains the only persistence path. A companion local
+search navigator scans at most those same 10,000 loaded cues, folds
+English/Spanish case and accents, excludes hidden Markdown link destinations,
+and opens ordered caption or speaker matches through the existing paginated
+cue focus path. It stores nothing and makes no request.
 
 ## Roadmap
 

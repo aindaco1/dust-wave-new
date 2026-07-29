@@ -103,15 +103,19 @@ export function applyTranscriptSpeakerRange(cues, {
 }
 
 export function clipCueSummary(value) {
-  const summary = String(value || "")
+  const summary = transcriptCuePlainText(value);
+  return summary.length > 72
+    ? `${summary.slice(0, 69).trimEnd()}…`
+    : summary;
+}
+
+export function transcriptCuePlainText(value) {
+  return String(value || "")
     .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
     .replace(/<[^>]*>/g, " ")
     .replace(/[*_~`[\]()>#+=-]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
-  return summary.length > 72
-    ? `${summary.slice(0, 69).trimEnd()}…`
-    : summary;
 }
 
 export function millisecondsToTimestamp(value) {
