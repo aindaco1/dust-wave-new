@@ -1,7 +1,8 @@
-import { AdminApiClient, AdminApiError } from "./dust-wave-admin-shell/api-client.js?v=0.8.2";
-import { AdminDownloadError, requestCredentialedBlob, triggerBlobDownload } from "./dust-wave-admin-shell/credentialed-download.js?v=0.8.2";
-import { mountRichTextEditor } from "./dust-wave-admin-shell/editor.js?v=0.8.2";
-import { markdownToEditorHtml } from "./dust-wave-admin-shell/editor-codec.js?v=0.8.2";
+import { AdminApiClient, AdminApiError } from "./dust-wave-admin-shell/api-client.js?v=0.9.0";
+import { AdminDownloadError, requestCredentialedBlob, triggerBlobDownload } from "./dust-wave-admin-shell/credentialed-download.js?v=0.9.0";
+import { mountConfirmationDialog } from "./dust-wave-admin-shell/confirmation-dialog.js?v=0.9.0";
+import { mountRichTextEditor } from "./dust-wave-admin-shell/editor.js?v=0.9.0";
+import { markdownToEditorHtml } from "./dust-wave-admin-shell/editor-codec.js?v=0.9.0";
 import {
   clipCueSummary,
   emptyTranscript,
@@ -19,9 +20,18 @@ import {
   drawQrCanvas,
   qrSvgMarkup,
   safeMarketingFilename
-} from "./dust-wave-admin-shell/marketing-assets.js?v=0.8.2";
+} from "./dust-wave-admin-shell/marketing-assets.js?v=0.9.0";
 import { mountSavedMarketingLinks } from "./podcast-admin-marketing-links.js";
 import { renderEpisodeCatalog, renderShowCatalog } from "./podcast-admin-catalog.js";
+import { mountEpisodePublishWorkflow } from "./podcast-admin-publish-workflow.js";
+import { mountProgressiveSections } from "./podcast-admin-progressive-sections.js";
+import {
+  mountPodcastAdminToolDisclosure
+} from "./podcast-admin-tool-disclosure.js";
+import { createEpisodePublisher } from "./podcast-admin-publication.js";
+import {
+  createEpisodeWorkflowNavigator
+} from "./podcast-admin-workflow-navigation.js";
 import { mountEpisodeEditor } from "./podcast-admin-episode-editor.js";
 import { mountShowNotesAssistant } from "./podcast-admin-show-notes.js";
 import { mountChapterDraftAssistant } from "./podcast-admin-chapter-draft.js";
@@ -51,9 +61,9 @@ import {
   distributionCertificationList,
   renderDistributionLaunchClaim
 } from "./podcast-admin-distribution-certification.js";
-import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js?v=0.8.2";
-import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js?v=0.8.2";
-import { responsiveTurnstileSize } from "./dust-wave-admin-shell/turnstile.js?v=0.8.2";
+import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js?v=0.9.0";
+import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js?v=0.9.0";
+import { responsiveTurnstileSize } from "./dust-wave-admin-shell/turnstile.js?v=0.9.0";
 
 const root = document.querySelector("[data-podcast-admin]");
 if (root) startPodcastAdmin(root);
@@ -454,6 +464,7 @@ function startPodcastAdmin(root) {
   let latestAnnouncementReview = null;
   let announcementHistoryRequestId = 0;
   let latestProcessorManifest = null;
+  let episodeProgressiveTools = null;
   let turnstileToken = "";
   let turnstileWidgetId;
   let turnstileInitialization;
@@ -593,6 +604,7 @@ function startPodcastAdmin(root) {
     canEdit: () => canManageCreatives,
     onModeChange({ episodeId, sourceLanguage }) {
       showNotesAssistant.setEpisode(episodeId, sourceLanguage);
+      if (episodeId) episodeProgressiveTools?.openFor(episodeForm);
     },
     onPermissionsChange({ editable }) {
       showNotesAssistant.setEditable(editable);
@@ -694,38 +706,113 @@ function startPodcastAdmin(root) {
       ({ role }) => role === "super_admin"
     )
   });
-  mountAccessibleTabs(root.querySelector("[data-podcast-tabs]"), {
-    responsiveSelect: {
-      id: "podcast-admin-mobile-tabs"
+  const confirmationDialog = mountConfirmationDialog(root, {
+    cancelLabel: adminText("dialogCancel"),
+    confirmLabel: adminText("dialogConfirm"),
+    requiredMessage: adminText("dialogRequired")
+  });
+  const publishEpisode = createEpisodePublisher({
+    client,
+    confirmationDialog,
+    text: adminText,
+    nodeLabel: localizedReadinessNodeLabel,
+    operationId,
+    report(message, error = false) {
+      setStatus(episodeStatus, message, error);
     },
-    storageKey: "dustwave-podcast-admin-tab",
-    onSelect(tab) {
-      if (tab !== "production") pauseClipMediaPlayers(clipList);
-      if (tab !== "marketing") pauseClipMediaPlayers(clipLibrary);
-      if (tab === "production") {
-        loadAudioQcPolicy();
-        loadAudioQc();
-        loadAudioMaster();
-        loadTranscript();
-        loadAlignmentBenchmarks();
-        loadChapters();
-        loadProductionReviews();
-        deliveryAudio.refresh();
-        youtubeAudioRenditions.refresh();
+    friendlyError,
+    humanizeCode,
+    onReadiness(episodeId, readiness) {
+      if (episodeId !== reviewEpisodeSelect?.value) return;
+      publicationReadiness = readiness;
+      renderPublicationReadiness();
+    },
+    async onPublished(episodeId) {
+      await loadEpisodes();
+      if (distributionFilter) {
+        distributionFilter.elements.episodeId.value = episodeId;
       }
-      if (tab === "distribution") loadDistribution();
-      if (tab === "marketing") {
-        updateMarketingTools();
-        loadClipLibrary({ reset: true });
-        loadAnnouncementHistory();
-        savedMarketingLinks.load({ reset: true });
-      }
-      if (tab === "subscribers") loadSubscribers({ reset: true });
-      if (tab === "billing") loadBilling();
-      if (tab === "sponsors") loadCampaigns();
-      if (tab === "analytics") podcastAnalytics.load();
+      await loadDistribution(episodeId);
     }
   });
+  const adminTabs = mountAccessibleTabs(
+    root.querySelector("[data-podcast-tabs]"),
+    {
+      responsiveSelect: {
+        id: "podcast-admin-mobile-tabs"
+      },
+      storageKey: "dustwave-podcast-admin-tab",
+      onSelect(tab) {
+        if (tab !== "production") pauseClipMediaPlayers(clipList);
+        if (tab !== "marketing") pauseClipMediaPlayers(clipLibrary);
+        if (tab === "production") {
+          loadAudioQcPolicy();
+          loadAudioQc();
+          loadAudioMaster();
+          loadTranscript();
+          loadAlignmentBenchmarks();
+          loadChapters();
+          loadProductionReviews();
+          deliveryAudio.refresh();
+          youtubeAudioRenditions.refresh();
+        }
+        if (tab === "distribution") loadDistribution();
+        if (tab === "marketing") {
+          updateMarketingTools();
+          loadClipLibrary({ reset: true });
+          loadAnnouncementHistory();
+          savedMarketingLinks.load({ reset: true });
+        }
+        if (tab === "subscribers") loadSubscribers({ reset: true });
+        if (tab === "billing") loadBilling();
+        if (tab === "sponsors") loadCampaigns();
+        if (tab === "analytics") podcastAnalytics.load();
+      }
+    }
+  );
+  episodeProgressiveTools = mountPodcastAdminToolDisclosure({
+    root,
+    text: adminText,
+    episodeForm,
+    uploadForm,
+    adPlanForm,
+    adPlanResult,
+    audioQcPolicyForm,
+    marketingLinkForm,
+    embedForm,
+    shareCardForm,
+    announcementForm,
+    announcementHistory,
+    campaignForm,
+    creativeForm
+  });
+  const navigateEpisodeWorkflow = createEpisodeWorkflowNavigator({
+    root,
+    tabs: adminTabs,
+    episodeList,
+    episodeForm,
+    adPlanForm,
+    audioQcEpisodeSelect,
+    audioMasterEpisodeSelect,
+    transcriptEpisodeSelect,
+    chapterEpisodeSelect,
+    transcriptWorkbench,
+    reviewEpisodeSelect,
+    loadProductionReviews,
+    loadPublicationReadiness
+  });
+  const episodePublishWorkflow = mountEpisodePublishWorkflow({
+    root: root.querySelector("[data-podcast-publish-workflow]"),
+    client,
+    text: adminText,
+    nodeLabel: localizedReadinessNodeLabel,
+    onNavigate: navigateEpisodeWorkflow,
+    onPublish: publishEpisode
+  });
+  mountProgressiveSections(
+    root.querySelector("#podcast-panel-production"),
+    { label: adminText("productionSectionsAria") }
+  );
 
   root.querySelector("[data-podcast-refresh]")?.addEventListener("click", loadShows);
   billingRefresh?.addEventListener("click", loadBilling);
@@ -979,6 +1066,11 @@ function startPodcastAdmin(root) {
   creativeForm?.addEventListener("submit", uploadCreative);
   campaignList?.addEventListener("click", handleCampaignAction);
   episodeList?.addEventListener("click", async (event) => {
+    const review = event.target.closest("[data-review-episode]");
+    if (review) {
+      episodePublishWorkflow.selectEpisode(review.dataset.reviewEpisode);
+      return;
+    }
     const button = event.target.closest("[data-publish-episode]");
     if (!button) return;
     await publishEpisode(button.dataset.publishEpisode, button);
@@ -1929,6 +2021,8 @@ function startPodcastAdmin(root) {
       formatDate,
       canEdit: canManageCreatives
     });
+    episodeProgressiveTools?.setOpen(episodeForm, episodes.length === 0);
+    episodePublishWorkflow.setEpisodes(episodes);
   }
 
   function fillEpisodeSelects() {
@@ -3465,6 +3559,22 @@ function startPodcastAdmin(root) {
       end.value = millisecondsToSeconds(cue.endsAtMs);
       speaker.value = cue.speakerLabel || "";
       confirmed.checked = cue.speakerConfirmed === true;
+      start.setAttribute("aria-label", adminText("cueFieldLabel", {
+        field: adminText("startSeconds"),
+        number: formatInteger(index + 1)
+      }));
+      end.setAttribute("aria-label", adminText("cueFieldLabel", {
+        field: adminText("endSeconds"),
+        number: formatInteger(index + 1)
+      }));
+      speaker.setAttribute("aria-label", adminText("cueFieldLabel", {
+        field: adminText("publicSpeakerLabel"),
+        number: formatInteger(index + 1)
+      }));
+      confirmed.setAttribute("aria-label", adminText(
+        "cueSpeakerConfirmed",
+        { number: formatInteger(index + 1) }
+      ));
       confirmed.disabled = !canEditTranscripts || !speaker.value;
       speaker.addEventListener("input", () => {
         transcriptDirty = true;
@@ -3487,6 +3597,10 @@ function startPodcastAdmin(root) {
       }
       const remove = row.querySelector("[data-podcast-transcript-remove]");
       remove.disabled = !canEditTranscripts || cues.length === 1;
+      remove.setAttribute("aria-label", adminText(
+        "removeCue",
+        { number: formatInteger(index + 1) }
+      ));
       const cueLabel = adminText(
         "cueCaption",
         { number: formatInteger(index + 1) }
@@ -3512,6 +3626,12 @@ function startPodcastAdmin(root) {
           button.disabled = true;
         });
       }
+      row.querySelectorAll(".dw-editor__toolbar button").forEach((button) => {
+        button.setAttribute("aria-label", adminText("cueFormatAction", {
+          action: button.textContent.trim(),
+          number: formatInteger(index + 1)
+        }));
+      });
       transcriptEditors.set(cue.id, editor);
       return row;
     });
@@ -6583,180 +6703,6 @@ function startPodcastAdmin(root) {
     }
   }
 
-  async function publishEpisode(episodeId, button) {
-    button.disabled = true;
-    setStatus(
-      episodeStatus,
-      adminText(
-        "refreshingPublicationEvidence"
-      )
-    );
-    try {
-      const readiness = await client.request(
-        `/v1/admin/episodes/${encodeURIComponent(episodeId)}/readiness`
-      );
-      if (episodeId === reviewEpisodeSelect?.value) {
-        publicationReadiness = readiness;
-        renderPublicationReadiness();
-      }
-      const mode = String(readiness.publicationGateMode || "legacy");
-      const candidate = readiness.candidateGate || {};
-      const body = mode === "legacy"
-        ? {}
-        : {
-            snapshotDigest: String(readiness.snapshotDigest || ""),
-            basePublicationRevision: Number(
-              readiness.publicationRevision || 0
-            )
-          };
-      if (mode === "enforce" && !candidate.ready) {
-        if (!candidate.overrideAvailable) {
-          throw new AdminApiError(
-            adminText(
-              "resolvePublicationBlockers"
-            ),
-            {
-              status: 409,
-              code: "publication_not_ready",
-              details: readiness
-            }
-          );
-        }
-        const blockerLabels = (readiness.nodes || [])
-          .filter((node) =>
-            node.severity === "blocker"
-            && !["ready", "not_applicable"].includes(node.status)
-          )
-          .map((node) => localizedReadinessNodeLabel(node));
-        const reason = globalThis.prompt(
-          [
-            adminText(
-              "publicationBlockersRemain",
-              {
-                count: blockerLabels.length,
-                blockers: blockerLabels.length === 1
-                  ? adminText("blockerSingular")
-                  : adminText("blockerPlural"),
-                remain: blockerLabels.length === 1
-                  ? adminText("remainsSingular")
-                  : adminText("remainPlural")
-              }
-            ),
-            blockerLabels.join("; "),
-            "",
-            adminText(
-              "enterOverrideReason"
-            )
-          ].join("\n")
-        );
-        if (reason === null) {
-          setStatus(
-            episodeStatus,
-            adminText(
-              "publicationOverrideCanceled"
-            )
-          );
-          return;
-        }
-        const normalizedReason = reason
-          .normalize("NFKC")
-          .replace(/\s+/g, " ")
-          .trim();
-        if (!normalizedReason || normalizedReason.length > 500) {
-          throw new AdminApiError(
-            adminText(
-              "overrideReasonInvalid"
-            ),
-            { status: 400, code: "publication_override_reason_invalid" }
-          );
-        }
-        const confirmed = globalThis.confirm(
-          adminText(
-            "overrideConfirm",
-            "Publish this exact snapshot with unresolved blockers? "
-              + "Your identity, reason hash, and evidence counts will be audited."
-          )
-        );
-        if (!confirmed) {
-          setStatus(
-            episodeStatus,
-            adminText(
-              "publicationOverrideCanceled"
-            )
-          );
-          return;
-        }
-        body.override = {
-          id: operationId("publication_override"),
-          reason: normalizedReason,
-          confirmation: "PUBLISH_WITH_BLOCKERS"
-        };
-      }
-      setStatus(
-        episodeStatus,
-        mode === "enforce"
-          ? adminText(
-              "publishingEnforcedSnapshot"
-            )
-          : mode === "shadow"
-            ? adminText(
-                "publishingShadowSnapshot"
-              )
-            : adminText(
-                "publishingLegacyChecks"
-              )
-      );
-      const result = await client.request(
-        `/v1/admin/episodes/${encodeURIComponent(episodeId)}/publish`,
-        { method: "POST", body }
-      );
-      const gate = result.publicationGate || {};
-      setStatus(
-        episodeStatus,
-        result.idempotent
-          ? adminText(
-              "alreadyPublishedRevision",
-              { revision: result.publicationRevision }
-            )
-          : [
-              adminText(
-                "revisionStatus",
-                {
-                  revision: result.publicationRevision,
-                  status: humanizeCode(result.status)
-                }
-              ),
-              adminText(
-                "directoryStatesCreated",
-                { count: result.distributionTargets }
-              ),
-              gate.overridden
-                ? adminText(
-                    "candidateBlockersOverridden"
-                  )
-                : gate.mode === "shadow"
-                  ? gate.snapshotMatched
-                    ? adminText(
-                        "shadowSnapshotMatched"
-                      )
-                    : adminText(
-                        "shadowSnapshotMismatch"
-                      )
-                  : ""
-            ].filter(Boolean).join(" ")
-      );
-      await loadEpisodes();
-      if (distributionFilter) {
-        distributionFilter.elements.episodeId.value = episodeId;
-      }
-      await loadDistribution(episodeId);
-    } catch (error) {
-      setStatus(episodeStatus, friendlyError(error), true);
-    } finally {
-      button.disabled = false;
-    }
-  }
-
   async function loadDistribution(episodeId) {
     if (!distributionRoot || !selectedShowId) return;
     const selectedEpisodeId = episodeId
@@ -6844,7 +6790,7 @@ function startPodcastAdmin(root) {
 
     const feed = document.createElement("div");
     feed.className = "podcast-admin__distribution-feed";
-    const feedText = document.createElement("div");
+    const feedText = document.createElement("label");
     const feedLabel = document.createElement("strong");
     feedLabel.textContent = adminText(
       "canonicalRssFeed"
@@ -7075,9 +7021,21 @@ function startPodcastAdmin(root) {
   }
 
   function distributionDestinationCard(destination, { episodeId }) {
-    const card = document.createElement("article");
+    const card = document.createElement("details");
+    card.className = "podcast-admin__directory-card";
     card.dataset.destinationId = String(destination.id || "");
+    card.open = Boolean(
+      destination.ownerSetupStatus !== "verified"
+      || destination.setupError
+      || destination.publicationError
+      || destination.publicationStatus === "failed"
+      || (
+        destination.certification
+        && !destination.certification.certified
+      )
+    );
 
+    const summary = document.createElement("summary");
     const heading = document.createElement("div");
     heading.className = "podcast-admin__directory-heading";
     const titleGroup = document.createElement("div");
@@ -7120,7 +7078,8 @@ function startPodcastAdmin(root) {
       );
     }
     heading.append(titleGroup, badges);
-    card.append(heading);
+    summary.append(heading);
+    card.append(summary);
 
     const details = document.createElement("p");
     details.className = "podcast-admin__directory-details";
@@ -7190,6 +7149,20 @@ function startPodcastAdmin(root) {
       destination.submissionEvidenceUrl,
       adminText("openSubmissionEvidence")
     );
+    const destinationName = String(
+      destination.name || adminText("directoryFallback")
+    );
+    for (const link of [
+      setupLink,
+      listingLink,
+      evidenceLink,
+      submissionEvidenceLink
+    ].filter(Boolean)) {
+      link.setAttribute("aria-label", adminText("directoryActionLabel", {
+        action: link.textContent,
+        directory: destinationName
+      }));
+    }
     if (setupLink) links.append(setupLink);
     if (submissionEvidenceLink) links.append(submissionEvidenceLink);
     if (listingLink) links.append(listingLink);
@@ -7209,6 +7182,9 @@ function startPodcastAdmin(root) {
     if (canManageSelectedShowDistribution()) {
       const form = document.createElement("form");
       form.className = "podcast-admin__distribution-form";
+      form.setAttribute("aria-label", adminText("directorySetupFormLabel", {
+        directory: destinationName
+      }));
       form.dataset.podcastDistributionForm = "";
       form.dataset.destinationId = String(destination.id || "");
       form.dataset.episodeId = episodeId;
@@ -7317,6 +7293,10 @@ function startPodcastAdmin(root) {
       save.className = "btn btn-outline-light";
       save.type = "submit";
       save.textContent = adminText("saveSetup");
+      save.setAttribute("aria-label", adminText("directoryActionLabel", {
+        action: adminText("saveSetup"),
+        directory: destinationName
+      }));
       const formStatus = document.createElement("p");
       formStatus.className = "podcast-admin__status";
       formStatus.dataset.podcastDistributionStatus = "";

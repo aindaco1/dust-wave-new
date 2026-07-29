@@ -1,5 +1,29 @@
 # Changelog
 
+## v1.3.0 - Unreleased
+
+- Reframed episode publishing as one bilingual, six-step workflow across
+  details, media, transcript and chapters, monetization, review, and publish.
+  The workflow derives its state from the existing immutable readiness
+  response, exposes every blocker with a direct repair path, and keeps draft
+  episodes reviewable before their media is ready.
+- Advanced the independently versioned `@dustwave/admin-shell` boundary to
+  0.9.0 with reusable accessible workflow-progress and confirmation-dialog
+  primitives. Podcast retains its publication policy and audit payloads while
+  native dialog semantics, focus restoration, validation, and status
+  presentation remain shared with future Pool and Store consumers.
+- Replaced browser prompts and confirms on the final publication path with a
+  responsive, keyboard-safe review dialog. Normal releases summarize their
+  News, RSS, and eligible YouTube effects; readiness overrides continue to
+  require an explicit, audited reason.
+- Reduced Production and Distribution overload with progressive disclosure,
+  smaller transcript pages, contextual transcript-control labels, and
+  collapsed directory details. Advanced import and migration tools are also
+  hidden by default without changing their underlying behavior.
+- Restored contextual audio-speed and distribution-form labels, corrected the
+  YouTube rendition heading order, and added responsive/focus-visible styling
+  for the new workflow and dialogs.
+
 ## v1.2.0 - Unreleased
 
 - Added the pinned `aindaco1/dust-wave-platform` submodule and recursive CI checkout as the independently versioned shared-code boundary for Dust Wave, Pool, Store, and Podcast.

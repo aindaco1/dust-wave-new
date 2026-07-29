@@ -81,43 +81,50 @@ eleventyComputed:
           </div>
           <div class="podcast-admin__cards" data-podcast-show-cards></div>
 
-          <form class="podcast-admin__form podcast-admin__form--settings" data-podcast-rss-import-form hidden>
-            <h3>{{ workbench.overview.importHeading }}</h3>
-            <p>{{ workbench.overview.importIntro }}</p>
-            <label>{{ workbench.overview.importFeedUrl }}
-              <input name="feedUrl" type="url" inputmode="url" autocomplete="url" required>
-            </label>
-            <label class="podcast-admin__checkbox">
-              <input name="ownershipConfirmed" type="checkbox" required>
-              {{ workbench.overview.importOwnership }}
-            </label>
-            <p class="podcast-admin__callout">{{ workbench.overview.importPreviewOnly }}</p>
-            <button class="btn btn-outline-light" type="submit">{{ workbench.overview.previewImport }}</button>
-            <p class="podcast-admin__status" data-podcast-rss-import-status role="status" aria-live="polite"></p>
-            <div class="podcast-admin__readiness-groups" data-podcast-rss-import-preview aria-live="polite"></div>
-          </form>
-          <section class="podcast-admin__form podcast-admin__form--settings" data-podcast-rss-import-plan-section hidden>
-            <h3>{{ workbench.overview.importPlansHeading }}</h3>
-            <p>{{ workbench.overview.importPlansIntro }}</p>
-            <p class="podcast-admin__callout">{{ workbench.overview.importPlansZeroCopy }}</p>
-            <div class="podcast-admin__readiness-list" data-podcast-rss-import-plans aria-live="polite"></div>
-          </section>
+          <details class="podcast-admin__advanced-tools">
+            <summary>{{ workbench.overview.advancedTools }}</summary>
+            <form class="podcast-admin__form podcast-admin__form--settings" data-podcast-rss-import-form hidden>
+              <h3>{{ workbench.overview.importHeading }}</h3>
+              <p>{{ workbench.overview.importIntro }}</p>
+              <label>{{ workbench.overview.importFeedUrl }}
+                <input name="feedUrl" type="url" inputmode="url" autocomplete="url" required>
+              </label>
+              <label class="podcast-admin__checkbox">
+                <input name="ownershipConfirmed" type="checkbox" required>
+                {{ workbench.overview.importOwnership }}
+              </label>
+              <p class="podcast-admin__callout">{{ workbench.overview.importPreviewOnly }}</p>
+              <button class="btn btn-outline-light" type="submit">{{ workbench.overview.previewImport }}</button>
+              <p class="podcast-admin__status" data-podcast-rss-import-status role="status" aria-live="polite"></p>
+              <div class="podcast-admin__readiness-groups" data-podcast-rss-import-preview aria-live="polite"></div>
+            </form>
+            <section class="podcast-admin__form podcast-admin__form--settings" data-podcast-rss-import-plan-section hidden>
+              <h3>{{ workbench.overview.importPlansHeading }}</h3>
+              <p>{{ workbench.overview.importPlansIntro }}</p>
+              <p class="podcast-admin__callout">{{ workbench.overview.importPlansZeroCopy }}</p>
+              <div class="podcast-admin__readiness-list" data-podcast-rss-import-plans aria-live="polite"></div>
+            </section>
+          </details>
         </section>
 
         <section id="podcast-panel-episodes" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-episodes" hidden>
+          <section
+            class="podcast-admin__form podcast-admin__publish-workflow"
+            data-podcast-publish-workflow
+            hidden></section>
           <div class="podcast-admin__panel-heading">
             <div>
               <h2>{{ workbench.episodes.heading }}</h2>
               <p>{{ workbench.episodes.intro }}</p>
             </div>
-            <select data-podcast-show-select aria-label="{{ workbench.common.show }}"></select>
+            <select name="showId" data-podcast-show-select aria-label="{{ workbench.common.show }}"></select>
           </div>
 
-          <form class="podcast-admin__form" data-podcast-episode-form>
+          <form id="podcast-episode-details" class="podcast-admin__form" data-podcast-episode-form>
             <h3 data-podcast-episode-form-heading>{{ workbench.episodes.new }}</h3>
             <div class="podcast-admin__field-grid">
               <label>{{ workbench.common.title }}
-                <input name="title" required>
+                <input name="title" autocomplete="off" required>
               </label>
               <label>{{ workbench.episodes.slug }}
                 <input
@@ -148,13 +155,13 @@ eleventyComputed:
               <p class="podcast-admin__help">{{ workbench.episodes.showNotesReviewNotice }}</p>
               <div class="podcast-admin__field-grid">
                 <label>{{ workbench.episodes.showNotesSourceLanguage }}
-                  <select data-podcast-show-notes-source-language>
+                  <select name="showNotesSourceLanguage" data-podcast-show-notes-source-language>
                     <option value="es">{{ workbench.common.spanish }}</option>
                     <option value="en">{{ workbench.common.english }}</option>
                   </select>
                 </label>
                 <label>{{ workbench.episodes.showNotesOutputLanguage }}
-                  <select data-podcast-show-notes-output-language>
+                  <select name="showNotesOutputLanguage" data-podcast-show-notes-output-language>
                     <option value="es">{{ workbench.common.spanish }}</option>
                     <option value="en">{{ workbench.common.english }}</option>
                   </select>
@@ -340,7 +347,7 @@ eleventyComputed:
           <section class="podcast-admin__audio-qc" data-podcast-audio-qc aria-label="{{ workbench.production.audioQcHeading }}">
             <div class="podcast-admin__field-grid">
               <label>{{ workbench.common.episode }}
-                <select data-podcast-audio-qc-episode required></select>
+                <select name="audioQcEpisodeId" data-podcast-audio-qc-episode required></select>
               </label>
             </div>
             <div class="podcast-admin__transcript-actions">
@@ -364,7 +371,7 @@ eleventyComputed:
           <section class="podcast-admin__audio-master" data-podcast-audio-master aria-label="{{ workbench.production.workingMasterLabel }}">
             <div class="podcast-admin__field-grid">
               <label>{{ workbench.common.episode }}
-                <select data-podcast-audio-master-episode required></select>
+                <select name="audioMasterEpisodeId" data-podcast-audio-master-episode required></select>
               </label>
             </div>
             <div class="podcast-admin__transcript-actions">
@@ -435,7 +442,7 @@ eleventyComputed:
           <section class="podcast-admin__form podcast-admin__delivery-audio" data-podcast-delivery-audio aria-label="{{ workbench.production.deliveryAudioLabel }}">
             <div class="podcast-admin__field-grid">
               <label>{{ workbench.common.episode }}
-                <select data-podcast-delivery-audio-episode required></select>
+                <select name="deliveryAudioEpisodeId" data-podcast-delivery-audio-episode required></select>
               </label>
             </div>
             <div class="podcast-admin__transcript-actions">
@@ -459,7 +466,7 @@ eleventyComputed:
           <section class="podcast-admin__form podcast-admin__youtube-audio" aria-label="{{ workbench.production.youtubeAudioLabel }}">
             <div class="podcast-admin__field-grid">
               <label>{{ workbench.common.episode }}
-                <select data-podcast-youtube-audio-episode required></select>
+                <select name="youtubeAudioEpisodeId" data-podcast-youtube-audio-episode required></select>
               </label>
             </div>
             <div class="podcast-admin__transcript-actions">
@@ -498,10 +505,10 @@ eleventyComputed:
           <div class="podcast-admin__form" data-podcast-transcript-workbench>
             <div class="podcast-admin__field-grid">
               <label>{{ workbench.common.episode }}
-                <select data-podcast-transcript-episode required></select>
+                <select name="transcriptEpisodeId" data-podcast-transcript-episode required></select>
               </label>
               <label>{{ workbench.production.transcriptLanguage }}
-                <select data-podcast-transcript-language>
+                <select name="transcriptLanguage" data-podcast-transcript-language>
                   <option value="es">{{ workbench.common.spanish }}</option>
                   <option value="en">{{ workbench.common.english }}</option>
                 </select>
@@ -523,6 +530,7 @@ eleventyComputed:
               <form class="podcast-admin__transcript-import-form" data-podcast-transcript-import-form>
                 <label>{{ workbench.production.importCaptionsFile }}
                   <input
+                    name="transcriptImportFile"
                     data-podcast-transcript-import-file
                     type="file"
                     accept=".vtt,.srt,text/vtt,application/x-subrip,application/srt,text/srt"
@@ -572,6 +580,7 @@ eleventyComputed:
                 role="search">
                 <label>{{ workbench.production.transcriptSearchLabel }}
                   <input
+                    name="transcriptSearch"
                     data-podcast-transcript-search-input
                     type="search"
                     maxlength="160"
@@ -606,16 +615,16 @@ eleventyComputed:
               </div>
               <div class="podcast-admin__field-grid">
                 <label>{{ workbench.production.speakerRangeStart }}
-                  <input data-podcast-transcript-speaker-range-start type="number" min="1" step="1" required>
+                  <input name="speakerRangeStart" data-podcast-transcript-speaker-range-start type="number" min="1" step="1" required>
                 </label>
                 <label>{{ workbench.production.speakerRangeEnd }}
-                  <input data-podcast-transcript-speaker-range-end type="number" min="1" step="1" required>
+                  <input name="speakerRangeEnd" data-podcast-transcript-speaker-range-end type="number" min="1" step="1" required>
                 </label>
                 <label>{{ workbench.production.speakerRangeLabel }}
-                  <input data-podcast-transcript-speaker-range-label maxlength="80" autocomplete="off" required>
+                  <input name="speakerRangeLabel" data-podcast-transcript-speaker-range-label maxlength="80" autocomplete="off" required>
                 </label>
                 <label class="podcast-admin__checkbox">
-                  <input data-podcast-transcript-speaker-range-confirmed type="checkbox">
+                  <input name="speakerRangeConfirmed" data-podcast-transcript-speaker-range-confirmed type="checkbox">
                   {{ workbench.production.speakerRangeConfirmed }}
                 </label>
               </div>
@@ -646,7 +655,7 @@ eleventyComputed:
               </div>
               <div class="podcast-admin__field-grid">
                 <label>{{ workbench.production.alignmentAdapter }}
-                  <select data-podcast-alignment-adapter>
+                  <select name="alignmentAdapter" data-podcast-alignment-adapter>
                     <option value="whisperx">WhisperX 3.8.6</option>
                     <option value="stable-ts">{{ workbench.production.stableFallback }}</option>
                   </select>
@@ -692,7 +701,7 @@ eleventyComputed:
           <div class="podcast-admin__form" data-podcast-chapter-workbench>
             <div class="podcast-admin__field-grid">
               <label>{{ workbench.common.episode }}
-                <select data-podcast-chapter-episode required></select>
+                <select name="chapterEpisodeId" data-podcast-chapter-episode required></select>
               </label>
             </div>
             <div class="podcast-admin__transcript-meta" data-podcast-chapter-meta aria-live="polite"></div>
@@ -705,13 +714,13 @@ eleventyComputed:
               <p class="podcast-admin__help">{{ workbench.production.chapterDraftReviewNotice }}</p>
               <div class="podcast-admin__field-grid">
                 <label>{{ workbench.production.chapterDraftSourceLanguage }}
-                  <select data-podcast-chapter-draft-source-language>
+                  <select name="chapterDraftSourceLanguage" data-podcast-chapter-draft-source-language>
                     <option value="es">{{ workbench.common.spanish }}</option>
                     <option value="en">{{ workbench.common.english }}</option>
                   </select>
                 </label>
                 <label>{{ workbench.production.chapterDraftOutputLanguage }}
-                  <select data-podcast-chapter-draft-output-language>
+                  <select name="chapterDraftOutputLanguage" data-podcast-chapter-draft-output-language>
                     <option value="es">{{ workbench.common.spanish }}</option>
                     <option value="en">{{ workbench.common.english }}</option>
                   </select>
@@ -837,13 +846,13 @@ eleventyComputed:
             <p class="podcast-admin__help">{{ workbench.production.clipDraftReviewNotice }}</p>
             <div class="podcast-admin__field-grid">
               <label>{{ workbench.production.clipDraftSourceLanguage }}
-                <select data-podcast-clip-draft-source-language disabled>
+                <select name="clipDraftSourceLanguage" data-podcast-clip-draft-source-language disabled>
                   <option value="es">{{ workbench.common.spanish }}</option>
                   <option value="en">{{ workbench.common.english }}</option>
                 </select>
               </label>
               <label>{{ workbench.production.clipDraftOutputLanguage }}
-                <select data-podcast-clip-draft-output-language>
+                <select name="clipDraftOutputLanguage" data-podcast-clip-draft-output-language>
                   <option value="es">{{ workbench.common.spanish }}</option>
                   <option value="en">{{ workbench.common.english }}</option>
                 </select>
@@ -883,7 +892,7 @@ eleventyComputed:
           <form class="podcast-admin__form" data-podcast-clip-form>
             <div class="podcast-admin__field-grid">
               <label>{{ workbench.production.clipTitle }}
-                <input name="title" maxlength="160" required>
+                <input name="title" maxlength="160" autocomplete="off" required>
               </label>
               <label>{{ workbench.production.format }}
                 <select name="aspectRatio">
@@ -1009,7 +1018,7 @@ eleventyComputed:
                   required>
               </label>
               <label>{{ workbench.marketing.clipPublicTitle }}
-                <input name="title" maxlength="160" required>
+                <input name="title" maxlength="160" autocomplete="off" required>
               </label>
               <label class="podcast-admin__field-wide">{{ workbench.marketing.publicDescription }}
                 <textarea name="description" maxlength="1000" rows="4"></textarea>
@@ -1036,7 +1045,7 @@ eleventyComputed:
             </div>
             <div class="podcast-admin__field-grid">
               <label>{{ workbench.marketing.videoTitle }}
-                <input name="title" maxlength="100" required>
+                <input name="title" maxlength="100" autocomplete="off" required>
               </label>
               <label>{{ workbench.marketing.visibility }}
                 <select name="privacyStatus">
@@ -1262,7 +1271,7 @@ eleventyComputed:
             <p>{{ workbench.sponsors.campaignIntro }}</p>
             <div class="podcast-admin__field-grid">
               <label>{{ workbench.sponsors.campaignName }}
-                <input name="name" required>
+                <input name="name" autocomplete="off" required>
               </label>
               <label>{{ workbench.sponsors.type }}
                 <select name="campaignType">
@@ -1358,7 +1367,7 @@ eleventyComputed:
                 <select name="campaignId" required></select>
               </label>
               <label>{{ workbench.sponsors.creativeName }}
-                <input name="name" required>
+                <input name="name" autocomplete="off" required>
               </label>
               <label>{{ workbench.sponsors.declaredDuration }}
                 <input name="durationSeconds" type="number" min="1" max="600" required>
@@ -1428,7 +1437,7 @@ eleventyComputed:
             </div>
             <div class="podcast-admin__analytics-actions">
               <label>{{ workbench.analytics.range }}
-                <select data-podcast-analytics-range>
+                <select name="analyticsRange" data-podcast-analytics-range>
                   <option value="7">{{ workbench.analytics.sevenDays }}</option>
                   <option value="30" selected>{{ workbench.analytics.thirtyDays }}</option>
                   <option value="90">{{ workbench.analytics.ninetyDays }}</option>
@@ -1544,11 +1553,11 @@ eleventyComputed:
               <h2>{{ workbench.overview.settings }}</h2>
               <p>{{ workbench.overview.settingsIntro }}</p>
             </div>
-            <select data-podcast-show-select aria-label="{{ workbench.common.show }}"></select>
+            <select name="showId" data-podcast-show-select aria-label="{{ workbench.common.show }}"></select>
           </div>
           <form class="podcast-admin__form podcast-admin__form--settings" data-podcast-show-form hidden>
             <label>{{ workbench.common.title }}
-              <input id="podcast-show-title" name="title" required>
+              <input id="podcast-show-title" name="title" autocomplete="off" required>
             </label>
             <div class="podcast-admin__field-grid">
               <label>{{ workbench.overview.primaryLanguage }}

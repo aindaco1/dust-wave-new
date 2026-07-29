@@ -151,6 +151,10 @@ const adminConstantsScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-constants.js'),
   'utf8'
 );
+const publicationScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-publication.js'),
+  'utf8'
+);
 const analyticsScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-analytics.js'),
   'utf8'
@@ -1399,11 +1403,11 @@ assert.match(adminScript, /`readinessSummary_\$\{status\}`/);
 assert.match(adminScript, /localizedCode\("readinessStatus", status\)/);
 assert.match(adminScript, /localizedCode\("readinessSeverity", severity\)/);
 assert.match(adminScript, /publicationGateMode/);
-assert.match(adminScript, /PUBLISH_WITH_BLOCKERS/);
-assert.match(adminScript, /publication_override/);
-assert.match(adminScript, /basePublicationRevision/);
-assert.match(adminScript, /mode === "enforce"/);
-assert.match(adminScript, /mode === "shadow"/);
+assert.match(publicationScript, /PUBLISH_WITH_BLOCKERS/);
+assert.match(publicationScript, /publication_override/);
+assert.match(publicationScript, /basePublicationRevision/);
+assert.match(publicationScript, /mode === "enforce"/);
+assert.match(publicationScript, /mode === "shadow"/);
 assert.match(
   adminStyles,
   /\.podcast-admin \.btn[\s\S]*min-height: var\(--dw-admin-control-min-height\)/
@@ -1441,7 +1445,7 @@ assert.match(adminScript, /expectedTranscriptRevision/);
 assert.match(adminScript, /structurallyEligible/);
 assert.match(adminScript, /benchmark\?\.passedRunId/);
 assert.match(adminStyles, /\.podcast-admin__benchmark-list/);
-assert.match(adminConstantsScript, /TRANSCRIPT_CUES_PER_PAGE = 100/);
+assert.match(adminConstantsScript, /TRANSCRIPT_CUES_PER_PAGE = 10/);
 assert.match(adminScript, /syncVisibleTranscriptCues/);
 assert.match(
   adminScript,

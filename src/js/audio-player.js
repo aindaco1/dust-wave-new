@@ -282,29 +282,33 @@ function wireControls(card, ws) {
 	let speedBtn = hardenControl(ctrls.querySelector("[data-audio-speed]"));
 	if (speedBtn) {
 	const rates = [1, 1.1, 1.25, 1.5, 2, 0.5];
-	const advanceRate = () => {
-		const current = ws.getPlaybackRate ? ws.getPlaybackRate() : 1;
-		const idx = rates.indexOf(current);
-		const next = rates[(idx + 1) % rates.length];
-		ws.setPlaybackRate(next);
-		speedBtn.textContent = `${next}x`;
+	const updateRateLabel = (rate) => {
+		const visibleRate = `${rate}x`;
+		speedBtn.textContent = visibleRate;
 		speedBtn.setAttribute('aria-live', 'polite');
 		speedBtn.setAttribute(
 			'aria-label',
 			playerText(
 				'playbackSpeed',
-				`Playback speed: ${next}x`,
-				{ speed: `${next}x` }
+				`Playback speed: ${visibleRate}`,
+				{ speed: visibleRate }
 			)
 		);
+	};
+	const advanceRate = () => {
+		const current = ws.getPlaybackRate ? ws.getPlaybackRate() : 1;
+		const idx = rates.indexOf(current);
+		const next = rates[(idx + 1) % rates.length];
+		ws.setPlaybackRate(next);
+		updateRateLabel(next);
 	};
 	bindThrottled(speedBtn, "click",  advanceRate, "ws-speed-click");
 	bindThrottled(speedBtn, "keydown",(e) => {
 		if (e.key === "Enter" || e.key === " ") { e.preventDefault(); advanceRate(); }
 	}, "ws-speed-key");
-	speedBtn.textContent = "1x";
+	updateRateLabel(1);
 	if (!speedBtn.__bound_playbackRate) {
-		ws.on?.("playback-rate", (r) => { speedBtn.textContent = `${r}x`; });
+		ws.on?.("playback-rate", updateRateLabel);
 		speedBtn.__bound_playbackRate = true;
 	}
 	}

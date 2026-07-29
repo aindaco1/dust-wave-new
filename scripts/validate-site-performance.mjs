@@ -93,7 +93,7 @@ assert.match(
 );
 assert.equal(
   JSON.parse(packageSource).version,
-  "1.2.0",
+  "1.3.0",
   "the release asset version must remain aligned with the website package"
 );
 const localEntryUrls = localAssetTemplates

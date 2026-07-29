@@ -576,6 +576,7 @@ export function mountRssImportWorkbench({
       feedInput.type = "url";
       feedInput.inputMode = "url";
       feedInput.autocomplete = "off";
+      feedInput.name = "reviewFeedUrl";
       feedInput.required = true;
       feedInput.dataset.podcastRssImportReviewFeed = "";
       feedLabel.append(feedInput);
@@ -583,6 +584,7 @@ export function mountRssImportWorkbench({
       confirmation.className = "podcast-admin__checkbox";
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
+      checkbox.name = "reviewConfirmed";
       checkbox.dataset.podcastRssImportReviewConfirmed = "";
       const confirmationText = document.createElement("span");
       confirmationText.textContent = text("rssImportReviewConfirmation");
@@ -601,6 +603,7 @@ export function mountRssImportWorkbench({
       cancelLabel.textContent = text("rssImportCancelReason");
       const cancelInput = document.createElement("input");
       cancelInput.type = "text";
+      cancelInput.name = "cancellationReason";
       cancelInput.maxLength = 500;
       cancelInput.required = true;
       cancelInput.dataset.podcastRssImportCancelReason = "";

@@ -1,6 +1,6 @@
 import {
   mountUnsavedChangesGuard
-} from "./dust-wave-admin-shell/unsaved-changes.js?v=0.8.2";
+} from "./dust-wave-admin-shell/unsaved-changes.js?v=0.9.0";
 import {
   mountPodcastReviewDraftGuard as mountReviewDraftGuard
 } from "./podcast-admin-unsaved-changes-core.js";
