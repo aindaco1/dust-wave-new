@@ -9,6 +9,15 @@ import {
   markdownToEditorHtml
 } from "./dust-wave-admin-shell/editor-codec.js?v=0.7.0";
 import {
+  clipCueSummary,
+  clearTranscriptReviewDiagnostics as clearQa,
+  emptyTranscript,
+  millisecondsToTimestamp,
+  navigateToTranscriptReviewCue,
+  newTranscriptCue,
+  renderTranscriptReviewDiagnostics
+} from "./podcast-admin-transcript-review.js";
+import {
   buildTaggedMarketingUrl,
   createMarketingQr,
   drawQrCanvas,
@@ -1087,6 +1096,7 @@ function startPodcastAdmin(root) {
     transcriptRequestId += 1;
     transcriptEditors.clear();
     transcriptCuesRoot?.replaceChildren();
+    clearQa(root);
     transcriptMeta?.replaceChildren();
     transcriptionSummary?.replaceChildren();
     transcriptionJobsRoot?.replaceChildren();
@@ -1972,6 +1982,7 @@ function startPodcastAdmin(root) {
       alignmentRequestId += 1;
       transcriptEditors.clear();
       transcriptCuesRoot?.replaceChildren();
+      clearQa(root);
       transcriptionJobsRoot?.replaceChildren();
       alignmentJobsRoot?.replaceChildren();
       if (transcriptionSummary) {
@@ -2460,6 +2471,7 @@ function startPodcastAdmin(root) {
     transcriptPage = 0;
     transcriptEditors.clear();
     transcriptCuesRoot?.replaceChildren();
+    clearQa(root);
     if (!episodeId) {
       transcript = null;
       alignmentState = null;
@@ -2510,6 +2522,7 @@ function startPodcastAdmin(root) {
       transcript = null;
       transcriptEditors.clear();
       transcriptCuesRoot?.replaceChildren();
+      clearQa(root);
       if (transcriptPages) transcriptPages.hidden = true;
       clips = [];
       selectedClipId = "";
@@ -3335,6 +3348,7 @@ function startPodcastAdmin(root) {
       ? transcript.cues
       : [newTranscriptCue()];
     transcript.cues = cues;
+    renderTranscriptReviewDiagnostics(root, cues, adminText, openTranscriptCue);
     const pageCount = Math.max(
       1,
       Math.ceil(cues.length / TRANSCRIPT_CUES_PER_PAGE)
@@ -3639,6 +3653,25 @@ function startPodcastAdmin(root) {
         Math.min(pageCount - 1, transcriptPage + offset)
       );
       renderTranscript();
+    } catch (error) {
+      setStatus(transcriptStatus, transcriptInputError(error), true);
+    }
+  }
+
+  function openTranscriptCue(cueIndex) {
+    try {
+      navigateToTranscriptReviewCue({
+        cueIndex,
+        cues: transcript?.cues,
+        cuesPerPage: TRANSCRIPT_CUES_PER_PAGE,
+        syncVisibleCues: () =>
+          syncVisibleTranscriptCues({ requireText: false }),
+        showPage: (page) => {
+          transcriptPage = page;
+          renderTranscript();
+        },
+        cuesRoot: transcriptCuesRoot
+      });
     } catch (error) {
       setStatus(transcriptStatus, transcriptInputError(error), true);
     }
@@ -8768,40 +8801,6 @@ function setStatus(element, message, error = false) {
   element.classList.toggle("is-error", error);
 }
 
-function emptyTranscript(language) {
-  return {
-    id: null,
-    language,
-    source: "editor",
-    status: "new",
-    revision: 0,
-    speakerLabelsConfirmed: true,
-    approvedRevision: null,
-    approvedAt: null,
-    cues: [newTranscriptCue()],
-    alignment: {
-      id: null,
-      status: "not_run",
-      adapter: null,
-      model: null,
-      completedAt: null,
-      alignedWordCount: 0,
-      wordControlsEnabled: false
-    }
-  };
-}
-
-function newTranscriptCue(startsAtMs = 0, endsAtMs = 5_000) {
-  return {
-    id: operationId("cue"),
-    startsAtMs,
-    endsAtMs,
-    speakerLabel: "",
-    speakerConfirmed: false,
-    textMarkdown: ""
-  };
-}
-
 function emptyChapterSet(episodeId) {
   return {
     episodeId,
@@ -8834,14 +8833,6 @@ function millisecondsToSeconds(value) {
   return (Number(value || 0) / 1_000).toFixed(3).replace(/\.?0+$/, "");
 }
 
-function millisecondsToTimestamp(value) {
-  const totalMilliseconds = Math.max(0, Math.round(Number(value || 0)));
-  const minutes = Math.floor(totalMilliseconds / 60_000);
-  const seconds = Math.floor((totalMilliseconds % 60_000) / 1_000);
-  const milliseconds = totalMilliseconds % 1_000;
-  return `${minutes}:${String(seconds).padStart(2, "0")}.${String(milliseconds).padStart(3, "0")}`;
-}
-
 function formatClipDuration(value) {
   const seconds = Number(value || 0) / 1_000;
   return adminText(
@@ -8852,15 +8843,6 @@ function formatClipDuration(value) {
       }).format(seconds)
     }
   );
-}
-
-function clipCueSummary(value) {
-  const summary = String(value || "")
-    .replace(/<[^>]*>/g, " ")
-    .replace(/[*_~`[\]()>#+=-]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-  return summary.length > 72 ? `${summary.slice(0, 69)}…` : summary;
 }
 
 function secondsToMilliseconds(value, label) {

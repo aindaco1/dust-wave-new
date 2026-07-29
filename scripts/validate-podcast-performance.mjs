@@ -142,6 +142,7 @@ for (const [name, layout] of [
 
 const scriptBudgets = new Map([
   ["src/js/podcast-admin.js", 302_000],
+  ["src/js/podcast-admin-transcript-review.js", 12_000],
   ["src/js/podcast-admin-clip-publications.js", 10_000],
   ["src/js/podcast-admin-distribution-certification.js", 5_000],
   ["src/js/podcast-admin-catalog.js", 8_000],
@@ -263,6 +264,11 @@ assert.match(
   tracer,
   /Emulation\.setDeviceMetricsOverride[\s\S]+observed\?\.innerWidth !== viewport\.width[\s\S]+observed\?\.innerHeight !== viewport\.height[\s\S]+observed\?\.scrollWidth > viewport\.width/,
   "performance traces must verify the exact CSS viewport and horizontal fit"
+);
+assert.match(
+  tracer,
+  /ADMIN_TABS[\s\S]+dustwave-podcast-admin-tab[\s\S]+observed\?\.activeTab !== adminTab/,
+  "performance traces must support and verify a bounded admin-tab fixture"
 );
 assert.match(
   tracer,

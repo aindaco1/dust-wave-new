@@ -26,6 +26,13 @@ const adminScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin.js'),
   'utf8'
 );
+const transcriptDiagnosticsScript = await readFile(
+  path.join(
+    repositoryRoot,
+    'src/js/podcast-admin-transcript-review.js'
+  ),
+  'utf8'
+);
 const clipPublicationScript = await readFile(
   path.join(
     repositoryRoot,
@@ -153,7 +160,8 @@ const staticRuntimeKeys = [
   ...rssImportReconciliationScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...rssImportCutoverScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...rssImportActivationApprovalScript.matchAll(/text\(\s*"([^"]+)"/g),
-  ...youtubeAudioRenditionScript.matchAll(/text\(\s*"([^"]+)"/g)
+  ...youtubeAudioRenditionScript.matchAll(/text\(\s*"([^"]+)"/g),
+  ...transcriptDiagnosticsScript.matchAll(/text\(\s*"([^"]+)"/g)
 ].map((match) => match[1]);
 for (const key of new Set(staticRuntimeKeys)) {
   assert.equal(
@@ -576,6 +584,25 @@ assert.match(englishWorkbenchText, /Source-language transcription/);
 assert.match(adminTemplate, /name="sourceLanguage"/);
 assert.match(adminTemplate, /data-podcast-transcript-cues/);
 assert.match(adminTemplate, /data-podcast-transcript-pages/);
+assert.match(adminTemplate, /data-podcast-transcript-diagnostics/);
+assert.match(adminTemplate, /data-podcast-transcript-diagnostics-list/);
+assert.match(
+  adminScript,
+  /renderTranscriptReviewDiagnostics\(root, cues, adminText, openTranscriptCue\)/
+);
+assert.match(
+  transcriptDiagnosticsScript,
+  /minimumCueDurationMs:\s*500[\s\S]+maximumCueDurationMs:\s*10_000/
+);
+assert.match(
+  transcriptDiagnosticsScript,
+  /maximumCharactersPerSecond:\s*25/
+);
+assert.match(
+  adminMockApi,
+  /PODCAST_ADMIN_MOCK_TRANSCRIPT_CUES[\s\S]+maximum:\s*10_000[\s\S]+transcriptFixture/,
+  "browser QA must provide a bounded opt-in large-transcript fixture"
+);
 assert.match(englishWorkbenchText, /Word timing gated/);
 assert.match(adminTemplate, /data-podcast-alignment/);
 assert.match(adminTemplate, /data-podcast-alignment-adapter/);

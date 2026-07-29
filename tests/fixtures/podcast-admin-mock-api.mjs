@@ -8,6 +8,10 @@ const adminRole =
   process.env.PODCAST_ADMIN_MOCK_ROLE === "producer"
     ? "producer"
     : "super_admin";
+const transcriptCueCount = boundedInteger(
+  process.env.PODCAST_ADMIN_MOCK_TRANSCRIPT_CUES,
+  { minimum: 0, maximum: 10_000, fallback: 0 }
+);
 const sha = (character) => character.repeat(64);
 
 const show = {
@@ -43,6 +47,61 @@ const episode = {
   canonicalUrl:
     "https://dustwave.xyz/news/podcasts/opera-en-la-selva/episodio-de-prueba/"
 };
+
+const transcriptCues = Array.from(
+  { length: transcriptCueCount },
+  (_, index) => {
+    const startsAtMs = index * 3_000;
+    const durationMs = index % 97 === 0
+      ? 0
+      : index % 29 === 0
+        ? 11_000
+        : index % 11 === 0
+          ? 400
+          : 2_500;
+    return {
+      id: `cue_browser_${String(index + 1).padStart(5, "0")}`,
+      startsAtMs,
+      endsAtMs: startsAtMs + durationMs,
+      speakerLabel: index % 7 === 0
+        ? ""
+        : index % 2 === 0
+          ? "Jay"
+          : "Guest",
+      speakerConfirmed: index % 13 !== 0,
+      textMarkdown: index % 17 === 0
+        ? "Una línea sintética deliberadamente rápida para revisar."
+        : "Texto sintético de control."
+    };
+  }
+);
+const transcriptDurationSeconds = transcriptCues.length
+  ? Math.ceil(transcriptCues.at(-1).endsAtMs / 1_000)
+  : 180;
+const transcriptFixture = transcriptCues.length
+  ? {
+      id: "transcript_browser_fixture",
+      episodeId: episode.id,
+      language: "es",
+      source: "transcription",
+      status: "needs_review",
+      revision: 1,
+      speakerLabelsConfirmed: false,
+      approvedRevision: null,
+      approvedAt: null,
+      contentSha256: sha("3"),
+      cues: transcriptCues,
+      alignment: {
+        id: null,
+        status: "not_run",
+        adapter: null,
+        model: null,
+        completedAt: null,
+        alignedWordCount: 0,
+        wordControlsEnabled: false
+      }
+    }
+  : null;
 
 const clip = {
   id: "clip_browser_fixture",
@@ -651,6 +710,19 @@ function json(response, status = 200) {
     contentType: "application/json; charset=utf-8",
     body: JSON.stringify(response)
   };
+}
+
+function boundedInteger(value, {
+  minimum,
+  maximum,
+  fallback
+}) {
+  const parsed = Number(value);
+  return Number.isSafeInteger(parsed)
+    && parsed >= minimum
+    && parsed <= maximum
+    ? parsed
+    : fallback;
 }
 
 function responseFor(request) {
@@ -1811,7 +1883,10 @@ function responseFor(request) {
     request.method === "GET"
     && path === `/v1/admin/episodes/${episode.id}/transcripts`
   ) {
-    return json({ durationSeconds: 180, transcripts: [] });
+    return json({
+      durationSeconds: transcriptDurationSeconds,
+      transcripts: transcriptFixture ? [transcriptFixture] : []
+    });
   }
   if (
     request.method === "GET"
@@ -2092,6 +2167,7 @@ const server = createServer((request, response) => {
 
 server.listen(port, host, () => {
   process.stdout.write(
-    `Podcast admin mock API listening on http://${host}:${port}\n`
+    `Podcast admin mock API listening on http://${host}:${port}`
+      + ` (${transcriptCueCount} transcript cues)\n`
   );
 });

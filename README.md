@@ -291,6 +291,22 @@ npm run perf:podcast-admin:trace -- \
   --url https://dust-wave-website-staging.pages.dev/es/admin/podcasts/
 ```
 
+Use `--admin-tab production` with the repository mock API to capture the
+transcript workbench directly. For a bounded large-transcript regression,
+build once and run the next two server commands in separate terminals:
+
+```bash
+PODCAST_ADMIN_API_ORIGIN=http://127.0.0.1:4174 \
+  PODCAST_PUBLIC_API_ORIGIN=http://127.0.0.1:4174 \
+  PODCAST_MEMBER_API_ORIGIN=http://127.0.0.1:4174 \
+  npm run build-dev
+python3 -m http.server 4173 --bind 127.0.0.1 --directory dev
+PODCAST_ADMIN_MOCK_TRANSCRIPT_CUES=1300 npm run qa:podcast-admin:mock-api
+npm run perf:podcast-admin:trace -- \
+  --url http://127.0.0.1:4173/admin/podcasts/ \
+  --admin-tab production
+```
+
 Load the resulting JSON from Chrome DevTools **Performance → Load profile**.
 Trace files contain visited URLs and page metadata, so review them before
 sharing. Run `npm run perf:podcast-admin:trace -- --help` for all options.
