@@ -290,7 +290,6 @@ for (const environmentName of [
   );
 }
 for (const environmentName of [
-  "PODCAST_ADMIN_TURNSTILE_SITE_KEY",
   "PODCAST_CHECKOUT_TURNSTILE_SITE_KEY",
   "PODCAST_MEMBER_TURNSTILE_SITE_KEY"
 ]) {
@@ -300,6 +299,11 @@ for (const environmentName of [
     `${environmentName} must use the explicit staging Turnstile site key`
   );
 }
+assert.match(
+  stagingBuild,
+  /PODCAST_ADMIN_TURNSTILE_SITE_KEY: ""/,
+  "isolated staging must omit only the Admin Turnstile widget"
+);
 assert.doesNotMatch(
   stagingBuild,
   /feeds\.dustwave\.xyz|media\.dustwave\.xyz/,
