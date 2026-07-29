@@ -841,6 +841,53 @@ function responseFor(request) {
   }
   if (
     request.method === "GET"
+    && path === `/v1/admin/shows/${show.id}/site-projection`
+  ) {
+    return json({
+      target: {
+        owner: "aindaco1",
+        repository: "dust-wave-new",
+        ref: "release/1.2.0-youtube-preflight",
+        path: "src/_data/podcastShows.json"
+      },
+      mode: "dry_run",
+      showId: show.id,
+      catalogSha: sha("a"),
+      changed: true,
+      changedFields: [
+        "canonicalUrl",
+        "feedArtworkUrl",
+        "authorName",
+        "category",
+        "explicit"
+      ],
+      blockers: []
+    });
+  }
+  if (
+    request.method === "POST"
+    && path === `/v1/admin/shows/${show.id}/site-projection`
+  ) {
+    return json({
+      target: {
+        owner: "aindaco1",
+        repository: "dust-wave-new",
+        ref: "release/1.2.0-youtube-preflight",
+        path: "src/_data/podcastShows.json"
+      },
+      mode: "dry_run",
+      showId: show.id,
+      catalogSha: sha("a"),
+      changed: true,
+      changedFields: ["canonicalUrl", "feedArtworkUrl"],
+      blockers: [],
+      published: false,
+      dryRun: true,
+      idempotent: false
+    });
+  }
+  if (
+    request.method === "GET"
     && path === "/v1/admin/distribution"
     && url.searchParams.get("showId") === show.id
   ) {

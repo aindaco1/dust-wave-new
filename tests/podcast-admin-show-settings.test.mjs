@@ -1,18 +1,11 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-const moduleSource = await readFile(
-  new URL("../src/js/podcast-admin-show-settings.js", import.meta.url),
-  "utf8"
-);
 const {
   needsShowArchiveConfirmation,
   populateShowSettingsForm,
   readShowSettingsPayload
-} = await import(
-  `data:text/javascript;base64,${Buffer.from(moduleSource).toString("base64")}`
-);
+} = await import("../src/js/podcast-admin-show-settings.js");
 
 test("populates every editable field and keeps permanent destinations display-only", () => {
   const form = fixtureForm();

@@ -28,6 +28,29 @@ for (const show of shows) {
   assert.equal(typeof show.descriptionEn, 'string');
   assert(show.descriptionEn.trim().length > 0, `${show.slug} needs an English description`);
   assert(['en', 'es'].includes(show.language), `${show.slug} must use a launch language`);
+  assert.equal(
+    show.canonicalUrl,
+    `https://dustwave.xyz/podcasts/${show.slug}/`,
+    `${show.slug} canonical URL must match its permanent show page`
+  );
+  assert(
+    typeof show.authorName === 'string' && show.authorName.trim(),
+    `${show.slug} needs an author`
+  );
+  assert(
+    typeof show.category === 'string' && show.category.trim(),
+    `${show.slug} needs a category`
+  );
+  assert.equal(
+    typeof show.explicit,
+    'boolean',
+    `${show.slug} must declare its explicit policy`
+  );
+  assert.match(
+    show.feedArtworkUrl,
+    /^https:\/\/dustwave\.xyz\/img\/podcasts\/[a-z0-9/_-]+\.png$/,
+    `${show.slug} feed artwork must use a permanent first-party HTTPS URL`
+  );
   assert(Array.isArray(show.episodes), `${show.slug} episodes must be an array`);
   assert.equal(show.publicAccess.priceCents, 0, `${show.slug} public access must remain free`);
   assert.equal(

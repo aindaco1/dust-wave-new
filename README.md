@@ -307,6 +307,9 @@ npm run perf:podcast-admin:trace -- \
   --admin-tab production
 ```
 
+Use `--admin-tab settings` to measure the bilingual show form and the
+dry-run-first public-page projection controls at 320 px or desktop width.
+
 Load the resulting JSON from Chrome DevTools **Performance → Load profile**.
 Trace files contain visited URLs and page metadata, so review them before
 sharing. Run `npm run perf:podcast-admin:trace -- --help` for all options.

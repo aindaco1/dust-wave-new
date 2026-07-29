@@ -32,6 +32,7 @@ import {
   renderShowCatalog
 } from "./podcast-admin-catalog.js";
 import {
+  mountShowSiteProjection,
   needsShowArchiveConfirmation,
   populateShowSettingsForm,
   readShowSettingsPayload
@@ -636,6 +637,16 @@ function startPodcastAdmin(root) {
     text: adminText,
     setStatus,
     friendlyError
+  });
+  const showSiteProjection = mountShowSiteProjection({
+    root,
+    client,
+    text: adminText,
+    setStatus,
+    friendlyError,
+    canPublish: () => (adminIdentity?.roles || []).some(
+      ({ role }) => role === "super_admin"
+    )
   });
   mountAccessibleTabs(root.querySelector("[data-podcast-tabs]"), {
     responsiveSelect: {
@@ -1246,6 +1257,7 @@ function startPodcastAdmin(root) {
   function fillShowForm() {
     const show = shows.find(({ id }) => id === selectedShowId);
     showForm.hidden = !show;
+    showSiteProjection.setShow(show);
     rssImport.setShow(Boolean(show));
     if (!show) return;
     populateShowSettingsForm(showForm, show);

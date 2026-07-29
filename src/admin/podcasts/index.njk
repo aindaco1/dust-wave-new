@@ -1336,6 +1336,45 @@ eleventyComputed:
             <button class="btn btn-danger" type="submit">{{ workbench.overview.save }}</button>
             <p class="podcast-admin__status" data-podcast-show-status role="status" aria-live="polite"></p>
           </form>
+          <section
+            class="podcast-admin__form podcast-admin__form--settings"
+            data-podcast-site-projection
+            hidden>
+            <h3>{{ workbench.overview.siteProjectionHeading }}</h3>
+            <p>{{ workbench.overview.siteProjectionIntro }}</p>
+            <div class="podcast-admin__billing-actions">
+              <button
+                class="btn btn-outline-light"
+                type="button"
+                data-podcast-site-projection-preview>
+                {{ workbench.overview.siteProjectionPreview }}
+              </button>
+            </div>
+            <p
+              class="podcast-admin__status"
+              data-podcast-site-projection-status
+              role="status"
+              aria-live="polite"></p>
+            <div data-podcast-site-projection-summary hidden></div>
+            <form
+              class="podcast-admin__callout"
+              data-podcast-site-projection-form
+              hidden>
+              <p>{{ workbench.overview.siteProjectionPublishHelp }}</p>
+              <p data-podcast-site-projection-confirmation-hint></p>
+              <label>{{ workbench.overview.siteProjectionConfirmation }}
+                <input
+                  name="confirmation"
+                  autocomplete="off"
+                  spellcheck="false"
+                  maxlength="120"
+                  required>
+              </label>
+              <button class="btn btn-danger" type="submit">
+                {{ workbench.overview.siteProjectionPublish }}
+              </button>
+            </form>
+          </section>
         </section>
       </div>
     </div>

@@ -1,3 +1,7 @@
+export {
+  mountShowSiteProjection
+} from "./podcast-admin-show-projection.js";
+
 const SHOW_TEXT_FIELDS = [
   "title",
   "description",

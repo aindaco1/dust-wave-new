@@ -26,7 +26,8 @@ const ADMIN_TABS = new Set([
   "sponsors",
   "analytics",
   "subscribers",
-  "billing"
+  "billing",
+  "settings"
 ]);
 const SUPPORTED_EXECUTABLE_NAMES = new Set([
   "chrome",

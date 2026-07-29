@@ -30,6 +30,10 @@ const showSettingsScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-show-settings.js'),
   'utf8'
 );
+const showProjectionScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-show-projection.js'),
+  'utf8'
+);
 const transcriptDiagnosticsScript = await readFile(
   path.join(
     repositoryRoot,
@@ -282,6 +286,34 @@ assert.match(
 );
 assert.match(adminScript, /archiveShowConfirm/);
 assert.match(adminScript, /readShowSettingsPayload\(showForm\)/);
+assert.match(adminTemplate, /data-podcast-site-projection-preview/);
+assert.match(adminTemplate, /data-podcast-site-projection-summary/);
+assert.match(adminTemplate, /data-podcast-site-projection-confirmation-hint/);
+assert.match(adminTemplate, /data-podcast-site-projection-form/);
+assert.match(
+  showProjectionScript,
+  /\/v1\/admin\/shows\/\$\{encodeURIComponent\(showId\)\}\/site-projection/
+);
+assert.match(
+  showProjectionScript,
+  /expectedCatalogSha: preview\.catalogSha,[\s\S]+confirmation/
+);
+assert.match(
+  showProjectionScript,
+  /PUBLISH_SHOW_CATALOG \$\{show\.id\}/
+);
+assert.doesNotMatch(showProjectionScript, /innerHTML|insertAdjacentHTML/);
+assert.match(adminScript, /showSiteProjection\.setShow\(show\)/);
+assert.match(
+  englishWorkbench.overview.siteProjectionIntro,
+  /preserving local artwork variants/
+);
+assert.match(
+  spanishWorkbench.overview.siteProjectionIntro,
+  /conserva las variantes locales/
+);
+assert.equal(englishRuntime.siteProjectionTargetLabel, 'Target');
+assert.equal(spanishRuntime.siteProjectionTargetLabel, 'Destino');
 assert.equal(englishI18n.podcast.admin.tabs.settings, 'Settings');
 assert.equal(spanishI18n.podcast.admin.tabs.settings, 'Configuración');
 assert.match(
