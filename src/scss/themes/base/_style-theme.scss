@@ -472,14 +472,36 @@ li p { margin-bottom: 0; }
 .navbar-light a.nav-link {
   color: $black;
   border-bottom: 2px solid transparent;
-  margin: 0 clamp(.45rem, 1vw, 1rem);
-  font-size: clamp(.9rem, 1.15vw, 1.1rem);
+  margin: 0 clamp(.35rem, .6vw, .75rem);
+  font-size: clamp(.875rem, 1vw, 1rem);
   white-space: nowrap;
 }
 .navbar-expand-lg .navbar-nav a.nav-link { padding-left: 0; padding-right: 0; }
 
 .nav-link { line-height: 1.5; padding: .75rem 1rem; }
 .navbar-nav li { margin-left: 0 !important; }
+
+/* Keep the desktop link group centered in the header, independent of the logo. */
+@media (min-width: 992px) {
+  .site-navbar__inner {
+    position: relative;
+    justify-content: center !important;
+  }
+  .site-navbar__brand {
+    position: absolute;
+    inset-inline-start: 0;
+    top: 50%;
+    margin: 0;
+    transform: translateY(-50%);
+    z-index: 1;
+  }
+  .site-navbar__content {
+    flex: 0 1 auto;
+    width: auto;
+  }
+  .site-navbar__nav { width: auto !important; }
+  .site-navbar__links { justify-content: center; }
+}
 
 .navbar-toggler-icon {
   background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='white' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
@@ -1203,32 +1225,77 @@ button i { padding-right: .3vw; }
 .newsletter-button { background-color: white; }
 
 #sticky-button {
-  background-color: black; color: white;
-  position: absolute; border-color: white; border-radius: 3px;
-  opacity: .4; animation: ball 25s infinite linear;
+  --sticky-safe-left: calc(100vw - 19rem);
+  align-items: center;
+  animation: ball 25s infinite linear;
+  background-color: black;
+  border: 1px solid rgba(255, 255, 255, .75);
+  border-radius: 3px;
+  color: white;
+  display: inline-flex;
+  gap: .5rem;
+  justify-content: center;
+  left: 10%;
+  line-height: 1.2;
+  max-width: calc(100vw - 2rem);
+  opacity: .72;
+  padding: .6rem .8rem;
+  position: absolute;
+  text-align: center;
+  text-decoration: none;
+  top: 40%;
+  transition: opacity 200ms ease, transform 200ms ease, border-color 200ms ease;
+  z-index: 5;
+
   @media screen and (max-width: 1024px) {
-    animation: unset; opacity: 1; position: relative;
-    display: block; margin: 40px auto 0; transform: none;
+    animation: none;
+    display: flex;
+    left: auto;
+    margin: 40px auto 0;
+    opacity: 1;
+    position: relative;
+    top: auto;
+    transform: none;
+    width: fit-content;
   }
 }
-#sticky-button:hover {
-  transition: all .5s ease-in-out 0s;
-  transform: scale(1.05, 1.05);
-  opacity: 1; animation-play-state: paused;
+#sticky-button:visited { color: white; }
+#sticky-button:hover,
+#sticky-button:focus-visible {
+  animation-play-state: paused;
+  border-color: white;
+  color: white;
+  opacity: 1;
+  text-decoration: none;
+  transform: scale(1.05);
+}
+#sticky-button:focus-visible {
+  outline: 3px solid white;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #sticky-button {
+    animation: none;
+    opacity: 1;
+    transition: none;
+  }
+  #sticky-button:hover,
+  #sticky-button:focus-visible { transform: none; }
 }
 
 @keyframes ball {
-  0%   { top: 40%; left: 10%; opacity: .1; }
+  0%   { top: 40%; left: 10%; opacity: .72; }
   10%  { top: 60%; left: 5%;  opacity: 1;  }
-  20%  { top: 80%; left: 7%;  opacity: .1; }
+  20%  { top: 80%; left: 7%;  opacity: .72; }
   30%  { top: 66%; left: 2%;  opacity: 1;  }
-  40%  { top: 55%; left: 27%; opacity: .1; }
+  40%  { top: 55%; left: 27%; opacity: .72; }
   50%  { top: 44%; left: 65%; opacity: 1;  }
-  60%  { top: 60%; left: 70%; opacity: .1; }
-  70%  { top: 55%; left: 75%; opacity: 1;  }
-  80%  { top: 68%; left: 65%; opacity: .1; }
-  90%  { top: 35%; left: 80%; opacity: 1;  }
-  100% { top: 40%; left: 10%; opacity: .1; }
+  60%  { top: 60%; left: 70%; opacity: .72; }
+  70%  { top: 55%; left: min(75%, var(--sticky-safe-left)); opacity: 1;  }
+  80%  { top: 68%; left: 65%; opacity: .72; }
+  90%  { top: 35%; left: min(80%, var(--sticky-safe-left)); opacity: 1;  }
+  100% { top: 40%; left: 10%; opacity: .72; }
 }
 
 /* Anchor wrapping a button (no underline) */
