@@ -43,7 +43,7 @@ assert.match(styles, /\.site-footer__copyright\s*\{[\s\S]*grid-area:\s*copyright
 assert.match(styles, /\.site-footer__language\s*\{[\s\S]*grid-area:\s*language;[\s\S]*width:\s*100%;/);
 assert.match(
   styles,
-  /\.site-footer__lang-switcher\s*\{[\s\S]*display:\s*grid;[\s\S]*gap:\s*\.25rem;[\s\S]*grid-template-columns:\s*repeat\(2,\s*max-content\);[\s\S]*justify-content:\s*center;[\s\S]*width:\s*100%;/
+  /\.site-footer__lang-switcher\s*\{[\s\S]*display:\s*grid;[\s\S]*gap:\s*\.5rem;[\s\S]*grid-template-columns:\s*repeat\(2,\s*max-content\);[\s\S]*justify-content:\s*center;[\s\S]*width:\s*100%;/
 );
 assert.match(
   styles,
