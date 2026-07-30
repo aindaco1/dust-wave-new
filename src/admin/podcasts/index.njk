@@ -82,30 +82,35 @@ eleventyComputed:
 
           <form id="podcast-episode-details" class="podcast-admin__form" data-podcast-episode-form>
             <h3 data-podcast-episode-form-heading>{{ workbench.episodes.new }}</h3>
-            <div class="podcast-admin__field-grid">
-              <label>{{ workbench.common.title }}
-                <input name="title" autocomplete="off" required>
+            <section
+              class="podcast-admin__field-group"
+              aria-labelledby="podcast-episode-copy-heading">
+              <h4 id="podcast-episode-copy-heading">{{ workbench.episodes.copyGroup }}</h4>
+              <div class="podcast-admin__field-grid">
+                <label>{{ workbench.common.title }}
+                  <input name="title" autocomplete="off" required>
+                </label>
+                <label>{{ workbench.episodes.slug }}
+                  <input
+                    name="slug"
+                    pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
+                    aria-describedby="podcast-episode-slug-help"
+                    required>
+                  <span
+                    id="podcast-episode-slug-help"
+                    class="podcast-admin__help"
+                    data-podcast-episode-slug-help
+                    hidden>{{ workbench.episodes.slugLocked }}</span>
+                </label>
+              </div>
+              <label>{{ workbench.episodes.summary }}
+                <textarea name="summary" rows="3" required></textarea>
               </label>
-              <label>{{ workbench.episodes.slug }}
-                <input
-                  name="slug"
-                  pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
-                  aria-describedby="podcast-episode-slug-help"
-                  required>
-                <span
-                  id="podcast-episode-slug-help"
-                  class="podcast-admin__help"
-                  data-podcast-episode-slug-help
-                  hidden>{{ workbench.episodes.slugLocked }}</span>
-              </label>
-            </div>
-            <label>{{ workbench.episodes.summary }}
-              <textarea name="summary" rows="3" required></textarea>
-            </label>
-            <div class="podcast-admin__field">
-              <span class="podcast-admin__field-label">{{ workbench.episodes.notes }}</span>
-              <div class="podcast-admin__editor" data-podcast-notes-editor></div>
-            </div>
+              <div class="podcast-admin__field">
+                <span class="podcast-admin__field-label">{{ workbench.episodes.notes }}</span>
+                <div class="podcast-admin__editor" data-podcast-notes-editor></div>
+              </div>
+            </section>
             <section
               class="podcast-admin__callout podcast-admin__show-notes"
               data-podcast-show-notes
@@ -171,28 +176,35 @@ eleventyComputed:
                 </div>
               </section>
             </section>
-            <div class="podcast-admin__field-grid podcast-admin__field-grid--three">
-              <label>{{ workbench.episodes.access }}
-                <select name="access">
-                  <option value="public">{{ workbench.episodes.public }}</option>
-                  <option value="early_access">{{ workbench.episodes.earlyAccess }}</option>
-                  <option value="premium_bonus">{{ workbench.episodes.premiumBonus }}</option>
-                  <option value="free_mini">{{ workbench.episodes.freeMini }}</option>
-                </select>
-              </label>
-              <label>{{ workbench.episodes.sourceLanguage }}
-                <select name="sourceLanguage" required>
-                  <option value="es">{{ workbench.common.spanish }}</option>
-                  <option value="en">{{ workbench.common.english }}</option>
-                </select>
-              </label>
-              <label>{{ workbench.episodes.premiumRelease }}
-                <input name="premiumAt" type="datetime-local">
-              </label>
-              <label>{{ workbench.episodes.publicRelease }}
-                <input name="publicAt" type="datetime-local">
-              </label>
-            </div>
+            <section
+              class="podcast-admin__field-group podcast-admin__field-group--divided"
+              aria-labelledby="podcast-episode-release-heading">
+              <h4 id="podcast-episode-release-heading">{{ workbench.episodes.releaseGroup }}</h4>
+              <div class="podcast-admin__field-grid podcast-admin__field-grid--compact">
+                <label>{{ workbench.episodes.access }}
+                  <select name="access">
+                    <option value="public">{{ workbench.episodes.public }}</option>
+                    <option value="early_access">{{ workbench.episodes.earlyAccess }}</option>
+                    <option value="premium_bonus">{{ workbench.episodes.premiumBonus }}</option>
+                    <option value="free_mini">{{ workbench.episodes.freeMini }}</option>
+                  </select>
+                </label>
+                <label>{{ workbench.episodes.sourceLanguage }}
+                  <select name="sourceLanguage" required>
+                    <option value="es">{{ workbench.common.spanish }}</option>
+                    <option value="en">{{ workbench.common.english }}</option>
+                  </select>
+                </label>
+              </div>
+              <div class="podcast-admin__field-grid podcast-admin__field-grid--compact">
+                <label>{{ workbench.episodes.premiumRelease }}
+                  <input name="premiumAt" type="datetime-local">
+                </label>
+                <label>{{ workbench.episodes.publicRelease }}
+                  <input name="publicAt" type="datetime-local">
+                </label>
+              </div>
+            </section>
             <div class="podcast-admin__form-actions">
               <button class="btn btn-danger" type="submit">{{ workbench.episodes.createDraft }}</button>
               <button
@@ -1257,91 +1269,119 @@ eleventyComputed:
           <form class="podcast-admin__form" data-podcast-campaign-form>
             <h3>{{ workbench.sponsors.newCampaign }}</h3>
             <p>{{ workbench.sponsors.campaignIntro }}</p>
-            <div class="podcast-admin__field-grid">
-              <label>{{ workbench.sponsors.campaignName }}
-                <input name="name" autocomplete="off" required>
-              </label>
-              <label>{{ workbench.sponsors.type }}
-                <select name="campaignType">
-                  <option value="house">{{ workbench.sponsors.house }}</option>
-                  <option value="direct">{{ workbench.sponsors.direct }}</option>
-                </select>
-              </label>
-              <label data-direct-sponsor-field hidden>{{ workbench.sponsors.sponsorName }}
-                <input name="sponsorName">
-              </label>
-              <label data-direct-sponsor-field hidden>{{ workbench.sponsors.sponsorWebsite }}
-                <input name="sponsorWebsiteUrl" type="url" inputmode="url">
-              </label>
-              <label>{{ workbench.sponsors.starts }}
-                <input name="startsAt" type="datetime-local" required>
-              </label>
-              <label>{{ workbench.sponsors.ends }}
-                <input name="endsAt" type="datetime-local">
-              </label>
-              <label>{{ workbench.sponsors.episodeTarget }}
-                <select name="episodeId">
-                  <option value="">{{ workbench.sponsors.allEpisodes }}</option>
-                </select>
-              </label>
-              <label>{{ workbench.sponsors.position }}
-                <select name="position">
-                  <option value="">{{ workbench.sponsors.allPositions }}</option>
-                  <option value="pre">{{ workbench.common.preRoll }}</option>
-                  <option value="mid">{{ workbench.common.midRoll }}</option>
-                  <option value="post">{{ workbench.common.postRoll }}</option>
-                </select>
-              </label>
-              <label>{{ workbench.sponsors.podcastApp }}
-                <select name="appName">
-                  <option value="">{{ workbench.sponsors.allApps }}</option>
-                  <option value="apple_podcasts">Apple Podcasts</option>
-                  <option value="spotify">Spotify</option>
-                  <option value="pocket_casts">Pocket Casts</option>
-                  <option value="overcast">Overcast</option>
-                  <option value="podcast_addict">Podcast Addict</option>
-                  <option value="browser">{{ workbench.sponsors.webPlayer }}</option>
-                </select>
-              </label>
-              <label>{{ workbench.sponsors.device }}
-                <select name="deviceType">
-                  <option value="">{{ workbench.sponsors.allDevices }}</option>
-                  <option value="mobile">{{ workbench.sponsors.mobile }}</option>
-                  <option value="tablet">{{ workbench.sponsors.tablet }}</option>
-                  <option value="desktop">{{ workbench.sponsors.desktop }}</option>
-                  <option value="smart_speaker">{{ workbench.sponsors.smartSpeaker }}</option>
-                  <option value="unknown">{{ workbench.sponsors.unknown }}</option>
-                </select>
-              </label>
-              <label>{{ workbench.sponsors.priority }}
-                <input name="priority" type="number" min="-1000" max="1000" value="0">
-              </label>
-              <label>{{ workbench.sponsors.pacing }}
-                <select name="pacingStrategy">
-                  <option value="even">{{ workbench.sponsors.even }}</option>
-                  <option value="asap">{{ workbench.sponsors.asap }}</option>
-                  <option value="manual">{{ workbench.sponsors.manual }}</option>
-                </select>
-              </label>
-              <label>{{ workbench.sponsors.hardCap }}
-                <input name="impressionCap" type="number" min="1">
-              </label>
-              <label>{{ workbench.sponsors.qualifiedGoal }}
-                <input name="qualifiedImpressionGoal" type="number" min="1">
-              </label>
-              <label data-direct-sponsor-field hidden>{{ workbench.sponsors.billingModel }}
-                <select name="billingModel">
-                  <option value="flat_fee">{{ workbench.sponsors.flatFee }}</option>
-                  <option value="cpm">CPM</option>
-                </select>
-              </label>
-              <label data-direct-sponsor-field hidden>{{ workbench.sponsors.contractAmount }}
-                <input name="contractAmount" type="number" min="0" step="0.01">
-              </label>
-              <label data-direct-sponsor-field hidden>{{ workbench.sponsors.cpm }}
-                <input name="cpm" type="number" min="0" step="0.01">
-              </label>
-            </div>
+            <section
+              class="podcast-admin__field-group"
+              aria-labelledby="podcast-campaign-identity-heading">
+              <h4 id="podcast-campaign-identity-heading">{{ workbench.sponsors.identityGroup }}</h4>
+              <div class="podcast-admin__field-grid">
+                <label>{{ workbench.sponsors.campaignName }}
+                  <input name="name" autocomplete="off" required>
+                </label>
+                <label>{{ workbench.sponsors.type }}
+                  <select name="campaignType">
+                    <option value="house">{{ workbench.sponsors.house }}</option>
+                    <option value="direct">{{ workbench.sponsors.direct }}</option>
+                  </select>
+                </label>
+                <label data-direct-sponsor-field hidden>{{ workbench.sponsors.sponsorName }}
+                  <input name="sponsorName">
+                </label>
+                <label data-direct-sponsor-field hidden>{{ workbench.sponsors.sponsorWebsite }}
+                  <input name="sponsorWebsiteUrl" type="url" inputmode="url">
+                </label>
+              </div>
+            </section>
+            <section
+              class="podcast-admin__field-group"
+              aria-labelledby="podcast-campaign-schedule-heading">
+              <h4 id="podcast-campaign-schedule-heading">{{ workbench.sponsors.scheduleGroup }}</h4>
+              <div class="podcast-admin__field-grid">
+                <label>{{ workbench.sponsors.starts }}
+                  <input name="startsAt" type="datetime-local" required>
+                </label>
+                <label>{{ workbench.sponsors.ends }}
+                  <input name="endsAt" type="datetime-local">
+                </label>
+                <label>{{ workbench.sponsors.episodeTarget }}
+                  <select name="episodeId">
+                    <option value="">{{ workbench.sponsors.allEpisodes }}</option>
+                  </select>
+                </label>
+                <label>{{ workbench.sponsors.position }}
+                  <select name="position">
+                    <option value="">{{ workbench.sponsors.allPositions }}</option>
+                    <option value="pre">{{ workbench.common.preRoll }}</option>
+                    <option value="mid">{{ workbench.common.midRoll }}</option>
+                    <option value="post">{{ workbench.common.postRoll }}</option>
+                  </select>
+                </label>
+              </div>
+            </section>
+            <section
+              class="podcast-admin__field-group"
+              aria-labelledby="podcast-campaign-delivery-heading">
+              <h4 id="podcast-campaign-delivery-heading">{{ workbench.sponsors.deliveryGroup }}</h4>
+              <div class="podcast-admin__field-grid">
+                <label>{{ workbench.sponsors.podcastApp }}
+                  <select name="appName">
+                    <option value="">{{ workbench.sponsors.allApps }}</option>
+                    <option value="apple_podcasts">Apple Podcasts</option>
+                    <option value="spotify">Spotify</option>
+                    <option value="pocket_casts">Pocket Casts</option>
+                    <option value="overcast">Overcast</option>
+                    <option value="podcast_addict">Podcast Addict</option>
+                    <option value="browser">{{ workbench.sponsors.webPlayer }}</option>
+                  </select>
+                </label>
+                <label>{{ workbench.sponsors.device }}
+                  <select name="deviceType">
+                    <option value="">{{ workbench.sponsors.allDevices }}</option>
+                    <option value="mobile">{{ workbench.sponsors.mobile }}</option>
+                    <option value="tablet">{{ workbench.sponsors.tablet }}</option>
+                    <option value="desktop">{{ workbench.sponsors.desktop }}</option>
+                    <option value="smart_speaker">{{ workbench.sponsors.smartSpeaker }}</option>
+                    <option value="unknown">{{ workbench.sponsors.unknown }}</option>
+                  </select>
+                </label>
+                <label>{{ workbench.sponsors.priority }}
+                  <input name="priority" type="number" min="-1000" max="1000" value="0">
+                </label>
+                <label>{{ workbench.sponsors.pacing }}
+                  <select name="pacingStrategy">
+                    <option value="even">{{ workbench.sponsors.even }}</option>
+                    <option value="asap">{{ workbench.sponsors.asap }}</option>
+                    <option value="manual">{{ workbench.sponsors.manual }}</option>
+                  </select>
+                </label>
+                <label>{{ workbench.sponsors.hardCap }}
+                  <input name="impressionCap" type="number" min="1">
+                </label>
+                <label>{{ workbench.sponsors.qualifiedGoal }}
+                  <input name="qualifiedImpressionGoal" type="number" min="1">
+                </label>
+              </div>
+            </section>
+            <section
+              class="podcast-admin__field-group"
+              data-direct-sponsor-field
+              aria-labelledby="podcast-campaign-commercial-heading"
+              hidden>
+              <h4 id="podcast-campaign-commercial-heading">{{ workbench.sponsors.commercialGroup }}</h4>
+              <div class="podcast-admin__field-grid podcast-admin__field-grid--three">
+                <label>{{ workbench.sponsors.billingModel }}
+                  <select name="billingModel">
+                    <option value="flat_fee">{{ workbench.sponsors.flatFee }}</option>
+                    <option value="cpm">CPM</option>
+                  </select>
+                </label>
+                <label>{{ workbench.sponsors.contractAmount }}
+                  <input name="contractAmount" type="number" min="0" step="0.01">
+                </label>
+                <label>{{ workbench.sponsors.cpm }}
+                  <input name="cpm" type="number" min="0" step="0.01">
+                </label>
+              </div>
+            </section>
             <button class="btn btn-outline-light" type="submit">{{ workbench.sponsors.createCampaign }}</button>
             <p class="podcast-admin__status" data-podcast-campaign-status role="status" aria-live="polite"></p>
           </form>
@@ -1587,81 +1627,98 @@ eleventyComputed:
           </div>
           <div class="podcast-admin__cards" data-podcast-show-cards></div>
           <form class="podcast-admin__form podcast-admin__form--settings" data-podcast-show-form hidden>
-            <label>{{ workbench.common.title }}
-              <input id="podcast-show-title" name="title" autocomplete="off" required>
-            </label>
-            <div class="podcast-admin__field-grid">
-              <label>{{ workbench.overview.primaryLanguage }}
-                <select name="language" required>
-                  <option value="es">{{ workbench.common.spanish }}</option>
-                  <option value="en">{{ workbench.common.english }}</option>
-                </select>
+            <section
+              class="podcast-admin__field-group podcast-admin__field-group--compact"
+              aria-labelledby="podcast-show-identity-heading">
+              <h3 id="podcast-show-identity-heading">{{ workbench.overview.identityGroup }}</h3>
+              <label>{{ workbench.common.title }}
+                <input id="podcast-show-title" name="title" autocomplete="off" required>
               </label>
-              <label>{{ workbench.overview.showStatus }}
-                <select name="status" required>
-                  <option value="coming_soon">{{ workbench.overview.statusComingSoon }}</option>
-                  <option value="active">{{ workbench.overview.statusActive }}</option>
-                  <option value="archived">{{ workbench.overview.statusArchived }}</option>
-                </select>
-              </label>
-            </div>
-            <div class="podcast-admin__field-grid">
-              <label>{{ workbench.overview.authorName }}
-                <input name="authorName" maxlength="200">
-              </label>
-              <label>{{ workbench.overview.category }}
-                <input name="category" maxlength="200">
-              </label>
-            </div>
-            <label>{{ workbench.overview.descriptionSpanish }}
-              <textarea id="podcast-show-description" name="description" rows="4"></textarea>
-            </label>
-            <label>{{ workbench.overview.descriptionEnglish }}
-              <textarea id="podcast-show-description-en" name="descriptionEn" rows="4"></textarea>
-            </label>
-            <label>{{ workbench.overview.artworkUrl }}
-              <input
-                name="artworkUrl"
-                type="url"
-                inputmode="url"
-                autocomplete="url"
-                pattern="https://.*"
-                maxlength="2000">
-            </label>
-            <div class="podcast-admin__callout">
-              <p>{{ workbench.overview.permanentDestinationsHelp }}</p>
-              <div class="podcast-admin__field-grid">
-                <label>{{ workbench.overview.canonicalPage }}
-                  <input name="canonicalUrl" type="url" readonly>
+              <div class="podcast-admin__field-grid podcast-admin__field-grid--compact">
+                <label>{{ workbench.overview.primaryLanguage }}
+                  <select name="language" required>
+                    <option value="es">{{ workbench.common.spanish }}</option>
+                    <option value="en">{{ workbench.common.english }}</option>
+                  </select>
                 </label>
-                <label>{{ workbench.overview.rssFeed }}
-                  <input name="feedUrl" type="url" readonly>
+                <label>{{ workbench.overview.showStatus }}
+                  <select name="status" required>
+                    <option value="coming_soon">{{ workbench.overview.statusComingSoon }}</option>
+                    <option value="active">{{ workbench.overview.statusActive }}</option>
+                    <option value="archived">{{ workbench.overview.statusArchived }}</option>
+                  </select>
                 </label>
               </div>
-            </div>
-            <div class="podcast-admin__field-grid">
-              <label>{{ workbench.overview.earlyAccessDays }}
-                <input name="earlyAccessDays" type="number" min="0" max="365">
+              <div class="podcast-admin__field-grid">
+                <label>{{ workbench.overview.authorName }}
+                  <input name="authorName" maxlength="200">
+                </label>
+                <label>{{ workbench.overview.category }}
+                  <input name="category" maxlength="200">
+                </label>
+              </div>
+            </section>
+            <section
+              class="podcast-admin__field-group"
+              aria-labelledby="podcast-show-presentation-heading">
+              <h3 id="podcast-show-presentation-heading">{{ workbench.overview.presentationGroup }}</h3>
+              <label>{{ workbench.overview.descriptionSpanish }}
+                <textarea id="podcast-show-description" name="description" rows="4"></textarea>
               </label>
-              <label>{{ workbench.overview.youtubeChannel }}
+              <label>{{ workbench.overview.descriptionEnglish }}
+                <textarea id="podcast-show-description-en" name="descriptionEn" rows="4"></textarea>
+              </label>
+              <label>{{ workbench.overview.artworkUrl }}
                 <input
-                  name="youtubeChannelUrl"
+                  name="artworkUrl"
                   type="url"
                   inputmode="url"
                   autocomplete="url"
-                  pattern="https://(www\.|m\.)?youtube\.com/(?:@|channel/|c/|user/).+"
+                  pattern="https://.*"
                   maxlength="2000">
               </label>
-            </div>
-            <label class="podcast-admin__checkbox">
-              <input name="premiumEnabled" type="checkbox"> {{ workbench.overview.premiumEnabled }}
-            </label>
-            <label class="podcast-admin__checkbox">
-              <input name="freeMiniEpisodeEnabled" type="checkbox"> {{ workbench.overview.freeMiniEnabled }}
-            </label>
-            <label class="podcast-admin__checkbox">
-              <input name="explicit" type="checkbox"> {{ workbench.overview.explicit }}
-            </label>
+              <div class="podcast-admin__callout">
+                <p>{{ workbench.overview.permanentDestinationsHelp }}</p>
+                <div class="podcast-admin__field-grid">
+                  <label>{{ workbench.overview.canonicalPage }}
+                    <input name="canonicalUrl" type="url" readonly>
+                  </label>
+                  <label>{{ workbench.overview.rssFeed }}
+                    <input name="feedUrl" type="url" readonly>
+                  </label>
+                </div>
+              </div>
+            </section>
+            <section
+              class="podcast-admin__field-group"
+              aria-labelledby="podcast-show-release-defaults-heading">
+              <h3 id="podcast-show-release-defaults-heading">{{ workbench.overview.releaseDefaultsGroup }}</h3>
+              <div class="podcast-admin__field-grid">
+                <label>{{ workbench.overview.earlyAccessDays }}
+                  <input name="earlyAccessDays" type="number" min="0" max="365">
+                </label>
+                <label>{{ workbench.overview.youtubeChannel }}
+                  <input
+                    name="youtubeChannelUrl"
+                    type="url"
+                    inputmode="url"
+                    autocomplete="url"
+                    pattern="https://(www\.|m\.)?youtube\.com/(?:@|channel/|c/|user/).+"
+                    maxlength="2000">
+                </label>
+              </div>
+              <div class="podcast-admin__option-grid">
+                <label class="podcast-admin__checkbox">
+                  <input name="premiumEnabled" type="checkbox"> {{ workbench.overview.premiumEnabled }}
+                </label>
+                <label class="podcast-admin__checkbox">
+                  <input name="freeMiniEpisodeEnabled" type="checkbox"> {{ workbench.overview.freeMiniEnabled }}
+                </label>
+                <label class="podcast-admin__checkbox">
+                  <input name="explicit" type="checkbox"> {{ workbench.overview.explicit }}
+                </label>
+              </div>
+            </section>
             <button class="btn btn-danger" type="submit">{{ workbench.overview.save }}</button>
             <p class="podcast-admin__status" data-podcast-show-status role="status" aria-live="polite"></p>
           </form>

@@ -2,6 +2,12 @@
 
 ## v1.3.0 - Unreleased
 
+- Standardized Podcast Admin form composition around the Pool/Store spacing
+  rhythm: predictable one-column mobile and two-column desktop grids,
+  explicit three-column opt-ins, semantic episode/show/sponsor field groups,
+  compact related controls, full-width narrow actions, and reduced nested
+  padding. The publishing workflow now uses readable three-, two-, and
+  one-column arrangements instead of forcing six dense cards into one row.
 - Reduced the Podcast workbench from ten system-oriented tabs to six
   task-oriented sections. Episodes now opens first and contains production;
   Audience groups analytics with subscribers; Monetization groups sponsors

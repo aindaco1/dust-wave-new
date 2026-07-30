@@ -1245,8 +1245,38 @@ assert.match(
 );
 assert.match(
   adminStyles,
-  /repeat\(auto-fit, minmax\(min\(100%, 16rem\), 1fr\)\)/,
-  'Podcast Admin field grids must collapse responsively without overflow'
+  /\.podcast-admin__field-grid \{[\s\S]+grid-template-columns: minmax\(0, 1fr\);[\s\S]+@media \(min-width: 48rem\) \{[\s\S]+\.podcast-admin__field-grid,[\s\S]+grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/,
+  'Podcast Admin field grids must use one predictable mobile column and at most two default desktop columns'
+);
+assert.match(
+  adminStyles,
+  /@media \(min-width: 64rem\) \{[\s\S]+\.podcast-admin__field-grid--three \{[\s\S]+grid-template-columns: repeat\(3, minmax\(0, 1fr\)\);/,
+  'Explicit compact field groups may use three columns only when enough width is available'
+);
+assert.match(
+  adminStyles,
+  /\.podcast-admin__field-group \{[\s\S]+gap: var\(--dw-admin-grid-row-gap\);[\s\S]+\.podcast-admin__field-group \+ \.podcast-admin__field-group,[\s\S]+border-top:/,
+  'Long Podcast Admin forms must use the shared grouped-field rhythm'
+);
+assert.match(
+  adminTemplate,
+  /workbench\.episodes\.copyGroup[\s\S]+workbench\.episodes\.releaseGroup[\s\S]+workbench\.sponsors\.identityGroup[\s\S]+workbench\.sponsors\.commercialGroup[\s\S]+workbench\.overview\.identityGroup[\s\S]+workbench\.overview\.releaseDefaultsGroup/,
+  'Episode, sponsor, and show forms must expose clear semantic field groups'
+);
+assert.match(
+  adminStyles,
+  /\.dw-admin-workflow__list \{[\s\S]+grid-template-columns: repeat\(3, minmax\(0, 1fr\)\);[\s\S]+@media \(max-width: 40rem\) \{[\s\S]+\.dw-admin-workflow__list \{[\s\S]+grid-template-columns: minmax\(0, 1fr\);/,
+  'The episode workflow must preserve readable three-, two-, and one-column states'
+);
+assert.match(
+  adminStyles,
+  /\.podcast-admin__option-grid \{[\s\S]+repeat\(auto-fit, minmax\(min\(100%, 15rem\), 1fr\)\)/,
+  'Related show policy toggles must share one responsive option-grid primitive'
+);
+assert.match(
+  adminStyles,
+  /@media \(max-width: 30rem\) \{[\s\S]+\.podcast-admin__progressive-body \{[\s\S]+var\(--dw-admin-space-xs\)[\s\S]+\.podcast-admin__progressive-body \.podcast-admin__form \{[\s\S]+padding: var\(--dw-admin-space-sm\);/,
+  'Nested technical forms must recover usable field width on small screens'
 );
 assert.match(
   adminStyles,
