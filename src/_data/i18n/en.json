@@ -57,8 +57,7 @@
     },
     "news": {
       "title": "News",
-      "description": "News from Dust Wave.",
-      "authoredNotice": "News entries remain in the language in which they were published."
+      "description": "News from Dust Wave."
     },
     "about": {
       "title": "What We Believe In",

@@ -19,7 +19,6 @@ eleventyComputed:
       <h1>{{title}}</h1>
     </div>
     <div class="col-11 col-lg-10 col-xl-8">
-      <p class="text-center">{{ i18n | t(language, "pages.news.authoredNotice") }}</p>
       <div class="row border-bottom">
         {% include "snippets/loop-news.njk" %}
       </div>

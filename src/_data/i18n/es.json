@@ -57,8 +57,7 @@
     },
     "news": {
       "title": "Noticias",
-      "description": "Noticias de Dust Wave.",
-      "authoredNotice": "Las noticias se mantienen en el idioma en el que fueron publicadas."
+      "description": "Noticias de Dust Wave."
     },
     "about": {
       "title": "En qué creemos",

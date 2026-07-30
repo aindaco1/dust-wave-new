@@ -172,7 +172,13 @@ assert.match(sharePanel, /normalizeMastodonInstance/);
 assert.match(sharePanel, /parsed\.username \|\| parsed\.password/);
 
 const newsIndex = await readFile(path.join(sourceRoot, "news.njk"), "utf8");
-assert.match(newsIndex, /pages\.news\.authoredNotice/);
+assert.doesNotMatch(
+  newsIndex,
+  /pages\.news\.authoredNotice/,
+  "The News index must not display an authored-language notice"
+);
+assert.equal(english.pages.news.authoredNotice, undefined);
+assert.equal(spanish.pages.news.authoredNotice, undefined);
 assert.doesNotMatch(
   newsIndex,
   /\/es\/news\/.+\{\{/,
