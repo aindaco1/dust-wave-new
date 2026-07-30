@@ -27,12 +27,32 @@ for (const name of ["instagram", "youtube", "tiktok", "bluesky", "mastodon"]) {
 assert.match(styles, /grid-template-columns:\s*repeat\(4,\s*minmax\(0,\s*1fr\)\)/);
 assert.match(
   styles,
-  /@media only screen and \(max-width:\s*640px\)[\s\S]*grid-template-areas:\s*"copyright social newsletter"\s*"language language language";[\s\S]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto\s+minmax\(0,\s*1fr\)/
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*grid-template-areas:\s*"social social social"\s*"copyright language newsletter";[\s\S]*grid-template-columns:\s*max-content\s+minmax\(0,\s*1fr\)\s+max-content;[\s\S]*margin-inline:\s*auto;[\s\S]*max-width:\s*30\.9375rem;[\s\S]*width:\s*82\.5% !important;/
 );
 assert.match(styles, /\.footer-social\s*\{[\s\S]*grid-area:\s*social;[\s\S]*justify-self:\s*center;/);
+assert.match(styles, /\.footer-sep\s*\{[\s\S]*display:\s*none;/);
+assert.match(
+  styles,
+  /\.footer-social a\s*\{[\s\S]*min-height:\s*2\.75rem;[\s\S]*min-width:\s*2\.75rem;/
+);
+assert.match(
+  styles,
+  /\.site-footer__social-icon\s*\{[\s\S]*height:\s*1\.25rem;[\s\S]*width:\s*1\.25rem;/
+);
 assert.match(styles, /\.site-footer__copyright\s*\{[\s\S]*grid-area:\s*copyright;[\s\S]*white-space:\s*nowrap;/);
-assert.match(styles, /\.site-footer__language\s*\{[\s\S]*grid-area:\s*language;[\s\S]*justify-content:\s*center;/);
-assert.match(styles, /\.site-footer__lang-switcher\s*\{[\s\S]*justify-content:\s*center;/);
+assert.match(styles, /\.site-footer__language\s*\{[\s\S]*grid-area:\s*language;[\s\S]*width:\s*100%;/);
+assert.match(
+  styles,
+  /\.site-footer__lang-switcher\s*\{[\s\S]*display:\s*grid;[\s\S]*gap:\s*\.25rem;[\s\S]*grid-template-columns:\s*repeat\(2,\s*max-content\);[\s\S]*justify-content:\s*center;[\s\S]*width:\s*100%;/
+);
+assert.match(
+  styles,
+  /@media only screen and \(max-width:\s*400px\)[\s\S]*#footer-items-column\s*\{[\s\S]*font-size:\s*\.675rem;/
+);
+assert.match(
+  styles,
+  /@media only screen and \(max-width:\s*330px\)[\s\S]*#footer-items-column\s*\{[\s\S]*font-size:\s*\.625rem;/
+);
 assert.match(styles, /\.site-footer__language\s*\{[\s\S]*justify-content:\s*flex-end/);
 assert.match(
   styles,
