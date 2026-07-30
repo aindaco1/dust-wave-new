@@ -190,6 +190,7 @@ const scriptBudgets = new Map([
   ["src/js/podcast-admin-publish-workflow.js", 8_000],
   ["src/js/podcast-admin-publish-workflow-core.js", 5_000],
   ["src/js/podcast-admin-progressive-sections.js", 5_000],
+  ["src/js/podcast-admin-workspaces.js", 2_500],
   ["src/js/podcast-admin-tool-disclosure.js", 3_000],
   ["src/js/podcast-admin-publication.js", 5_000],
   ["src/js/podcast-admin-workflow-navigation.js", 3_000],
@@ -344,6 +345,11 @@ assert.match(
   tracer,
   /ADMIN_TABS[\s\S]+dustwave-podcast-admin-tab[\s\S]+observed\?\.activeTab !== adminTab/,
   "performance traces must support and verify a bounded admin-tab fixture"
+);
+assert.match(
+  tracer,
+  /ADMIN_GROUPS[\s\S]+data-podcast-workspace-group[\s\S]+activeGroups[\s\S]+adminGroup/,
+  "performance traces must open and verify contextual admin workspaces"
 );
 assert.match(
   tracer,

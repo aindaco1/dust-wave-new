@@ -2,6 +2,11 @@
 
 ## v1.3.0 - Unreleased
 
+- Reduced the Podcast workbench from ten system-oriented tabs to six
+  task-oriented sections. Episodes now opens first and contains production;
+  Audience groups analytics with subscribers; Monetization groups sponsors
+  with premium evidence; and show overview, configuration, and migration live
+  together under Settings. Contextual workspaces load only when opened.
 - Reframed episode publishing as one bilingual, six-step workflow across
   details, media, transcript and chapters, monetization, review, and publish.
   The workflow derives its state from the existing immutable readiness

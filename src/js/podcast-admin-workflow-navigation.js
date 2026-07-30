@@ -5,7 +5,11 @@ function selectEpisode(control, episodeId) {
 }
 
 function reveal(target, document) {
-  target?.closest?.("details")?.setAttribute("open", "");
+  let disclosure = target?.closest?.("details") || null;
+  while (disclosure) {
+    disclosure.setAttribute("open", "");
+    disclosure = disclosure.parentElement?.closest?.("details") || null;
+  }
   queueMicrotask(() => {
     const reduceMotion = document.defaultView
       ?.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
@@ -63,7 +67,7 @@ export function createEpisodeWorkflowNavigator({
       return;
     }
 
-    tabs.select("production");
+    tabs.select("episodes");
     if (step === "media") {
       selectEpisode(audioQcEpisodeSelect, episodeId);
       selectEpisode(audioMasterEpisodeSelect, episodeId);

@@ -22,6 +22,10 @@ export function mountDeliveryAudio({
   const results = root.querySelector("[data-podcast-delivery-audio-results]");
   const status = root.querySelector("[data-podcast-delivery-audio-status]");
   const productionPanel = root.querySelector("#podcast-panel-production");
+  const episodePanel = root.querySelector("#podcast-panel-episodes");
+  const productionGroup = productionPanel?.closest(
+    "[data-podcast-workspace-group]"
+  );
   let requestId = 0;
   let state = null;
 
@@ -51,7 +55,12 @@ export function mountDeliveryAudio({
       setStatus(status, "");
       return;
     }
-    if (productionPanel && !productionPanel.hidden) {
+    if (
+      productionPanel
+      && productionGroup?.open
+      && episodePanel
+      && !episodePanel.hidden
+    ) {
       refresh();
     } else {
       summary.textContent = text("deliveryAudioChooseEpisode");

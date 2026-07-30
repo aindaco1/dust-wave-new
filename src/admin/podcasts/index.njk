@@ -58,56 +58,16 @@ eleventyComputed:
 
     <div class="podcast-admin__tabs" data-podcast-tabs>
       <div class="podcast-admin__tab-list" role="tablist" aria-label="{{ i18n | t(language, 'podcast.admin.tabs.label') }}">
-        <button id="podcast-tab-overview" type="button" role="tab" data-tab="overview" aria-controls="podcast-panel-overview">{{ i18n | t(language, "podcast.admin.tabs.overview") }}</button>
         <button id="podcast-tab-episodes" type="button" role="tab" data-tab="episodes" aria-controls="podcast-panel-episodes">{{ i18n | t(language, "podcast.admin.tabs.episodes") }}</button>
-        <button id="podcast-tab-production" type="button" role="tab" data-tab="production" aria-controls="podcast-panel-production">{{ i18n | t(language, "podcast.admin.tabs.production") }}</button>
         <button id="podcast-tab-distribution" type="button" role="tab" data-tab="distribution" aria-controls="podcast-panel-distribution">{{ i18n | t(language, "podcast.admin.tabs.distribution") }}</button>
         <button id="podcast-tab-marketing" type="button" role="tab" data-tab="marketing" aria-controls="podcast-panel-marketing">{{ i18n | t(language, "podcast.admin.tabs.marketing") }}</button>
-        <button id="podcast-tab-sponsors" type="button" role="tab" data-tab="sponsors" aria-controls="podcast-panel-sponsors">{{ i18n | t(language, "podcast.admin.tabs.sponsors") }}</button>
-        <button id="podcast-tab-analytics" type="button" role="tab" data-tab="analytics" aria-controls="podcast-panel-analytics">{{ i18n | t(language, "podcast.admin.tabs.analytics") }}</button>
-        <button id="podcast-tab-subscribers" type="button" role="tab" data-tab="subscribers" aria-controls="podcast-panel-subscribers">{{ i18n | t(language, "podcast.admin.tabs.subscribers") }}</button>
-        <button id="podcast-tab-billing" type="button" role="tab" data-tab="billing" aria-controls="podcast-panel-billing">{{ i18n | t(language, "podcast.admin.tabs.premium") }}</button>
+        <button id="podcast-tab-audience" type="button" role="tab" data-tab="audience" aria-controls="podcast-panel-audience">{{ i18n | t(language, "podcast.admin.tabs.audience") }}</button>
+        <button id="podcast-tab-monetization" type="button" role="tab" data-tab="monetization" aria-controls="podcast-panel-monetization">{{ i18n | t(language, "podcast.admin.tabs.monetization") }}</button>
         <button id="podcast-tab-settings" type="button" role="tab" data-tab="settings" aria-controls="podcast-panel-settings">{{ i18n | t(language, "podcast.admin.tabs.settings") }}</button>
       </div>
 
       <div id="podcast-admin-content">
-        <section id="podcast-panel-overview" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-overview">
-          <div class="podcast-admin__panel-heading">
-            <div>
-              <h2>{{ workbench.overview.shows }}</h2>
-              <p>{{ workbench.overview.intro }}</p>
-            </div>
-            <button class="btn btn-outline-light" type="button" data-podcast-refresh>{{ workbench.common.refresh }}</button>
-          </div>
-          <div class="podcast-admin__cards" data-podcast-show-cards></div>
-
-          <details class="podcast-admin__advanced-tools">
-            <summary>{{ workbench.overview.advancedTools }}</summary>
-            <form class="podcast-admin__form podcast-admin__form--settings" data-podcast-rss-import-form hidden>
-              <h3>{{ workbench.overview.importHeading }}</h3>
-              <p>{{ workbench.overview.importIntro }}</p>
-              <label>{{ workbench.overview.importFeedUrl }}
-                <input name="feedUrl" type="url" inputmode="url" autocomplete="url" required>
-              </label>
-              <label class="podcast-admin__checkbox">
-                <input name="ownershipConfirmed" type="checkbox" required>
-                {{ workbench.overview.importOwnership }}
-              </label>
-              <p class="podcast-admin__callout">{{ workbench.overview.importPreviewOnly }}</p>
-              <button class="btn btn-outline-light" type="submit">{{ workbench.overview.previewImport }}</button>
-              <p class="podcast-admin__status" data-podcast-rss-import-status role="status" aria-live="polite"></p>
-              <div class="podcast-admin__readiness-groups" data-podcast-rss-import-preview aria-live="polite"></div>
-            </form>
-            <section class="podcast-admin__form podcast-admin__form--settings" data-podcast-rss-import-plan-section hidden>
-              <h3>{{ workbench.overview.importPlansHeading }}</h3>
-              <p>{{ workbench.overview.importPlansIntro }}</p>
-              <p class="podcast-admin__callout">{{ workbench.overview.importPlansZeroCopy }}</p>
-              <div class="podcast-admin__readiness-list" data-podcast-rss-import-plans aria-live="polite"></div>
-            </section>
-          </details>
-        </section>
-
-        <section id="podcast-panel-episodes" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-episodes" hidden>
+        <section id="podcast-panel-episodes" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-episodes">
           <section
             class="podcast-admin__form podcast-admin__publish-workflow"
             data-podcast-publish-workflow
@@ -292,9 +252,19 @@ eleventyComputed:
           <div data-podcast-ad-plan-result aria-live="polite"></div>
 
           <div class="podcast-admin__episode-list" data-podcast-episode-list></div>
-        </section>
 
-        <section id="podcast-panel-production" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-production" hidden>
+          <details
+            class="podcast-admin__progressive-section podcast-admin__workspace-group"
+            data-podcast-workspace-group="production">
+            <summary>
+              <h2>{{ workbench.navigation.production }}</h2>
+              <span class="podcast-admin__progressive-state" data-podcast-workspace-state aria-hidden="true">+</span>
+            </summary>
+            <div class="podcast-admin__progressive-body">
+        <section
+          id="podcast-panel-production"
+          class="podcast-admin__workspace-content"
+          aria-label="{{ workbench.navigation.production }}">
           <div class="podcast-admin__panel-heading">
             <div>
               <h2>{{ workbench.production.audioQcHeading }}</h2>
@@ -933,6 +903,9 @@ eleventyComputed:
           </form>
           <div class="podcast-admin__clip-list" data-podcast-clip-list></div>
         </section>
+            </div>
+          </details>
+        </section>
 
         <section id="podcast-panel-distribution" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-distribution" hidden>
           <div class="podcast-admin__panel-heading">
@@ -1255,10 +1228,25 @@ eleventyComputed:
           </section>
         </section>
 
-        <section id="podcast-panel-sponsors" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-sponsors" hidden>
+        <section id="podcast-panel-monetization" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-monetization" hidden>
           <div class="podcast-admin__panel-heading">
             <div>
-              <h2>{{ workbench.sponsors.heading }}</h2>
+              <h2>{{ workbench.navigation.monetization }}</h2>
+              <p>{{ workbench.navigation.monetizationIntro }}</p>
+            </div>
+          </div>
+          <details
+            class="podcast-admin__progressive-section podcast-admin__workspace-group"
+            data-podcast-workspace-group="sponsors"
+            open>
+            <summary>
+              <h3 id="podcast-sponsors-heading">{{ i18n | t(language, "podcast.admin.tabs.sponsors") }}</h3>
+              <span class="podcast-admin__progressive-state" data-podcast-workspace-state aria-hidden="true">−</span>
+            </summary>
+            <div class="podcast-admin__progressive-body">
+        <section id="podcast-panel-sponsors" class="podcast-admin__workspace-content" aria-labelledby="podcast-sponsors-heading">
+          <div class="podcast-admin__panel-heading">
+            <div>
               <p>{{ workbench.sponsors.intro }}</p>
             </div>
             <p class="podcast-admin__pill">{{ workbench.sponsors.previewOnly }}</p>
@@ -1428,11 +1416,53 @@ eleventyComputed:
           </form>
           <div data-podcast-sponsor-preview-result aria-live="polite"></div>
         </section>
+            </div>
+          </details>
 
-        <section id="podcast-panel-analytics" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-analytics" hidden>
+          <details
+            class="podcast-admin__progressive-section podcast-admin__workspace-group"
+            data-podcast-workspace-group="billing">
+            <summary>
+              <h3 id="podcast-billing-heading">{{ i18n | t(language, "podcast.admin.tabs.premium") }}</h3>
+              <span class="podcast-admin__progressive-state" data-podcast-workspace-state aria-hidden="true">+</span>
+            </summary>
+            <div class="podcast-admin__progressive-body">
+              <section id="podcast-panel-billing" class="podcast-admin__workspace-content" aria-labelledby="podcast-billing-heading">
+                <div class="podcast-admin__panel-heading">
+                  <div>
+                    <p>{{ i18n | t(language, "podcast.admin.billing.intro") }}</p>
+                  </div>
+                  <div class="podcast-admin__billing-actions">
+                    <button class="btn btn-outline-light" type="button" data-podcast-billing-refresh>{{ i18n | t(language, "podcast.admin.billing.refresh") }}</button>
+                    <button class="btn btn-outline-light" type="button" data-podcast-billing-export>{{ i18n | t(language, "podcast.admin.billing.export") }}</button>
+                  </div>
+                </div>
+                <p class="podcast-admin__status" data-podcast-billing-status role="status" aria-live="polite"></p>
+                <div data-podcast-billing></div>
+              </section>
+            </div>
+          </details>
+        </section>
+
+        <section id="podcast-panel-audience" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-audience" hidden>
           <div class="podcast-admin__panel-heading">
             <div>
-              <h2>{{ workbench.analytics.heading }}</h2>
+              <h2>{{ workbench.navigation.audience }}</h2>
+              <p>{{ workbench.navigation.audienceIntro }}</p>
+            </div>
+          </div>
+          <details
+            class="podcast-admin__progressive-section podcast-admin__workspace-group"
+            data-podcast-workspace-group="analytics"
+            open>
+            <summary>
+              <h3 id="podcast-analytics-heading">{{ i18n | t(language, "podcast.admin.tabs.analytics") }}</h3>
+              <span class="podcast-admin__progressive-state" data-podcast-workspace-state aria-hidden="true">−</span>
+            </summary>
+            <div class="podcast-admin__progressive-body">
+        <section id="podcast-panel-analytics" class="podcast-admin__workspace-content" aria-labelledby="podcast-analytics-heading">
+          <div class="podcast-admin__panel-heading">
+            <div>
               <p>{{ workbench.analytics.introBefore }} <strong data-podcast-reconciliation-show>{{ workbench.analytics.thisShow }}</strong>.</p>
             </div>
             <div class="podcast-admin__analytics-actions">
@@ -1491,11 +1521,20 @@ eleventyComputed:
           <p class="podcast-admin__status" data-podcast-reconciliation-status role="status" aria-live="polite"></p>
           <div data-podcast-reconciliation></div>
         </section>
+            </div>
+          </details>
 
-        <section id="podcast-panel-subscribers" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-subscribers" hidden>
+          <details
+            class="podcast-admin__progressive-section podcast-admin__workspace-group"
+            data-podcast-workspace-group="subscribers">
+            <summary>
+              <h3 id="podcast-subscribers-heading">{{ i18n | t(language, "podcast.admin.tabs.subscribers") }}</h3>
+              <span class="podcast-admin__progressive-state" data-podcast-workspace-state aria-hidden="true">+</span>
+            </summary>
+            <div class="podcast-admin__progressive-body">
+        <section id="podcast-panel-subscribers" class="podcast-admin__workspace-content" aria-labelledby="podcast-subscribers-heading">
           <div class="podcast-admin__panel-heading">
             <div>
-              <h2>{{ i18n | t(language, "podcast.admin.subscribers.heading") }}</h2>
               <p>{{ i18n | t(language, "podcast.admin.subscribers.intro") }}</p>
             </div>
             <div class="podcast-admin__billing-actions">
@@ -1531,20 +1570,8 @@ eleventyComputed:
           <div data-podcast-subscribers></div>
           <button class="btn btn-outline-light podcast-admin__load-more" type="button" data-podcast-subscribers-more hidden>{{ i18n | t(language, "podcast.admin.subscribers.more") }}</button>
         </section>
-
-        <section id="podcast-panel-billing" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-billing" hidden>
-          <div class="podcast-admin__panel-heading">
-            <div>
-              <h2>{{ i18n | t(language, "podcast.admin.billing.heading") }}</h2>
-              <p>{{ i18n | t(language, "podcast.admin.billing.intro") }}</p>
             </div>
-            <div class="podcast-admin__billing-actions">
-              <button class="btn btn-outline-light" type="button" data-podcast-billing-refresh>{{ i18n | t(language, "podcast.admin.billing.refresh") }}</button>
-              <button class="btn btn-outline-light" type="button" data-podcast-billing-export>{{ i18n | t(language, "podcast.admin.billing.export") }}</button>
-            </div>
-          </div>
-          <p class="podcast-admin__status" data-podcast-billing-status role="status" aria-live="polite"></p>
-          <div data-podcast-billing></div>
+          </details>
         </section>
 
         <section id="podcast-panel-settings" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-settings" hidden>
@@ -1553,8 +1580,12 @@ eleventyComputed:
               <h2>{{ workbench.overview.settings }}</h2>
               <p>{{ workbench.overview.settingsIntro }}</p>
             </div>
-            <select name="showId" data-podcast-show-select aria-label="{{ workbench.common.show }}"></select>
+            <div class="podcast-admin__heading-actions">
+              <select name="showId" data-podcast-show-select aria-label="{{ workbench.common.show }}"></select>
+              <button class="btn btn-outline-light" type="button" data-podcast-refresh>{{ workbench.common.refresh }}</button>
+            </div>
           </div>
+          <div class="podcast-admin__cards" data-podcast-show-cards></div>
           <form class="podcast-admin__form podcast-admin__form--settings" data-podcast-show-form hidden>
             <label>{{ workbench.common.title }}
               <input id="podcast-show-title" name="title" autocomplete="off" required>
@@ -1736,6 +1767,30 @@ eleventyComputed:
               </button>
             </form>
           </section>
+          <details class="podcast-admin__advanced-tools">
+            <summary>{{ workbench.overview.advancedTools }}</summary>
+            <form class="podcast-admin__form podcast-admin__form--settings" data-podcast-rss-import-form hidden>
+              <h3>{{ workbench.overview.importHeading }}</h3>
+              <p>{{ workbench.overview.importIntro }}</p>
+              <label>{{ workbench.overview.importFeedUrl }}
+                <input name="feedUrl" type="url" inputmode="url" autocomplete="url" required>
+              </label>
+              <label class="podcast-admin__checkbox">
+                <input name="ownershipConfirmed" type="checkbox" required>
+                {{ workbench.overview.importOwnership }}
+              </label>
+              <p class="podcast-admin__callout">{{ workbench.overview.importPreviewOnly }}</p>
+              <button class="btn btn-outline-light" type="submit">{{ workbench.overview.previewImport }}</button>
+              <p class="podcast-admin__status" data-podcast-rss-import-status role="status" aria-live="polite"></p>
+              <div class="podcast-admin__readiness-groups" data-podcast-rss-import-preview aria-live="polite"></div>
+            </form>
+            <section class="podcast-admin__form podcast-admin__form--settings" data-podcast-rss-import-plan-section hidden>
+              <h3>{{ workbench.overview.importPlansHeading }}</h3>
+              <p>{{ workbench.overview.importPlansIntro }}</p>
+              <p class="podcast-admin__callout">{{ workbench.overview.importPlansZeroCopy }}</p>
+              <div class="podcast-admin__readiness-list" data-podcast-rss-import-plans aria-live="polite"></div>
+            </section>
+          </details>
         </section>
       </div>
     </div>

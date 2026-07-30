@@ -26,6 +26,10 @@ const adminScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin.js'),
   'utf8'
 );
+const workspaceScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-workspaces.js'),
+  'utf8'
+);
 const showSettingsScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-show-settings.js'),
   'utf8'
@@ -201,6 +205,42 @@ const englishWorkbenchText = JSON.stringify(englishWorkbench);
 const englishRuntime = englishI18n.runtime.admin;
 const spanishRuntime = spanishI18n.runtime.admin;
 const englishRuntimeText = JSON.stringify(englishRuntime);
+const topLevelAdminTabs = Array.from(
+  adminTemplate.matchAll(/role="tab"\s+data-tab="([^"]+)"/g),
+  (match) => match[1]
+);
+assert.deepEqual(
+  topLevelAdminTabs,
+  [
+    'episodes',
+    'distribution',
+    'marketing',
+    'audience',
+    'monetization',
+    'settings'
+  ],
+  'Podcast Admin must expose six task-oriented top-level sections'
+);
+assert.doesNotMatch(
+  adminTemplate,
+  /podcast-tab-(?:overview|production|sponsors|analytics|subscribers|billing)/,
+  'System-oriented tools must not return as top-level Podcast Admin tabs'
+);
+assert.match(
+  adminTemplate,
+  /data-podcast-workspace-group="production"/,
+  'Production tools must remain inside the episode-centered workflow'
+);
+assert.match(
+  adminTemplate,
+  /id="podcast-panel-audience"[\s\S]+data-podcast-workspace-group="analytics"[\s\S]+data-podcast-workspace-group="subscribers"/,
+  'Audience must group analytics and subscribers contextually'
+);
+assert.match(
+  adminTemplate,
+  /id="podcast-panel-monetization"[\s\S]+data-podcast-workspace-group="sponsors"[\s\S]+data-podcast-workspace-group="billing"/,
+  'Monetization must group sponsors and premium evidence contextually'
+);
 const controlledYoutubeErrorCodes = [
   'youtube_controlled_test_not_configured',
   'youtube_not_configured',
@@ -950,7 +990,7 @@ assert.match(adminTemplate, /data-podcast-analytics-apps/);
 assert.match(analyticsScript, /\/analytics\/overview\?days=/);
 assert.match(analyticsScript, /\/analytics\/overview\.csv\?days=/);
 assert.doesNotMatch(analyticsScript, /innerHTML/);
-assert.match(adminTemplate, /data-tab="subscribers"/);
+assert.match(adminTemplate, /data-podcast-workspace-group="subscribers"/);
 assert.match(adminTemplate, /data-podcast-subscribers-filters/);
 assert.match(adminTemplate, /data-podcast-subscribers-export/);
 assert.match(adminTemplate, /data-podcast-subscribers-more/);
@@ -974,7 +1014,7 @@ assert.match(
   englishWorkbench.distribution.filterHelp,
   /exact RSS, News, YouTube, and per-directory states/
 );
-assert.match(adminTemplate, /data-tab="production"/);
+assert.match(adminTemplate, /data-podcast-workspace-group="production"/);
 assert.match(adminTemplate, /data-podcast-audio-qc/);
 assert.match(adminTemplate, /data-podcast-audio-qc-queue/);
 assert.match(adminTemplate, /data-podcast-audio-qc-policy-form/);
@@ -1119,8 +1159,8 @@ assert.match(adminTemplate, /data-podcast-announcement-approve/);
 assert.match(adminTemplate, /data-podcast-announcement-history/);
 assert.match(englishWorkbenchText, /Private evidence only/);
 assert.match(adminTemplate, /data-tab="marketing"/);
-assert.match(adminTemplate, /data-tab="sponsors"/);
-assert.match(adminTemplate, /data-tab="analytics"/);
+assert.match(adminTemplate, /data-podcast-workspace-group="sponsors"/);
+assert.match(adminTemplate, /data-podcast-workspace-group="analytics"/);
 assert.match(adminTemplate, /data-podcast-reconciliation/);
 assert.match(englishWorkbenchText, /Qualified sponsor deliveries/);
 assert.match(adminTemplate, /data-podcast-sponsor-preview-form/);
@@ -1548,8 +1588,12 @@ assert.doesNotMatch(
   /podcast-tab-production/
 );
 assert.match(
+  workspaceScript,
+  /episodes:\s*\["production"\][\s\S]+audience:\s*\["analytics", "subscribers"\][\s\S]+monetization:\s*\["sponsors", "billing"\]/
+);
+assert.match(
   adminScript,
-  /if \(tab === "production"\) \{[\s\S]*youtubeAudioRenditions\.refresh\(\)/
+  /production\(\) \{[\s\S]*youtubeAudioRenditions\.refresh\(\)/
 );
 assert.match(
   adminMockApi,

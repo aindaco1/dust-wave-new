@@ -27,6 +27,10 @@ export function mountYouTubeAudioRenditions({
     "[data-podcast-youtube-audio-status]"
   );
   const productionPanel = root.querySelector("#podcast-panel-production");
+  const episodePanel = root.querySelector("#podcast-panel-episodes");
+  const productionGroup = productionPanel?.closest(
+    "[data-podcast-workspace-group]"
+  );
   let requestId = 0;
   let state = null;
 
@@ -55,7 +59,12 @@ export function mountYouTubeAudioRenditions({
       setStatus(status, "");
       return;
     }
-    if (productionPanel && !productionPanel.hidden) {
+    if (
+      productionPanel
+      && productionGroup?.open
+      && episodePanel
+      && !episodePanel.hidden
+    ) {
       refresh();
     } else {
       summary.textContent = text("youtubeAudioChooseEpisode");

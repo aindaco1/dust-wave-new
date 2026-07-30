@@ -303,8 +303,9 @@ npm run perf:podcast-admin:trace -- \
   --url https://dust-wave-website-staging.pages.dev/es/admin/podcasts/
 ```
 
-Use `--admin-tab production` with the repository mock API to capture the
-transcript workbench directly. For a bounded large-transcript regression,
+Use `--admin-tab episodes --admin-group production` with the repository mock
+API to capture the transcript workbench directly. For a bounded
+large-transcript regression,
 build once and run the next two server commands in separate terminals:
 
 ```bash
@@ -316,7 +317,8 @@ python3 -m http.server 4173 --bind 127.0.0.1 --directory dev
 PODCAST_ADMIN_MOCK_TRANSCRIPT_CUES=1300 npm run qa:podcast-admin:mock-api
 npm run perf:podcast-admin:trace -- \
   --url http://127.0.0.1:4173/admin/podcasts/ \
-  --admin-tab production
+  --admin-tab episodes \
+  --admin-group production
 ```
 
 Use `--admin-tab settings` to measure the bilingual show form and the

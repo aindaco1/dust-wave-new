@@ -199,6 +199,8 @@
         "production": "Producción",
         "distribution": "Distribución",
         "marketing": "Marketing",
+        "audience": "Audiencia",
+        "monetization": "Monetización",
         "sponsors": "Patrocinadores",
         "analytics": "Analítica",
         "subscribers": "Suscriptores",
@@ -206,6 +208,13 @@
         "settings": "Configuración"
       },
       "workbench": {
+        "navigation": {
+          "production": "Herramientas de producción",
+          "audience": "Audiencia",
+          "audienceIntro": "Comprende la escucha y administra a las personas con acceso premium.",
+          "monetization": "Monetización",
+          "monetizationIntro": "Administra patrocinadores e ingresos por suscripción fuera del proceso de publicación de episodios."
+        },
         "common": {
           "refresh": "Actualizar",
           "show": "Programa",

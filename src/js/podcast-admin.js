@@ -26,6 +26,9 @@ import { renderEpisodeCatalog, renderShowCatalog } from "./podcast-admin-catalog
 import { mountEpisodePublishWorkflow } from "./podcast-admin-publish-workflow.js";
 import { mountProgressiveSections } from "./podcast-admin-progressive-sections.js";
 import {
+  mountPodcastAdminWorkspaces
+} from "./podcast-admin-workspaces.js";
+import {
   mountPodcastAdminToolDisclosure
 } from "./podcast-admin-tool-disclosure.js";
 import { createEpisodePublisher } from "./podcast-admin-publication.js";
@@ -735,6 +738,26 @@ function startPodcastAdmin(root) {
       await loadDistribution(episodeId);
     }
   });
+  const workspaceGroups = mountPodcastAdminWorkspaces({
+    root,
+    loaders: {
+      production() {
+        loadAudioQcPolicy();
+        loadAudioQc();
+        loadAudioMaster();
+        loadTranscript();
+        loadAlignmentBenchmarks();
+        loadChapters();
+        loadProductionReviews();
+        deliveryAudio.refresh();
+        youtubeAudioRenditions.refresh();
+      },
+      analytics: () => podcastAnalytics.load(),
+      subscribers: () => loadSubscribers({ reset: true }),
+      sponsors: loadCampaigns,
+      billing: loadBilling
+    }
+  });
   const adminTabs = mountAccessibleTabs(
     root.querySelector("[data-podcast-tabs]"),
     {
@@ -743,19 +766,9 @@ function startPodcastAdmin(root) {
       },
       storageKey: "dustwave-podcast-admin-tab",
       onSelect(tab) {
-        if (tab !== "production") pauseClipMediaPlayers(clipList);
+        if (tab !== "episodes") pauseClipMediaPlayers(clipList);
         if (tab !== "marketing") pauseClipMediaPlayers(clipLibrary);
-        if (tab === "production") {
-          loadAudioQcPolicy();
-          loadAudioQc();
-          loadAudioMaster();
-          loadTranscript();
-          loadAlignmentBenchmarks();
-          loadChapters();
-          loadProductionReviews();
-          deliveryAudio.refresh();
-          youtubeAudioRenditions.refresh();
-        }
+        workspaceGroups.loadTab(tab);
         if (tab === "distribution") loadDistribution();
         if (tab === "marketing") {
           updateMarketingTools();
@@ -763,10 +776,6 @@ function startPodcastAdmin(root) {
           loadAnnouncementHistory();
           savedMarketingLinks.load({ reset: true });
         }
-        if (tab === "subscribers") loadSubscribers({ reset: true });
-        if (tab === "billing") loadBilling();
-        if (tab === "sponsors") loadCampaigns();
-        if (tab === "analytics") podcastAnalytics.load();
       }
     }
   );
@@ -883,9 +892,14 @@ function startPodcastAdmin(root) {
           savedMarketingLinks.load({ reset: true })
         ]);
       }
-      const analyticsPanel = root.querySelector("#podcast-panel-analytics");
-      if (analyticsPanel && !analyticsPanel.hidden) {
-        await podcastAnalytics.load();
+      const audiencePanel = root.querySelector("#podcast-panel-audience");
+      if (audiencePanel && !audiencePanel.hidden) {
+        if (workspaceGroups.isOpen("analytics")) {
+          await podcastAnalytics.load();
+        }
+        if (workspaceGroups.isOpen("subscribers")) {
+          await loadSubscribers({ reset: true });
+        }
       }
       const distributionPanel = root.querySelector(
         "#podcast-panel-distribution"
@@ -893,15 +907,15 @@ function startPodcastAdmin(root) {
       if (distributionPanel && !distributionPanel.hidden) {
         await loadDistribution();
       }
-      const billingPanel = root.querySelector("#podcast-panel-billing");
-      if (billingPanel && !billingPanel.hidden) {
-        await loadBilling();
-      }
-      const subscribersPanel = root.querySelector(
-        "#podcast-panel-subscribers"
+      const monetizationPanel = root.querySelector(
+        "#podcast-panel-monetization"
       );
-      if (subscribersPanel && !subscribersPanel.hidden) {
-        await loadSubscribers({ reset: true });
+      if (
+        monetizationPanel
+        && !monetizationPanel.hidden
+        && workspaceGroups.isOpen("billing")
+      ) {
+        await loadBilling();
       }
     });
   }
@@ -1362,8 +1376,12 @@ function startPodcastAdmin(root) {
           savedMarketingLinks.load({ reset: true })
         ]);
       }
-      const analyticsPanel = root.querySelector("#podcast-panel-analytics");
-      if (analyticsPanel && !analyticsPanel.hidden) {
+      const audiencePanel = root.querySelector("#podcast-panel-audience");
+      if (
+        audiencePanel
+        && !audiencePanel.hidden
+        && workspaceGroups.isOpen("analytics")
+      ) {
         await podcastAnalytics.load();
       }
       setStatus(globalStatus, "");
@@ -1994,8 +2012,12 @@ function startPodcastAdmin(root) {
       renderEpisodes();
       fillEpisodeSelects();
       await loadAdPlan();
-      const productionPanel = root.querySelector("#podcast-panel-production");
-      if (productionPanel && !productionPanel.hidden) {
+      const episodePanel = root.querySelector("#podcast-panel-episodes");
+      if (
+        episodePanel
+        && !episodePanel.hidden
+        && workspaceGroups.isOpen("production")
+      ) {
         await Promise.all([
           loadAudioQcPolicy(),
           loadAudioQc(),

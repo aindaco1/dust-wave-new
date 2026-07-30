@@ -18,16 +18,19 @@ const DEFAULT_URL =
 const DEFAULT_DURATION_SECONDS = 8;
 const DEFAULT_VIEWPORT = "1440x900";
 const ADMIN_TABS = new Set([
-  "overview",
   "episodes",
-  "production",
   "distribution",
   "marketing",
-  "sponsors",
+  "audience",
+  "monetization",
+  "settings"
+]);
+const ADMIN_GROUPS = new Set([
+  "production",
   "analytics",
   "subscribers",
-  "billing",
-  "settings"
+  "sponsors",
+  "billing"
 ]);
 const SUPPORTED_EXECUTABLE_NAMES = new Set([
   "chrome",
@@ -80,6 +83,7 @@ Options:
   --viewport <WIDTHxHEIGHT>
                           Browser viewport (default: ${DEFAULT_VIEWPORT})
   --admin-tab <name>      Open a specific admin tab before recording
+  --admin-group <name>    Open a contextual workspace within that tab
   --chrome <path>         Chrome/Chromium executable
   --help                  Show this help
 
@@ -148,6 +152,16 @@ function validateAdminTab(value) {
     );
   }
   return tab;
+}
+
+function validateAdminGroup(value) {
+  const group = String(value || "").trim();
+  if (group && !ADMIN_GROUPS.has(group)) {
+    throw new Error(
+      `Admin group must be one of: ${[...ADMIN_GROUPS].join(", ")}.`
+    );
+  }
+  return group;
 }
 
 function assertSupportedExecutable(candidate) {
@@ -439,6 +453,7 @@ class CdpSession {
 }
 
 async function captureTrace({
+  adminGroup,
   adminTab,
   cdp,
   durationSeconds,
@@ -458,6 +473,16 @@ async function captureTrace({
         `sessionStorage.setItem("dustwave-podcast-admin-tab", ${
           JSON.stringify(adminTab)
         });`
+    });
+  }
+  if (adminGroup) {
+    await cdp.send("Page.addScriptToEvaluateOnNewDocument", {
+      source:
+        `document.addEventListener("DOMContentLoaded", () => {`
+        + `document.querySelector(`
+        + `"[data-podcast-workspace-group=${JSON.stringify(adminGroup)}]"`
+        + `)?.setAttribute("open", "");`
+        + `}, { once: true });`
     });
   }
   await cdp.send("Emulation.setDeviceMetricsOverride", {
@@ -493,7 +518,10 @@ async function captureTrace({
       + "globalThis.__dustWaveCspViolations ?? null, "
       + "activeTab: document.querySelector("
       + "'[role=\"tab\"][aria-selected=\"true\"]'"
-      + ")?.dataset.tab ?? null })",
+      + ")?.dataset.tab ?? null, "
+      + "activeGroups: Array.from(document.querySelectorAll("
+      + "'[data-podcast-workspace-group][open]'"
+      + ")).map((group) => group.dataset.podcastWorkspaceGroup) })",
     returnByValue: true
   });
   const observed = measured.result?.value;
@@ -529,6 +557,11 @@ async function captureTrace({
     throw new Error(
       `Chrome did not activate the requested admin tab "${adminTab}". `
       + `Observed: "${observed?.activeTab ?? "none"}".`
+    );
+  }
+  if (adminGroup && !observed?.activeGroups?.includes(adminGroup)) {
+    throw new Error(
+      `Chrome did not open the requested admin group "${adminGroup}".`
     );
   }
   const tracingComplete = cdp.waitForEvent(
@@ -635,6 +668,7 @@ async function main() {
     argumentsMap.get("viewport") || DEFAULT_VIEWPORT
   );
   const adminTab = validateAdminTab(argumentsMap.get("admin-tab"));
+  const adminGroup = validateAdminGroup(argumentsMap.get("admin-group"));
   const chromePath = await findChrome(argumentsMap.get("chrome"));
   const timestamp = new Date().toISOString().replaceAll(":", "-");
   const outputPath = resolve(
@@ -695,6 +729,7 @@ async function main() {
       () => launchError
     );
     const observed = await captureTrace({
+      adminGroup,
       adminTab,
       cdp,
       durationSeconds,
