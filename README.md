@@ -343,6 +343,12 @@ the browser contract validates Spanish/English labels, canonical sharing,
 safe text-only rendering, MP4 download URLs, and complete concealment when no
 approved selection remains.
 
+Set `PODCAST_ADMIN_MOCK_WORKFLOW_TARGET` to `attach_media`,
+`working_master`, `delivery_audio`, `alignment`, `chapters`,
+`production_review`, or `promotion_clips` to expose one controlled readiness
+state and verify that the guided workflow opens and focuses the exact repair
+control.
+
 ### WebP Images
 
 Local development and `npm run build` use the original JPG/PNG image paths and

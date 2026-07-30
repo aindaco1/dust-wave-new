@@ -1,7 +1,8 @@
 import { mountWorkflowProgress } from "./dust-wave-admin-shell/workflow-progress.js?v=0.9.0";
 import {
   deriveEpisodeWorkflow,
-  workflowStepForNode
+  workflowStepForNode,
+  workflowTargetForNode
 } from "./podcast-admin-publish-workflow-core.js";
 
 export function mountEpisodePublishWorkflow({
@@ -93,11 +94,11 @@ export function mountEpisodePublishWorkflow({
     return episodes.find(({ id }) => String(id) === select.value) || null;
   }
 
-  function navigate(id) {
+  function navigate(id, target = "") {
     const episode = selectedEpisode();
     if (!episode) return;
     progress.setActive(id);
-    onNavigate?.(id, episode);
+    onNavigate?.(id, episode, target);
   }
 
   function render() {
@@ -140,7 +141,10 @@ export function mountEpisodePublishWorkflow({
       fix.textContent = text("fixWorkflowIssue");
       fix.addEventListener(
         "click",
-        () => navigate(workflowStepForNode(node))
+        () => navigate(
+          workflowStepForNode(node),
+          workflowTargetForNode(node)
+        )
       );
       item.append(copy, fix);
       return item;

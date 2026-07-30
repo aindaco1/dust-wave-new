@@ -280,6 +280,25 @@ function delay(milliseconds) {
   return new Promise((resolveDelay) => setTimeout(resolveDelay, milliseconds));
 }
 
+async function waitForTargetDocument(cdp, url) {
+  const deadline = Date.now() + 15_000;
+  while (Date.now() < deadline) {
+    try {
+      const result = await cdp.send("Runtime.evaluate", {
+        expression:
+          `({ href: location.href, readyState: document.readyState })`,
+        returnByValue: true
+      });
+      const state = result.result?.value;
+      if (state?.href === url && state.readyState !== "loading") return;
+    } catch {
+      // Navigation can replace the execution context between polls.
+    }
+    await delay(100);
+  }
+  throw new Error("Chrome did not finish loading the requested trace URL.");
+}
+
 async function connectToCdp(
   profileDirectory,
   child,
@@ -462,6 +481,9 @@ async function captureTrace({
   viewport
 }) {
   const mobile = viewport.width < 768;
+  const adminGroupSelector = adminGroup
+    ? `[data-podcast-workspace-group="${adminGroup}"]`
+    : "";
   await cdp.send("Page.enable");
   await cdp.send("Runtime.enable");
   await cdp.send("Page.addScriptToEvaluateOnNewDocument", {
@@ -479,8 +501,7 @@ async function captureTrace({
     await cdp.send("Page.addScriptToEvaluateOnNewDocument", {
       source:
         `document.addEventListener("DOMContentLoaded", () => {`
-        + `document.querySelector(`
-        + `"[data-podcast-workspace-group=${JSON.stringify(adminGroup)}]"`
+        + `document.querySelector(${JSON.stringify(adminGroupSelector)}`
         + `)?.setAttribute("open", "");`
         + `}, { once: true });`
     });
@@ -508,6 +529,14 @@ async function captureTrace({
   const navigation = await cdp.send("Page.navigate", { url });
   if (navigation.errorText) {
     throw new Error(`Chrome navigation failed: ${navigation.errorText}.`);
+  }
+  await waitForTargetDocument(cdp, url);
+  if (adminGroup) {
+    await cdp.send("Runtime.evaluate", {
+      expression:
+        `document.querySelector(${JSON.stringify(adminGroupSelector)}`
+        + `)?.setAttribute("open", "");`
+    });
   }
   await delay(durationSeconds * 1_000);
   const measured = await cdp.send("Runtime.evaluate", {

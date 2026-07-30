@@ -2,6 +2,14 @@
 
 ## v1.3.0 - Unreleased
 
+- Routed the episode workflow to the exact missing media, transcript, chapter,
+  review, or clip control, including Attach media for a new draft, while
+  preserving the existing progressive disclosures. Guided navigation focuses
+  one disclosure at each level so unrelated technical evidence does not remain
+  open beside the requested fix.
+- Made the isolated Chrome performance tracer reassert a requested contextual
+  workspace after the final page load, eliminating a race in tablet/mobile
+  production-workbench coverage.
 - Standardized Podcast Admin form composition around the Pool/Store spacing
   rhythm: predictable one-column mobile and two-column desktop grids,
   explicit three-column opt-ins, semantic episode/show/sponsor field groups,

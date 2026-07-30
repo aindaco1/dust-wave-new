@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   deriveEpisodeWorkflow,
-  workflowStepForNode
+  workflowStepForNode,
+  workflowTargetForNode
 } from "../src/js/podcast-admin-publish-workflow-core.js";
 
 test("episode workflow derives steps from immutable readiness evidence", () => {
@@ -36,6 +37,22 @@ test("episode workflow derives steps from immutable readiness evidence", () => {
     "needs_action"
   );
   assert.equal(workflowStepForNode(derived.blockers[0]), "media");
+});
+
+test("readiness nodes route workflow fixes to their exact production tool", () => {
+  const routes = [
+    ["core.working_master", "media", "working_master"],
+    ["core-delivery-audio", "media", "delivery_audio"],
+    ["editorial_word_alignment", "transcript", "alignment"],
+    ["editorial.chapters", "transcript", "chapters"],
+    ["editorial_production_review", "review", "production_review"],
+    ["editorial-promotion-clips", "review", "promotion_clips"]
+  ];
+
+  for (const [id, step, target] of routes) {
+    assert.equal(workflowStepForNode({ id }), step);
+    assert.equal(workflowTargetForNode({ id }), target);
+  }
 });
 
 test("episode evidence completes details and media without duplicate nodes", () => {

@@ -16,6 +16,18 @@ const STEP_NODES = Object.freeze({
   ]
 });
 
+const NODE_TARGETS = Object.freeze({
+  core_working_master: "working_master",
+  core_delivery_audio: "delivery_audio",
+  editorial_primary_transcript: "transcript",
+  editorial_bilingual_transcripts: "transcript",
+  editorial_word_alignment: "alignment",
+  editorial_chapters: "chapters",
+  monetization_dynamic_ads: "monetization",
+  editorial_production_review: "production_review",
+  editorial_promotion_clips: "promotion_clips"
+});
+
 function nodeKey(node) {
   return String(node?.id || node?.key || "")
     .replace(/^readinessNode_/u, "")
@@ -26,6 +38,10 @@ export function workflowStepForNode(node) {
   const key = nodeKey(node);
   return Object.entries(STEP_NODES).find(([, keys]) => keys.includes(key))
     ?.[0] || "review";
+}
+
+export function workflowTargetForNode(node) {
+  return NODE_TARGETS[nodeKey(node)] || workflowStepForNode(node);
 }
 
 function unresolvedBlocker(node) {

@@ -19,6 +19,18 @@ const publicClipMode = ["ready", "empty", "missing"].includes(
 )
   ? process.env.PODCAST_ADMIN_MOCK_PUBLIC_CLIPS
   : "ready";
+const workflowTarget = new Set([
+  "default",
+  "attach_media",
+  "working_master",
+  "delivery_audio",
+  "alignment",
+  "chapters",
+  "production_review",
+  "promotion_clips"
+]).has(process.env.PODCAST_ADMIN_MOCK_WORKFLOW_TARGET)
+  ? process.env.PODCAST_ADMIN_MOCK_WORKFLOW_TARGET
+  : "default";
 const sha = (character) => character.repeat(64);
 
 const show = {
@@ -53,7 +65,7 @@ const episode = {
     "<h2>Notas del episodio</h2><p>Contenido revisable y seguro.</p>",
   status: "draft",
   access: "public",
-  mediaStatus: "ready",
+  mediaStatus: workflowTarget === "attach_media" ? "pending" : "ready",
   sourceLanguage: "es",
   audioFilename: "episode-source.wav",
   publicationRevision: 0,
@@ -2306,6 +2318,21 @@ function responseFor(request) {
     request.method === "GET"
     && path === `/v1/admin/episodes/${episode.id}/readiness`
   ) {
+    const workflowNodes = {
+      working_master: ["core.working_master", "Working master"],
+      delivery_audio: ["core.delivery_audio", "Delivery audio"],
+      alignment: ["editorial.word_alignment", "Word alignment"],
+      chapters: ["editorial.chapters", "Chapters"],
+      production_review: [
+        "editorial.production_review",
+        "Production review"
+      ],
+      promotion_clips: [
+        "editorial.promotion_clips",
+        "Promotion clips"
+      ]
+    };
+    const workflowNode = workflowNodes[workflowTarget];
     return json({
       publicationRevision: 0,
       publicationGateMode: "shadow",
@@ -2319,12 +2346,14 @@ function responseFor(request) {
       },
       nodes: [
         {
-          id: "core.working_master",
-          group: "core",
-          label: "Working master",
-          status: "ready",
+          id: workflowNode?.[0] || "core.working_master",
+          group: String(workflowNode?.[0] || "core").split(".")[0],
+          label: workflowNode?.[1] || "Working master",
+          status: workflowNode ? "missing" : "ready",
           severity: "blocker",
-          summary: "Exact source and QC evidence are approved.",
+          summary: workflowNode
+            ? "Controlled workflow-navigation blocker."
+            : "Exact source and QC evidence are approved.",
           evidence: { revision: 1, sourceSha256: sha("a") }
         }
       ]
@@ -2552,6 +2581,6 @@ server.listen(port, host, () => {
   process.stdout.write(
     `Podcast admin mock API listening on http://${host}:${port}`
       + ` (${transcriptCueCount} transcript cues, `
-      + `${publicClipMode} public clips)\n`
+      + `${publicClipMode} public clips, ${workflowTarget} workflow target)\n`
   );
 });
