@@ -1,5 +1,5 @@
 <nav id="navScroll" class="navbar navbar-expand-lg navbar-light white-text container {% if stickyNav %}fixed-top{% endif %} py-lg-3 pb-0 px-vw-6" tabindex="0">
-  <div class="container d-flex flex-column d-lg-flex flex-lg-row justify-content-between align-items-center w-100">
+  <div class="container site-navbar__inner d-flex flex-column d-lg-flex flex-lg-row justify-content-between align-items-center w-100">
 
     {# Show "DUST WAVE" link on mobile, but hide it on homepage #}
     {% if not isHomepage %}
@@ -10,7 +10,7 @@
     </div>
     {% endif %}
 
-    <div class="navbar-brand d-none d-lg-block">
+    <div class="site-navbar__brand d-none d-lg-block">
       {% include "snippets/navbar-brand.njk" %}
     </div>
 

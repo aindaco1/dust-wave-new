@@ -1,7 +1,7 @@
-<div class="collapse navbar-collapse" id="navbarContent">
+<div class="collapse navbar-collapse site-navbar__content" id="navbarContent">
   {% set podcastPath = "/es/podcasts/opera-en-la-selva/" if language == "es" else "/podcasts/opera-en-la-selva/" %}
-  <nav class="w-100" aria-label="{{ i18n | t(language, 'nav.main') }}">
-  <ul class="navbar-nav mx-auto">
+  <nav class="site-navbar__nav w-100" aria-label="{{ i18n | t(language, 'nav.main') }}">
+  <ul class="navbar-nav site-navbar__links mx-auto">
     <li class="nav-item">
         <a class="nav-link initialism white-text" href="{{ i18n | localizedUrl(language, 'about', '/about.html') }}">
           {{ i18n | t(language, "nav.about") }}
