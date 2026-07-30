@@ -16,7 +16,7 @@ assert.doesNotMatch(footer, /fa-brands|font-awesome/i);
 assert.equal(
   (footer.match(/class="site-footer__item/g) || []).length,
   4,
-  "The public footer must keep four equally spaced top-level items."
+  "The public footer must keep four shared top-level items."
 );
 
 for (const name of ["instagram", "youtube", "tiktok", "bluesky", "mastodon"]) {
@@ -27,8 +27,12 @@ for (const name of ["instagram", "youtube", "tiktok", "bluesky", "mastodon"]) {
 assert.match(styles, /grid-template-columns:\s*repeat\(4,\s*minmax\(0,\s*1fr\)\)/);
 assert.match(
   styles,
-  /@media only screen and \(max-width:\s*640px\)[\s\S]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*grid-template-areas:\s*"copyright social newsletter"\s*"language language language";[\s\S]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto\s+minmax\(0,\s*1fr\)/
 );
+assert.match(styles, /\.footer-social\s*\{[\s\S]*grid-area:\s*social;[\s\S]*justify-self:\s*center;/);
+assert.match(styles, /\.site-footer__copyright\s*\{[\s\S]*grid-area:\s*copyright;[\s\S]*white-space:\s*nowrap;/);
+assert.match(styles, /\.site-footer__language\s*\{[\s\S]*grid-area:\s*language;[\s\S]*justify-content:\s*center;/);
+assert.match(styles, /\.site-footer__lang-switcher\s*\{[\s\S]*justify-content:\s*center;/);
 assert.match(styles, /\.site-footer__language\s*\{[\s\S]*justify-content:\s*flex-end/);
 assert.match(
   styles,
