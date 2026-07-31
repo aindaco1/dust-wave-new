@@ -1267,6 +1267,7 @@
       "workflowOtherBlocker": "1 bloqueo de lanzamiento más",
       "workflowOtherBlockers": "%{count} bloqueos de lanzamiento más",
       "continueWorkflow": "Continuar: %{step}",
+      "continueWorkflowAction": "Continuar: %{action}",
       "fixWorkflowIssue": "Resolver",
       "refreshReadiness": "Actualizar preparación",
       "publishReviewedEpisode": "Publicar episodio revisado",

@@ -24,6 +24,10 @@ import {
 import { mountSavedMarketingLinks } from "./podcast-admin-marketing-links.js";
 import { renderEpisodeCatalog, renderShowCatalog } from "./podcast-admin-catalog.js";
 import { mountEpisodePublishWorkflow } from "./podcast-admin-publish-workflow.js";
+import {
+  readinessNodeLabel,
+  readinessNodeSummary
+} from "./podcast-admin-readiness-copy.js";
 import { mountProgressiveSections } from "./podcast-admin-progressive-sections.js";
 import { mountPodcastAdminWorkspaces } from "./podcast-admin-workspaces.js";
 import { mountPodcastAdminToolDisclosure } from "./podcast-admin-tool-disclosure.js";
@@ -723,7 +727,7 @@ function startPodcastAdmin(root) {
     client,
     confirmationDialog,
     text: adminText,
-    nodeLabel: localizedReadinessNodeLabel,
+    nodeLabel: (node) => readinessNodeLabel(adminText, node),
     operationId,
     report(message, error = false) {
       setStatus(episodeStatus, message, error);
@@ -819,7 +823,8 @@ function startPodcastAdmin(root) {
     root: root.querySelector("[data-podcast-publish-workflow]"),
     client,
     text: adminText,
-    nodeLabel: localizedReadinessNodeLabel,
+    nodeLabel: (node) => readinessNodeLabel(adminText, node),
+    nodeDescription: (node) => readinessNodeSummary(adminText, node),
     episodeSelect: currentEpisodeSelect,
     onNavigate: navigateEpisodeWorkflow,
     onPublish: publishEpisode
@@ -5272,7 +5277,7 @@ function startPodcastAdmin(root) {
     const card = document.createElement("article");
     const status = String(readinessNode.status || "missing");
     const severity = String(readinessNode.severity || "info");
-    const label = localizedReadinessNodeLabel(readinessNode);
+    const label = readinessNodeLabel(adminText, readinessNode);
     card.className =
       `podcast-admin__readiness-card is-${status} severity-${severity}`;
     const heading = document.createElement("div");
@@ -5287,11 +5292,7 @@ function startPodcastAdmin(root) {
     ].join(" · ");
     heading.append(title, pill);
     const summary = document.createElement("p");
-    summary.textContent = adminText(
-      `readinessSummary_${status}`,
-      String(readinessNode.summary || ""),
-      { label }
-    );
+    summary.textContent = readinessNodeSummary(adminText, readinessNode);
     const evidence = document.createElement("details");
     const evidenceSummary = document.createElement("summary");
     evidenceSummary.textContent = adminText("evidenceLabel");
@@ -5307,18 +5308,6 @@ function startPodcastAdmin(root) {
     evidence.append(evidenceSummary, values);
     card.append(heading, summary, evidence);
     return card;
-  }
-
-  function localizedReadinessNodeLabel(readinessNode) {
-    const id = String(readinessNode?.id || "")
-      .replace(/[^A-Za-z0-9]+/g, "_")
-      .replace(/^_+|_+$/g, "");
-    return adminText(
-      `readinessNode_${id}`,
-      String(
-        readinessNode?.label || adminText("dependencyFallback")
-      )
-    );
   }
 
   function readinessEvidenceValue(value) {

@@ -38,6 +38,10 @@ const episodeContextSetupScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-episode-context-setup.js'),
   'utf8'
 );
+const readinessCopyScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-readiness-copy.js'),
+  'utf8'
+);
 const showContextScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-show-context.js'),
   'utf8'
@@ -1565,8 +1569,13 @@ assert.match(
   /\/v1\/admin\/episodes\/\$\{encodeURIComponent\(episodeId\)\}\/readiness/
 );
 assert.match(adminScript, /function renderPublicationReadiness/);
-assert.match(adminScript, /function localizedReadinessNodeLabel/);
-assert.match(adminScript, /`readinessSummary_\$\{status\}`/);
+assert.match(
+  adminScript,
+  /nodeDescription: \(node\) => readinessNodeSummary\(adminText, node\)/
+);
+assert.match(readinessCopyScript, /export function readinessNodeLabel/);
+assert.match(readinessCopyScript, /export function readinessNodeSummary/);
+assert.match(readinessCopyScript, /`readinessSummary_\$\{status\}`/);
 assert.match(adminScript, /localizedCode\("readinessStatus", status\)/);
 assert.match(adminScript, /localizedCode\("readinessSeverity", severity\)/);
 assert.match(adminScript, /publicationGateMode/);

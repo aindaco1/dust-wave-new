@@ -20,6 +20,7 @@ export function mountEpisodePublishWorkflow({
   client,
   text,
   nodeLabel,
+  nodeDescription,
   episodeSelect,
   onNavigate,
   onPublish
@@ -73,6 +74,7 @@ export function mountEpisodePublishWorkflow({
     document,
     text,
     nodeLabel,
+    nodeDescription,
     onNavigate(node) {
       navigate(
         workflowStepForNode(node),
@@ -137,9 +139,13 @@ export function mountEpisodePublishWorkflow({
     progress.setSteps(steps);
     nextStep = derived.nextStep;
     nextTarget = derived.nextTarget;
-    continueButton.textContent = text("continueWorkflow", {
-      step: stepDefinitions.find(([id]) => id === nextStep)?.[1] || ""
-    });
+    continueButton.textContent = derived.nextBlocker
+      ? text("continueWorkflowAction", {
+        action: nodeLabel(derived.nextBlocker)
+      })
+      : text("continueWorkflow", {
+        step: stepDefinitions.find(([id]) => id === nextStep)?.[1] || ""
+      });
     continueButton.hidden = nextStep === "publish";
     publishButton.hidden = nextStep !== "publish";
     publishButton.disabled = !readiness;

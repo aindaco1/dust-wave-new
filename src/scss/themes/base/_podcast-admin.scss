@@ -683,10 +683,20 @@
   text-transform: uppercase;
 }
 
-.podcast-admin__workflow-next-action p {
+.podcast-admin__workflow-next-title {
   font-size: 1.05rem;
   font-weight: 700;
   margin: 0;
+}
+
+.podcast-admin__workflow-next-description {
+  color: #d8d3cc;
+  margin: var(--dw-admin-space-xxs) 0 0;
+  max-inline-size: 72ch;
+}
+
+.podcast-admin__workflow-next-description[hidden] {
+  display: none;
 }
 
 .podcast-admin__workflow-more-blockers {

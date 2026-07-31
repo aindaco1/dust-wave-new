@@ -2,6 +2,7 @@ export function mountWorkflowPriority({
   document,
   text,
   nodeLabel,
+  nodeDescription = () => "",
   onNavigate
 }) {
   const blockers = document.createElement("ul");
@@ -11,8 +12,15 @@ export function mountWorkflowPriority({
   nextAction.hidden = true;
   const nextActionLabel = document.createElement("strong");
   nextActionLabel.textContent = text("workflowNextRequiredAction");
-  const nextActionCopy = document.createElement("p");
-  nextAction.append(nextActionLabel, nextActionCopy);
+  const nextActionTitle = document.createElement("p");
+  nextActionTitle.className = "podcast-admin__workflow-next-title";
+  const nextActionDescription = document.createElement("p");
+  nextActionDescription.className = "podcast-admin__workflow-next-description";
+  nextAction.append(
+    nextActionLabel,
+    nextActionTitle,
+    nextActionDescription
+  );
   const remaining = document.createElement("details");
   remaining.className = "podcast-admin__workflow-more-blockers";
   remaining.hidden = true;
@@ -21,7 +29,9 @@ export function mountWorkflowPriority({
 
   function render({ nodes, next }) {
     nextAction.hidden = !next;
-    nextActionCopy.textContent = next ? nodeLabel(next) : "";
+    nextActionTitle.textContent = next ? nodeLabel(next) : "";
+    nextActionDescription.textContent = next ? nodeDescription(next) : "";
+    nextActionDescription.hidden = !nextActionDescription.textContent;
     const others = nodes.filter((node) => node !== next);
     blockers.replaceChildren(...others.map((node) => {
       const item = document.createElement("li");

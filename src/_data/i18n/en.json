@@ -1267,6 +1267,7 @@
       "workflowOtherBlocker": "1 more release blocker",
       "workflowOtherBlockers": "%{count} more release blockers",
       "continueWorkflow": "Continue: %{step}",
+      "continueWorkflowAction": "Continue: %{action}",
       "fixWorkflowIssue": "Fix",
       "refreshReadiness": "Refresh readiness",
       "publishReviewedEpisode": "Publish reviewed episode",
