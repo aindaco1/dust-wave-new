@@ -397,6 +397,11 @@ assert.match(
   "Distribution traces must fail closed on guidance, directory, and proof-summary regressions"
 );
 assert.match(
+  traceContract,
+  /Distribution trace requires an authenticated Podcast admin session/,
+  "selected Distribution traces must reject signed-out shells"
+);
+assert.match(
   tracer,
   /PerformanceObserver[\s\S]+layout-shift[\s\S]+MAX_AUTHENTICATED_CLS/,
   "performance traces must enforce the good CLS threshold for authenticated admin sessions"

@@ -1,7 +1,12 @@
 const MINIMUM_LAUNCH_DIRECTORIES = 10;
 
 export function assertPodcastAdminTraceContract(observed, { adminTab } = {}) {
-  if (adminTab !== "distribution" || !observed?.authenticatedAdmin) return;
+  if (adminTab !== "distribution") return;
+  if (!observed?.authenticatedAdmin) {
+    throw new Error(
+      "Distribution trace requires an authenticated Podcast admin session."
+    );
+  }
 
   const distribution = observed.distribution;
   if (!distribution?.guidancePresent) {

@@ -41,15 +41,18 @@ test("accepts a fully certified directory set with every card closed", () => {
   ));
 });
 
-test("ignores Distribution-only checks for other or signed-out views", () => {
+test("ignores Distribution-only checks for other admin views", () => {
   assert.doesNotThrow(() => assertPodcastAdminTraceContract(
     {},
     { adminTab: "episodes" }
   ));
-  assert.doesNotThrow(() => assertPodcastAdminTraceContract(
+});
+
+test("rejects signed-out shells when Distribution was requested", () => {
+  assert.throws(() => assertPodcastAdminTraceContract(
     { authenticatedAdmin: false },
     { adminTab: "distribution" }
-  ));
+  ), /requires an authenticated Podcast admin session/);
 });
 
 for (const [name, mutate, message] of [
