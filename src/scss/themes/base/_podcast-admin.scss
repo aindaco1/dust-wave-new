@@ -40,6 +40,13 @@
     var(--dw-admin-space-4xl);
 }
 
+// The public editorial theme gives every list item a one-sided 2rem margin.
+// Admin lists own their layout through parent gap/padding tokens, so contain
+// that legacy rule at the admin boundary instead of patching each component.
+.podcast-admin :is(ol, ul) > li {
+  margin-inline: 0 !important;
+}
+
 .podcast-admin__container {
   margin: 0 auto;
   max-width: 1180px;

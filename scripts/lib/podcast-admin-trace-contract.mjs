@@ -1,4 +1,21 @@
 const MINIMUM_LAUNCH_DIRECTORIES = 10;
+const MAXIMUM_INSET_DELTA_PX = 1;
+
+export function assertPodcastAdminSpacingContract(observed) {
+  if (!observed?.authenticatedAdmin) return;
+  if (!Array.isArray(observed.listItemMarginViolations)) {
+    throw new Error(
+      "Podcast admin trace could not inspect list-item inline spacing."
+    );
+  }
+  if (observed.listItemMarginViolations.length > 0) {
+    throw new Error(
+      "Podcast admin list items must use their component spacing instead of "
+      + "inheriting one-sided editorial margins. "
+      + JSON.stringify(observed.listItemMarginViolations)
+    );
+  }
+}
 
 export function assertPodcastAdminTraceContract(observed, { adminTab } = {}) {
   if (adminTab !== "distribution") return;
@@ -51,6 +68,19 @@ export function assertPodcastAdminTraceContract(observed, { adminTab } = {}) {
     throw new Error(
       "Every distribution directory must expose compact proof progress in "
       + "its collapsed summary."
+    );
+  }
+  const inset = distribution.certificationRowInset;
+  if (
+    !Number.isFinite(inset?.start)
+    || !Number.isFinite(inset?.end)
+    || Math.abs(inset.start) > MAXIMUM_INSET_DELTA_PX
+    || Math.abs(inset.end) > MAXIMUM_INSET_DELTA_PX
+  ) {
+    throw new Error(
+      "Distribution certification rows must share the expanded card's "
+      + "horizontal inset. "
+      + `Observed ${JSON.stringify(inset)}.`
     );
   }
 }

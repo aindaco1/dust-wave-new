@@ -13,6 +13,7 @@ import {
 import { homedir, tmpdir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
 import {
+  assertPodcastAdminSpacingContract,
   assertPodcastAdminTraceContract,
   podcastAdminTraceContractSummary
 } from "./lib/podcast-admin-trace-contract.mjs";
@@ -129,11 +130,38 @@ const LAYOUT_PROBE = `(() => {
       }];
     })
     .slice(0, 20);
+  const listItemMarginViolations = Array.from(root.querySelectorAll('li'))
+    .flatMap((element) => {
+      const style = getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      const marginStart = Number.parseFloat(style.marginInlineStart) || 0;
+      const marginEnd = Number.parseFloat(style.marginInlineEnd) || 0;
+      if (
+        style.display === 'none'
+        || style.visibility === 'hidden'
+        || rect.width <= 0
+        || rect.height <= 0
+        || (Math.abs(marginStart) <= 0.5 && Math.abs(marginEnd) <= 0.5)
+      ) {
+        return [];
+      }
+      return [{
+        classes: Array.from(element.classList).slice(0, 4),
+        marginStart,
+        marginEnd,
+        text: String(element.textContent || '')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .slice(0, 100)
+      }];
+    })
+    .slice(0, 20);
   return {
     innerWidth,
     innerHeight,
     scrollWidth: document.documentElement.scrollWidth,
     viewportOverflow,
+    listItemMarginViolations,
     authenticatedAdmin:
       document.querySelector('[data-podcast-app]')?.hidden === false,
     cumulativeLayoutShift: globalThis.__dustWaveCumulativeLayoutShift ?? null,
@@ -154,6 +182,15 @@ const LAYOUT_PROBE = `(() => {
       const directories = Array.from(document.querySelectorAll(
         '.podcast-admin__directory-card'
       ));
+      const openDirectory = directories.find((directory) => directory.open);
+      const directoryDetails = openDirectory?.querySelector(
+        ':scope > .podcast-admin__directory-details'
+      );
+      const certificationRow = openDirectory?.querySelector(
+        ':scope > .podcast-admin__certification-list > li'
+      );
+      const detailsRect = directoryDetails?.getBoundingClientRect();
+      const rowRect = certificationRow?.getBoundingClientRect();
       return {
         guidancePresent: Boolean(guidance),
         guidanceOpen: guidance?.open ?? null,
@@ -168,6 +205,10 @@ const LAYOUT_PROBE = `(() => {
             'summary .podcast-admin__directory-heading p'
           )
         )).length,
+        certificationRowInset: detailsRect && rowRect ? {
+          start: Math.round((rowRect.left - detailsRect.left) * 100) / 100,
+          end: Math.round((detailsRect.right - rowRect.right) * 100) / 100
+        } : null,
         statusText: String(distributionRoot?.textContent || '')
           .replace(/\s+/g, ' ')
           .trim()
@@ -709,6 +750,7 @@ async function captureTrace({
       + `maximum ${MAX_AUTHENTICATED_CLS.toFixed(1)}.`
     );
   }
+  assertPodcastAdminSpacingContract(observed);
   assertPodcastAdminTraceContract(observed, { adminTab });
   const tracingComplete = cdp.waitForEvent(
     "Tracing.tracingComplete",

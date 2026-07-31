@@ -1529,6 +1529,11 @@ assert.match(
 );
 assert.match(
   adminStyles,
+  /\.podcast-admin :is\(ol, ul\) > li \{[\s\S]+margin-inline: 0 !important;/,
+  'Admin list items must not inherit the public theme one-sided indentation'
+);
+assert.match(
+  adminStyles,
   /@media \(max-width: 760px\) \{[\s\S]+\.podcast-admin__certification-list li \{[\s\S]+flex-direction: column;/
 );
 assert.match(
