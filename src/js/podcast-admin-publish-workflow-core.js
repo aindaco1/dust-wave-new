@@ -101,10 +101,17 @@ export function deriveEpisodeWorkflow(episode, readiness) {
   const firstIncomplete = steps.find(({ id, status }) =>
     id !== "publish" && status === "needs_action"
   );
+  const blockers = nodes.filter(unresolvedBlocker);
+  const nextStep = firstIncomplete?.id
+    || (readiness?.candidateGate?.ready ? "publish" : "review");
+  const nextBlocker = blockers.find((node) =>
+    workflowStepForNode(node) === nextStep
+  ) || blockers[0] || null;
   return {
-    blockers: nodes.filter(unresolvedBlocker),
-    nextStep: firstIncomplete?.id
-      || (readiness?.candidateGate?.ready ? "publish" : "review"),
+    blockers,
+    nextBlocker,
+    nextStep,
+    nextTarget: nextBlocker ? workflowTargetForNode(nextBlocker) : "",
     steps
   };
 }

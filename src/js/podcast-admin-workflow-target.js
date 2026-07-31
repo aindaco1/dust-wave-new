@@ -56,18 +56,31 @@ export function revealWorkflowTarget(target, document) {
     disclosure.open = true;
     disclosure = disclosure.parentElement?.closest?.("details") || null;
   }
-  queueMicrotask(() => {
+  const reveal = () => {
     const reduceMotion = document.defaultView
       ?.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     target?.scrollIntoView?.({
       behavior: reduceMotion ? "auto" : "smooth",
       block: "start"
     });
-    const focusTarget = target?.matches?.("button, input, select, textarea")
-      ? target
-      : target?.querySelector?.("button, input, select, textarea");
+    const focusSelector = "button, input, select, textarea";
+    const focusCandidates = target?.matches?.(focusSelector)
+      ? [target]
+      : Array.from(target?.querySelectorAll?.(focusSelector) || []);
+    const summary = target?.closest?.("details")
+      ?.querySelector?.(":scope > summary");
+    if (summary) focusCandidates.push(summary);
+    const focusTarget = focusCandidates.find((candidate) => {
+      const style = document.defaultView?.getComputedStyle?.(candidate);
+      return !candidate.disabled
+        && !candidate.hidden
+        && !candidate.closest?.("[hidden]")
+        && style?.display !== "none"
+        && style?.visibility !== "hidden";
+    });
     focusTarget?.focus?.({ preventScroll: true });
-  });
+  };
+  document.defaultView?.setTimeout?.(reveal, 0) ?? queueMicrotask(reveal);
 }
 
 export function createExactWorkflowNavigator(root) {

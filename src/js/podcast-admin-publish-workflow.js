@@ -4,6 +4,7 @@ import {
   workflowStepForNode,
   workflowTargetForNode
 } from "./podcast-admin-publish-workflow-core.js";
+import { mountWorkflowPriority } from "./podcast-admin-workflow-priority.js";
 
 export function revealEpisodePublishWorkflow(root) {
   const reduceMotion = root?.ownerDocument?.defaultView
@@ -56,8 +57,6 @@ export function mountEpisodePublishWorkflow({
   summary.className = "podcast-admin__workflow-summary";
   summary.setAttribute("role", "status");
   summary.setAttribute("aria-live", "polite");
-  const blockers = document.createElement("ul");
-  blockers.className = "podcast-admin__workflow-blockers";
   const actions = document.createElement("div");
   actions.className =
     "podcast-admin__form-actions podcast-admin__workflow-actions";
@@ -70,9 +69,25 @@ export function mountEpisodePublishWorkflow({
   publishButton.textContent = text("publishReviewedEpisode");
   publishButton.hidden = true;
   actions.append(continueButton, publishButton);
+  const workflowPriority = mountWorkflowPriority({
+    document,
+    text,
+    nodeLabel,
+    onNavigate(node) {
+      navigate(
+        workflowStepForNode(node),
+        workflowTargetForNode(node)
+      );
+    }
+  });
   root.append(heading);
   if (episodeLabel) root.append(episodeLabel);
-  root.append(progressRoot, summary, blockers, actions);
+  root.append(
+    progressRoot,
+    summary,
+    ...workflowPriority.elements,
+    actions
+  );
 
   const stepDefinitions = [
     ["details", text("workflowDetails")],
@@ -97,6 +112,7 @@ export function mountEpisodePublishWorkflow({
   let readiness = null;
   let requestId = 0;
   let nextStep = "details";
+  let nextTarget = "";
 
   function selectedEpisode() {
     return episodes.find(({ id }) => String(id) === select.value) || null;
@@ -120,6 +136,7 @@ export function mountEpisodePublishWorkflow({
     }));
     progress.setSteps(steps);
     nextStep = derived.nextStep;
+    nextTarget = derived.nextTarget;
     continueButton.textContent = text("continueWorkflow", {
       step: stepDefinitions.find(([id]) => id === nextStep)?.[1] || ""
     });
@@ -139,25 +156,10 @@ export function mountEpisodePublishWorkflow({
         )
       });
     }
-    blockers.replaceChildren(...blockerNodes.map((node) => {
-      const item = document.createElement("li");
-      const copy = document.createElement("span");
-      copy.textContent = nodeLabel(node);
-      const fix = document.createElement("button");
-      fix.className = "btn btn-outline-light";
-      fix.type = "button";
-      fix.textContent = text("fixWorkflowIssue");
-      fix.addEventListener(
-        "click",
-        () => navigate(
-          workflowStepForNode(node),
-          workflowTargetForNode(node)
-        )
-      );
-      item.append(copy, fix);
-      return item;
-    }));
-    blockers.hidden = blockerNodes.length === 0;
+    workflowPriority.render({
+      nodes: blockerNodes,
+      next: derived.nextBlocker
+    });
   }
 
   async function refresh() {
@@ -180,15 +182,17 @@ export function mountEpisodePublishWorkflow({
     } catch {
       if (currentRequest !== requestId) return;
       summary.textContent = text("readinessFailed");
-      blockers.replaceChildren();
-      blockers.hidden = true;
+      workflowPriority.clear();
     }
   }
 
   const handleEpisodeChange = () => refresh();
   if (!episodeSelect) select.addEventListener("change", handleEpisodeChange);
   refreshButton.addEventListener("click", refresh);
-  continueButton.addEventListener("click", () => navigate(nextStep));
+  continueButton.addEventListener(
+    "click",
+    () => navigate(nextStep, nextTarget)
+  );
   publishButton.addEventListener("click", async () => {
     const episode = selectedEpisode();
     if (!episode || publishButton.disabled) return;

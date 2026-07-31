@@ -27,7 +27,8 @@ const workflowTarget = new Set([
   "alignment",
   "chapters",
   "production_review",
-  "promotion_clips"
+  "promotion_clips",
+  "multiple"
 ]).has(process.env.PODCAST_ADMIN_MOCK_WORKFLOW_TARGET)
   ? process.env.PODCAST_ADMIN_MOCK_WORKFLOW_TARGET
   : "default";
@@ -2333,19 +2334,22 @@ function responseFor(request) {
       ]
     };
     const workflowNode = workflowNodes[workflowTarget];
-    return json({
-      publicationRevision: 0,
-      publicationGateMode: "shadow",
-      snapshotDigest: sha("e"),
-      legacyGate: { ready: false, missing: ["publication"] },
-      candidateGate: {
-        ready: false,
-        blockerCount: 1,
-        warningCount: 1,
-        overrideAvailable: true
-      },
-      nodes: [
-        {
+    const readinessNodes = workflowTarget === "multiple"
+      ? [
+          ["editorial.production_review", "Production review"],
+          ["core.delivery_audio", "Delivery audio"],
+          ["editorial.word_alignment", "Word alignment"],
+          ["editorial.chapters", "Chapters"]
+        ].map(([id, label]) => ({
+          id,
+          group: id.split(".")[0],
+          label,
+          status: "missing",
+          severity: "blocker",
+          summary: "Controlled multi-blocker workflow fixture.",
+          evidence: {}
+        }))
+      : [{
           id: workflowNode?.[0] || "core.working_master",
           group: String(workflowNode?.[0] || "core").split(".")[0],
           label: workflowNode?.[1] || "Working master",
@@ -2355,8 +2359,21 @@ function responseFor(request) {
             ? "Controlled workflow-navigation blocker."
             : "Exact source and QC evidence are approved.",
           evidence: { revision: 1, sourceSha256: sha("a") }
-        }
-      ]
+        }];
+    return json({
+      publicationRevision: 0,
+      publicationGateMode: "shadow",
+      snapshotDigest: sha("e"),
+      legacyGate: { ready: false, missing: ["publication"] },
+      candidateGate: {
+        ready: false,
+        blockerCount: readinessNodes.filter(
+          ({ status }) => status !== "ready"
+        ).length,
+        warningCount: 1,
+        overrideAvailable: true
+      },
+      nodes: readinessNodes
     });
   }
   if (

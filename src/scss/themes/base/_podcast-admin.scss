@@ -661,6 +661,58 @@
   padding: var(--dw-admin-space-sm) var(--dw-admin-space-md);
 }
 
+.podcast-admin__workflow-next-action {
+  align-items: start;
+  background: rgba(255, 89, 100, 0.09);
+  border: 1px solid rgba(255, 89, 100, 0.42);
+  border-radius: 0.65rem;
+  display: grid;
+  gap: var(--dw-admin-space-xxs);
+  padding: var(--dw-admin-space-md);
+}
+
+.podcast-admin__workflow-next-action[hidden],
+.podcast-admin__workflow-more-blockers[hidden] {
+  display: none;
+}
+
+.podcast-admin__workflow-next-action strong {
+  color: #ff9aa2;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.podcast-admin__workflow-next-action p {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.podcast-admin__workflow-more-blockers {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 0.65rem;
+  padding: 0 var(--dw-admin-space-sm) var(--dw-admin-space-sm);
+}
+
+.podcast-admin__workflow-more-blockers:not([open]) {
+  padding-bottom: 0;
+}
+
+.podcast-admin__workflow-more-blockers > summary {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  font-weight: 700;
+  min-height: var(--dw-admin-control-min-height);
+  padding: var(--dw-admin-space-sm);
+}
+
+.podcast-admin__workflow-more-blockers[open]
+  > summary {
+  margin-bottom: var(--dw-admin-space-xs);
+}
+
 .podcast-admin__workflow-blockers {
   display: grid;
   gap: var(--dw-admin-space-xs);

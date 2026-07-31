@@ -2,6 +2,10 @@
 
 ## v1.3.0 - Unreleased
 
+- Turned release readiness into one prioritized, bilingual next action. The
+  primary Continue control now opens the exact production tool for that
+  blocker, while secondary blockers stay available in one collapsed list so
+  editors can finish an episode without confronting the full evidence graph.
 - Restored the shared Pool/Store section rhythm before Podcast Admin
   disclosures. Episode cards, marketing clips, and show settings no longer
   visually collide with the next tool group, while consecutive disclosures

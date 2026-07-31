@@ -32,6 +32,7 @@ test("episode workflow derives steps from immutable readiness evidence", () => {
 
   assert.equal(derived.nextStep, "media");
   assert.equal(derived.blockers.length, 1);
+  assert.equal(derived.nextBlocker.id, "core.delivery_audio");
   assert.equal(
     derived.steps.find(({ id }) => id === "media").status,
     "needs_action"
@@ -76,4 +77,40 @@ test("episode evidence completes details and media without duplicate nodes", () 
     "complete"
   );
   assert.equal(derived.nextStep, "review");
+  assert.equal(derived.nextBlocker, null);
+});
+
+test("episode workflow prioritizes one exact blocker in step order", () => {
+  const derived = deriveEpisodeWorkflow({
+    title: "Episode",
+    summary: "Summary",
+    sourceLanguage: "es",
+    mediaStatus: "pending",
+    status: "draft"
+  }, {
+    candidateGate: { ready: false, blockerCount: 3 },
+    nodes: [
+      {
+        id: "editorial.production_review",
+        severity: "blocker",
+        status: "missing"
+      },
+      {
+        id: "core.delivery_audio",
+        severity: "blocker",
+        status: "missing"
+      },
+      {
+        id: "editorial.word_alignment",
+        severity: "blocker",
+        status: "missing"
+      }
+    ]
+  });
+
+  assert.equal(derived.nextStep, "media");
+  assert.equal(derived.nextBlocker.id, "core.delivery_audio");
+  assert.equal(derived.nextTarget, "delivery_audio");
+  assert.equal(workflowTargetForNode(derived.nextBlocker), "delivery_audio");
+  assert.equal(derived.blockers.length, 3);
 });
