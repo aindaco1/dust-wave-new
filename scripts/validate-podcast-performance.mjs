@@ -13,6 +13,7 @@ const [
   adminLayout,
   memberLayout,
   tracer,
+  traceContract,
   stagingBuild,
   webpBuild,
   publicStyles,
@@ -33,6 +34,10 @@ const [
   ),
   readFile(
     new URL("scripts/trace-podcast-admin-performance.mjs", repositoryRoot),
+    "utf8"
+  ),
+  readFile(
+    new URL("scripts/lib/podcast-admin-trace-contract.mjs", repositoryRoot),
     "utf8"
   ),
   readFile(
@@ -173,7 +178,7 @@ for (const [name, layout] of [
 }
 
 const scriptBudgets = new Map([
-  ["src/js/podcast-admin.js", 304_000],
+  ["src/js/podcast-admin.js", 304_200],
   ["src/js/podcast-admin-episode-context.js", 5_000],
   ["src/js/podcast-admin-episode-context-setup.js", 3_000],
   ["src/js/podcast-admin-show-context.js", 2_000],
@@ -375,6 +380,21 @@ assert.match(
   tracer,
   /LAYOUT_PROBE[\s\S]+viewportOverflow[\s\S]+Clipped elements/,
   "performance traces must reject clipped descendants outside intentional scrollers"
+);
+assert.match(
+  tracer,
+  /distribution:[\s\S]+guidancePresent[\s\S]+actionableDirectoryCount[\s\S]+openDirectoryCount[\s\S]+summaryCount/,
+  "Distribution traces must observe the progressive provider interaction contract"
+);
+assert.match(
+  tracer,
+  /assertPodcastAdminTraceContract\(observed, \{ adminTab \}\)/,
+  "performance traces must enforce the selected admin interaction contract"
+);
+assert.match(
+  traceContract,
+  /guidanceOpen !== false[\s\S]+directoryCount < MINIMUM_LAUNCH_DIRECTORIES[\s\S]+actionableDirectoryCount > 0 \? 1 : 0[\s\S]+openDirectoryCount !== expectedOpenCount[\s\S]+summaryCount !== distribution\.directoryCount/,
+  "Distribution traces must fail closed on guidance, directory, and proof-summary regressions"
 );
 assert.match(
   tracer,

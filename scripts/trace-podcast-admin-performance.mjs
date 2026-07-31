@@ -12,6 +12,10 @@ import {
 } from "node:fs/promises";
 import { homedir, tmpdir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
+import {
+  assertPodcastAdminTraceContract,
+  podcastAdminTraceContractSummary
+} from "./lib/podcast-admin-trace-contract.mjs";
 
 const DEFAULT_URL =
   "https://dust-wave-website-staging.pages.dev/admin/podcasts/";
@@ -139,7 +143,37 @@ const LAYOUT_PROBE = `(() => {
     )?.dataset.tab ?? null,
     activeGroups: Array.from(document.querySelectorAll(
       '[data-podcast-workspace-group][open]'
-    )).map((group) => group.dataset.podcastWorkspaceGroup)
+    )).map((group) => group.dataset.podcastWorkspaceGroup),
+    distribution: (() => {
+      const guidance = document.querySelector(
+        '.podcast-admin__distribution-guidance'
+      );
+      const distributionRoot = document.querySelector(
+        '[data-podcast-distribution]'
+      );
+      const directories = Array.from(document.querySelectorAll(
+        '.podcast-admin__directory-card'
+      ));
+      return {
+        guidancePresent: Boolean(guidance),
+        guidanceOpen: guidance?.open ?? null,
+        directoryCount: directories.length,
+        actionableDirectoryCount: directories.filter(
+          (directory) => directory.dataset.actionable === 'true'
+        ).length,
+        openDirectoryCount: directories.filter((directory) => directory.open)
+          .length,
+        summaryCount: directories.filter((directory) => Boolean(
+          directory.querySelector(
+            'summary .podcast-admin__directory-heading p'
+          )
+        )).length,
+        statusText: String(distributionRoot?.textContent || '')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .slice(0, 240)
+      };
+    })()
   };
 })()`;
 
@@ -675,6 +709,7 @@ async function captureTrace({
       + `maximum ${MAX_AUTHENTICATED_CLS.toFixed(1)}.`
     );
   }
+  assertPodcastAdminTraceContract(observed, { adminTab });
   const tracingComplete = cdp.waitForEvent(
     "Tracing.tracingComplete",
     30_000
@@ -852,6 +887,10 @@ async function main() {
     await stopChrome(child);
     await verifyJsonTrace(outputPath, url);
     const traceDetails = await stat(outputPath);
+    const contractSummary = podcastAdminTraceContractSummary(
+      observed,
+      { adminTab }
+    );
     process.stdout.write(
       [
         "Podcast Admin Chrome trace captured.",
@@ -862,6 +901,7 @@ async function main() {
         `Authenticated admin: ${observed.authenticatedAdmin ? "yes" : "no"}`,
         `Cumulative layout shift: ${observed.cumulativeLayoutShift.toFixed(4)}`,
         `Active admin tab: ${observed.activeTab || "not detected"}`,
+        ...(contractSummary ? [contractSummary] : []),
         `Duration: ${durationSeconds}s`,
         `Trace: ${outputPath}`,
         `Size: ${traceDetails.size.toLocaleString("en-US")} bytes`,

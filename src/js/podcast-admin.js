@@ -1381,6 +1381,9 @@ function startPodcastAdmin(root) {
         showChanged: selectedShowId !== previousShowId
       });
       await Promise.all([loadEpisodes(), loadCampaigns()]);
+      if (!root.querySelector("#podcast-panel-distribution").hidden) {
+        await loadDistribution();
+      }
       const marketingPanel = root.querySelector("#podcast-panel-marketing");
       if (marketingPanel && !marketingPanel.hidden) {
         await Promise.all([
@@ -7039,6 +7042,9 @@ function startPodcastAdmin(root) {
   }) {
     const card = document.createElement("details");
     card.className = "podcast-admin__directory-card";
+    card.dataset.actionable = String(
+      destination.enabled && !destination.certification?.certified
+    );
     distributionDisclosures.mount(card, disclosure, destination.id);
 
     const summary = document.createElement("summary");

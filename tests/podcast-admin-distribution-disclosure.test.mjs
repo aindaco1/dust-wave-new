@@ -48,6 +48,53 @@ test("preserves operator disclosure choices across refreshes per show", () => {
   );
 });
 
+test("does not reopen a directory after the operator closes every card", () => {
+  const state = createDistributionDisclosureState();
+  state.prepare("show-1", destinations);
+  state.set("show-1", "first-actionable", false);
+  assert.deepEqual([...state.prepare("show-1", destinations)], []);
+});
+
+test("keeps all cards closed when no enabled directory needs action", () => {
+  const state = createDistributionDisclosureState();
+  assert.deepEqual([...state.prepare("show-ready", [
+    {
+      id: "ready",
+      enabled: true,
+      certification: { certified: true }
+    },
+    {
+      id: "disabled",
+      enabled: false,
+      certification: { certified: false }
+    }
+  ])], []);
+});
+
+test("mount wires native disclosure toggles back into show state", () => {
+  const state = createDistributionDisclosureState();
+  const context = state.context("show-1", destinations);
+  const listeners = new Map();
+  const card = {
+    dataset: {},
+    open: false,
+    addEventListener(type, listener) {
+      listeners.set(type, listener);
+    }
+  };
+
+  state.mount(card, context, "first-actionable");
+  assert.equal(card.dataset.destinationId, "first-actionable");
+  assert.equal(card.open, true);
+
+  card.open = false;
+  listeners.get("toggle")();
+  assert.deepEqual(
+    [...state.context("show-1", destinations).openDestinationIds],
+    []
+  );
+});
+
 test("reports the compact four-part certification progress", () => {
   assert.deepEqual(distributionEvidenceProgress({
     ownerVerified: true,
