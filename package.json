@@ -26,7 +26,7 @@
     "security:secrets": "node shared/dust-wave-platform/scripts/scan-tracked-secrets.mjs",
     "security:audit": "npm audit --audit-level=high",
     "check:podcasts": "npm run security:secrets && npm run security:audit && npm run test:podcasts && npm run test:podcast-admin-context",
-    "test:podcast-admin-context": "node --test tests/podcast-admin-episode-context.test.mjs && node --check src/js/podcast-admin-episode-context.js && node --check src/js/podcast-admin-episode-context-setup.js",
+    "test:podcast-admin-context": "node --test tests/podcast-admin-episode-context.test.mjs tests/podcast-admin-show-context.test.mjs && node --check src/js/podcast-admin-episode-context.js && node --check src/js/podcast-admin-episode-context-setup.js && node --check src/js/podcast-admin-show-context.js",
     "test:i18n": "node scripts/validate-i18n.mjs",
     "test:public-shell": "node scripts/validate-public-shell.mjs",
     "test:footer": "npm run test:public-shell",

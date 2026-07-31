@@ -248,6 +248,28 @@
   max-width: 20rem;
 }
 
+.podcast-admin__show-context {
+  align-items: center;
+  display: grid;
+  flex: 0 1 20rem;
+  gap: var(--dw-admin-field-gap);
+  min-width: 0;
+}
+
+.podcast-admin__show-context[hidden] {
+  display: none;
+}
+
+.podcast-admin__show-context select {
+  max-width: 20rem;
+  width: 100%;
+}
+
+.podcast-admin__show-context .podcast-admin__pill {
+  overflow-wrap: anywhere;
+  text-align: right;
+}
+
 .podcast-admin__inline-form,
 .podcast-admin__field-grid {
   display: grid;
@@ -2522,6 +2544,7 @@
 
   .podcast-admin__header > .btn,
   .podcast-admin__panel-heading > :is(.btn, select),
+  .podcast-admin__panel-heading > .podcast-admin__show-context,
   .podcast-admin__panel-heading > .podcast-admin__billing-actions,
   .podcast-admin__panel-heading > .podcast-admin__heading-actions {
     max-width: none;
@@ -2531,6 +2554,10 @@
   .podcast-admin__heading-actions {
     align-items: stretch;
     display: grid;
+  }
+
+  .podcast-admin__show-context .podcast-admin__pill {
+    text-align: left;
   }
 
   .podcast-admin__transcript-actions .btn,

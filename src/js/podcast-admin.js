@@ -38,6 +38,7 @@ import { clipDownloadActionMarkup, mountTranscriptDownloads } from "./podcast-ad
 import { mountTranscriptCaptionImport } from "./podcast-admin-transcript-import.js";
 import { mountTranscriptSearch } from "./podcast-admin-transcript-search.js";
 import { mountPodcastEpisodeContext } from "./podcast-admin-episode-context-setup.js";
+import { mountPodcastShowContext } from "./podcast-admin-show-context.js";
 import { syncReviewDraftButton } from "./podcast-admin-dirty-controls.js";
 import { adminText, editorLabels } from "./podcast-admin-text.js";
 import { ALIGNMENT_WORKFLOW, AUDIO_QC_POLICY_FIELDS, MAXIMUM_ALIGNMENT_BENCHMARK_BYTES, TRANSCRIPTION_CHUNK_WORKFLOW, TRANSCRIPT_CUES_PER_PAGE } from "./podcast-admin-constants.js";
@@ -82,7 +83,8 @@ function startPodcastAdmin(root) {
   const showCards = root.querySelector("[data-podcast-show-cards]");
   const showForm = root.querySelector("[data-podcast-show-form]");
   const showStatus = root.querySelector("[data-podcast-show-status]");
-  const showSelects = [...root.querySelectorAll("[data-podcast-show-select]")];
+  const showContext = mountPodcastShowContext(root);
+  const showSelects = showContext.selects;
   const episodeForm = root.querySelector("[data-podcast-episode-form]");
   const episodeStatus = root.querySelector("[data-podcast-episode-status]");
   const episodeList = root.querySelector("[data-podcast-episode-list]");
@@ -1406,11 +1408,7 @@ function startPodcastAdmin(root) {
   }
 
   function fillShowSelect() {
-    for (const showSelect of showSelects) {
-      showSelect.replaceChildren(...shows.map((show) =>
-        new Option(show.title, show.id, false, show.id === selectedShowId)
-      ));
-    }
+    showContext.setShows(shows, selectedShowId);
   }
 
   function fillShowForm() {

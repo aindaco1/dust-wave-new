@@ -176,6 +176,7 @@ const scriptBudgets = new Map([
   ["src/js/podcast-admin.js", 304_000],
   ["src/js/podcast-admin-episode-context.js", 5_000],
   ["src/js/podcast-admin-episode-context-setup.js", 3_000],
+  ["src/js/podcast-admin-show-context.js", 2_000],
   ["src/js/podcast-admin-show-settings.js", 4_000],
   ["src/js/podcast-admin-show-prices.js", 8_000],
   ["src/js/podcast-admin-transcript-review.js", 12_000],

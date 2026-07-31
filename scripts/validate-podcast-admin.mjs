@@ -38,6 +38,10 @@ const episodeContextSetupScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-episode-context-setup.js'),
   'utf8'
 );
+const showContextScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-show-context.js'),
+  'utf8'
+);
 const showSettingsScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-show-settings.js'),
   'utf8'
@@ -253,6 +257,16 @@ assert.equal(
   [...adminTemplate.matchAll(/data-podcast-current-episode/g)].length,
   1,
   'Episodes must expose one canonical current-episode selector'
+);
+assert.equal(
+  [...adminTemplate.matchAll(/data-podcast-show-context/g)].length,
+  2,
+  'Episode and Settings headings must reuse the same show-context contract'
+);
+assert.equal(
+  [...adminTemplate.matchAll(/data-podcast-show-name/g)].length,
+  2,
+  'Each show context must support a non-interactive single-show label'
 );
 assert.match(
   adminTemplate,
@@ -471,7 +485,17 @@ assert.equal(englishI18n.podcast.admin.tabs.settings, 'Settings');
 assert.equal(spanishI18n.podcast.admin.tabs.settings, 'Configuración');
 assert.match(
   adminScript,
-  /const showSelects = \[\.\.\.root\.querySelectorAll\([\s\S]+for \(const showSelect of showSelects\)/
+  /const showContext = mountPodcastShowContext\(root\);[\s\S]+const showSelects = showContext\.selects;[\s\S]+showContext\.setShows\(shows, selectedShowId\)/
+);
+assert.match(
+  showContextScript,
+  /singleShow = normalized\.length === 1[\s\S]+select\.hidden = Boolean\(singleShow\)[\s\S]+name\.hidden = !singleShow/,
+  'single-show mode must remove selector chrome without removing its state'
+);
+assert.doesNotMatch(
+  showContextScript,
+  /innerHTML|insertAdjacentHTML|localStorage|sessionStorage|\bfetch\s*\(/,
+  'show context must remain local and render only through DOM text'
 );
 assert.match(adminTemplate, /data-podcast-episode-form/);
 assert.match(adminTemplate, /data-podcast-episode-form-heading/);
@@ -1311,6 +1335,11 @@ assert.match(
   adminStyles,
   /\.podcast-admin__episode-context \{[\s\S]+grid-template-columns: minmax\(0, 1fr\) minmax\(15rem, 24rem\);[\s\S]+@media \(max-width: 47\.9375rem\) \{[\s\S]+\.podcast-admin__episode-context \{[\s\S]+grid-template-columns: minmax\(0, 1fr\);[\s\S]+position: static;/,
   'Current episode context must stay bounded and become one non-sticky mobile column'
+);
+assert.match(
+  adminStyles,
+  /\.podcast-admin__show-context \{[\s\S]+min-width: 0;[\s\S]+\.podcast-admin__show-context select \{[\s\S]+width: 100%;[\s\S]+@media \(max-width: 760px\)[\s\S]+\.podcast-admin__panel-heading > \.podcast-admin__show-context[\s\S]+width: 100%;/,
+  'show context must remain bounded and fill the available mobile heading width'
 );
 assert.match(
   adminStyles,

@@ -73,7 +73,10 @@ eleventyComputed:
               <h2>{{ workbench.episodes.heading }}</h2>
               <p>{{ workbench.episodes.intro }}</p>
             </div>
-            <select name="showId" data-podcast-show-select aria-label="{{ workbench.common.show }}"></select>
+            <div class="podcast-admin__show-context" data-podcast-show-context hidden>
+              <span class="podcast-admin__pill" data-podcast-show-name hidden></span>
+              <select name="showId" data-podcast-show-select aria-label="{{ workbench.common.show }}"></select>
+            </div>
           </div>
           <section
             class="podcast-admin__episode-context"
@@ -1634,7 +1637,10 @@ eleventyComputed:
               <p>{{ workbench.overview.settingsIntro }}</p>
             </div>
             <div class="podcast-admin__heading-actions">
-              <select name="showId" data-podcast-show-select aria-label="{{ workbench.common.show }}"></select>
+              <div class="podcast-admin__show-context" data-podcast-show-context hidden>
+                <span class="podcast-admin__pill" data-podcast-show-name hidden></span>
+                <select name="showId" data-podcast-show-select aria-label="{{ workbench.common.show }}"></select>
+              </div>
               <button class="btn btn-outline-light" type="button" data-podcast-refresh>{{ workbench.common.refresh }}</button>
             </div>
           </div>

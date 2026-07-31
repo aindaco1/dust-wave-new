@@ -2,6 +2,10 @@
 
 ## v1.3.0 - Unreleased
 
+- Simplified the single-show launch UI by presenting the current show as
+  compact context instead of an unnecessary selector. The same shared
+  controller restores synchronized selectors automatically when a second show
+  exists, so the underlying architecture remains multi-show ready.
 - Added one bilingual, responsive Current episode context above the publishing
   workflow. Its selection now keeps all nine episode-scoped production tools
   synchronized, removes their repeated selectors from view, preserves the
