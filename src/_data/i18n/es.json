@@ -1405,6 +1405,7 @@
       "failureRecoveryEvidence": "Recuperación ante fallos verificada",
       "evidenceVerified": "Verificada",
       "evidenceMissing": "Faltante",
+      "directoryEvidenceReadySummary": "%{ready} de %{total} pruebas listas",
       "canonicalRssFeed": "Feed RSS canónico",
       "copyFeedUrl": "Copiar URL del feed",
       "noDistributionDestinations": "No hay destinos de distribución configurados.",

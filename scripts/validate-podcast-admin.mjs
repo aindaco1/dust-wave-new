@@ -186,6 +186,13 @@ const distributionCertificationScript = await readFile(
   ),
   'utf8'
 );
+const distributionDisclosureScript = await readFile(
+  path.join(
+    repositoryRoot,
+    'src/js/podcast-admin-distribution-disclosure.js'
+  ),
+  'utf8'
+);
 const youtubeAudioRenditionScript = await readFile(
   path.join(
     repositoryRoot,
@@ -306,6 +313,7 @@ for (const code of controlledYoutubeErrorCodes) {
 const staticRuntimeKeys = [
   ...adminScript.matchAll(/adminText\(\s*"([^"]+)"/g),
   ...distributionCertificationScript.matchAll(/text\(\s*"([^"]+)"/g),
+  ...distributionDisclosureScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...audioDerivativeScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...analyticsScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...marketingLinksScript.matchAll(/text\(\s*"([^"]+)"/g),
@@ -1426,6 +1434,31 @@ assert.match(
 );
 assert.match(distributionCertificationScript, /requiredDestinations/);
 assert.match(distributionCertificationScript, /failureRecoveryVerified/);
+assert.match(
+  distributionDisclosureScript,
+  /firstActionable[\s\S]+destination\?\.enabled[\s\S]+!destination\?\.certification\?\.certified/,
+  'Distribution should initially disclose only the first actionable directory'
+);
+assert.match(
+  distributionDisclosureScript,
+  /expandedByShow[\s\S]+openDestinationIds[\s\S]+addEventListener\("toggle"/,
+  'Distribution disclosure choices must persist by show across rerenders'
+);
+assert.match(
+  adminStyles,
+  /\.podcast-admin__directory-card > summary \{[\s\S]+grid-template-columns: minmax\(0, 1fr\) 2\.25rem;/,
+  'Directory summaries must reserve responsive space for their disclosure control'
+);
+assert.match(
+  adminStyles,
+  /\.podcast-admin__distribution-form-link \{[\s\S]+grid-column: span 2;/,
+  'Directory evidence URLs must share balanced desktop rows'
+);
+assert.match(
+  adminStyles,
+  /@media \(max-width: 56\.25rem\)[\s\S]+\.podcast-admin__distribution-form \{[\s\S]+repeat\(2, minmax\(0, 1fr\)\)/,
+  'Directory forms must use an intermediate two-column tablet layout'
+);
 assert.match(
   distributionCertificationScript,
   /feed\.status === "valid" && feed\.currentValidator === false/,

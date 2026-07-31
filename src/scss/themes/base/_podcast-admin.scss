@@ -1384,18 +1384,49 @@
 }
 
 .podcast-admin__directory-card > summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 2.25rem;
+  align-items: center;
+  gap: var(--dw-admin-space-sm);
+  min-width: 0;
   cursor: pointer;
-  list-style-position: outside;
+  list-style: none;
 }
 
-.podcast-admin__directory-card > summary::marker {
-  color: #ff5964;
+.podcast-admin__directory-card > summary::-webkit-details-marker {
+  display: none;
+}
+
+.podcast-admin__directory-card > summary::after {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  color: #fff;
+  content: "+";
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.podcast-admin__directory-card[open] > summary::after {
+  content: "−";
 }
 
 .podcast-admin__directory-card[open] > summary {
   border-bottom: 1px solid rgba(255, 255, 255, 0.14);
-  margin-bottom: var(--dw-admin-space-md);
   padding-bottom: var(--dw-admin-space-md);
+}
+
+.podcast-admin__directory-card > summary:focus-visible {
+  outline: 2px solid #ff5964;
+  outline-offset: 0.35rem;
+}
+
+.podcast-admin__directory-card > summary .podcast-admin__directory-heading,
+.podcast-admin__directory-card > summary .podcast-admin__directory-heading > * {
+  min-width: 0;
 }
 
 .podcast-admin__directory-heading h3,
@@ -1407,6 +1438,11 @@
 .podcast-admin__directory-heading p,
 .podcast-admin__directory-details {
   color: #c7c2bb;
+}
+
+.podcast-admin__directory-card > summary .podcast-admin__directory-heading p {
+  margin-top: var(--dw-admin-space-2xs);
+  font-size: 0.9rem;
 }
 
 .podcast-admin__directory-notes {
@@ -1448,6 +1484,10 @@
 
 .podcast-admin__distribution-form-wide {
   grid-column: 1 / -1;
+}
+
+.podcast-admin__distribution-form-link {
+  grid-column: span 2;
 }
 
 .podcast-admin__distribution-form textarea {
@@ -2571,6 +2611,10 @@
   .dw-admin-workflow__list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .podcast-admin__distribution-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 47.9375rem) {
@@ -2684,6 +2728,10 @@
 
   .podcast-admin__distribution-form .btn {
     width: 100%;
+  }
+
+  .podcast-admin__distribution-form-link {
+    grid-column: 1 / -1;
   }
 
   .podcast-admin__certification-list li {

@@ -1,0 +1,71 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import {
+  createDistributionDisclosureState,
+  distributionEvidenceProgress,
+  distributionEvidenceSummary
+} from "../src/js/podcast-admin-distribution-disclosure.js";
+
+const destinations = [
+  {
+    id: "disabled",
+    enabled: false,
+    certification: { certified: false }
+  },
+  {
+    id: "first-actionable",
+    enabled: true,
+    certification: { certified: false }
+  },
+  {
+    id: "second-actionable",
+    enabled: true,
+    certification: { certified: false }
+  }
+];
+
+test("opens only the first actionable directory on initial render", () => {
+  const state = createDistributionDisclosureState();
+  assert.deepEqual(
+    [...state.prepare("show-1", destinations)],
+    ["first-actionable"]
+  );
+});
+
+test("preserves operator disclosure choices across refreshes per show", () => {
+  const state = createDistributionDisclosureState();
+  state.prepare("show-1", destinations);
+  state.set("show-1", "first-actionable", false);
+  state.set("show-1", "second-actionable", true);
+
+  assert.deepEqual(
+    [...state.prepare("show-1", destinations)],
+    ["second-actionable"]
+  );
+  assert.deepEqual(
+    [...state.prepare("show-2", destinations)],
+    ["first-actionable"]
+  );
+});
+
+test("reports the compact four-part certification progress", () => {
+  assert.deepEqual(distributionEvidenceProgress({
+    ownerVerified: true,
+    feedValidated: true,
+    ingestionObserved: false,
+    failureRecoveryVerified: false
+  }), { ready: 2, total: 4 });
+});
+
+test("combines provider semantics with localized proof progress", () => {
+  const text = (key, values) => key === "rssFollowingDirectory"
+    ? "RSS directory"
+    : `${values.ready}/${values.total} proofs`;
+  assert.equal(
+    distributionEvidenceSummary({
+      mode: "rss",
+      certification: { ownerVerified: true }
+    }, text),
+    "RSS directory · 1/4 proofs"
+  );
+});

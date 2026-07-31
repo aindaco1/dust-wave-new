@@ -63,6 +63,7 @@ import {
   distributionCertificationList,
   renderDistributionLaunchClaim
 } from "./podcast-admin-distribution-certification.js";
+import { createDistributionDisclosureState, distributionEvidenceSummary } from "./podcast-admin-distribution-disclosure.js";
 import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js?v=0.9.0";
 import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js?v=0.9.0";
 import { responsiveTurnstileSize } from "./dust-wave-admin-shell/turnstile.js?v=0.9.0";
@@ -367,6 +368,7 @@ function startPodcastAdmin(root) {
   const adPlanStatus = root.querySelector("[data-podcast-ad-plan-status]");
   const adPlanResult = root.querySelector("[data-podcast-ad-plan-result]");
   const distributionRoot = root.querySelector("[data-podcast-distribution]");
+  const distributionDisclosures = createDistributionDisclosureState();
   const distributionFilter = root.querySelector(
     "[data-podcast-distribution-filter]"
   );
@@ -6823,10 +6825,15 @@ function startPodcastAdmin(root) {
 
     const list = document.createElement("div");
     list.className = "podcast-admin__directory-list";
+    const disclosure = distributionDisclosures.context(
+      selectedShowId,
+      destinations
+    );
     for (const destination of destinations) {
       list.append(
         distributionDestinationCard(destination, {
-          episodeId: payload.episodeId || ""
+          episodeId: payload.episodeId || "",
+          disclosure
         })
       );
     }
@@ -7026,20 +7033,13 @@ function startPodcastAdmin(root) {
     );
   }
 
-  function distributionDestinationCard(destination, { episodeId }) {
+  function distributionDestinationCard(destination, {
+    episodeId,
+    disclosure
+  }) {
     const card = document.createElement("details");
     card.className = "podcast-admin__directory-card";
-    card.dataset.destinationId = String(destination.id || "");
-    card.open = Boolean(
-      destination.ownerSetupStatus !== "verified"
-      || destination.setupError
-      || destination.publicationError
-      || destination.publicationStatus === "failed"
-      || (
-        destination.certification
-        && !destination.certification.certified
-      )
-    );
+    distributionDisclosures.mount(card, disclosure, destination.id);
 
     const summary = document.createElement("summary");
     const heading = document.createElement("div");
@@ -7050,9 +7050,10 @@ function startPodcastAdmin(root) {
       destination.name || adminText("directoryFallback")
     );
     const semantics = document.createElement("p");
-    semantics.textContent = destination.mode === "direct_api"
-      ? adminText("directProviderAdapter")
-      : adminText("rssFollowingDirectory");
+    semantics.textContent = distributionEvidenceSummary(
+      destination,
+      adminText
+    );
     titleGroup.append(title, semantics);
     const badges = document.createElement("div");
     badges.className = "podcast-admin__badges";
@@ -7245,6 +7246,8 @@ function startPodcastAdmin(root) {
       submissionDateLabel.append(submissionDate);
 
       const submissionEvidenceLabel = document.createElement("label");
+      submissionEvidenceLabel.className =
+        "podcast-admin__distribution-form-link";
       submissionEvidenceLabel.textContent = adminText(
         "submissionEvidenceOptional"
       );
@@ -7260,6 +7263,7 @@ function startPodcastAdmin(root) {
       submissionEvidenceLabel.append(submissionEvidence);
 
       const listingLabel = document.createElement("label");
+      listingLabel.className = "podcast-admin__distribution-form-link";
       listingLabel.textContent = adminText(
         "publicListingOptional"
       );
