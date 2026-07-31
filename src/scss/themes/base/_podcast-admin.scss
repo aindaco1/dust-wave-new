@@ -488,6 +488,7 @@
 .podcast-admin__workspace-content {
   display: grid;
   gap: var(--dw-admin-space-lg);
+  grid-template-columns: minmax(0, 1fr);
   min-width: 0;
 }
 

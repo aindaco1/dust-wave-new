@@ -293,6 +293,10 @@ The command launches a temporary, extension-free Chrome profile, records an
 by Git). It never reuses browser cookies or an authenticated session. The
 tracer discovers system Chrome/Chromium and Playwright's standard browser cache;
 set `PLAYWRIGHT_BROWSERS_PATH` or pass `--chrome` for a custom installation.
+It also verifies the exact CSS viewport, enforced CSP, requested admin context,
+and clipped descendants outside intentional horizontal scrollers. The summary
+reports cumulative layout shift and rejects authenticated traces above the 0.1
+good-experience threshold.
 
 Use `--viewport 390x844` for the mobile breakpoint, or override the safe
 staging default explicitly:

@@ -392,6 +392,11 @@ assert.match(
 );
 assert.match(
   adminScript,
+  /showAuthenticated\(result\.identity\);[\s\S]+await Promise\.all\(\[loadShows\(\), loadAlignmentBenchmarks\(\)\]\);[\s\S]+app\.hidden = false;/,
+  'Authenticated admin content must reveal only after its initial data has settled'
+);
+assert.match(
+  adminScript,
   /function loadTurnstile\(\) \{[\s\S]+document\.head\.append\(script\);/,
   'The login surface must load Turnstile on demand'
 );
@@ -399,7 +404,11 @@ assert.match(adminConfig, /require\("\.\/podcastApi\.js"\)\.apiOrigin/);
 assert.match(podcastApiConfig, /https:\/\/feeds\.dustwave\.xyz/);
 assert.doesNotMatch(adminConfig, /workers\.dev/);
 assert.doesNotMatch(podcastApiConfig, /workers\.dev/);
-assert.match(adminTemplate, /data-podcast-auth/);
+assert.match(
+  adminTemplate,
+  /data-podcast-auth aria-labelledby="podcast-login-title" hidden/,
+  'The login surface must remain concealed until the session check resolves'
+);
 assert.match(adminTemplate, /data-tab="settings"/);
 assert.match(adminTemplate, /id="podcast-panel-settings"/);
 assert.equal(
@@ -981,6 +990,11 @@ assert.match(
   catalogScript,
   /localizedCode\("language", episode\.sourceLanguage \|\| "not_set"\)/
 );
+assert.match(
+  catalogScript,
+  /<a class="btn btn-outline-light" href="\$\{escapeAttribute\(show\.canonicalUrl\)\}">/,
+  'The standalone canonical show-page action must retain the shared 44px control target'
+);
 assert.match(catalogScript, /data-edit-episode=/);
 assert.match(adminScript, /renderShowCatalog\(\{/);
 assert.match(adminScript, /renderEpisodeCatalog\(\{/);
@@ -1345,6 +1359,11 @@ assert.match(
   adminStyles,
   /\.podcast-admin__show-context \{[\s\S]+min-width: 0;[\s\S]+\.podcast-admin__show-context select \{[\s\S]+width: 100%;[\s\S]+@media \(max-width: 760px\)[\s\S]+\.podcast-admin__panel-heading > \.podcast-admin__show-context[\s\S]+width: 100%;/,
   'show context must remain bounded and fill the available mobile heading width'
+);
+assert.match(
+  adminStyles,
+  /\.podcast-admin__workspace-content \{[\s\S]+grid-template-columns: minmax\(0, 1fr\);[\s\S]+min-width: 0;/,
+  'Nested admin workspaces must constrain intrinsic field widths instead of clipping narrow-screen content'
 );
 assert.match(
   adminStyles,

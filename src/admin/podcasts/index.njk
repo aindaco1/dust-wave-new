@@ -35,7 +35,7 @@ eleventyComputed:
 
   <p class="podcast-admin__status" data-podcast-global-status role="status" aria-live="polite"></p>
 
-  <section class="podcast-admin__auth" data-podcast-auth aria-labelledby="podcast-login-title">
+  <section class="podcast-admin__auth" data-podcast-auth aria-labelledby="podcast-login-title" hidden>
     <h2 id="podcast-login-title">{{ i18n | t(language, "podcast.admin.signIn") }}</h2>
     <p>{{ i18n | t(language, "podcast.admin.signInBody") }}</p>
     <form data-podcast-login-form>

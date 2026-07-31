@@ -17,6 +17,7 @@ const DEFAULT_URL =
   "https://dust-wave-website-staging.pages.dev/admin/podcasts/";
 const DEFAULT_DURATION_SECONDS = 8;
 const DEFAULT_VIEWPORT = "1440x900";
+const MAX_AUTHENTICATED_CLS = 0.1;
 const ADMIN_TABS = new Set([
   "episodes",
   "distribution",
@@ -57,8 +58,9 @@ const SAFE_CHROME_STARTUP_DOCUMENTS = new Set([
   "chrome://newtab/",
   "chrome://webui-toolbar.top-chrome/"
 ]);
-const CSP_VIOLATION_PROBE = `(() => {
+const RUNTIME_PROBE = `(() => {
   globalThis.__dustWaveCspViolations = [];
+  globalThis.__dustWaveCumulativeLayoutShift = 0;
   document.addEventListener("securitypolicyviolation", (event) => {
     globalThis.__dustWaveCspViolations.push({
       blockedUrl: event.blockedURI,
@@ -68,7 +70,78 @@ const CSP_VIOLATION_PROBE = `(() => {
       sourceFile: event.sourceFile
     });
   });
+  try {
+    new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        if (!entry.hadRecentInput) {
+          globalThis.__dustWaveCumulativeLayoutShift += entry.value;
+        }
+      }
+    }).observe({ type: "layout-shift", buffered: true });
+  } catch {
+    globalThis.__dustWaveCumulativeLayoutShift = null;
+  }
 })();`;
+const LAYOUT_PROBE = `(() => {
+  const activePanel = document.querySelector('[role="tabpanel"]:not([hidden])');
+  const root = activePanel || document.querySelector('main') || document.body;
+  const isInsideIntentionalScroller = (element) => {
+    for (
+      let ancestor = element.parentElement;
+      ancestor && ancestor !== root.parentElement;
+      ancestor = ancestor.parentElement
+    ) {
+      const overflowX = getComputedStyle(ancestor).overflowX;
+      if (
+        (overflowX === 'auto' || overflowX === 'scroll')
+        && ancestor.scrollWidth > ancestor.clientWidth + 1
+      ) {
+        return true;
+      }
+    }
+    return false;
+  };
+  const viewportOverflow = Array.from(root.querySelectorAll('*'))
+    .flatMap((element) => {
+      const style = getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      if (
+        style.display === 'none'
+        || style.visibility === 'hidden'
+        || rect.width <= 0
+        || rect.height <= 0
+        || isInsideIntentionalScroller(element)
+        || (rect.left >= -1 && rect.right <= innerWidth + 1)
+      ) {
+        return [];
+      }
+      return [{
+        tag: element.tagName.toLowerCase(),
+        id: element.id || null,
+        classes: Array.from(element.classList).slice(0, 4),
+        left: Math.round(rect.left),
+        right: Math.round(rect.right),
+        width: Math.round(rect.width)
+      }];
+    })
+    .slice(0, 20);
+  return {
+    innerWidth,
+    innerHeight,
+    scrollWidth: document.documentElement.scrollWidth,
+    viewportOverflow,
+    authenticatedAdmin:
+      document.querySelector('[data-podcast-app]')?.hidden === false,
+    cumulativeLayoutShift: globalThis.__dustWaveCumulativeLayoutShift ?? null,
+    securityPolicyViolations: globalThis.__dustWaveCspViolations ?? null,
+    activeTab: document.querySelector(
+      '[role="tab"][aria-selected="true"]'
+    )?.dataset.tab ?? null,
+    activeGroups: Array.from(document.querySelectorAll(
+      '[data-podcast-workspace-group][open]'
+    )).map((group) => group.dataset.podcastWorkspaceGroup)
+  };
+})()`;
 
 function usage() {
   return `Capture an isolated Chrome performance trace for Podcast Admin.
@@ -487,7 +560,7 @@ async function captureTrace({
   await cdp.send("Page.enable");
   await cdp.send("Runtime.enable");
   await cdp.send("Page.addScriptToEvaluateOnNewDocument", {
-    source: CSP_VIOLATION_PROBE
+    source: RUNTIME_PROBE
   });
   if (adminTab) {
     await cdp.send("Page.addScriptToEvaluateOnNewDocument", {
@@ -534,29 +607,26 @@ async function captureTrace({
   if (adminGroup) {
     await cdp.send("Runtime.evaluate", {
       expression:
-        `document.querySelector(${JSON.stringify(adminGroupSelector)}`
-        + `)?.setAttribute("open", "");`
+        `(() => { const group = document.querySelector(`
+        + `${JSON.stringify(adminGroupSelector)});`
+        + `group?.setAttribute("open", "");`
+        + `group?.scrollIntoView({ block: "start" }); })();`
     });
   }
   await delay(durationSeconds * 1_000);
   const measured = await cdp.send("Runtime.evaluate", {
-    expression:
-      "({ innerWidth, innerHeight, "
-      + "scrollWidth: document.documentElement.scrollWidth, "
-      + "securityPolicyViolations: "
-      + "globalThis.__dustWaveCspViolations ?? null, "
-      + "activeTab: document.querySelector("
-      + "'[role=\"tab\"][aria-selected=\"true\"]'"
-      + ")?.dataset.tab ?? null, "
-      + "activeGroups: Array.from(document.querySelectorAll("
-      + "'[data-podcast-workspace-group][open]'"
-      + ")).map((group) => group.dataset.podcastWorkspaceGroup) })",
+    expression: LAYOUT_PROBE,
     returnByValue: true
   });
   const observed = measured.result?.value;
   if (!Array.isArray(observed?.securityPolicyViolations)) {
     throw new Error(
       "Chrome did not install the CSP violation probe before navigation."
+    );
+  }
+  if (!Number.isFinite(observed?.cumulativeLayoutShift)) {
+    throw new Error(
+      "Chrome did not install the layout-shift performance probe before navigation."
     );
   }
   const enforcedViolations = observed.securityPolicyViolations.filter(
@@ -572,6 +642,7 @@ async function captureTrace({
     observed?.innerWidth !== viewport.width
     || observed?.innerHeight !== viewport.height
     || observed?.scrollWidth > viewport.width
+    || observed?.viewportOverflow?.length > 0
   ) {
     throw new Error(
       "Chrome did not honor the exact requested viewport or the page "
@@ -579,7 +650,8 @@ async function captureTrace({
       + `Expected ${viewport.width}x${viewport.height}; observed `
       + `${observed?.innerWidth ?? "unknown"}x`
       + `${observed?.innerHeight ?? "unknown"} with `
-      + `${observed?.scrollWidth ?? "unknown"}px document width.`
+      + `${observed?.scrollWidth ?? "unknown"}px document width. `
+      + `Clipped elements: ${JSON.stringify(observed?.viewportOverflow ?? [])}`
     );
   }
   if (adminTab && observed?.activeTab !== adminTab) {
@@ -591,6 +663,16 @@ async function captureTrace({
   if (adminGroup && !observed?.activeGroups?.includes(adminGroup)) {
     throw new Error(
       `Chrome did not open the requested admin group "${adminGroup}".`
+    );
+  }
+  if (
+    observed.authenticatedAdmin
+    && observed.cumulativeLayoutShift > MAX_AUTHENTICATED_CLS
+  ) {
+    throw new Error(
+      "Authenticated Podcast Admin exceeded the good CLS threshold. "
+      + `Observed ${observed.cumulativeLayoutShift.toFixed(4)}; `
+      + `maximum ${MAX_AUTHENTICATED_CLS.toFixed(1)}.`
     );
   }
   const tracingComplete = cdp.waitForEvent(
@@ -777,6 +859,8 @@ async function main() {
         `Viewport: ${viewport.width}x${viewport.height}`,
         `Verified CSS viewport: ${observed.innerWidth}x${observed.innerHeight}`,
         `Document width: ${observed.scrollWidth}px`,
+        `Authenticated admin: ${observed.authenticatedAdmin ? "yes" : "no"}`,
+        `Cumulative layout shift: ${observed.cumulativeLayoutShift.toFixed(4)}`,
         `Active admin tab: ${observed.activeTab || "not detected"}`,
         `Duration: ${durationSeconds}s`,
         `Trace: ${outputPath}`,

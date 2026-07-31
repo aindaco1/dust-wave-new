@@ -1111,6 +1111,7 @@ function startPodcastAdmin(root) {
       if (token) session.clearFragment();
       showAuthenticated(result.identity);
       await Promise.all([loadShows(), loadAlignmentBenchmarks()]);
+      app.hidden = false;
       setStatus(globalStatus, "");
     } catch (error) {
       showLoggedOut();
@@ -1164,7 +1165,6 @@ function startPodcastAdmin(root) {
   function showAuthenticated(identity) {
     adminIdentity = identity || null;
     authPanel.hidden = true;
-    app.hidden = false;
     logoutButton.hidden = false;
     const roles = (identity?.roles || [])
       .map(({ role }) =>
