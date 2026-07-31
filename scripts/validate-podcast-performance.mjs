@@ -362,13 +362,23 @@ assert.match(
 );
 assert.match(
   tracer,
-  /Page\.addScriptToEvaluateOnNewDocument[\s\S]+source: CSP_VIOLATION_PROBE/,
-  "performance traces must install the CSP probe before navigation"
+  /Page\.addScriptToEvaluateOnNewDocument[\s\S]+source: RUNTIME_PROBE/,
+  "performance traces must install the CSP and CLS probes before navigation"
 );
 assert.match(
   tracer,
   /securityPolicyViolations[\s\S]+enforcedViolations\.length > 0/,
   "performance traces must fail closed on enforced CSP violations"
+);
+assert.match(
+  tracer,
+  /LAYOUT_PROBE[\s\S]+viewportOverflow[\s\S]+Clipped elements/,
+  "performance traces must reject clipped descendants outside intentional scrollers"
+);
+assert.match(
+  tracer,
+  /PerformanceObserver[\s\S]+layout-shift[\s\S]+MAX_AUTHENTICATED_CLS/,
+  "performance traces must enforce the good CLS threshold for authenticated admin sessions"
 );
 assert.match(
   tracer,
