@@ -280,6 +280,8 @@
         "episodes": {
           "heading": "Episodes",
           "intro": "Create the canonical episode record, attach delivery media, then publish one reviewed revision.",
+          "currentEpisode": "Current episode",
+          "currentEpisodeHelp": "Every episode publishing tool below stays on this episode.",
           "new": "New episode",
           "copyGroup": "Episode details",
           "releaseGroup": "Access and release timing",

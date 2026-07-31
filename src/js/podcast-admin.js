@@ -25,16 +25,10 @@ import { mountSavedMarketingLinks } from "./podcast-admin-marketing-links.js";
 import { renderEpisodeCatalog, renderShowCatalog } from "./podcast-admin-catalog.js";
 import { mountEpisodePublishWorkflow } from "./podcast-admin-publish-workflow.js";
 import { mountProgressiveSections } from "./podcast-admin-progressive-sections.js";
-import {
-  mountPodcastAdminWorkspaces
-} from "./podcast-admin-workspaces.js";
-import {
-  mountPodcastAdminToolDisclosure
-} from "./podcast-admin-tool-disclosure.js";
+import { mountPodcastAdminWorkspaces } from "./podcast-admin-workspaces.js";
+import { mountPodcastAdminToolDisclosure } from "./podcast-admin-tool-disclosure.js";
 import { createEpisodePublisher } from "./podcast-admin-publication.js";
-import {
-  createEpisodeWorkflowNavigator
-} from "./podcast-admin-workflow-navigation.js";
+import { createEpisodeWorkflowNavigator } from "./podcast-admin-workflow-navigation.js";
 import { mountEpisodeEditor } from "./podcast-admin-episode-editor.js";
 import { mountShowNotesAssistant } from "./podcast-admin-show-notes.js";
 import { mountChapterDraftAssistant } from "./podcast-admin-chapter-draft.js";
@@ -43,7 +37,7 @@ import { renderClipRecipePreview } from "./podcast-admin-clip-preview.js";
 import { clipDownloadActionMarkup, mountTranscriptDownloads } from "./podcast-admin-download-actions.js";
 import { mountTranscriptCaptionImport } from "./podcast-admin-transcript-import.js";
 import { mountTranscriptSearch } from "./podcast-admin-transcript-search.js";
-import { mountPodcastReviewDraftGuard } from "./podcast-admin-unsaved-changes.js";
+import { mountPodcastEpisodeContext } from "./podcast-admin-episode-context-setup.js";
 import { syncReviewDraftButton } from "./podcast-admin-dirty-controls.js";
 import { adminText, editorLabels } from "./podcast-admin-text.js";
 import { ALIGNMENT_WORKFLOW, AUDIO_QC_POLICY_FIELDS, MAXIMUM_ALIGNMENT_BENCHMARK_BYTES, TRANSCRIPTION_CHUNK_WORKFLOW, TRANSCRIPT_CUES_PER_PAGE } from "./podcast-admin-constants.js";
@@ -88,9 +82,7 @@ function startPodcastAdmin(root) {
   const showCards = root.querySelector("[data-podcast-show-cards]");
   const showForm = root.querySelector("[data-podcast-show-form]");
   const showStatus = root.querySelector("[data-podcast-show-status]");
-  const showSelects = Array.from(
-    root.querySelectorAll("[data-podcast-show-select]")
-  );
+  const showSelects = [...root.querySelectorAll("[data-podcast-show-select]")];
   const episodeForm = root.querySelector("[data-podcast-episode-form]");
   const episodeStatus = root.querySelector("[data-podcast-episode-status]");
   const episodeList = root.querySelector("[data-podcast-episode-list]");
@@ -468,6 +460,8 @@ function startPodcastAdmin(root) {
   let announcementHistoryRequestId = 0;
   let latestProcessorManifest = null;
   let episodeProgressiveTools = null;
+  let episodePublishWorkflow = null;
+  let workspaceGroups = null;
   let turnstileToken = "";
   let turnstileWidgetId;
   let turnstileInitialization;
@@ -510,15 +504,24 @@ function startPodcastAdmin(root) {
     onOpenCue: openTranscriptCue,
     formatError: transcriptInputError
   });
-  const reviewDraftGuard = mountPodcastReviewDraftGuard({
-    showSelects, transcriptEpisodeSelect, transcriptLanguageSelect,
-    chapterEpisodeSelect, logoutButton,
+  const {
+    context: episodeContext,
+    reviewDraftGuard,
+    select: currentEpisodeSelect
+  } = mountPodcastEpisodeContext({
+    root, text: adminText,
     hasTranscriptChanges: () => transcriptDirty,
     hasChapterChanges: () => chapterDirty,
-    discardTranscriptChanges: () => { transcriptDirty = false; },
-    discardChapterChanges: () => { chapterDirty = false; },
+    discardTranscriptChanges() { transcriptDirty = false; },
+    discardChapterChanges() { chapterDirty = false; },
     loadTranscript, loadChapters,
-    message: () => adminText("discardUnsavedReviewChanges")
+    onChange({ primary }) {
+      episodePublishWorkflow?.refresh();
+      if (!primary) return;
+      void loadAdPlan();
+      if (workspaceGroups?.isOpen("production"))
+        workspaceGroups.loadTab("episodes");
+    }
   });
   const rssImport = mountRssImportWorkbench({
     root,
@@ -738,7 +741,7 @@ function startPodcastAdmin(root) {
       await loadDistribution(episodeId);
     }
   });
-  const workspaceGroups = mountPodcastAdminWorkspaces({
+  workspaceGroups = mountPodcastAdminWorkspaces({
     root,
     loaders: {
       production() {
@@ -810,11 +813,12 @@ function startPodcastAdmin(root) {
     loadProductionReviews,
     loadPublicationReadiness
   });
-  const episodePublishWorkflow = mountEpisodePublishWorkflow({
+  episodePublishWorkflow = mountEpisodePublishWorkflow({
     root: root.querySelector("[data-podcast-publish-workflow]"),
     client,
     text: adminText,
     nodeLabel: localizedReadinessNodeLabel,
+    episodeSelect: currentEpisodeSelect,
     onNavigate: navigateEpisodeWorkflow,
     onPublish: publishEpisode
   });
@@ -1082,7 +1086,7 @@ function startPodcastAdmin(root) {
   episodeList?.addEventListener("click", async (event) => {
     const review = event.target.closest("[data-review-episode]");
     if (review) {
-      episodePublishWorkflow.selectEpisode(review.dataset.reviewEpisode);
+      episodeContext.selectEpisode(review.dataset.reviewEpisode);
       return;
     }
     const button = event.target.closest("[data-publish-episode]");
@@ -2044,24 +2048,17 @@ function startPodcastAdmin(root) {
       canEdit: canManageCreatives
     });
     episodeProgressiveTools?.setOpen(episodeForm, episodes.length === 0);
+    episodeContext.setEpisodes(episodes);
     episodePublishWorkflow.setEpisodes(episodes);
   }
 
   function fillEpisodeSelects() {
     deliveryAudio.setEpisodes(episodes);
     youtubeAudioRenditions.setEpisodes(episodes);
-    for (const select of [
-      uploadForm?.elements.episodeId,
-      sponsorForm?.elements.episodeId,
-      adPlanForm?.elements.episodeId,
-      transcriptEpisodeSelect,
-      chapterEpisodeSelect,
-      reviewEpisodeSelect,
-      audioQcEpisodeSelect,
-      audioMasterEpisodeSelect
-    ].filter(Boolean)) {
-      const previousValue = select.value;
-      select.replaceChildren(...episodes.map((episode) =>
+    const sponsorEpisodeSelect = sponsorForm?.elements.episodeId;
+    if (sponsorEpisodeSelect) {
+      const previousValue = sponsorEpisodeSelect.value;
+      sponsorEpisodeSelect.replaceChildren(...episodes.map((episode) =>
         new Option(
           `${episode.title} — ${episode.mediaStatus}`,
           episode.id,

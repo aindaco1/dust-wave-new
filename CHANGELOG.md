@@ -2,6 +2,11 @@
 
 ## v1.3.0 - Unreleased
 
+- Added one bilingual, responsive Current episode context above the publishing
+  workflow. Its selection now keeps all nine episode-scoped production tools
+  synchronized, removes their repeated selectors from view, preserves the
+  existing unsaved transcript/chapter guard, and keeps review shortcuts
+  focused on the selected episode without adding browser persistence.
 - Routed the episode workflow to the exact missing media, transcript, chapter,
   review, or clip control, including Attach media for a new draft, while
   preserving the existing progressive disclosures. Guided navigation focuses

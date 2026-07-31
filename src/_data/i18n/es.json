@@ -280,6 +280,8 @@
         "episodes": {
           "heading": "Episodios",
           "intro": "Crea el registro canónico del episodio, adjunta el medio de entrega y publica una revisión aprobada.",
+          "currentEpisode": "Episodio actual",
+          "currentEpisodeHelp": "Todas las herramientas de publicación siguientes permanecen en este episodio.",
           "new": "Nuevo episodio",
           "copyGroup": "Detalles del episodio",
           "releaseGroup": "Acceso y momento de lanzamiento",

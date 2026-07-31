@@ -5,11 +5,21 @@ import {
   workflowTargetForNode
 } from "./podcast-admin-publish-workflow-core.js";
 
+export function revealEpisodePublishWorkflow(root) {
+  const reduceMotion = root?.ownerDocument?.defaultView
+    ?.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  root?.scrollIntoView?.({
+    behavior: reduceMotion ? "auto" : "smooth",
+    block: "start"
+  });
+}
+
 export function mountEpisodePublishWorkflow({
   root,
   client,
   text,
   nodeLabel,
+  episodeSelect,
   onNavigate,
   onPublish
 }) {
@@ -31,13 +41,16 @@ export function mountEpisodePublishWorkflow({
   refreshButton.textContent = text("refreshReadiness");
   heading.append(headingCopy, refreshButton);
 
-  const episodeLabel = document.createElement("label");
-  episodeLabel.className = "podcast-admin__workflow-episode";
-  episodeLabel.append(document.createTextNode(text("workflowEpisode")));
-  const select = document.createElement("select");
-  select.name = "workflowEpisodeId";
-  select.dataset.podcastWorkflowEpisode = "";
-  episodeLabel.append(select);
+  const select = episodeSelect || document.createElement("select");
+  let episodeLabel = null;
+  if (!episodeSelect) {
+    episodeLabel = document.createElement("label");
+    episodeLabel.className = "podcast-admin__workflow-episode";
+    episodeLabel.append(document.createTextNode(text("workflowEpisode")));
+    select.name = "workflowEpisodeId";
+    select.dataset.podcastWorkflowEpisode = "";
+    episodeLabel.append(select);
+  }
   const progressRoot = document.createElement("div");
   const summary = document.createElement("p");
   summary.className = "podcast-admin__workflow-summary";
@@ -57,14 +70,9 @@ export function mountEpisodePublishWorkflow({
   publishButton.textContent = text("publishReviewedEpisode");
   publishButton.hidden = true;
   actions.append(continueButton, publishButton);
-  root.append(
-    heading,
-    episodeLabel,
-    progressRoot,
-    summary,
-    blockers,
-    actions
-  );
+  root.append(heading);
+  if (episodeLabel) root.append(episodeLabel);
+  root.append(progressRoot, summary, blockers, actions);
 
   const stepDefinitions = [
     ["details", text("workflowDetails")],
@@ -177,7 +185,8 @@ export function mountEpisodePublishWorkflow({
     }
   }
 
-  select.addEventListener("change", refresh);
+  const handleEpisodeChange = () => refresh();
+  if (!episodeSelect) select.addEventListener("change", handleEpisodeChange);
   refreshButton.addEventListener("click", refresh);
   continueButton.addEventListener("click", () => navigate(nextStep));
   publishButton.addEventListener("click", async () => {
@@ -191,13 +200,15 @@ export function mountEpisodePublishWorkflow({
     setEpisodes(nextEpisodes) {
       const previous = select.value;
       episodes = Array.from(nextEpisodes || []);
-      select.replaceChildren(...episodes.map((episode) => {
-        const option = document.createElement("option");
-        option.value = String(episode.id);
-        option.textContent = String(episode.title || "");
-        option.selected = episode.id === previous;
-        return option;
-      }));
+      if (!episodeSelect) {
+        select.replaceChildren(...episodes.map((episode) => {
+          const option = document.createElement("option");
+          option.value = String(episode.id);
+          option.textContent = String(episode.title || "");
+          option.selected = episode.id === previous;
+          return option;
+        }));
+      }
       if (!select.value && episodes[0]) select.value = episodes[0].id;
       refresh();
     },
@@ -207,17 +218,15 @@ export function mountEpisodePublishWorkflow({
       }
       select.value = String(episodeId);
       refresh();
-      const reduceMotion = document.defaultView
-        ?.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-      root.scrollIntoView?.({
-        behavior: reduceMotion ? "auto" : "smooth",
-        block: "start"
-      });
+      revealEpisodePublishWorkflow(root);
       return true;
     },
     refresh,
     destroy() {
       requestId += 1;
+      if (!episodeSelect) {
+        select.removeEventListener("change", handleEpisodeChange);
+      }
       progress.destroy();
       root.replaceChildren();
     }

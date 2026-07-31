@@ -68,10 +68,6 @@ eleventyComputed:
 
       <div id="podcast-admin-content">
         <section id="podcast-panel-episodes" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-episodes">
-          <section
-            class="podcast-admin__form podcast-admin__publish-workflow"
-            data-podcast-publish-workflow
-            hidden></section>
           <div class="podcast-admin__panel-heading">
             <div>
               <h2>{{ workbench.episodes.heading }}</h2>
@@ -79,6 +75,23 @@ eleventyComputed:
             </div>
             <select name="showId" data-podcast-show-select aria-label="{{ workbench.common.show }}"></select>
           </div>
+          <section
+            class="podcast-admin__episode-context"
+            data-podcast-episode-context
+            aria-labelledby="podcast-current-episode-heading"
+            hidden>
+            <div>
+              <h3 id="podcast-current-episode-heading">{{ workbench.episodes.currentEpisode }}</h3>
+              <p>{{ workbench.episodes.currentEpisodeHelp }}</p>
+            </div>
+            <label>{{ workbench.common.episode }}
+              <select name="currentEpisodeId" data-podcast-current-episode required></select>
+            </label>
+          </section>
+          <section
+            class="podcast-admin__form podcast-admin__publish-workflow"
+            data-podcast-publish-workflow
+            hidden></section>
 
           <form id="podcast-episode-details" class="podcast-admin__form" data-podcast-episode-form>
             <h3 data-podcast-episode-form-heading>{{ workbench.episodes.new }}</h3>

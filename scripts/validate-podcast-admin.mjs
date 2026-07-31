@@ -30,6 +30,14 @@ const workspaceScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-workspaces.js'),
   'utf8'
 );
+const episodeContextScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-episode-context.js'),
+  'utf8'
+);
+const episodeContextSetupScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-episode-context-setup.js'),
+  'utf8'
+);
 const showSettingsScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-show-settings.js'),
   'utf8'
@@ -241,6 +249,20 @@ assert.match(
   /id="podcast-panel-monetization"[\s\S]+data-podcast-workspace-group="sponsors"[\s\S]+data-podcast-workspace-group="billing"/,
   'Monetization must group sponsors and premium evidence contextually'
 );
+assert.equal(
+  [...adminTemplate.matchAll(/data-podcast-current-episode/g)].length,
+  1,
+  'Episodes must expose one canonical current-episode selector'
+);
+assert.match(
+  adminTemplate,
+  /data-podcast-episode-context[\s\S]+data-podcast-current-episode[\s\S]+data-podcast-publish-workflow/,
+  'The current episode must precede and control the publishing workflow'
+);
+for (const workbench of [englishWorkbench, spanishWorkbench]) {
+  assert.equal(typeof workbench.episodes.currentEpisode, 'string');
+  assert.equal(typeof workbench.episodes.currentEpisodeHelp, 'string');
+}
 const controlledYoutubeErrorCodes = [
   'youtube_controlled_test_not_configured',
   'youtube_not_configured',
@@ -449,7 +471,7 @@ assert.equal(englishI18n.podcast.admin.tabs.settings, 'Settings');
 assert.equal(spanishI18n.podcast.admin.tabs.settings, 'Configuración');
 assert.match(
   adminScript,
-  /const showSelects = Array\.from\([\s\S]+for \(const showSelect of showSelects\)/
+  /const showSelects = \[\.\.\.root\.querySelectorAll\([\s\S]+for \(const showSelect of showSelects\)/
 );
 assert.match(adminTemplate, /data-podcast-episode-form/);
 assert.match(adminTemplate, /data-podcast-episode-form-heading/);
@@ -645,9 +667,26 @@ assert.match(
   'transcript search must reuse the current unsaved cue state and pagination'
 );
 assert.match(
-  adminScript,
-  /mountPodcastReviewDraftGuard\([\s\S]+hasTranscriptChanges:\s*\(\) => transcriptDirty[\s\S]+hasChapterChanges:\s*\(\) => chapterDirty/,
+  episodeContextSetupScript,
+  /mountPodcastReviewDraftGuard\([\s\S]+hasTranscriptChanges[\s\S]+hasChapterChanges/,
   'review drafts must expose consumer-owned dirty state to the shared guard'
+);
+assert.match(
+  adminScript,
+  /mountPodcastEpisodeContext\([\s\S]+episodeSelect: currentEpisodeSelect/,
+  'the publishing workflow must reuse the canonical current-episode selector'
+);
+assert.match(
+  episodeContextScript,
+  /new Set\(controls\)/,
+  'internal tools must share one guarded, deduplicated episode context'
+);
+assert.match(episodeContextScript, /label\.hidden = true/);
+assert.match(episodeContextScript, /stopImmediatePropagation/);
+assert.doesNotMatch(
+  episodeContextScript,
+  /innerHTML|insertAdjacentHTML|localStorage|sessionStorage|\bfetch\s*\(/,
+  'episode context must remain local and avoid HTML sinks or persistence'
 );
 assert.match(
   unsavedChangesCoreScript,
@@ -1267,6 +1306,11 @@ assert.match(
   adminStyles,
   /\.dw-admin-workflow__list \{[\s\S]+grid-template-columns: repeat\(3, minmax\(0, 1fr\)\);[\s\S]+@media \(max-width: 40rem\) \{[\s\S]+\.dw-admin-workflow__list \{[\s\S]+grid-template-columns: minmax\(0, 1fr\);/,
   'The episode workflow must preserve readable three-, two-, and one-column states'
+);
+assert.match(
+  adminStyles,
+  /\.podcast-admin__episode-context \{[\s\S]+grid-template-columns: minmax\(0, 1fr\) minmax\(15rem, 24rem\);[\s\S]+@media \(max-width: 47\.9375rem\) \{[\s\S]+\.podcast-admin__episode-context \{[\s\S]+grid-template-columns: minmax\(0, 1fr\);[\s\S]+position: static;/,
+  'Current episode context must stay bounded and become one non-sticky mobile column'
 );
 assert.match(
   adminStyles,
