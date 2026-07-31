@@ -943,12 +943,18 @@ eleventyComputed:
             </div>
             <p class="podcast-admin__pill">{{ workbench.distribution.pill }}</p>
           </div>
-          <div class="podcast-admin__callout">
-            <p>{{ workbench.distribution.canonicalFlow }}</p>
-            <p>{{ workbench.distribution.retryFlow }}</p>
-            <p>{{ workbench.distribution.evidenceFlow }}</p>
-            <p>{{ workbench.distribution.credentialSafety }}</p>
-          </div>
+          <details class="podcast-admin__advanced-tools podcast-admin__distribution-guidance">
+            <summary>
+              <strong>{{ workbench.distribution.guidanceSummary }}</strong>
+              <span>{{ workbench.distribution.guidanceIntro }}</span>
+            </summary>
+            <div class="podcast-admin__distribution-guidance-body">
+              <p>{{ workbench.distribution.canonicalFlow }}</p>
+              <p>{{ workbench.distribution.retryFlow }}</p>
+              <p>{{ workbench.distribution.evidenceFlow }}</p>
+              <p>{{ workbench.distribution.credentialSafety }}</p>
+            </div>
+          </details>
           <form class="podcast-admin__distribution-filter" data-podcast-distribution-filter>
             <label>{{ workbench.distribution.releaseView }}
               <select name="episodeId">

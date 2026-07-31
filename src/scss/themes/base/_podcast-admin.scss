@@ -535,6 +535,37 @@
   color: #ff5964;
 }
 
+.podcast-admin__distribution-guidance {
+  margin-top: var(--dw-admin-section-gap);
+}
+
+.podcast-admin__distribution-guidance > summary {
+  display: grid;
+  gap: var(--dw-admin-space-2xs);
+}
+
+.podcast-admin__distribution-guidance > summary span {
+  color: #c7c2bb;
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.podcast-admin__distribution-guidance[open] > summary {
+  margin-bottom: var(--dw-admin-space-sm);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  padding-bottom: var(--dw-admin-space-md);
+}
+
+.podcast-admin__distribution-guidance-body {
+  display: grid;
+  gap: var(--dw-admin-space-xs);
+  padding: 0 var(--dw-admin-space-sm) var(--dw-admin-space-sm);
+}
+
+.podcast-admin__distribution-guidance-body > p {
+  margin: 0;
+}
+
 .podcast-admin__progressive-section {
   background: #171717;
   border: 1px solid rgba(255, 255, 255, 0.16);

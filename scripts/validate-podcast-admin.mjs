@@ -1093,6 +1093,19 @@ assert.match(
   /más de 10 plataformas/
 );
 assert.match(
+  adminTemplate,
+  /<details class="podcast-admin__advanced-tools podcast-admin__distribution-guidance">[\s\S]+workbench\.distribution\.guidanceSummary[\s\S]+workbench\.distribution\.canonicalFlow[\s\S]+<\/details>/,
+  'Distribution operating detail must remain available without overwhelming the default view'
+);
+assert.match(
+  englishWorkbench.distribution.guidanceIntro,
+  /one-time provider setup and evidence requirements/
+);
+assert.match(
+  spanishWorkbench.distribution.guidanceIntro,
+  /configuración inicial y los requisitos de evidencia/
+);
+assert.match(
   englishWorkbench.distribution.canonicalFlow,
   /Each platform still requires one-time owner setup/
 );

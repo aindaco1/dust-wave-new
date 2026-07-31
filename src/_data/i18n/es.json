@@ -498,6 +498,8 @@
           "heading": "Publicación simplificada",
           "tagline": "Con un solo clic, enviamos tus episodios a más de 10 plataformas como Spotify, Apple y otras plataformas principales.",
           "pill": "Más de 10 plataformas",
+          "guidanceSummary": "Cómo funciona la distribución a más de 10 plataformas",
+          "guidanceIntro": "Revisa la configuración inicial y los requisitos de evidencia de cada proveedor.",
           "canonicalFlow": "Una revisión aprobada actualiza el feed canónico, la página de Noticias y el trabajo de YouTube, y después crea estados de ingestión supervisados para cada directorio habilitado. Cada plataforma requiere una configuración inicial del propietario y controla cuándo actualiza el RSS.",
           "retryFlow": "Los roles de Producción, Administración y Superadministración pueden reintentar explícitamente un trabajo raíz inmutable fallido sin crear otra revisión del episodio.",
           "evidenceFlow": "Después de completar la configuración del propietario, el estado del episodio en cada directorio requiere un enlace HTTPS de evidencia del listado o panel; la ingestión no verificada permanece visible.",

@@ -498,6 +498,8 @@
           "heading": "Streamlined publishing",
           "tagline": "With just one click, we send your episodes live to 10+ platforms like Spotify, Apple and other major platforms.",
           "pill": "10+ platforms",
+          "guidanceSummary": "How 10+ platform distribution works",
+          "guidanceIntro": "Review the one-time provider setup and evidence requirements.",
           "canonicalFlow": "One reviewed revision updates the canonical feed, News page, and YouTube job, then creates monitored ingestion states for every enabled directory. Each platform still requires one-time owner setup and controls its own RSS refresh timing.",
           "retryFlow": "Producer, Admin, and Super-admin roles can explicitly retry a failed immutable root job without creating a new episode revision.",
           "evidenceFlow": "Once owner setup is complete, episode-level directory status requires an HTTPS listing or dashboard evidence link; unverified ingestion stays visible.",
