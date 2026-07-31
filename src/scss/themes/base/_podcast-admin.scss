@@ -492,9 +492,9 @@
 }
 
 .podcast-admin__panel
-  > .podcast-admin__panel-heading
-  + .podcast-admin__workspace-group {
-  margin-top: var(--dw-admin-space-xl);
+  > :not(.podcast-admin__progressive-section)
+  + .podcast-admin__progressive-section {
+  margin-top: var(--dw-admin-section-gap);
 }
 
 .podcast-admin__heading-actions {

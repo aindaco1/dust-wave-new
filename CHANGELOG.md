@@ -2,6 +2,10 @@
 
 ## v1.3.0 - Unreleased
 
+- Restored the shared Pool/Store section rhythm before Podcast Admin
+  disclosures. Episode cards, marketing clips, and show settings no longer
+  visually collide with the next tool group, while consecutive disclosures
+  retain their compact spacing at every responsive width.
 - Simplified the single-show launch UI by presenting the current show as
   compact context instead of an unnecessary selector. The same shared
   controller restores synchronized selectors automatically when a second show

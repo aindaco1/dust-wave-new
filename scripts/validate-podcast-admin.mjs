@@ -1303,6 +1303,11 @@ assert.match(
 );
 assert.match(
   adminStyles,
+  /\.podcast-admin__panel[\s\S]+> :not\(\.podcast-admin__progressive-section\)[\s\S]+\+ \.podcast-admin__progressive-section \{[\s\S]+margin-top: var\(--dw-admin-section-gap\);/,
+  'Podcast Admin disclosures must preserve section spacing after non-disclosure content'
+);
+assert.match(
+  adminStyles,
   /\.podcast-admin label \{[\s\S]+gap: var\(--dw-admin-field-gap\);[\s\S]+margin: 0;/,
   'Podcast Admin labels must not add margins inside already-gapped grids'
 );
