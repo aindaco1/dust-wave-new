@@ -727,6 +727,7 @@ function startPodcastAdmin(root) {
   });
   const publishEpisode = createEpisodePublisher({
     client,
+    ApiError: AdminApiError,
     confirmationDialog,
     text: adminText,
     nodeLabel: (node) => readinessNodeLabel(adminText, node),

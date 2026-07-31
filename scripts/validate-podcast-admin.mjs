@@ -175,6 +175,13 @@ const publicationScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-publication.js'),
   'utf8'
 );
+const publicationSecurityScript = await readFile(
+  path.join(
+    repositoryRoot,
+    'src/js/podcast-admin-publication-security.js'
+  ),
+  'utf8'
+);
 const analyticsScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-analytics.js'),
   'utf8'
@@ -1635,6 +1642,26 @@ assert.match(publicationScript, /publication_override/);
 assert.match(publicationScript, /basePublicationRevision/);
 assert.match(publicationScript, /mode === "enforce"/);
 assert.match(publicationScript, /mode === "shadow"/);
+assert.match(
+  publicationSecurityScript,
+  /UNSAFE_OVERRIDE_TEXT[\s\S]+normalizePublicationOverrideReason/,
+  "publication overrides must reject control and bidirectional text before the API call"
+);
+assert.match(
+  publicationScript,
+  /normalizePublicationOverrideReason[\s\S]+publication_override_reason_invalid/,
+  "the publication coordinator must fail closed on an unsafe override reason"
+);
+assert.doesNotMatch(
+  publicationScript,
+  /dust-wave-admin-shell\/api-client/,
+  "the publication coordinator must remain source-testable through API-error injection"
+);
+assert.match(
+  adminScript,
+  /createEpisodePublisher\(\{[\s\S]+ApiError: AdminApiError/,
+  "Podcast Admin must inject its existing localized API error type"
+);
 assert.match(
   adminStyles,
   /\.podcast-admin \.btn[\s\S]*min-height: var\(--dw-admin-control-min-height\)/
