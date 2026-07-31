@@ -328,6 +328,26 @@ npm run perf:podcast-admin:trace -- \
 Use `--admin-tab settings` to measure the bilingual show form and the
 dry-run-first public-page projection controls at 320 px or desktop width.
 
+Use `--admin-tab all` with the authenticated repository mock to audit all six
+top-level workspaces in navigation order within one isolated browser session.
+The matrix verifies the exact desktop or mobile viewport, horizontal fit, CSP,
+layout stability, active-tab state, shared list spacing, and progressive
+disclosure defaults for every workspace:
+
+```bash
+npm run perf:podcast-admin:trace -- \
+  --url http://127.0.0.1:4173/admin/podcasts/ \
+  --admin-tab all \
+  --viewport 1440x900
+npm run perf:podcast-admin:trace -- \
+  --url http://127.0.0.1:4173/admin/podcasts/ \
+  --admin-tab all \
+  --viewport 320x700
+```
+
+Keep focused `--admin-group` traces separate from `--admin-tab all`; they test
+an explicitly expanded workbench rather than the concise launch state.
+
 Load the resulting JSON from Chrome DevTools **Performance → Load profile**.
 Trace files contain visited URLs and page metadata, so review them before
 sharing. Run `npm run perf:podcast-admin:trace -- --help` for all options.

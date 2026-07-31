@@ -2,7 +2,9 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   assertPodcastAdminSpacingContract,
+  assertPodcastAdminTabMatrixContract,
   assertPodcastAdminTraceContract,
+  PODCAST_ADMIN_TRACE_TABS,
   podcastAdminTraceContractSummary
 } from "../scripts/lib/podcast-admin-trace-contract.mjs";
 
@@ -22,6 +24,23 @@ function validObservation() {
   };
 }
 
+const TAB_GROUPS = Object.freeze({
+  episodes: [],
+  distribution: [],
+  marketing: [],
+  audience: ["analytics"],
+  monetization: ["sponsors"],
+  settings: []
+});
+
+function validTabMatrix() {
+  return PODCAST_ADMIN_TRACE_TABS.map((activeTab) => ({
+    activeTab,
+    activeGroups: TAB_GROUPS[activeTab],
+    authenticatedAdmin: true
+  }));
+}
+
 test("accepts the concise authenticated Distribution contract", () => {
   const observed = validObservation();
   assert.doesNotThrow(() => assertPodcastAdminTraceContract(
@@ -38,6 +57,44 @@ test("accepts component-owned admin list spacing", () => {
   assert.doesNotThrow(() => assertPodcastAdminSpacingContract(
     validObservation()
   ));
+});
+
+test("accepts one authenticated observation for every admin workspace", () => {
+  const observations = validTabMatrix();
+  assert.doesNotThrow(() => assertPodcastAdminTabMatrixContract(observations));
+  assert.equal(
+    podcastAdminTraceContractSummary(
+      { tabMatrix: observations },
+      { adminTab: "all" }
+    ),
+    "Admin tab matrix: 6 workspaces audited (episodes, distribution, "
+      + "marketing, audience, monetization, settings)."
+  );
+});
+
+test("rejects incomplete, reordered, and signed-out admin matrices", () => {
+  assert.throws(
+    () => assertPodcastAdminTabMatrixContract(validTabMatrix().slice(0, -1)),
+    /every workspace once in navigation order/
+  );
+  const reordered = validTabMatrix();
+  [reordered[0], reordered[1]] = [reordered[1], reordered[0]];
+  assert.throws(
+    () => assertPodcastAdminTabMatrixContract(reordered),
+    /every workspace once in navigation order/
+  );
+  const signedOut = validTabMatrix();
+  signedOut[3].authenticatedAdmin = false;
+  assert.throws(
+    () => assertPodcastAdminTabMatrixContract(signedOut),
+    /requires an authenticated session/
+  );
+  const overwhelming = validTabMatrix();
+  overwhelming[4].activeGroups = ["sponsors", "billing"];
+  assert.throws(
+    () => assertPodcastAdminTabMatrixContract(overwhelming),
+    /progressively disclose only their primary operating group/
+  );
 });
 
 test("rejects inherited one-sided admin list margins", () => {

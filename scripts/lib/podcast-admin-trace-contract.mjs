@@ -1,5 +1,21 @@
 const MINIMUM_LAUNCH_DIRECTORIES = 10;
 const MAXIMUM_INSET_DELTA_PX = 1;
+export const PODCAST_ADMIN_TRACE_TABS = Object.freeze([
+  "episodes",
+  "distribution",
+  "marketing",
+  "audience",
+  "monetization",
+  "settings"
+]);
+const EXPECTED_OPEN_GROUPS = Object.freeze({
+  episodes: [],
+  distribution: [],
+  marketing: [],
+  audience: ["analytics"],
+  monetization: ["sponsors"],
+  settings: []
+});
 
 export function assertPodcastAdminSpacingContract(observed) {
   if (!observed?.authenticatedAdmin) return;
@@ -85,7 +101,57 @@ export function assertPodcastAdminTraceContract(observed, { adminTab } = {}) {
   }
 }
 
+export function assertPodcastAdminTabMatrixContract(observations) {
+  if (!Array.isArray(observations)) {
+    throw new Error("Podcast admin tab matrix was not measured.");
+  }
+  const measuredTabs = observations.map(({ activeTab }) => activeTab);
+  if (
+    observations.length !== PODCAST_ADMIN_TRACE_TABS.length
+    || PODCAST_ADMIN_TRACE_TABS.some(
+      (tab, index) => measuredTabs[index] !== tab
+    )
+  ) {
+    throw new Error(
+      "Podcast admin tab matrix must audit every workspace once in "
+      + "navigation order. "
+      + `Observed ${JSON.stringify(measuredTabs)}.`
+    );
+  }
+  const signedOutTab = observations.find(
+    ({ authenticatedAdmin }) => authenticatedAdmin !== true
+  );
+  if (signedOutTab) {
+    throw new Error(
+      "Podcast admin tab matrix requires an authenticated session for every "
+      + `workspace. Signed-out tab: ${signedOutTab.activeTab || "unknown"}.`
+    );
+  }
+  for (const observation of observations) {
+    const expectedGroups = EXPECTED_OPEN_GROUPS[observation.activeTab];
+    if (
+      !Array.isArray(observation.activeGroups)
+      || JSON.stringify(observation.activeGroups)
+        !== JSON.stringify(expectedGroups)
+    ) {
+      throw new Error(
+        "Podcast admin workspaces must progressively disclose only their "
+        + "primary operating group. "
+        + `${observation.activeTab}: expected ${JSON.stringify(expectedGroups)}, `
+        + `observed ${JSON.stringify(observation.activeGroups)}.`
+      );
+    }
+  }
+}
+
 export function podcastAdminTraceContractSummary(observed, { adminTab } = {}) {
+  if (adminTab === "all") {
+    const tabs = Array.isArray(observed?.tabMatrix)
+      ? observed.tabMatrix.map(({ activeTab }) => activeTab)
+      : [];
+    return `Admin tab matrix: ${tabs.length} workspaces audited (`
+      + `${tabs.join(", ")}).`;
+  }
   if (adminTab !== "distribution" || !observed?.authenticatedAdmin) return null;
   const distribution = observed.distribution;
   return `Distribution contract: ${distribution.openDirectoryCount} of `

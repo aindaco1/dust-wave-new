@@ -14,7 +14,9 @@ import { homedir, tmpdir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
 import {
   assertPodcastAdminSpacingContract,
+  assertPodcastAdminTabMatrixContract,
   assertPodcastAdminTraceContract,
+  PODCAST_ADMIN_TRACE_TABS,
   podcastAdminTraceContractSummary
 } from "./lib/podcast-admin-trace-contract.mjs";
 
@@ -23,14 +25,7 @@ const DEFAULT_URL =
 const DEFAULT_DURATION_SECONDS = 8;
 const DEFAULT_VIEWPORT = "1440x900";
 const MAX_AUTHENTICATED_CLS = 0.1;
-const ADMIN_TABS = new Set([
-  "episodes",
-  "distribution",
-  "marketing",
-  "audience",
-  "monetization",
-  "settings"
-]);
+const ADMIN_TABS = new Set([...PODCAST_ADMIN_TRACE_TABS, "all"]);
 const ADMIN_GROUPS = new Set([
   "production",
   "analytics",
@@ -169,7 +164,7 @@ const LAYOUT_PROBE = `(() => {
     activeTab: document.querySelector(
       '[role="tab"][aria-selected="true"]'
     )?.dataset.tab ?? null,
-    activeGroups: Array.from(document.querySelectorAll(
+    activeGroups: Array.from(root.querySelectorAll(
       '[data-podcast-workspace-group][open]'
     )).map((group) => group.dataset.podcastWorkspaceGroup),
     distribution: (() => {
@@ -230,7 +225,7 @@ Options:
   --duration <seconds>    Recording time, 3-60 (default: ${DEFAULT_DURATION_SECONDS})
   --viewport <WIDTHxHEIGHT>
                           Browser viewport (default: ${DEFAULT_VIEWPORT})
-  --admin-tab <name>      Open a specific admin tab before recording
+  --admin-tab <name|all>  Open one admin tab, or audit all six in one session
   --admin-group <name>    Open a contextual workspace within that tab
   --chrome <path>         Chrome/Chromium executable
   --help                  Show this help
@@ -619,81 +614,19 @@ class CdpSession {
   }
 }
 
-async function captureTrace({
-  adminGroup,
-  adminTab,
-  cdp,
-  durationSeconds,
-  outputPath,
-  url,
-  viewport
-}) {
-  const mobile = viewport.width < 768;
-  const adminGroupSelector = adminGroup
-    ? `[data-podcast-workspace-group="${adminGroup}"]`
-    : "";
-  await cdp.send("Page.enable");
-  await cdp.send("Runtime.enable");
-  await cdp.send("Page.addScriptToEvaluateOnNewDocument", {
-    source: RUNTIME_PROBE
-  });
-  if (adminTab) {
-    await cdp.send("Page.addScriptToEvaluateOnNewDocument", {
-      source:
-        `sessionStorage.setItem("dustwave-podcast-admin-tab", ${
-          JSON.stringify(adminTab)
-        });`
-    });
-  }
-  if (adminGroup) {
-    await cdp.send("Page.addScriptToEvaluateOnNewDocument", {
-      source:
-        `document.addEventListener("DOMContentLoaded", () => {`
-        + `document.querySelector(${JSON.stringify(adminGroupSelector)}`
-        + `)?.setAttribute("open", "");`
-        + `}, { once: true });`
-    });
-  }
-  await cdp.send("Emulation.setDeviceMetricsOverride", {
-    width: viewport.width,
-    height: viewport.height,
-    deviceScaleFactor: 1,
-    mobile,
-    screenWidth: viewport.width,
-    screenHeight: viewport.height,
-    positionX: 0,
-    positionY: 0,
-    dontSetVisibleSize: false
-  });
-  await cdp.send("Emulation.setTouchEmulationEnabled", {
-    enabled: mobile,
-    maxTouchPoints: mobile ? 5 : 1
-  });
-  await cdp.send("Tracing.start", {
-    categories: TRACE_CATEGORIES,
-    options: "record-as-much-as-possible",
-    transferMode: "ReturnAsStream"
-  });
-  const navigation = await cdp.send("Page.navigate", { url });
-  if (navigation.errorText) {
-    throw new Error(`Chrome navigation failed: ${navigation.errorText}.`);
-  }
-  await waitForTargetDocument(cdp, url);
-  if (adminGroup) {
-    await cdp.send("Runtime.evaluate", {
-      expression:
-        `(() => { const group = document.querySelector(`
-        + `${JSON.stringify(adminGroupSelector)});`
-        + `group?.setAttribute("open", "");`
-        + `group?.scrollIntoView({ block: "start" }); })();`
-    });
-  }
-  await delay(durationSeconds * 1_000);
+async function measureLayout(cdp) {
   const measured = await cdp.send("Runtime.evaluate", {
     expression: LAYOUT_PROBE,
     returnByValue: true
   });
-  const observed = measured.result?.value;
+  return measured.result?.value;
+}
+
+function assertLayoutObservation(observed, {
+  adminGroup,
+  adminTab,
+  viewport
+}) {
   if (!Array.isArray(observed?.securityPolicyViolations)) {
     throw new Error(
       "Chrome did not install the CSP violation probe before navigation."
@@ -752,6 +685,129 @@ async function captureTrace({
   }
   assertPodcastAdminSpacingContract(observed);
   assertPodcastAdminTraceContract(observed, { adminTab });
+}
+
+async function activateAdminTab(cdp, adminTab) {
+  const selector = `[role="tab"][data-tab="${adminTab}"]`;
+  const activation = await cdp.send("Runtime.evaluate", {
+    expression:
+      `(() => { const tab = document.querySelector(${JSON.stringify(selector)});`
+      + `if (!tab) return false; tab.click(); return true; })()`,
+    returnByValue: true
+  });
+  if (activation.result?.value !== true) {
+    throw new Error(`Chrome could not find admin tab "${adminTab}".`);
+  }
+}
+
+async function waitForAdminTabObservation(cdp, adminTab) {
+  const deadline = Date.now() + 8_000;
+  let observed;
+  do {
+    observed = await measureLayout(cdp);
+    const distributionReady = adminTab !== "distribution"
+      || observed?.distribution?.directoryCount >= 10;
+    if (
+      observed?.authenticatedAdmin
+      && observed?.activeTab === adminTab
+      && distributionReady
+    ) {
+      return observed;
+    }
+    await delay(250);
+  } while (Date.now() < deadline);
+  return observed;
+}
+
+async function captureTrace({
+  adminGroup,
+  adminTab,
+  cdp,
+  durationSeconds,
+  outputPath,
+  url,
+  viewport
+}) {
+  const mobile = viewport.width < 768;
+  const adminGroupSelector = adminGroup
+    ? `[data-podcast-workspace-group="${adminGroup}"]`
+    : "";
+  await cdp.send("Page.enable");
+  await cdp.send("Runtime.enable");
+  await cdp.send("Page.addScriptToEvaluateOnNewDocument", {
+    source: RUNTIME_PROBE
+  });
+  if (adminTab) {
+    await cdp.send("Page.addScriptToEvaluateOnNewDocument", {
+      source:
+        `sessionStorage.setItem("dustwave-podcast-admin-tab", ${
+          JSON.stringify(adminTab === "all" ? "episodes" : adminTab)
+        });`
+    });
+  }
+  if (adminGroup) {
+    await cdp.send("Page.addScriptToEvaluateOnNewDocument", {
+      source:
+        `document.addEventListener("DOMContentLoaded", () => {`
+        + `document.querySelector(${JSON.stringify(adminGroupSelector)}`
+        + `)?.setAttribute("open", "");`
+        + `}, { once: true });`
+    });
+  }
+  await cdp.send("Emulation.setDeviceMetricsOverride", {
+    width: viewport.width,
+    height: viewport.height,
+    deviceScaleFactor: 1,
+    mobile,
+    screenWidth: viewport.width,
+    screenHeight: viewport.height,
+    positionX: 0,
+    positionY: 0,
+    dontSetVisibleSize: false
+  });
+  await cdp.send("Emulation.setTouchEmulationEnabled", {
+    enabled: mobile,
+    maxTouchPoints: mobile ? 5 : 1
+  });
+  await cdp.send("Tracing.start", {
+    categories: TRACE_CATEGORIES,
+    options: "record-as-much-as-possible",
+    transferMode: "ReturnAsStream"
+  });
+  const navigation = await cdp.send("Page.navigate", { url });
+  if (navigation.errorText) {
+    throw new Error(`Chrome navigation failed: ${navigation.errorText}.`);
+  }
+  await waitForTargetDocument(cdp, url);
+  if (adminGroup) {
+    await cdp.send("Runtime.evaluate", {
+      expression:
+        `(() => { const group = document.querySelector(`
+        + `${JSON.stringify(adminGroupSelector)});`
+        + `group?.setAttribute("open", "");`
+        + `group?.scrollIntoView({ block: "start" }); })();`
+    });
+  }
+  await delay(durationSeconds * 1_000);
+  let observed;
+  if (adminTab === "all") {
+    const tabMatrix = [];
+    for (const tab of PODCAST_ADMIN_TRACE_TABS) {
+      await activateAdminTab(cdp, tab);
+      const tabObservation = await waitForAdminTabObservation(cdp, tab);
+      assertLayoutObservation(tabObservation, {
+        adminGroup: null,
+        adminTab: tab,
+        viewport
+      });
+      tabMatrix.push(tabObservation);
+    }
+    assertPodcastAdminTabMatrixContract(tabMatrix);
+    observed = { ...tabMatrix.at(-1), tabMatrix };
+  } else {
+    observed = await measureLayout(cdp);
+    assertLayoutObservation(observed, { adminGroup, adminTab, viewport });
+  }
   const tracingComplete = cdp.waitForEvent(
     "Tracing.tracingComplete",
     30_000
@@ -857,6 +913,12 @@ async function main() {
   );
   const adminTab = validateAdminTab(argumentsMap.get("admin-tab"));
   const adminGroup = validateAdminGroup(argumentsMap.get("admin-group"));
+  if (adminTab === "all" && adminGroup) {
+    throw new Error(
+      "--admin-group cannot be combined with --admin-tab all. "
+      + "Run the contextual workspace as a focused trace instead."
+    );
+  }
   const chromePath = await findChrome(argumentsMap.get("chrome"));
   const timestamp = new Date().toISOString().replaceAll(":", "-");
   const outputPath = resolve(
@@ -942,7 +1004,9 @@ async function main() {
         `Document width: ${observed.scrollWidth}px`,
         `Authenticated admin: ${observed.authenticatedAdmin ? "yes" : "no"}`,
         `Cumulative layout shift: ${observed.cumulativeLayoutShift.toFixed(4)}`,
-        `Active admin tab: ${observed.activeTab || "not detected"}`,
+        adminTab === "all"
+          ? `Final admin tab: ${observed.activeTab || "not detected"}`
+          : `Active admin tab: ${observed.activeTab || "not detected"}`,
         ...(contractSummary ? [contractSummary] : []),
         `Duration: ${durationSeconds}s`,
         `Trace: ${outputPath}`,

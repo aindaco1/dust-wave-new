@@ -348,13 +348,33 @@ assert.match(
 );
 assert.match(
   tracer,
-  /Emulation\.setDeviceMetricsOverride[\s\S]+observed\?\.innerWidth !== viewport\.width[\s\S]+observed\?\.innerHeight !== viewport\.height[\s\S]+observed\?\.scrollWidth > viewport\.width/,
+  /Emulation\.setDeviceMetricsOverride/,
+  "performance traces must request the exact CSS viewport"
+);
+assert.match(
+  tracer,
+  /observed\?\.innerWidth !== viewport\.width[\s\S]+observed\?\.innerHeight !== viewport\.height[\s\S]+observed\?\.scrollWidth > viewport\.width/,
   "performance traces must verify the exact CSS viewport and horizontal fit"
 );
 assert.match(
   tracer,
-  /ADMIN_TABS[\s\S]+dustwave-podcast-admin-tab[\s\S]+observed\?\.activeTab !== adminTab/,
-  "performance traces must support and verify a bounded admin-tab fixture"
+  /ADMIN_TABS = new Set\(\[\.\.\.PODCAST_ADMIN_TRACE_TABS, "all"\]\)/,
+  "performance traces must support a bounded admin-tab fixture"
+);
+assert.match(
+  tracer,
+  /dustwave-podcast-admin-tab/,
+  "performance traces must seed their requested admin tab"
+);
+assert.match(
+  tracer,
+  /observed\?\.activeTab !== adminTab/,
+  "performance traces must verify their requested admin tab"
+);
+assert.match(
+  tracer,
+  /PODCAST_ADMIN_TRACE_TABS[\s\S]+adminTab === "all"[\s\S]+assertPodcastAdminTabMatrixContract\(tabMatrix\)/,
+  "performance traces must audit all six admin workspaces in one session"
 );
 assert.match(
   tracer,
@@ -388,8 +408,18 @@ assert.match(
 );
 assert.match(
   tracer,
-  /assertPodcastAdminTraceContract\(observed, \{ adminTab \}\)/,
+  /assertLayoutObservation\(observed, \{ adminGroup, adminTab, viewport \}\)/,
   "performance traces must enforce the selected admin interaction contract"
+);
+assert.match(
+  traceContract,
+  /EXPECTED_OPEN_GROUPS[\s\S]+episodes: \[\][\s\S]+audience: \["analytics"\][\s\S]+monetization: \["sponsors"\][\s\S]+settings: \[\]/,
+  "all-tab traces must preserve concise progressive-disclosure defaults"
+);
+assert.match(
+  traceContract,
+  /assertPodcastAdminTabMatrixContract[\s\S]+every workspace once in[\s\S]+requires an authenticated session[\s\S]+progressively disclose only their/,
+  "the admin matrix must fail closed on incomplete, signed-out, or overwhelming workspaces"
 );
 assert.match(
   traceContract,
