@@ -1,5 +1,9 @@
 import { spawnSync } from "node:child_process";
 
+import {
+  validatePodcastStagingTurnstileWidget
+} from "./lib/podcast-staging-turnstile.mjs";
+
 const STAGING_API_ORIGIN =
   "https://dust-wave-podcast-staging.jogo.workers.dev";
 const explicitAssetRevision = String(
@@ -32,6 +36,44 @@ if (!/^[A-Za-z0-9_-]{1,128}$/.test(turnstileSiteKey)) {
     + "Turnstile site key."
   );
 }
+
+const wranglerCommand = process.platform === "win32" ? "npx.cmd" : "npx";
+const widgetListResult = spawnSync(
+  wranglerCommand,
+  [
+    "--yes",
+    "wrangler@4.118.0",
+    "turnstile",
+    "widget",
+    "list",
+    "--json"
+  ],
+  {
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"]
+  }
+);
+
+if (widgetListResult.error) throw widgetListResult.error;
+if (widgetListResult.signal) {
+  throw new Error(
+    `Turnstile widget verification ended after signal ${widgetListResult.signal}.`
+  );
+}
+if (widgetListResult.status !== 0) {
+  throw new Error(
+    "Cloudflare Turnstile widget verification failed. Confirm Wrangler "
+    + "authentication and retry."
+  );
+}
+
+let widgets;
+try {
+  widgets = JSON.parse(widgetListResult.stdout);
+} catch {
+  throw new Error("Cloudflare returned invalid Turnstile widget metadata.");
+}
+validatePodcastStagingTurnstileWidget(widgets, turnstileSiteKey);
 
 const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
 const result = spawnSync(npmCommand, ["run", "build:ci"], {

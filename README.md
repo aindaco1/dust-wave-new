@@ -82,8 +82,15 @@ Build the isolated Cloudflare Pages staging artifact with:
 
 ```bash
 PODCAST_STAGING_TURNSTILE_SITE_KEY="<public staging site key>" \
-  npm run build:podcast-staging
+npm run build:podcast-staging
 ```
+
+The staging build retrieves Cloudflare's secret-free widget list and fails
+before building unless that public key identifies exactly one managed
+`Dust Wave Podcasts staging` widget whose only hostname is
+`dust-wave-website-staging.pages.dev`. This prevents a Pool, Store, production,
+or expanded-hostname widget from being embedded accidentally. Wrangler must be
+authenticated, but the build never reads or prints a Turnstile secret.
 
 That command deliberately overrides the public, member, Admin, and Checkout
 API origins with
