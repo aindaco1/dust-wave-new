@@ -207,6 +207,8 @@ const scriptBudgets = new Map([
   ["src/js/podcast-admin-publication-security.js", 1_000],
   ["src/js/podcast-admin-request-security.js", 1_000],
   ["src/js/podcast-admin-workflow-navigation.js", 3_000],
+  ["src/js/podcast-admin-workflow-controller.js", 1_000],
+  ["src/js/podcast-admin-deep-link.js", 3_500],
   ["src/js/podcast-admin-workflow-target.js", 3_500],
   ["src/js/podcast-admin-clip-publications.js", 10_000],
   ["src/js/podcast-admin-distribution-certification.js", 5_000],

@@ -32,7 +32,7 @@ import { mountProgressiveSections } from "./podcast-admin-progressive-sections.j
 import { mountPodcastAdminWorkspaces } from "./podcast-admin-workspaces.js";
 import { mountPodcastAdminToolDisclosure } from "./podcast-admin-tool-disclosure.js";
 import { createEpisodePublisher } from "./podcast-admin-publication.js";
-import { createEpisodeWorkflowNavigator } from "./podcast-admin-workflow-navigation.js";
+import { createEpisodeWorkflowNavigator } from "./podcast-admin-workflow-controller.js";
 import { mountEpisodeEditor } from "./podcast-admin-episode-editor.js";
 import { mountShowNotesAssistant } from "./podcast-admin-show-notes.js";
 import { mountChapterDraftAssistant } from "./podcast-admin-chapter-draft.js";
@@ -1369,9 +1369,9 @@ function startPodcastAdmin(root) {
       const payload = await client.request("/v1/admin/shows");
       shows = payload.shows || [];
       const previousShowId = selectedShowId;
-      selectedShowId = shows.some(({ id }) => id === selectedShowId)
-        ? selectedShowId
-        : shows[0]?.id || "";
+      selectedShowId = navigateEpisodeWorkflow.selectLinkedShow(
+        shows, selectedShowId
+      );
       if (selectedShowId !== previousShowId) {
         clearClipLibraryState();
         clipPublications.close();
@@ -2042,6 +2042,9 @@ function startPodcastAdmin(root) {
           loadProductionReviews()
         ]);
       }
+      navigateEpisodeWorkflow.openDeepLink(
+        selectedShowId, episodes, episodeContext.selectEpisode
+      );
     } catch (error) {
       setStatus(episodeStatus, friendlyError(error), true);
     }
