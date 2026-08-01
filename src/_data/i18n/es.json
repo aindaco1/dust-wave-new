@@ -492,7 +492,7 @@
           "captionedWaveform": "Forma de onda con subtítulos v1",
           "newRecipe": "Nueva receta",
           "saveClipRecipe": "Guardar receta del clip",
-          "prepareManifest": "Preparar manifiesto del procesador"
+          "prepareManifest": "Iniciar render subtitulado"
         },
         "distribution": {
           "heading": "Publicación simplificada",
@@ -2070,9 +2070,9 @@
       "clipLayoutPreviewNotice": "solo diseño; el render privado usa los fragmentos aprobados exactos y el audio de origen",
       "savingClipRecipe": "Guardando la revisión inmutable de la receta del clip…",
       "clipRecipeSaved": "Receta del clip guardada. Los cortes por palabra y la subida pública siguen bloqueados.",
-      "preparingRenderManifest": "Preparando el manifiesto privado del render con suma de comprobación…",
-      "renderManifestExists": "El manifiesto privado existente del procesador se descargó de nuevo.",
-      "renderManifestCreated": "Manifiesto privado del procesador creado y descargado. Este no es un render completado.",
+      "preparingRenderManifest": "Poniendo en cola el render subtitulado exacto con suma de comprobación…",
+      "renderManifestExists": "Este render subtitulado exacto ya está en cola o en proceso y continuará automáticamente.",
+      "renderManifestCreated": "Render subtitulado en cola. El procesador protegido de staging se inicia automáticamente.",
       "loadingAdPlan": "Cargando el estado de marcadores y segmentos…",
       "noPlan": "sin plan",
       "adPlanRevision": "Revisión del plan de anuncios %{revision}",

@@ -53,11 +53,12 @@ maintained readiness database.
 | Slice | State | Evidence |
 |---|---|---|
 | Completion plan | Complete | This document is checked into `dust-wave-new` |
-| Processor discovery and dispatch | Complete in staging | Migration `0067` and Worker version `f1fe0cd8-9561-42d7-9ec2-2ec3158bea03` are deployed to staging; the signed protected-environment smoke run claimed an empty ledger successfully, while production remains disabled and unmigrated |
+| Processor discovery and dispatch | Deployed to staging; first live-job evidence pending | Migration `0067` and the signed Worker/GitHub boundary are deployed; two protected-environment smoke runs claimed an empty ledger successfully, while production remains disabled and unmigrated |
 | Shared processor CI setup | Implemented | Nine processor workflows and the dispatcher use one local composite action with a commit-SHA-pinned Node action and locked installs |
 | Dispatcher regression coverage | Passing locally and in CI | Source discovery, exclusive lease, signature rejection, idempotent acknowledgement, bounded retry, accepted-run ambiguity, closed registry, least permissions, shared-action, and D1 compound-query-limit contracts are automated |
 | Full Podcast verification | Passing locally and in CI | Secret scan, high-severity dependency audit, Cloudflare types, typecheck, 116 test files / 473 tests, workflow lint, and staging/production dry-run bundles pass |
-| Admin automatic-processing copy | Implemented; passing locally and in CI | English and Spanish status copy no longer asks producers to dispatch the eight automated workflows manually; a locale regression test enforces the contract |
+| Staging Queue dead-letter retention | Complete in staging | Exhausted staging jobs now enter isolated `dust-wave-podcast-jobs-staging-dlq`; it has no producer/consumer binding, production is unchanged, and typed recovery remains the next slice |
+| Admin automatic-processing copy | Implemented; passing locally and in CI | English and Spanish status copy no longer asks producers to dispatch the eight automated workflows manually; clip rendering no longer downloads an obsolete manual manifest, and regression tests enforce both contracts |
 
 This progress table records code delivery, not launch readiness. The live
 Worker readiness projection and immutable provider evidence remain the source

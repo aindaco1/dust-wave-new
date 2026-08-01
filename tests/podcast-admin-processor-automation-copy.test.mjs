@@ -20,7 +20,9 @@ const automaticProcessorKeys = [
   "enhancementPreviewQueued",
   "derivativeQueued",
   "runDerivativeWorkflow",
-  "waitingForStagingWorkflow"
+  "waitingForStagingWorkflow",
+  "renderManifestExists",
+  "renderManifestCreated"
 ];
 
 test("processor status copy describes automatic work in both locales", async () => {
@@ -45,4 +47,17 @@ test("processor status copy describes automatic work in both locales", async () 
       );
     }
   }
+});
+
+test("queueing a clip render does not download a manual processor manifest", async () => {
+  const source = await readFile(
+    new URL("../src/js/podcast-admin.js", import.meta.url),
+    "utf8"
+  );
+  const prepareClipRender = source.match(
+    /async function prepareClipRender\(\) \{[\s\S]*?\n  \}\n\n  function updateAdPlanFields/
+  )?.[0];
+  assert.equal(typeof prepareClipRender, "string");
+  assert.doesNotMatch(prepareClipRender, /downloadJson\(/);
+  assert.match(prepareClipRender, /\/v1\/admin\/clips\/.*\/render/);
 });

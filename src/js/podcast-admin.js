@@ -6520,10 +6520,6 @@ function startPodcastAdmin(root) {
           }
         }
       );
-      downloadJson(
-        `podcast-clip-${clip.id}-revision-${clip.revision}.json`,
-        payload.processorManifest
-      );
       await loadClips({ preserveStatus: true });
       setStatus(
         clipStatus,

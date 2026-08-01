@@ -492,7 +492,7 @@
           "captionedWaveform": "Captioned waveform v1",
           "newRecipe": "New recipe",
           "saveClipRecipe": "Save clip recipe",
-          "prepareManifest": "Prepare processor manifest"
+          "prepareManifest": "Start captioned render"
         },
         "distribution": {
           "heading": "Streamlined publishing",
@@ -2070,9 +2070,9 @@
       "clipLayoutPreviewNotice": "layout only; the private renderer uses the exact approved cues and source audio",
       "savingClipRecipe": "Saving immutable clip recipe revision…",
       "clipRecipeSaved": "Clip recipe saved. Word cuts and public upload remain locked.",
-      "preparingRenderManifest": "Preparing checksummed private render manifest…",
-      "renderManifestExists": "Existing private processor manifest downloaded again.",
-      "renderManifestCreated": "Private processor manifest created and downloaded. This is not a completed render.",
+      "preparingRenderManifest": "Queueing the exact checksummed captioned render…",
+      "renderManifestExists": "This exact captioned render is already queued or processing and will continue automatically.",
+      "renderManifestCreated": "Captioned render queued. The protected staging processor starts automatically.",
       "loadingAdPlan": "Loading marker and segment state…",
       "noPlan": "no plan",
       "adPlanRevision": "Ad plan revision %{revision}",
