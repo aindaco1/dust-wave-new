@@ -2357,6 +2357,21 @@
   margin-top: var(--dw-admin-space-lg);
 }
 
+.podcast-admin__transcript-label-review {
+  align-items: flex-start;
+  margin-top: var(--dw-admin-space-lg);
+}
+
+.podcast-admin__transcript-label-review span {
+  display: grid;
+  gap: var(--dw-admin-space-xxs);
+}
+
+.podcast-admin__transcript-label-review small {
+  color: #d6d6d6;
+  max-width: 72ch;
+}
+
 .podcast-admin__transcript-pages {
   margin-top: var(--dw-admin-space-md);
 }

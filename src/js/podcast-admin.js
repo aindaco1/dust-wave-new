@@ -41,6 +41,7 @@ import { renderClipRecipePreview } from "./podcast-admin-clip-preview.js";
 import { clipDownloadActionMarkup, mountTranscriptDownloads } from "./podcast-admin-download-actions.js";
 import { mountTranscriptCaptionImport } from "./podcast-admin-transcript-import.js";
 import { mountTranscriptSearch } from "./podcast-admin-transcript-search.js";
+import { mountTranscriptLabelReview } from "./podcast-admin-transcript-label-review.js";
 import { mountPodcastEpisodeContext } from "./podcast-admin-episode-context-setup.js";
 import { mountPodcastShowContext } from "./podcast-admin-show-context.js";
 import { syncReviewDraftButton } from "./podcast-admin-dirty-controls.js";
@@ -511,6 +512,20 @@ function startPodcastAdmin(root) {
       : [],
     getLanguage: () => transcriptLanguageSelect?.value || "es",
     onOpenCue: openTranscriptCue,
+    formatError: transcriptInputError
+  });
+  const transcriptLabelReview = mountTranscriptLabelReview({
+    root,
+    text: adminText,
+    canEdit: () => canEditTranscripts,
+    getTranscript: () => transcript,
+    syncCues: () => syncVisibleTranscriptCues({ requireText: false }),
+    markDirty() {
+      transcriptDirty = true;
+      syncReviewDraftButton(transcriptSaveButton, true, adminText);
+      transcriptApproveButton.disabled = true;
+    },
+    setStatus: (message, error) => setStatus(transcriptStatus, message, error),
     formatError: transcriptInputError
   });
   const {
@@ -3673,6 +3688,7 @@ function startPodcastAdmin(root) {
     transcriptAddButton.hidden = !canEditTranscripts;
     transcriptSaveButton.hidden = !canEditTranscripts;
     syncReviewDraftButton(transcriptSaveButton, transcriptDirty, adminText);
+    transcriptLabelReview.render(transcript, cues);
     transcriptApproveButton.hidden = !canApproveTranscripts;
     transcriptApproveButton.disabled = !canApproveTranscripts
       || Number(transcript.revision || 0) < 1

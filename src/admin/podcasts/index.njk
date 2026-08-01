@@ -639,6 +639,13 @@ eleventyComputed:
               <span data-podcast-transcript-page aria-live="polite"></span>
               <button class="btn btn-outline-light" type="button" data-podcast-transcript-next>{{ workbench.production.nextCues }}</button>
             </nav>
+            <label class="podcast-admin__checkbox podcast-admin__transcript-label-review">
+              <input data-podcast-transcript-label-review type="checkbox">
+              <span>
+                <strong>{{ workbench.production.speakerLabelsReviewed }}</strong>
+                <small>{{ workbench.production.speakerLabelsReviewedHelp }}</small>
+              </span>
+            </label>
             <div class="podcast-admin__transcript-actions">
               <button class="btn btn-outline-light" type="button" data-podcast-transcript-add>{{ workbench.production.addCue }}</button>
               <button class="btn btn-danger" type="button" data-podcast-transcript-save disabled>{{ workbench.production.saveReviewDraft }}</button>
