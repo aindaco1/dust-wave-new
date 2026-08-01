@@ -57,7 +57,7 @@ maintained readiness database.
 | Shared processor CI setup | Implemented | Nine processor workflows and the dispatcher use one local composite action with a commit-SHA-pinned Node action and locked installs |
 | Dispatcher regression coverage | Passing locally and in CI | Source discovery, exclusive lease, signature rejection, idempotent acknowledgement, bounded retry, accepted-run ambiguity, closed registry, least permissions, shared-action, and D1 compound-query-limit contracts are automated |
 | Full Podcast verification | Passing locally and in CI | Secret scan, high-severity dependency audit, Cloudflare types, typecheck, 116 test files / 473 tests, workflow lint, and staging/production dry-run bundles pass |
-| Admin automatic-processing copy | Implemented; branch verification in progress | English and Spanish status copy no longer asks producers to dispatch the eight automated workflows manually; a locale regression test enforces the contract |
+| Admin automatic-processing copy | Implemented; passing locally and in CI | English and Spanish status copy no longer asks producers to dispatch the eight automated workflows manually; a locale regression test enforces the contract |
 
 This progress table records code delivery, not launch readiness. The live
 Worker readiness projection and immutable provider evidence remain the source
