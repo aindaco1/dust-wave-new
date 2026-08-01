@@ -121,7 +121,9 @@ test("transcript lifecycle evidence separates automation from approval", () => {
   });
 
   assert.equal(processing.state, "processing");
-  assert.equal(processing.runningWork.length, 2);
+  assert.deepEqual(processing.runningWork.map(({ id }) => id), [
+    "editorial.primary_transcript"
+  ]);
   assert.equal(processing.approvalWaits.length, 0);
 
   const approval = deriveEpisodeAutopilot({
@@ -147,7 +149,9 @@ test("transcript lifecycle evidence separates automation from approval", () => {
   });
 
   assert.equal(approval.state, "awaiting_approval");
-  assert.equal(approval.approvalWaits.length, 2);
+  assert.deepEqual(approval.approvalWaits.map(({ id }) => id), [
+    "editorial.primary_transcript"
+  ]);
   assert.equal(approval.runningWork.length, 0);
 });
 
@@ -166,6 +170,37 @@ test("missing transcript lifecycle evidence never invents a human task", () => {
   assert.equal(state.state, "processing");
   assert.equal(state.runningWork.length, 1);
   assert.equal(state.approvalWaits.length, 0);
+});
+
+test("post-launch transcript warnings do not hold the launch autopilot", () => {
+  const state = deriveEpisodeAutopilot({
+    candidateGate: { ready: true },
+    nodes: [
+      {
+        id: "editorial.primary_transcript",
+        group: "editorial",
+        status: "pending",
+        severity: "warning",
+        evidence: { transcriptStatus: "needs_review" }
+      },
+      {
+        id: "editorial.word_alignment",
+        group: "editorial",
+        status: "missing",
+        severity: "warning"
+      }
+    ]
+  });
+
+  assert.equal(state.state, "ready");
+  assert.equal(state.approvalWaits.length, 0);
+  assert.equal(state.actionRequired.length, 0);
+  assert.equal(episodeWorkflowNodeRequiresAction({
+    id: "editorial.primary_transcript",
+    status: "pending",
+    severity: "warning",
+    evidence: { transcriptStatus: "needs_review" }
+  }), false);
 });
 
 test("ready and loading states remain explicit", () => {

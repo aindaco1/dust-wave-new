@@ -54,6 +54,10 @@ function unresolvedBlocker(node) {
     && !episodeWorkflowNodeIsComplete(node);
 }
 
+function launchRequirement(node) {
+  return !node?.severity || node.severity === "blocker";
+}
+
 function stepStatus(id, episode, nodes, readiness) {
   let episodeEvidenceComplete = false;
   if (id === "details") {
@@ -87,12 +91,14 @@ function stepStatus(id, episode, nodes, readiness) {
     if (episodeEvidenceComplete) return "complete";
     return id === "monetization" ? "optional" : "not_started";
   }
-  if (relevant.every((node) => String(node.status) === "not_applicable")) {
+  const required = relevant.filter(launchRequirement);
+  if (!required.length) return "optional";
+  if (required.every((node) => String(node.status) === "not_applicable")) {
     return "optional";
   }
-  if (relevant.every(episodeWorkflowNodeIsComplete)) return "complete";
-  if (relevant.some(episodeWorkflowNodeRequiresAction)) return "needs_action";
-  return relevant.some((node) =>
+  if (required.every(episodeWorkflowNodeIsComplete)) return "complete";
+  if (required.some(episodeWorkflowNodeRequiresAction)) return "needs_action";
+  return required.some((node) =>
     episodeWorkflowNodeIsAutomaticWait(node)
     || episodeWorkflowNodeIsProviderDelay(node)
   ) ? "processing" : "needs_action";

@@ -12,6 +12,11 @@ function nodeKey(node) {
     .toLowerCase();
 }
 
+function nodeIsLaunchBlocking(node) {
+  const severity = String(node?.severity || "blocker");
+  return severity === "blocker";
+}
+
 export function episodeWorkflowNodeIsApprovalWait(node) {
   if (String(node?.status || "") !== "pending") return false;
   const key = nodeKey(node);
@@ -38,6 +43,7 @@ export function episodeWorkflowNodeIsProviderDelay(node) {
 }
 
 export function episodeWorkflowNodeRequiresAction(node) {
+  if (!nodeIsLaunchBlocking(node)) return false;
   const status = String(node?.status || "");
   return status === "missing"
     || status === "stale"
@@ -64,13 +70,14 @@ export function deriveEpisodeAutopilot(readiness) {
   }
 
   const nodes = Array.isArray(readiness.nodes) ? readiness.nodes : [];
-  const terminalFailures = nodes.filter(
+  const launchNodes = nodes.filter(nodeIsLaunchBlocking);
+  const terminalFailures = launchNodes.filter(
     (node) => String(node?.status || "") === "failed"
   );
-  const approvalWaits = nodes.filter(episodeWorkflowNodeIsApprovalWait);
-  const providerDelays = nodes.filter(episodeWorkflowNodeIsProviderDelay);
-  const runningWork = nodes.filter(episodeWorkflowNodeIsAutomaticWait);
-  const actionRequired = nodes.filter((node) => {
+  const approvalWaits = launchNodes.filter(episodeWorkflowNodeIsApprovalWait);
+  const providerDelays = launchNodes.filter(episodeWorkflowNodeIsProviderDelay);
+  const runningWork = launchNodes.filter(episodeWorkflowNodeIsAutomaticWait);
+  const actionRequired = launchNodes.filter((node) => {
     if (String(node?.severity || "") !== "blocker") return false;
     const status = String(node?.status || "");
     return ["missing", "stale"].includes(status);

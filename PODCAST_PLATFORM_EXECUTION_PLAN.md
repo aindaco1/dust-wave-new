@@ -35,14 +35,17 @@ revision and exact forced-alignment result completed, it reported eight passes,
 two human-review blockers, zero waits, zero failures, and clean D1 referential
 integrity. The exact alignment is durably ready with all 10,176 words aligned,
 zero unaligned, interpolated, invalid, or projection-issue words, and aligned
-ratio `1.0`. The remaining episode blockers are deliberately sequenced: pass
-and reproduce the H1 bilingual benchmark, approve this exact alignment, then
-review the automatically generated chapter proposal. Media, production,
-delivery, transcript, and alignment processing itself now pass.
+ratio `1.0`. The August 1 launch-scope decision moves reviewed public
+transcripts, H1 word alignment, and chapters past launch. The current media,
+production, delivery, and approved segment transcript pass; word-level
+controls and public chapter resources remain disabled until their unchanged
+post-launch gates pass.
 
-The composed read-only launch gate was also rerun on 2026-08-01. It reported
-six passes, six intentional blockers, zero waits, zero failures, and confirmed
-that every launch-state query wrote zero rows. Staging matches 14 fail-closed
+The composed read-only launch gate was rerun after that scope decision on
+2026-08-01. It reported seven passes, five intentional blockers, zero waits,
+zero failures, and confirmed that every launch-state query wrote zero rows.
+The nested episode gate is launch-ready at eight passes, zero blocks/waits,
+and two explicit post-launch deferrals. Staging matches 14 fail-closed
 provider modes, production matches 17, all 17 required staging secret names are
 installed, the launch show and D1 foreign keys pass, and the system is safe to
 continue but not launch-ready.
@@ -51,7 +54,7 @@ continue but not launch-ready.
 |---|---|---|
 | Environment | PASS | Staging and production provider modes are fail-closed; required staging secret names are installed |
 | Show | PASS | Premium, RSS, canonical page, and YouTube show settings exist |
-| Episode | BLOCK | Enhanced master revision 2, its exact delivery MP3/player peaks, the current-audio production review, and English transcript revision 4 are approved. Exact alignment job `alignment_job_0426ec9ac766e5b43e626dd75695f128` is structurally eligible at 10,176/10,176 words. Complete the H1 benchmark and exact human alignment approval, then review the automatically proposed chapter and clip/audiogram evidence |
+| Episode | PASS for launch scope | Enhanced master revision 2, its exact delivery MP3/player peaks, the current-audio production review, and English transcript revision 4 are approved. Word alignment and chapters are recorded as post-launch; word-level controls and public chapter resources remain disabled until their existing gates pass |
 | Stripe | BLOCK | The test-mode gate has 14 passes and one blocker: import an accountant-approved version of the existing Store tax policy before activation |
 | Distribution | BLOCK | Certify at least 10 destinations through setup, validation, ingestion, and recovery evidence |
 | YouTube | BLOCK | Complete and reconcile one tightly controlled unlisted production-channel test |
@@ -193,19 +196,19 @@ of truth for promotion.
 3. Create enhancement previews and evaluate technical evidence.
 4. Pause only for a promote/reject master decision.
 5. Render delivery MP3, player peaks, and YouTube audio rendition.
-6. Transcribe and propose Spanish-primary metadata, English translation,
-   speaker labels, chapters, show notes, clip candidates, captions, and social
-   copy.
-7. Run word alignment and quality thresholds against the exact approved
-   transcript and working master.
-8. Consolidate revision-aware audio, transcript, chapter, clip, and ad-plan
-   review into one approval surface.
-9. Freeze an exact publication snapshot and schedule premium/public release.
-10. At premium time, expose entitled private-feed content only.
-11. At public time, commit one publication revision and fan out News, RSS,
+6. Transcribe privately and propose Spanish-primary metadata, English
+   translation, show notes, captions, and social copy. Keep unapproved
+   transcripts and transcript-dependent resources private.
+7. Consolidate launch-critical audio, metadata, rights, release, and ad-plan
+   decisions into one approval surface.
+8. Freeze an exact publication snapshot and schedule premium/public release.
+9. At premium time, expose entitled private-feed content only.
+10. At public time, commit one publication revision and fan out News, RSS,
     YouTube, announcement, and directory-observation jobs.
-12. Reconcile provider outcomes, retry safely, and alert only on an actionable
+11. Reconcile provider outcomes, retry safely, and alert only on an actionable
     decision or terminal failure.
+12. Post-launch, review the bilingual transcript, pass H1 word alignment, and
+    approve transcript-dependent chapters, word-level controls, and clips.
 
 ## Automation-first remainder
 
@@ -215,15 +218,15 @@ a second scheduler, readiness model, editor, identity store, or provider ledger.
 
 | Order | Trigger | Zero-touch work | The only permitted pause |
 |---|---|---|---|
-| 1. H1 alignment benchmark | A pinned runner identity lacks current passing evidence | Build a versioned bilingual corpus bundle; verify rights manifests and digests; select representative English/Spanish windows and cut previews; pre-align words; generate a bounded review packet; dispatch the protected benchmark Action; validate resource, idempotency, clean-environment, and Python/JavaScript digest parity; persist the signed result; retry or reconcile ambiguity | One concise review of rights and gold word boundaries, delivered through an expiring deep link; approval must name the exact corpus, runner revision, digest, and report hash |
-| 2. Alignment, chapters, clips, and show notes | H1 evidence passes for the exact adapter identity | Offer exact alignment approval; on approval, discover chapter and clip proposals; run entity-grounding and unlabeled-speaker validators; create Spanish-primary and English metadata variants; render private caption/audiogram previews; group all current-revision proposals in one editorial review surface | Accept or edit subjective titles, names, chapter boundaries, excerpts, captions, and social copy; no IDs, CLIs, or workflow dispatches |
-| 3. Publication snapshot | Editorial and ad-plan gates pass | Freeze one immutable revision; render News/show/RSS/private-feed/YouTube projections; validate canonical URLs, artwork, enclosure range behavior, transcript and chapter resources, premium timing, bonus exclusions, ad-free variants, and player/download parity; schedule premium and public root events | Confirm final rights-sensitive copy, release time, and public/premium intent once |
-| 4. Stripe and tax | A versioned accountant policy document is present | Validate and import policy through `@dustwave/tax-core`; reconcile test Product, monthly/annual Prices, Portal, and webhooks; run test-clock purchase, renewal, failure, recovery, cancellation, refund, duplicate, and out-of-order suites; persist only content-minimal evidence | Accountant approval of registration and taxability facts; live capability promotion remains separate |
-| 5. Pool benefit | Direct subscription lifecycle passes | Reuse the signed grant/revoke boundary; generate scoped redemption codes; test redeem, duplicate, revoke, expiry, subscription overlap, and private-feed rotation without copying unnecessary Pool identity | Approve the Pool tier/add-on policy and benefit duration |
-| 6. YouTube and Resend | A frozen staging publication exists | Create revision-bound resumable uploads; force unlisted mode; reconcile the exact video ID; test audio-only and native-video paths, early/public timing, and bonus exclusion; send consented bilingual staging mail; reconcile delivery, unsubscribe, suppression, retry, and unordered events | Authenticate/2FA if the provider requires it and inspect one unlisted production-channel result plus one consented message |
-| 7. Directories | Feed preflight passes with a public item | Generate the credential-free packet; prefill or browser-assist supported forms; record verification state; poll allowlisted listing URLs; verify show/episode identity; record setup, validation, ingestion, and failed-to-recovered evidence; enable the “10+ platforms” claim only at ten fully certified destinations | Provider login, terms, ownership codes, or provider review that cannot legally or technically be automated |
-| 8. Direct sponsor pilot | Exact episode plan and sponsor contract are present | Validate disclosure/creative/date/position/device/app rules; select decisions in real time; run house fallback and virtual load matrices; observe one native-client qualified download; prove HEAD, partial, canceled, failed, and house-fallback requests do not qualify; reconcile pacing and billing evidence | Approve sponsor contract facts, creative, disclosure, and final episode plan |
-| 9. Production promotion | Every staging launch node passes | Back up D1; apply ordered migrations; reconcile secret names and resources; deploy fail-closed; attach domains; run canary/range/private-leakage checks; promote capabilities independently; run focused gates after each flag; automatically roll back a flag or Worker version on failure | One explicit Super-admin promotion approval bound to the complete evidence snapshot |
+| 1. Publication snapshot | Launch-critical media, metadata, rights, release, and ad-plan gates pass | Freeze one immutable revision; render News/show/RSS/private-feed/YouTube projections; validate canonical URLs, artwork, enclosure range behavior, premium timing, bonus exclusions, ad-free variants, and player/download parity; confirm that unapproved transcript/chapter resources are absent; schedule premium and public root events | Confirm final rights-sensitive copy, release time, and public/premium intent once |
+| 2. Stripe and tax | A versioned accountant policy document is present | Validate and import policy through `@dustwave/tax-core`; reconcile test Product, monthly/annual Prices, Portal, and webhooks; run test-clock purchase, renewal, failure, recovery, cancellation, refund, duplicate, and out-of-order suites; persist only content-minimal evidence | Accountant approval of registration and taxability facts; live capability promotion remains separate |
+| 3. Pool benefit | Direct subscription lifecycle passes | Reuse the signed grant/revoke boundary; generate scoped redemption codes; test redeem, duplicate, revoke, expiry, subscription overlap, and private-feed rotation without copying unnecessary Pool identity | Approve the Pool tier/add-on policy and benefit duration |
+| 4. YouTube and Resend | A frozen staging publication exists | Create revision-bound resumable uploads; force unlisted mode; reconcile the exact video ID; test audio-only and native-video paths, early/public timing, and bonus exclusion; send consented bilingual staging mail; reconcile delivery, unsubscribe, suppression, retry, and unordered events | Authenticate/2FA if the provider requires it and inspect one unlisted production-channel result plus one consented message |
+| 5. Directories | Feed preflight passes with a public item | Generate the credential-free packet; prefill or browser-assist supported forms; record verification state; poll allowlisted listing URLs; verify show/episode identity; record setup, validation, ingestion, and failed-to-recovered evidence; enable the “10+ platforms” claim only at ten fully certified destinations | Provider login, terms, ownership codes, or provider review that cannot legally or technically be automated |
+| 6. Direct sponsor pilot | Exact episode plan and sponsor contract are present | Validate disclosure/creative/date/position/device/app rules; select decisions in real time; run house fallback and virtual load matrices; observe one native-client qualified download; prove HEAD, partial, canceled, failed, and house-fallback requests do not qualify; reconcile pacing and billing evidence | Approve sponsor contract facts, creative, disclosure, and final episode plan |
+| 7. Production promotion | Every staging launch node passes | Back up D1; apply ordered migrations; reconcile secret names and resources; deploy fail-closed; attach domains; run canary/range/private-leakage checks; promote capabilities independently; run focused gates after each flag; automatically roll back a flag or Worker version on failure | One explicit Super-admin promotion approval bound to the complete evidence snapshot |
+| 8. Post-launch transcript and H1 | Core launch is stable and a pinned runner identity lacks current passing evidence | Build a versioned bilingual corpus bundle; verify rights manifests and digests; select representative English/Spanish windows and cut previews; pre-align words; generate a bounded review packet; dispatch the protected benchmark Action; validate resource, idempotency, clean-environment, and Python/JavaScript digest parity; persist the signed result; retry or reconcile ambiguity | Review public bilingual transcripts and gold word boundaries through expiring deep links; each approval names the exact corpus, runner revision, digest, and report hash |
+| 9. Post-launch chapters and alignment-dependent clips | H1 evidence and exact transcript alignment pass | Offer exact alignment approval; on approval, discover chapter and clip proposals; run entity-grounding and unlabeled-speaker validators; render private caption/audiogram previews; group all current-revision proposals in one editorial review surface | Accept or edit subjective chapter boundaries, excerpts, captions, and social copy; no IDs, CLIs, or workflow dispatches |
 
 Automation implementation rules:
 
@@ -245,23 +248,37 @@ Automation implementation rules:
 
 Immediate execution queue:
 
-1. Turn the prepared 12-fixture Spanish candidate set into reviewed transcript
-   projections, then run exact primary/replay alignment and the offline packet
-   review. Populate the same 0.3.4 convention with 12 approved English
-   fixtures. The runner discovers complete pairs and materializes gold/preview
-   files; execute both measured clean resource runs without copying IDs or
-   authoring schemas by hand.
-2. Privately review the ready v10 show-notes proposal; keep it unapplied until
-   subjective copy review explicitly accepts or edits it in the existing
-   WYSIWYG surface. The automated entity, attribution, Markdown, and full-source
-   gates have passed on all 723 approved cues.
-3. Once H1 passes, let the existing scheduler generate chapters and clips, then
-   consolidate their exact-revision decisions into one review handoff.
-4. Freeze a dry-run publication snapshot and exercise News, RSS, player,
-   premium, YouTube-unlisted, Resend, and directory observation without public
-   release.
-5. Run Stripe/tax/Pool, 10+ directory, and direct-sponsor evidence programs in
-   parallel only where they do not share mutable state or human credentials.
+1. Merge the launch-scope gates, rerun all checks and dry bundles, then refresh
+   the protected exact-current virtual-audio evidence. Refresh the composed
+   read-only launch report from D1; never copy a short-lived Wrangler OAuth
+   token into GitHub to make the daily monitor appear green.
+2. Freeze and validate a dry-run release snapshot for a publishable staging
+   fixture. Exercise canonical News, show page, RSS, existing player/download,
+   premium/private feed, public absence of unapproved transcript/chapter
+   resources, and rollback without public release. Do not publish the current
+   source-test episode, which explicitly says `Do not publish`.
+3. Continue autonomous contract and recovery tests for Stripe, tax-core, Pool,
+   YouTube, Resend, directories, and ads, but stop at external facts: accountant
+   approval, OAuth/login/2FA/terms, consented recipient suppression, sponsor
+   contract/creative, native-client traffic, or a production promotion.
+4. Once those inputs exist, execute their purpose-bound staging workflows and
+   reconcile outcomes automatically. Keep provider operations unlisted,
+   consented, test-mode, or observation-only as applicable.
+5. After core launch, resume bilingual transcript review, H1 gold review and
+   clean resource runs, exact alignment approval, and transcript-dependent
+   chapter/clip generation. The prepared private Spanish fixtures remain valid
+   inputs and need no manual schema or path copying.
+
+Current human/external launch boundary:
+
+| Blocker | Everything Codex can complete first | Irreducible input |
+|---|---|---|
+| Tax | Validate the policy schema, tax-core import, Stripe test reconciliation, and lifecycle/recovery tests | Accountant-approved registration and taxability facts |
+| YouTube | Validate resumable/idempotent/unlisted upload contracts and reconciliation | Channel OAuth/2FA and inspection of one controlled unlisted result |
+| Resend | Validate signed delivery, unordered-event, retry, and suppression contracts | One consented staging recipient and an approved suppression exercise |
+| Directories | Generate/validate the submission packet and poll public listings | Provider login, terms, ownership codes, and provider review |
+| Direct sponsor | Validate plan, disclosure, selection, fallback, accounting, and load behavior | Approved contract/creative and one qualified native-client download |
+| Production | Build a complete immutable evidence snapshot and rollback plan | One exact-snapshot Super-admin promotion approval |
 
 ## Execution sequence
 
@@ -287,12 +304,12 @@ CLI command or manual GitHub Actions dispatch.
 - Technically evaluate and privately compare the ready enhanced candidate.
 - Promote or reject it; staging then generates delivery audio and player peaks
   automatically through the same guarded queue primitive.
-- Complete the transcript, public speaker-label, chapter, and exact-revision
-  production reviews.
-- Pass the bilingual word-alignment launch benchmark: rights-cleared fixtures,
-  human-marked words, cut previews, resource bounds, idempotent reruns, and a
-  clean-environment reproduction.
-- Render and inspect captioned clip and audiogram candidates.
+- Complete launch-critical exact-revision production, rights, release, and
+  metadata reviews. Keep unapproved transcripts and transcript-dependent
+  resources private.
+- Validate that segment captions and the existing player work without enabling
+  word-level navigation, public transcript/chapter resources, or
+  alignment-dependent clip controls.
 - Finalize the first `Ópera en la Selva` title, Spanish-primary summary, English
   translation, release intent, and canonical News/show projections.
 
@@ -316,12 +333,12 @@ Exit criterion: the episode gate has no block, wait, or failure node.
 Exit criterion: the Stripe gate passes and both direct subscription and Pool
 benefit paths have controlled end-to-end evidence.
 
-### P3 — YouTube, clips, and announcements
+### P3 — YouTube and announcements
 
 - Use resumable, revision-bound YouTube uploads with persisted reconciliation
   state.
-- Complete one unlisted production-channel full-episode test and one controlled
-  clip test; reconcile ambiguous outcomes rather than retrying blindly.
+- Complete one unlisted production-channel full-episode test; reconcile
+  ambiguous outcomes rather than retrying blindly.
 - Enforce public-release timing and premium-bonus exclusion.
 - Complete one consented Resend staging send, signed delivery transition,
   unsubscribe, and suppression exercise.
@@ -380,6 +397,13 @@ destinations.
 ### P7 — post-launch completion
 
 - Expose the multi-show/network UI already supported by the data model.
+- Review and approve public Spanish/English transcripts through the existing
+  WYSIWYG/timed-text surface.
+- Complete the bilingual H1 gold corpus, previews, primary/replay outputs,
+  measured clean resource runs, signed benchmark evidence, and exact alignment
+  approval before enabling word-level controls.
+- Generate and approve transcript-dependent chapters and captioned
+  clip/audiogram candidates only after their exact alignment inputs pass.
 - Add saved and scheduled reports, richer sponsor pacing, live/video clips,
   collaboration, listener questions, and deeper transcript discovery.
 - Treat remote multitrack recording as a separate feasibility and recovery
@@ -481,8 +505,9 @@ copying IDs, editing configuration, running CLIs, or inspecting technical logs.
 - At least ten directories are fully certified.
 - Dynamic ads pass native-client, load, privacy, fallback, and direct-sponsor
   evidence.
-- Captioned clips, audiograms, transcripts, chapters, bilingual metadata, and
-  the existing player pass their launch gates.
+- Bilingual metadata and the existing player pass their launch gates. After
+  launch, captioned clips, audiograms, public transcripts, and chapters pass
+  their unchanged feature gates before those capabilities are enabled.
 - Security, accessibility, performance, responsiveness, and recovery suites
   pass in CI and staging.
 - Production promotion and rollback require no undocumented manual procedure.

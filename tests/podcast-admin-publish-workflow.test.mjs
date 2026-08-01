@@ -168,3 +168,37 @@ test("episode workflow still routes an explicit approval wait", () => {
   assert.equal(derived.waitingForAutomation, false);
   assert.equal(derived.actionableBlockers.length, 1);
 });
+
+test("transcript and alignment warnings remain visible but optional at launch", () => {
+  const derived = deriveEpisodeWorkflow({
+    title: "Episode",
+    summary: "Summary",
+    sourceLanguage: "es",
+    mediaStatus: "ready",
+    status: "draft"
+  }, {
+    candidateGate: { ready: true, blockerCount: 0, warningCount: 2 },
+    nodes: [
+      {
+        id: "editorial.primary_transcript",
+        group: "editorial",
+        severity: "warning",
+        status: "pending"
+      },
+      {
+        id: "editorial.word_alignment",
+        group: "editorial",
+        severity: "warning",
+        status: "missing"
+      }
+    ]
+  });
+
+  assert.equal(
+    derived.steps.find(({ id }) => id === "transcript").status,
+    "optional"
+  );
+  assert.equal(derived.steps.find(({ id }) => id === "publish").status, "ready");
+  assert.equal(derived.nextStep, "publish");
+  assert.equal(derived.blockers.length, 0);
+});
