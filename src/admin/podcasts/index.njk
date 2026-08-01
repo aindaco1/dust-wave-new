@@ -721,26 +721,6 @@ eleventyComputed:
               <h3>{{ workbench.production.chapterDraftHeading }}</h3>
               <p>{{ workbench.production.chapterDraftIntro }}</p>
               <p class="podcast-admin__help">{{ workbench.production.chapterDraftReviewNotice }}</p>
-              <div class="podcast-admin__field-grid">
-                <label>{{ workbench.production.chapterDraftSourceLanguage }}
-                  <select name="chapterDraftSourceLanguage" data-podcast-chapter-draft-source-language>
-                    <option value="es">{{ workbench.common.spanish }}</option>
-                    <option value="en">{{ workbench.common.english }}</option>
-                  </select>
-                </label>
-                <label>{{ workbench.production.chapterDraftOutputLanguage }}
-                  <select name="chapterDraftOutputLanguage" data-podcast-chapter-draft-output-language>
-                    <option value="es">{{ workbench.common.spanish }}</option>
-                    <option value="en">{{ workbench.common.english }}</option>
-                  </select>
-                </label>
-              </div>
-              <div class="podcast-admin__form-actions">
-                <button
-                  class="btn btn-outline-light"
-                  type="button"
-                  data-podcast-chapter-draft-generate>{{ workbench.production.chapterDraftGenerate }}</button>
-              </div>
               <p
                 class="podcast-admin__status"
                 data-podcast-chapter-draft-status
@@ -766,9 +746,32 @@ eleventyComputed:
                   <button
                     class="btn btn-outline-light"
                     type="button"
-                    data-podcast-chapter-draft-dismiss>{{ workbench.production.chapterDraftDismiss }}</button>
+                  data-podcast-chapter-draft-dismiss>{{ workbench.production.chapterDraftDismiss }}</button>
                 </div>
               </section>
+              <details class="podcast-admin__advanced-tools podcast-admin__distribution-guidance">
+                <summary>{{ workbench.production.chapterDraftManualHeading }}</summary>
+                <div class="podcast-admin__field-grid">
+                  <label>{{ workbench.production.chapterDraftSourceLanguage }}
+                    <select name="chapterDraftSourceLanguage" data-podcast-chapter-draft-source-language>
+                      <option value="es">{{ workbench.common.spanish }}</option>
+                      <option value="en">{{ workbench.common.english }}</option>
+                    </select>
+                  </label>
+                  <label>{{ workbench.production.chapterDraftOutputLanguage }}
+                    <select name="chapterDraftOutputLanguage" data-podcast-chapter-draft-output-language>
+                      <option value="es">{{ workbench.common.spanish }}</option>
+                      <option value="en">{{ workbench.common.english }}</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="podcast-admin__form-actions">
+                  <button
+                    class="btn btn-outline-light"
+                    type="button"
+                    data-podcast-chapter-draft-generate>{{ workbench.production.chapterDraftGenerate }}</button>
+                </div>
+              </details>
             </section>
             <div class="podcast-admin__chapter-rows" data-podcast-chapter-rows></div>
             <div class="podcast-admin__transcript-actions">

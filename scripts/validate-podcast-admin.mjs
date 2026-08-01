@@ -153,6 +153,13 @@ const chapterDraftScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-chapter-draft.js'),
   'utf8'
 );
+const chapterDraftContractScript = await readFile(
+  path.join(
+    repositoryRoot,
+    'src/js/podcast-admin-chapter-draft-contract.js'
+  ),
+  'utf8'
+);
 const clipDraftScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-clip-draft.js'),
   'utf8'
@@ -573,17 +580,18 @@ assert.doesNotMatch(
 assert.match(adminTemplate, /data-podcast-chapter-draft/);
 assert.match(adminTemplate, /data-podcast-chapter-draft-review/);
 assert.match(
-  chapterDraftScript,
+  chapterDraftContractScript,
   /includedCueCount !== totalCueCount[\s\S]+source\.truncated !== false/,
   'AI chapter proposals must prove complete transcript coverage'
 );
+assert.match(chapterDraftScript, /\/chapters\/drafts/);
 assert.match(
   chapterDraftScript,
   /applyChapters\(result\.draft\.chapters\.map/,
   'AI chapter proposals may enter only the unsaved chapter editor'
 );
 assert.doesNotMatch(
-  chapterDraftScript,
+  `${chapterDraftScript}\n${chapterDraftContractScript}`,
   /innerHTML|insertAdjacentHTML/,
   'AI chapter evidence and proposals must render without HTML sinks'
 );
