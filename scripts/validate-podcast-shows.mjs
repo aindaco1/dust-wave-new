@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import { access, readFile } from 'node:fs/promises';
 import path from 'node:path';
 
+import { imageDimensions } from '@dustwave/media-core/image-dimensions';
+
 const repositoryRoot = path.resolve(import.meta.dirname, '..');
 const showsPath = path.join(repositoryRoot, 'src/_data/podcastShows.json');
 const publicationsPath = path.join(repositoryRoot, 'src/_data/podcastEpisodePublications.json');
@@ -48,8 +50,33 @@ for (const show of shows) {
   );
   assert.match(
     show.feedArtworkUrl,
-    /^https:\/\/dustwave\.xyz\/img\/podcasts\/[a-z0-9/_-]+\.png$/,
+    /^https:\/\/dustwave\.xyz\/img\/podcasts\/[a-z0-9/_-]+\.(?:jpe?g|png)$/,
     `${show.slug} feed artwork must use a permanent first-party HTTPS URL`
+  );
+  const feedArtworkUrl = new URL(show.feedArtworkUrl);
+  const feedArtworkPath = path.join(
+    repositoryRoot,
+    'src',
+    decodeURIComponent(feedArtworkUrl.pathname).replace(/^\//, '')
+  );
+  const feedArtworkBytes = new Uint8Array(await readFile(feedArtworkPath));
+  assert(
+    feedArtworkBytes.byteLength <= 512 * 1024,
+    `${show.slug} feed artwork must not exceed 512 KiB`
+  );
+  const feedArtworkType = feedArtworkUrl.pathname.endsWith('.png')
+    ? 'image/png'
+    : 'image/jpeg';
+  const feedArtworkDimensions = imageDimensions(
+    feedArtworkBytes,
+    feedArtworkType
+  );
+  assert(
+    feedArtworkDimensions
+      && feedArtworkDimensions.width === feedArtworkDimensions.height
+      && feedArtworkDimensions.width >= 1_400
+      && feedArtworkDimensions.width <= 3_000,
+    `${show.slug} feed artwork must be square and 1400–3000 pixels`
   );
   assert(Array.isArray(show.episodes), `${show.slug} episodes must be an array`);
   assert.equal(show.publicAccess.priceCents, 0, `${show.slug} public access must remain free`);
