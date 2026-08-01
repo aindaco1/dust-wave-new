@@ -53,10 +53,11 @@ maintained readiness database.
 | Slice | State | Evidence |
 |---|---|---|
 | Completion plan | Complete | This document is checked into `dust-wave-new` |
-| Processor discovery and dispatch | Implemented; staging rollout pending | One normalized D1 view and transport ledger cover eight existing ID-based processors; signed claim/ack/reject routes and a scheduled GitHub dispatcher are implemented in `dust-wave-podcast` |
+| Processor discovery and dispatch | Complete in staging | Migration `0067` and Worker version `f1fe0cd8-9561-42d7-9ec2-2ec3158bea03` are deployed to staging; the signed protected-environment smoke run claimed an empty ledger successfully, while production remains disabled and unmigrated |
 | Shared processor CI setup | Implemented | Nine processor workflows and the dispatcher use one local composite action with a commit-SHA-pinned Node action and locked installs |
-| Dispatcher regression coverage | Passing locally | Source discovery, exclusive lease, signature rejection, idempotent acknowledgement, bounded retry, accepted-run ambiguity, closed registry, least permissions, and shared-action contracts are automated |
-| Full Podcast verification | Passing locally | Secret scan, high-severity dependency audit, Cloudflare types, typecheck, 116 test files / 472 tests, workflow lint, and staging/production dry-run bundles pass |
+| Dispatcher regression coverage | Passing locally and in CI | Source discovery, exclusive lease, signature rejection, idempotent acknowledgement, bounded retry, accepted-run ambiguity, closed registry, least permissions, shared-action, and D1 compound-query-limit contracts are automated |
+| Full Podcast verification | Passing locally and in CI | Secret scan, high-severity dependency audit, Cloudflare types, typecheck, 116 test files / 473 tests, workflow lint, and staging/production dry-run bundles pass |
+| Admin automatic-processing copy | Implemented; branch verification in progress | English and Spanish status copy no longer asks producers to dispatch the eight automated workflows manually; a locale regression test enforces the contract |
 
 This progress table records code delivery, not launch readiness. The live
 Worker readiness projection and immutable provider evidence remain the source
