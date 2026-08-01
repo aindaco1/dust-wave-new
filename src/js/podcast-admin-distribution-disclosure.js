@@ -17,10 +17,16 @@ export function distributionEvidenceSummary(destination, text) {
   const providerType = destination?.mode === "direct_api"
     ? text("directProviderAdapter")
     : text("rssFollowingDirectory");
+  const automatic = destination?.listingUrl
+    && ["verified", "not_required"].includes(
+      String(destination?.ownerSetupStatus || "")
+    )
+    ? ` · ${text("automaticListingChecksActive")}`
+    : "";
   return `${providerType} · ${text(
     "directoryEvidenceReadySummary",
     distributionEvidenceProgress(destination?.certification)
-  )}`;
+  )}${automatic}`;
 }
 
 export function createDistributionDisclosureState() {

@@ -1553,7 +1553,12 @@ assert.match(adminScript, /function canOperateSelectedShowPublication/);
 assert.match(adminScript, /function directoryObservationForm/);
 assert.match(adminScript, /function updateDirectoryObservation/);
 assert.match(adminScript, /data-podcast-directory-observation-form/);
-assert.match(englishRuntimeText, /Save episode evidence/);
+assert.match(englishRuntimeText, /Save manual evidence/);
+assert.match(englishRuntimeText, /Automatic listing checks active/);
+assert.match(
+  JSON.stringify(spanishRuntime),
+  /Verificaciones automáticas activas/
+);
 assert.match(adminScript, /function canManageSelectedShowDistribution/);
 assert.match(englishRuntimeText, /RSS-following directory/);
 assert.match(adminScript, /data-podcast-distribution-form/);
