@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 
 import {
@@ -19,6 +20,22 @@ const READY_JOB = Object.freeze({
   peaks: { length: 100, sha256: "b".repeat(64) },
   processor: { reportSha256: "c".repeat(64) },
   approval: { eligible: true, approvedCurrent: false }
+});
+
+test("uses evidence-based delivery approval copy in both languages", () => {
+  const english = JSON.parse(readFileSync(
+    new URL("../src/_data/i18n/en.json", import.meta.url),
+    "utf8"
+  )).runtime.admin;
+  const spanish = JSON.parse(readFileSync(
+    new URL("../src/_data/i18n/es.json", import.meta.url),
+    "utf8"
+  )).runtime.admin;
+
+  assert.match(english.exactDeliveryAudioAck, /full-file validation/);
+  assert.doesNotMatch(english.exactDeliveryAudioAck, /I listened/i);
+  assert.match(spanish.exactDeliveryAudioAck, /archivo completo/);
+  assert.doesNotMatch(spanish.exactDeliveryAudioAck, /Escuché/i);
 });
 
 test("builds an exact, normalized delivery-audio approval request", () => {
