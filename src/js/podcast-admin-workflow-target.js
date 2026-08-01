@@ -11,6 +11,10 @@ const TARGETS = Object.freeze({
     "[data-podcast-delivery-audio]",
     "[data-podcast-delivery-audio-episode]"
   ],
+  transcript_review: [
+    "[data-podcast-transcript-workbench]",
+    "[data-podcast-transcript-episode]"
+  ],
   alignment: [
     "[data-podcast-alignment]",
     "[data-podcast-transcript-episode]"

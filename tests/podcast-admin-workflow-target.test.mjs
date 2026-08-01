@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { revealWorkflowTarget } from "../src/js/podcast-admin-workflow-target.js";
+import {
+  createExactWorkflowNavigator,
+  revealWorkflowTarget
+} from "../src/js/podcast-admin-workflow-target.js";
 
 test("workflow target moves focus after the initiating click completes", () => {
   let scheduled = null;
@@ -96,4 +99,48 @@ test("workflow target moves focus after the initiating click completes", () => {
   assert.deepEqual(scrollOptions, { behavior: "smooth", block: "start" });
   assert.deepEqual(focusOptions, { preventScroll: true });
   assert.equal(hiddenFocusCalled, false);
+});
+
+test("transcript review selects the linked episode and reveals the editor", () => {
+  let selectedEpisode = "";
+  let revealed = false;
+  const control = {
+    ownerDocument: {
+      defaultView: {
+        Event: class {
+          constructor(type) { this.type = type; }
+        }
+      }
+    },
+    value: "",
+    dispatchEvent(event) {
+      assert.equal(event.type, "change");
+      selectedEpisode = this.value;
+    }
+  };
+  const workbench = {
+    closest() { return null; },
+    matches() { return false; },
+    querySelectorAll() { return []; },
+    scrollIntoView() { revealed = true; }
+  };
+  const root = {
+    ownerDocument: {
+      defaultView: {
+        matchMedia: () => ({ matches: true }),
+        getComputedStyle: () => ({ display: "block", visibility: "visible" }),
+        setTimeout(callback) { callback(); }
+      }
+    },
+    querySelector(selector) {
+      if (selector === "[data-podcast-transcript-workbench]") return workbench;
+      if (selector === "[data-podcast-transcript-episode]") return control;
+      return null;
+    }
+  };
+
+  const navigate = createExactWorkflowNavigator(root);
+  assert.equal(navigate("transcript_review", "episode_1"), true);
+  assert.equal(selectedEpisode, "episode_1");
+  assert.equal(revealed, true);
 });

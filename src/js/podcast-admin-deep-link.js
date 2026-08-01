@@ -3,7 +3,7 @@ const PARAMETERS = ["show", "episode", "step", "target"];
 const STEP_TARGETS = Object.freeze({
   details: new Set(),
   media: new Set(["attach_media", "working_master", "delivery_audio"]),
-  transcript: new Set(["alignment", "chapters"]),
+  transcript: new Set(["transcript_review", "alignment", "chapters"]),
   review: new Set(["production_review", "promotion_clips"]),
   monetization: new Set(),
   publish: new Set()

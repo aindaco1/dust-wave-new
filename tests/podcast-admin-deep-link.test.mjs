@@ -38,6 +38,20 @@ test("accepts a step without an exact target", () => {
   );
 });
 
+test("accepts the transcript review action target", () => {
+  assert.deepEqual(
+    parsePodcastAdminDeepLink(
+      "https://dustwave.xyz/admin/podcasts/?show=opera&episode=episode_1&step=transcript&target=transcript_review"
+    ),
+    {
+      showId: "opera",
+      episodeId: "episode_1",
+      step: "transcript",
+      target: "transcript_review"
+    }
+  );
+});
+
 test("rejects unknown, mismatched, and unbounded input", () => {
   const base = "https://dustwave.xyz/admin/podcasts/?show=opera&episode=episode_1";
   assert.equal(parsePodcastAdminDeepLink(`${base}&step=unknown`), null);
