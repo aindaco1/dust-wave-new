@@ -651,18 +651,26 @@ eleventyComputed:
                 </div>
                 <p class="podcast-admin__pill">{{ workbench.production.h1Pill }}</p>
               </div>
-              <div class="podcast-admin__field-grid">
-                <label>{{ workbench.production.alignmentAdapter }}
-                  <select name="alignmentAdapter" data-podcast-alignment-adapter>
-                    <option value="whisperx">WhisperX 3.8.6</option>
-                    <option value="stable-ts">{{ workbench.production.stableFallback }}</option>
-                  </select>
-                </label>
-              </div>
               <div class="podcast-admin__transcript-actions">
                 <button class="btn btn-outline-light" type="button" data-podcast-alignment-refresh>{{ workbench.production.refreshAlignments }}</button>
-                <button class="btn btn-danger" type="button" data-podcast-alignment-queue>{{ workbench.production.queueAlignment }}</button>
               </div>
+              <details class="podcast-admin__advanced-tools podcast-admin__distribution-guidance">
+                <summary>
+                  <strong>{{ workbench.production.alignmentRecoverySummary }}</strong>
+                  <span>{{ workbench.production.alignmentRecoveryIntro }}</span>
+                </summary>
+                <div class="podcast-admin__field-grid">
+                  <label>{{ workbench.production.alignmentAdapter }}
+                    <select name="alignmentAdapter" data-podcast-alignment-adapter>
+                      <option value="whisperx">WhisperX 3.8.6</option>
+                      <option value="stable-ts">{{ workbench.production.stableFallback }}</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="podcast-admin__transcript-actions">
+                  <button class="btn btn-outline-light" type="button" data-podcast-alignment-queue>{{ workbench.production.queueAlignment }}</button>
+                </div>
+              </details>
               <p class="podcast-admin__transcript-meta" data-podcast-alignment-summary aria-live="polite">{{ workbench.production.alignmentPrerequisite }}</p>
               <p class="podcast-admin__status" data-podcast-alignment-status role="status" aria-live="polite"></p>
               <div class="podcast-admin__audio-enhancement-results" data-podcast-alignment-jobs></div>

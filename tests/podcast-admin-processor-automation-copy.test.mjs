@@ -15,6 +15,7 @@ const automaticProcessorKeys = [
   "transcriptionChunkWorkflow",
   "runAlignmentWorkflow",
   "alignmentRecorded",
+  "noAlignmentJob",
   "qcQueuedNoChange",
   "qcRunQueued",
   "enhancementPreviewQueued",
@@ -47,6 +48,30 @@ test("processor status copy describes automatic work in both locales", async () 
       );
     }
   }
+});
+
+test("alignment recovery stays secondary to automatic processing", async () => {
+  const template = await readFile(
+    new URL("../src/admin/podcasts/index.njk", import.meta.url),
+    "utf8"
+  );
+  const alignment = template.match(
+    /<section class="podcast-admin__alignment"[\s\S]*?<section class="podcast-admin__benchmark"/
+  )?.[0];
+  assert.equal(typeof alignment, "string");
+  assert.match(
+    alignment,
+    /<details class="podcast-admin__advanced-tools podcast-admin__distribution-guidance">/
+  );
+  assert.match(alignment, /alignmentRecoveryIntro/);
+  assert.match(
+    alignment,
+    /class="btn btn-outline-light"[^>]+data-podcast-alignment-queue/
+  );
+  assert.doesNotMatch(
+    alignment,
+    /class="btn btn-danger"[^>]+data-podcast-alignment-queue/
+  );
 });
 
 test("queueing a clip render does not download a manual processor manifest", async () => {
