@@ -1318,6 +1318,8 @@
       "approveDeliveryAudio": "Aprobar audio de entrega",
       "approvingDeliveryAudio": "Volviendo a verificar el máster actual, objetos R2, evidencia multipartes, decodificación completa, cuadros MP3 y suma de la forma de onda…",
       "deliveryAudioApproved": "Audio de entrega exacto y forma de onda del reproductor aprobados.",
+      "deliveryAudioApprovalInvalid": "La aprobación ya no coincide con el episodio, máster o render actual exacto. Actualiza la evidencia y confírmala de nuevo.",
+      "deliveryAudioApprovalRefreshFailed": "El audio de entrega fue aprobado, pero no se pudo cargar la evidencia actualizada. Actualiza este panel antes de realizar otra acción.",
       "youtubeAudioCreateEpisode": "Crea un episodio antes de preparar una rendición de YouTube solo con audio.",
       "youtubeAudioChooseEpisode": "Elige un episodio para revisar sus rendiciones de YouTube solo con audio.",
       "youtubeAudioLoading": "Cargando evidencia del máster de trabajo y de las rendiciones…",

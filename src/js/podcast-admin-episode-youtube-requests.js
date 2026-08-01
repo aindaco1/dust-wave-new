@@ -1,4 +1,5 @@
-const IDENTIFIER_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_-]*$/;
+import { normalizeAdminIdentifier } from "./podcast-admin-request-security.js";
+
 const VIDEO_ID_PATTERN = /^[A-Za-z0-9_-]{6,64}$/;
 const TITLE_CONTROL_PATTERN = /[\u0000-\u001f\u007f]/;
 const DESCRIPTION_CONTROL_PATTERN = /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/;
@@ -12,8 +13,8 @@ export function buildEpisodeYouTubeDraftRequest({
   privacyStatus,
   confirmChannelUrl
 }) {
-  const normalizedEpisodeId = identifier(episodeId);
-  const normalizedPublicationId = identifier(publicationId);
+  const normalizedEpisodeId = normalizeAdminIdentifier(episodeId);
+  const normalizedPublicationId = normalizeAdminIdentifier(publicationId);
   const revision = Number(publicationRevision);
   const normalizedTitle = String(title || "").trim();
   const normalizedDescription = String(description || "").trim();
@@ -54,7 +55,7 @@ export function buildEpisodeYouTubeReconciliationRequest({
   providerVideoId,
   confirmed
 }) {
-  const normalizedPublicationId = identifier(publicationId);
+  const normalizedPublicationId = normalizeAdminIdentifier(publicationId);
   if (!normalizedPublicationId) return { error: "invalid" };
   if (outcome !== "uploaded" && outcome !== "not_uploaded") {
     return { error: "invalid" };
@@ -87,12 +88,5 @@ export function buildEpisodeYouTubeReconciliationRequest({
 }
 
 export function validEpisodeYouTubeIdentifier(value) {
-  return Boolean(identifier(value));
-}
-
-function identifier(value) {
-  const normalized = String(value || "").trim();
-  return normalized.length <= 160 && IDENTIFIER_PATTERN.test(normalized)
-    ? normalized
-    : "";
+  return Boolean(normalizeAdminIdentifier(value));
 }

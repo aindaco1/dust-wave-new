@@ -1318,6 +1318,8 @@
       "approveDeliveryAudio": "Approve delivery audio",
       "approvingDeliveryAudio": "Rechecking the current master, R2 objects, multipart evidence, full decode, MP3 frames, and waveform digest…",
       "deliveryAudioApproved": "Exact delivery audio and player waveform approved.",
+      "deliveryAudioApprovalInvalid": "The approval no longer matches the exact current episode, master, or render. Refresh the evidence and confirm it again.",
+      "deliveryAudioApprovalRefreshFailed": "Delivery audio was approved, but the updated evidence could not be loaded. Refresh this panel before taking another action.",
       "youtubeAudioCreateEpisode": "Create an episode before preparing an audio-only YouTube rendition.",
       "youtubeAudioChooseEpisode": "Choose an episode to inspect its audio-only YouTube renditions.",
       "youtubeAudioLoading": "Loading working-master and rendition evidence…",

@@ -1,16 +1,13 @@
+import { buildDeliveryAudioApprovalRequest } from "./podcast-admin-delivery-audio-approval.js";
 import {
   canQueueCurrentOperation,
   createRetriableOperationId
 } from "./podcast-admin-retriable-operation.js";
 
-const DELIVERY_AUDIO_WORKFLOW = "process-delivery-audio.yml";
-const ACTIVE_DELIVERY_STATUSES = new Set([
-  "queued",
-  "rendering",
-  "completing",
-  "ready",
-  "approved"
-]);
+const WORKFLOW_NAME = "process-delivery-audio.yml";
+const ACTIVE_STATUSES = new Set(
+  ["queued", "rendering", "completing", "ready", "approved"]
+);
 
 export function mountDeliveryAudio({
   root,
@@ -135,7 +132,7 @@ export function mountDeliveryAudio({
         processorEnabled: state?.delivery?.processor?.available,
         authorized: canQueue(),
         rows: jobs,
-        activeStatuses: ACTIVE_DELIVERY_STATUSES
+        activeStatuses: ACTIVE_STATUSES
       })
     ) return;
     queueButton.disabled = true;
@@ -159,7 +156,7 @@ export function mountDeliveryAudio({
       setStatus(status, text("deliveryAudioQueued", {
         id: String(response.job?.id || jobId),
         workflow: String(
-          response.processor?.workflow || DELIVERY_AUDIO_WORKFLOW
+          response.processor?.workflow || WORKFLOW_NAME
         )
       }));
       await refresh();
@@ -197,7 +194,7 @@ export function mountDeliveryAudio({
       processorEnabled: processorAvailable,
       authorized: canQueue(),
       rows: jobs,
-      activeStatuses: ACTIVE_DELIVERY_STATUSES
+      activeStatuses: ACTIVE_STATUSES
     });
     results.replaceChildren(
       ...(jobs.length
@@ -280,7 +277,7 @@ export function mountDeliveryAudio({
     const detail = document.createElement("p");
     if (["queued", "rendering", "completing"].includes(jobStatus)) {
       detail.textContent = text("deliveryAudioRunWorkflow", {
-        workflow: DELIVERY_AUDIO_WORKFLOW,
+        workflow: WORKFLOW_NAME,
         id: String(job.id || "")
       });
     } else if (jobStatus === "failed") {
@@ -320,6 +317,7 @@ export function mountDeliveryAudio({
     acknowledgeLabel.className = "podcast-admin__checkbox";
     const acknowledge = document.createElement("input");
     acknowledge.type = "checkbox";
+    acknowledge.name = "acknowledgeExactDeliveryAudio";
     acknowledge.required = true;
     acknowledgeLabel.append(
       acknowledge,
@@ -334,12 +332,7 @@ export function mountDeliveryAudio({
     formStatus.setAttribute("role", "status");
     formStatus.setAttribute("aria-live", "polite");
     form.append(
-      heading,
-      intro,
-      reasonLabel,
-      acknowledgeLabel,
-      button,
-      formStatus
+      heading, intro, reasonLabel, acknowledgeLabel, button, formStatus
     );
     form.addEventListener("submit", (event) =>
       approve(event, job, form, formStatus)
@@ -349,34 +342,34 @@ export function mountDeliveryAudio({
 
   async function approve(event, job, form, formStatus) {
     event.preventDefault();
-    const currentMaster = state?.master?.current;
-    if (
-      !job?.id
-      || !job.approval?.eligible
-      || !currentMaster?.id
-      || !canApprove()
-    ) return;
+    if (!canApprove()) return;
+    if (form.reportValidity && !form.reportValidity()) return;
+    const request = buildDeliveryAudioApprovalRequest({
+      job,
+      selectedEpisodeId: select?.value,
+      currentMasterId: state?.master?.current?.id,
+      approvalReason: form.elements.approvalReason.value,
+      acknowledged:
+        form.elements.acknowledgeExactDeliveryAudio?.checked === true
+    });
+    if (!request) {
+      setStatus(formStatus, text("deliveryAudioApprovalInvalid"), true);
+      return;
+    }
     const button = form.querySelector('button[type="submit"]');
+    if (!button) return;
     button.disabled = true;
     setStatus(formStatus, text("approvingDeliveryAudio"));
     try {
-      await client.request(
-        `/v1/admin/delivery-audio-jobs/${
-          encodeURIComponent(String(job.id))
-        }/approve`,
-        {
-          method: "POST",
-          body: {
-            workingMasterId: currentMaster.id,
-            approvalReason: form.elements.approvalReason.value
-          }
-        }
-      );
-      await onApproved(select?.value || "");
+      await client.request(request.path, request.options);
       setStatus(status, text("deliveryAudioApproved"));
+      try {
+        await onApproved(select?.value || "");
+      } catch {
+        setStatus(formStatus, text("deliveryAudioApprovalRefreshFailed"), true);
+      }
     } catch (error) {
       setStatus(formStatus, friendlyError(error), true);
-    } finally {
       button.disabled = false;
     }
   }

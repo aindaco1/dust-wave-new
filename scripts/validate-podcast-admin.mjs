@@ -97,6 +97,13 @@ const deliveryAudioScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-delivery-audio.js'),
   'utf8'
 );
+const deliveryAudioApprovalScript = await readFile(
+  path.join(
+    repositoryRoot,
+    'src/js/podcast-admin-delivery-audio-approval.js'
+  ),
+  'utf8'
+);
 const marketingLinksScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-marketing-links.js'),
   'utf8'
@@ -180,6 +187,10 @@ const publicationSecurityScript = await readFile(
     repositoryRoot,
     'src/js/podcast-admin-publication-security.js'
   ),
+  'utf8'
+);
+const requestSecurityScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-request-security.js'),
   'utf8'
 );
 const analyticsScript = await readFile(
@@ -1621,6 +1632,16 @@ assert.match(deliveryAudioScript, /workingMasterId: currentMaster\.id/);
 assert.match(deliveryAudioScript, /contract: "deliveryAudio"/);
 assert.match(deliveryAudioScript, /async function approve/);
 assert.match(deliveryAudioScript, /exactDeliveryAudioAck/);
+assert.match(deliveryAudioScript, /form\.reportValidity\(\)/);
+assert.match(deliveryAudioScript, /acknowledgeExactDeliveryAudio/);
+assert.match(
+  deliveryAudioApprovalScript,
+  /jobEpisodeId !== episodeId/
+);
+assert.match(
+  deliveryAudioApprovalScript,
+  /sourceMasterId !== masterId/
+);
 assert.match(adminStyles, /\[data-podcast-delivery-audio-queue\]/);
 assert.match(adminStyles, /\.podcast-admin__audio-enhancement-comparison/);
 assert.match(adminScript, /\/review-comments\//);
@@ -1648,10 +1669,11 @@ assert.match(publicationScript, /basePublicationRevision/);
 assert.match(publicationScript, /mode === "enforce"/);
 assert.match(publicationScript, /mode === "shadow"/);
 assert.match(
-  publicationSecurityScript,
-  /UNSAFE_OVERRIDE_TEXT[\s\S]+normalizePublicationOverrideReason/,
+  requestSecurityScript,
+  /UNSAFE_ADMIN_TEXT[\s\S]+normalizeAdminReason/,
   "publication overrides must reject control and bidirectional text before the API call"
 );
+assert.match(publicationSecurityScript, /normalizeAdminReason/);
 assert.match(
   publicationScript,
   /normalizePublicationOverrideReason[\s\S]+publication_override_reason_invalid/,
