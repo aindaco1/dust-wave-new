@@ -1,3 +1,9 @@
+import {
+  buildEpisodeYouTubeDraftRequest,
+  buildEpisodeYouTubeReconciliationRequest,
+  validEpisodeYouTubeIdentifier
+} from "./podcast-admin-episode-youtube-requests.js";
+
 export function buildEpisodeYouTubeControls({
   channel,
   release,
@@ -134,37 +140,28 @@ export async function handleEpisodeYouTubeSubmit({
   const status = form.querySelector(
     "[data-podcast-episode-youtube-status]"
   );
-  if (!episodeId || !button) return;
-  if (draftForm) {
-    const publicationRevision = Number(
-      form.dataset.publicationRevision || 0
-    );
-    if (
-      !Number.isSafeInteger(publicationRevision)
-      || publicationRevision <= 0
-    ) return;
+  if (!validEpisodeYouTubeIdentifier(episodeId) || !button) return;
+  if (typeof form.reportValidity === "function" && !form.reportValidity()) {
+    return;
   }
   button.disabled = true;
   try {
     if (draftForm) {
-      const publicationRevision = Number(
-        form.dataset.publicationRevision || 0
-      );
+      const request = buildEpisodeYouTubeDraftRequest({
+        episodeId,
+        publicationId: form.dataset.publicationId,
+        publicationRevision: form.dataset.publicationRevision,
+        title: form.elements.title.value,
+        description: form.elements.description.value,
+        privacyStatus: form.elements.privacyStatus.value,
+        confirmChannelUrl: form.elements.confirmChannelUrl.value
+      });
+      if (!request) {
+        setStatus(status, text("episodeYoutubeDraftInvalid"), true);
+        return;
+      }
       setStatus(status, text("preparingEpisodeYoutubeDraft"));
-      const result = await client.request(
-        `/v1/admin/episodes/${encodeURIComponent(episodeId)}/youtube`,
-        {
-          method: "POST",
-          body: {
-            publicationId: form.dataset.publicationId,
-            expectedPublicationRevision: publicationRevision,
-            title: form.elements.title.value,
-            description: form.elements.description.value,
-            privacyStatus: form.elements.privacyStatus.value,
-            confirmChannelUrl: form.elements.confirmChannelUrl.value
-          }
-        }
-      );
+      const result = await client.request(request.path, request.options);
       setStatus(
         status,
         result.idempotent
@@ -172,39 +169,31 @@ export async function handleEpisodeYouTubeSubmit({
           : text("episodeYoutubeDraftPrepared")
       );
     } else {
-      const publicationId = String(form.dataset.publicationId || "");
-      const outcome = form.elements.outcome.value;
-      if (!publicationId || !form.elements.confirmation.checked) {
+      const result = buildEpisodeYouTubeReconciliationRequest({
+        publicationId: form.dataset.publicationId,
+        outcome: form.elements.outcome.value,
+        providerVideoId: form.elements.providerVideoId.value,
+        confirmed: form.elements.confirmation.checked
+      });
+      if (result.error === "confirmation_required") {
         setStatus(status, text("episodeYoutubeReconcileConfirm"), true);
-        button.disabled = false;
         return;
       }
-      const providerVideoId = form.elements.providerVideoId.value.trim();
-      if (outcome === "uploaded" && !providerVideoId) {
+      if (result.error === "provider_id_required") {
         setStatus(status, text("episodeYoutubeProviderIdRequired"), true);
-        button.disabled = false;
+        return;
+      }
+      if (!result.request) {
+        setStatus(status, text("episodeYoutubeReconcileInvalid"), true);
         return;
       }
       setStatus(status, text("reconcilingEpisodeYoutube"));
-      await client.request(
-        `/v1/admin/episode-youtube-publications/${encodeURIComponent(
-          publicationId
-        )}/reconcile`,
-        {
-          method: "POST",
-          body: {
-            outcome,
-            providerVideoId,
-            confirmation: outcome === "uploaded"
-              ? "CONFIRM_VERIFIED_UNLISTED_VIDEO"
-              : "CONFIRM_NO_CHANNEL_VIDEO_REMAINS"
-          }
-        }
-      );
+      await client.request(result.request.path, result.request.options);
     }
     await loadDistribution(episodeId);
   } catch (error) {
     setStatus(status, friendlyError(error), true);
+  } finally {
     button.disabled = false;
   }
 }
@@ -240,6 +229,7 @@ export async function handleEpisodeYouTubeApproval({
     await loadDistribution(episodeId);
   } catch (error) {
     setStatus(status, friendlyError(error), true);
+  } finally {
     button.disabled = false;
   }
 }

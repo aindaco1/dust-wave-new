@@ -215,6 +215,7 @@ const scriptBudgets = new Map([
   ["src/js/podcast-admin-clip-preview.js", 5_000],
   ["src/js/podcast-admin-download-actions.js", 3_000],
   ["src/js/podcast-admin-episode-youtube.js", 10_000],
+  ["src/js/podcast-admin-episode-youtube-requests.js", 3_500],
   ["src/js/podcast-admin-analytics.js", 20_000],
   ["src/js/podcast-admin-rss-import.js", 35_000],
   ["src/js/podcast-admin-rss-reconciliation.js", 18_000],

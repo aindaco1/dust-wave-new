@@ -207,6 +207,10 @@ const youtubeAudioRenditionScript = await readFile(
   ),
   'utf8'
 );
+const episodeYoutubeScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-episode-youtube.js'),
+  'utf8'
+);
 const adminMockApi = await readFile(
   path.join(repositoryRoot, 'tests/fixtures/podcast-admin-mock-api.mjs'),
   'utf8'
@@ -330,6 +334,7 @@ const staticRuntimeKeys = [
   ...rssImportCutoverScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...rssImportActivationApprovalScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...youtubeAudioRenditionScript.matchAll(/text\(\s*"([^"]+)"/g),
+  ...episodeYoutubeScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...showPricesScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...transcriptDiagnosticsScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...transcriptDiagnosticNavigationScript.matchAll(/text\(\s*"([^"]+)"/g),
