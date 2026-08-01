@@ -5,6 +5,7 @@ import {
   workflowTargetForNode
 } from "./podcast-admin-publish-workflow-core.js";
 import { mountWorkflowPriority } from "./podcast-admin-workflow-priority.js";
+import { mountEpisodeAutopilot } from "./podcast-admin-autopilot.js";
 
 export function revealEpisodePublishWorkflow(root) {
   const reduceMotion = root?.ownerDocument?.defaultView
@@ -82,11 +83,13 @@ export function mountEpisodePublishWorkflow({
       );
     }
   });
+  const autopilot = mountEpisodeAutopilot({ document, text });
   root.append(heading);
   if (episodeLabel) root.append(episodeLabel);
   root.append(
     progressRoot,
     summary,
+    autopilot.element,
     ...workflowPriority.elements,
     actions
   );
@@ -106,7 +109,8 @@ export function mountEpisodePublishWorkflow({
       ready: text("workflowStatusReady"),
       needs_action: text("workflowStatusNeedsAction"),
       optional: text("workflowStatusOptional"),
-      not_started: text("workflowStatusNotStarted")
+      not_started: text("workflowStatusNotStarted"),
+      processing: text("workflowStatusProcessing")
     },
     onSelect: (id) => navigate(id)
   });
@@ -147,25 +151,28 @@ export function mountEpisodePublishWorkflow({
         step: stepDefinitions.find(([id]) => id === nextStep)?.[1] || ""
       });
     continueButton.hidden = nextStep === "publish";
+    if (derived.waitingForAutomation) continueButton.hidden = true;
     publishButton.hidden = nextStep !== "publish";
     publishButton.disabled = !readiness;
-    const blockerNodes = derived.blockers;
     if (!readiness) {
       summary.textContent = text("workflowLoading");
     } else if (readiness.candidateGate?.ready) {
       summary.textContent = text("workflowReadySummary");
+    } else if (
+      derived.waitingForAutomation
+      && derived.actionableBlockers.length === 0
+    ) {
+      summary.textContent = text("workflowProcessingSummary");
     } else {
       summary.textContent = text("workflowNeedsActionSummary", {
-        count: Math.max(
-          blockerNodes.length,
-          Number(readiness.candidateGate?.blockerCount || 0)
-        )
+        count: derived.actionableBlockers.length
       });
     }
     workflowPriority.render({
-      nodes: blockerNodes,
+      nodes: derived.actionableBlockers,
       next: derived.nextBlocker
     });
+    autopilot.render(readiness);
   }
 
   async function refresh() {
@@ -189,6 +196,10 @@ export function mountEpisodePublishWorkflow({
       if (currentRequest !== requestId) return;
       summary.textContent = text("readinessFailed");
       workflowPriority.clear();
+      autopilot.render({
+        candidateGate: { ready: false },
+        nodes: [{ status: "failed", severity: "blocker" }]
+      });
     }
   }
 

@@ -114,3 +114,57 @@ test("episode workflow prioritizes one exact blocker in step order", () => {
   assert.equal(workflowTargetForNode(derived.nextBlocker), "delivery_audio");
   assert.equal(derived.blockers.length, 3);
 });
+
+test("episode workflow waits while automatic media work is pending", () => {
+  const derived = deriveEpisodeWorkflow({
+    title: "Episode",
+    summary: "Summary",
+    sourceLanguage: "es",
+    mediaStatus: "processing",
+    status: "draft"
+  }, {
+    candidateGate: { ready: false, blockerCount: 1 },
+    nodes: [{
+      id: "core.delivery_audio",
+      group: "core",
+      severity: "blocker",
+      status: "pending"
+    }]
+  });
+
+  assert.equal(derived.nextStep, "media");
+  assert.equal(derived.nextBlocker, null);
+  assert.equal(derived.waitingForAutomation, true);
+  assert.deepEqual(derived.actionableBlockers, []);
+  assert.equal(
+    derived.steps.find(({ id }) => id === "media").status,
+    "processing"
+  );
+  assert.equal(
+    derived.steps.find(({ id }) => id === "publish").status,
+    "processing"
+  );
+});
+
+test("episode workflow still routes an explicit approval wait", () => {
+  const derived = deriveEpisodeWorkflow({
+    title: "Episode",
+    summary: "Summary",
+    sourceLanguage: "es",
+    mediaStatus: "ready",
+    status: "draft"
+  }, {
+    candidateGate: { ready: false, blockerCount: 1 },
+    nodes: [{
+      id: "editorial.production_review",
+      group: "editorial",
+      severity: "blocker",
+      status: "pending"
+    }]
+  });
+
+  assert.equal(derived.nextStep, "review");
+  assert.equal(derived.nextBlocker.id, "editorial.production_review");
+  assert.equal(derived.waitingForAutomation, false);
+  assert.equal(derived.actionableBlockers.length, 1);
+});

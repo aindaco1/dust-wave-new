@@ -32,6 +32,14 @@ const workflowTarget = new Set([
 ]).has(process.env.PODCAST_ADMIN_MOCK_WORKFLOW_TARGET)
   ? process.env.PODCAST_ADMIN_MOCK_WORKFLOW_TARGET
   : "default";
+const workflowStatus = new Set([
+  "missing",
+  "pending",
+  "stale",
+  "failed"
+]).has(process.env.PODCAST_ADMIN_MOCK_WORKFLOW_STATUS)
+  ? process.env.PODCAST_ADMIN_MOCK_WORKFLOW_STATUS
+  : "missing";
 const sha = (character) => character.repeat(64);
 
 const show = {
@@ -2353,12 +2361,18 @@ function responseFor(request) {
           id: workflowNode?.[0] || "core.working_master",
           group: String(workflowNode?.[0] || "core").split(".")[0],
           label: workflowNode?.[1] || "Working master",
-          status: workflowNode ? "missing" : "ready",
+          status: workflowNode ? workflowStatus : "ready",
           severity: "blocker",
           summary: workflowNode
             ? "Controlled workflow-navigation blocker."
             : "Exact source and QC evidence are approved.",
-          evidence: { revision: 1, sourceSha256: sha("a") }
+          evidence: {
+            revision: 1,
+            sourceSha256: sha("a"),
+            alignmentStatus: workflowTarget === "alignment"
+              ? (workflowStatus === "pending" ? "queued" : workflowStatus)
+              : undefined
+          }
         }];
     return json({
       publicationRevision: 0,

@@ -2,6 +2,11 @@
 
 ## v1.3.0 - Unreleased
 
+- Added an episode-centered bilingual Autopilot view that separates automatic
+  processing, approval waits, platform delays, and terminal failures. Pending
+  system work now reads as Processing, hides misleading Fix/Continue actions,
+  and tells producers when no action is needed; responsive four-to-one-column
+  metrics remain within the admin container down to 320 px.
 - Turned release readiness into one prioritized, bilingual next action. The
   primary Continue control now opens the exact production tool for that
   blocker, while secondary blockers stay available in one collapsed list so

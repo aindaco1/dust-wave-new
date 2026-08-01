@@ -1742,7 +1742,11 @@ assert.match(adminScript, /endCueId: clipForm\.elements\.endCueId\.value/);
 assert.match(adminScript, /boundaryMode: "segment"/);
 assert.match(adminScript, /captioned-waveform-v1/);
 assert.match(adminScript, /downloadJson/);
-assert.match(englishRuntimeText, /This is not a completed render/);
+assert.match(
+  englishRuntimeText,
+  /Captioned render queued\. The protected staging processor starts automatically\./
+);
+assert.doesNotMatch(englishRuntimeText, /This is not a completed render/);
 assert.match(adminScript, /data-podcast-clip-render-preview/);
 assert.match(adminScript, /crossOrigin = "use-credentials"/);
 assert.match(adminScript, /downloadPath/);
