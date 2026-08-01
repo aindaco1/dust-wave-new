@@ -856,26 +856,6 @@ eleventyComputed:
             <h3>{{ workbench.production.clipDraftHeading }}</h3>
             <p>{{ workbench.production.clipDraftIntro }}</p>
             <p class="podcast-admin__help">{{ workbench.production.clipDraftReviewNotice }}</p>
-            <div class="podcast-admin__field-grid">
-              <label>{{ workbench.production.clipDraftSourceLanguage }}
-                <select name="clipDraftSourceLanguage" data-podcast-clip-draft-source-language disabled>
-                  <option value="es">{{ workbench.common.spanish }}</option>
-                  <option value="en">{{ workbench.common.english }}</option>
-                </select>
-              </label>
-              <label>{{ workbench.production.clipDraftOutputLanguage }}
-                <select name="clipDraftOutputLanguage" data-podcast-clip-draft-output-language>
-                  <option value="es">{{ workbench.common.spanish }}</option>
-                  <option value="en">{{ workbench.common.english }}</option>
-                </select>
-              </label>
-            </div>
-            <div class="podcast-admin__form-actions">
-              <button
-                class="btn btn-outline-light"
-                type="button"
-                data-podcast-clip-draft-generate>{{ workbench.production.clipDraftGenerate }}</button>
-            </div>
             <p
               class="podcast-admin__status"
               data-podcast-clip-draft-status
@@ -900,6 +880,29 @@ eleventyComputed:
                   data-podcast-clip-draft-dismiss>{{ workbench.production.clipDraftDismiss }}</button>
               </div>
             </section>
+            <details class="podcast-admin__advanced-tools podcast-admin__distribution-guidance">
+              <summary>{{ workbench.production.clipDraftManualHeading }}</summary>
+              <div class="podcast-admin__field-grid">
+                <label>{{ workbench.production.clipDraftSourceLanguage }}
+                  <select name="clipDraftSourceLanguage" data-podcast-clip-draft-source-language disabled>
+                    <option value="es">{{ workbench.common.spanish }}</option>
+                    <option value="en">{{ workbench.common.english }}</option>
+                  </select>
+                </label>
+                <label>{{ workbench.production.clipDraftOutputLanguage }}
+                  <select name="clipDraftOutputLanguage" data-podcast-clip-draft-output-language>
+                    <option value="es">{{ workbench.common.spanish }}</option>
+                    <option value="en">{{ workbench.common.english }}</option>
+                  </select>
+                </label>
+              </div>
+              <div class="podcast-admin__form-actions">
+                <button
+                  class="btn btn-outline-light"
+                  type="button"
+                  data-podcast-clip-draft-generate>{{ workbench.production.clipDraftGenerate }}</button>
+              </div>
+            </details>
           </section>
           <form class="podcast-admin__form" data-podcast-clip-form>
             <div class="podcast-admin__field-grid">

@@ -1798,6 +1798,12 @@ function responseFor(request) {
     });
   }
   if (
+    request.method === "GET"
+    && path === `/v1/admin/episodes/${episode.id}/clips/drafts`
+  ) {
+    return json({ episodeId: episode.id, drafts: [] });
+  }
+  if (
     request.method === "POST"
     && path === `/v1/admin/episodes/${episode.id}/clips/draft`
   ) {
