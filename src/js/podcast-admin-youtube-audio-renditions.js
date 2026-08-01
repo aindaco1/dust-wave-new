@@ -1,4 +1,15 @@
+import {
+  canQueueCurrentOperation,
+  createRetriableOperationId
+} from "./podcast-admin-retriable-operation.js";
+
 const WORKFLOW_NAME = "process-youtube-audio-rendition.yml";
+const ACTIVE_RENDITION_STATUSES = new Set([
+  "queued",
+  "rendering",
+  "completing",
+  "ready"
+]);
 
 export function mountYouTubeAudioRenditions({
   root,
@@ -6,6 +17,7 @@ export function mountYouTubeAudioRenditions({
   text,
   setStatus,
   friendlyError,
+  operationId,
   canQueue
 }) {
   const select = root.querySelector(
@@ -33,6 +45,10 @@ export function mountYouTubeAudioRenditions({
   );
   let requestId = 0;
   let state = null;
+  const queueOperation = createRetriableOperationId(
+    operationId,
+    "youtube_rendition"
+  );
 
   select?.addEventListener("change", refresh);
   refreshButton?.addEventListener("click", refresh);
@@ -114,17 +130,24 @@ export function mountYouTubeAudioRenditions({
   async function queue() {
     const episodeId = select?.value || "";
     const currentMaster = state?.master?.current;
+    const rows = Array.isArray(state?.renditions?.renditions)
+      ? state.renditions.renditions
+      : [];
     if (
       !episodeId
-      || !currentMaster?.id
-      || !state?.renditions?.processorEnabled
-      || !canQueue()
+      || !canQueueCurrentOperation({
+        currentId: currentMaster?.id,
+        processorEnabled: state?.renditions?.processorEnabled,
+        authorized: canQueue(),
+        rows,
+        activeStatuses: ACTIVE_RENDITION_STATUSES
+      })
     ) return;
     queueButton.disabled = true;
     setStatus(status, text("youtubeAudioQueuing"));
+    const operationContext = `${episodeId}:${currentMaster.id}`;
     try {
-      const renditionId =
-        `youtube_rendition_${crypto.randomUUID().replaceAll("-", "")}`;
+      const renditionId = queueOperation.get(operationContext);
       const response = await client.request(
         `/v1/admin/episodes/${encodeURIComponent(
           episodeId
@@ -137,6 +160,7 @@ export function mountYouTubeAudioRenditions({
           }
         }
       );
+      queueOperation.accept(operationContext, renditionId);
       setStatus(status, text("youtubeAudioQueued", {
         id: response.rendition?.id || renditionId,
         workflow: WORKFLOW_NAME
@@ -161,11 +185,13 @@ export function mountYouTubeAudioRenditions({
           bytes: formatBytes(currentMaster.objectBytes)
         })
       : text("youtubeAudioMasterRequired");
-    queueButton.disabled = !(
-      currentMaster
-      && processorEnabled
-      && canQueue()
-    );
+    queueButton.disabled = !canQueueCurrentOperation({
+      currentId: currentMaster?.id,
+      processorEnabled,
+      authorized: canQueue(),
+      rows,
+      activeStatuses: ACTIVE_RENDITION_STATUSES
+    });
     results.replaceChildren(
       ...(rows.length
         ? rows.map(renderRendition)
@@ -225,6 +251,7 @@ export function mountYouTubeAudioRenditions({
     reset() {
       requestId += 1;
       state = null;
+      queueOperation.reset();
       results?.replaceChildren();
       if (summary) summary.textContent = "";
       if (queueButton) queueButton.disabled = true;

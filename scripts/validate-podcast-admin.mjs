@@ -1798,6 +1798,15 @@ assert.match(
   youtubeAudioRenditionScript,
   /process-youtube-audio-rendition\.yml/
 );
+assert.match(
+  youtubeAudioRenditionScript,
+  /createRetriableOperationId/
+);
+assert.match(
+  deliveryAudioScript,
+  /createRetriableOperationId/
+);
+assert.match(adminScript, /youtubeAudio\.reset\(\)/);
 assert.doesNotMatch(
   youtubeAudioRenditionScript,
   /(?:localStorage|sessionStorage)/
@@ -1812,7 +1821,7 @@ assert.match(
 );
 assert.match(
   adminScript,
-  /production\(\) \{[\s\S]*youtubeAudioRenditions\.refresh\(\)/
+  /production\(\) \{[\s\S]*youtubeAudio\.refresh\(\)/
 );
 assert.match(
   adminMockApi,

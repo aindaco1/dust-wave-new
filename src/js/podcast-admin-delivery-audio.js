@@ -1,4 +1,16 @@
+import {
+  canQueueCurrentOperation,
+  createRetriableOperationId
+} from "./podcast-admin-retriable-operation.js";
+
 const DELIVERY_AUDIO_WORKFLOW = "process-delivery-audio.yml";
+const ACTIVE_DELIVERY_STATUSES = new Set([
+  "queued",
+  "rendering",
+  "completing",
+  "ready",
+  "approved"
+]);
 
 export function mountDeliveryAudio({
   root,
@@ -28,6 +40,10 @@ export function mountDeliveryAudio({
   );
   let requestId = 0;
   let state = null;
+  const queueOperation = createRetriableOperationId(
+    operationId,
+    "delivery_audio"
+  );
 
   select?.addEventListener("change", refresh);
   refreshButton?.addEventListener("click", refresh);
@@ -109,16 +125,24 @@ export function mountDeliveryAudio({
   async function queue() {
     const episodeId = select?.value || "";
     const currentMaster = state?.master?.current;
+    const jobs = Array.isArray(state?.delivery?.jobs)
+      ? state.delivery.jobs
+      : [];
     if (
       !episodeId
-      || !currentMaster?.id
-      || !state?.delivery?.processor?.available
-      || !canQueue()
+      || !canQueueCurrentOperation({
+        currentId: currentMaster?.id,
+        processorEnabled: state?.delivery?.processor?.available,
+        authorized: canQueue(),
+        rows: jobs,
+        activeStatuses: ACTIVE_DELIVERY_STATUSES
+      })
     ) return;
     queueButton.disabled = true;
     setStatus(status, text("deliveryAudioQueuing"));
+    const operationContext = `${episodeId}:${currentMaster.id}`;
     try {
-      const jobId = operationId("delivery_audio");
+      const jobId = queueOperation.get(operationContext);
       const response = await client.request(
         `/v1/admin/episodes/${encodeURIComponent(
           episodeId
@@ -131,6 +155,7 @@ export function mountDeliveryAudio({
           }
         }
       );
+      queueOperation.accept(operationContext, jobId);
       setStatus(status, text("deliveryAudioQueued", {
         id: String(response.job?.id || jobId),
         workflow: String(
@@ -159,12 +184,6 @@ export function mountDeliveryAudio({
     const jobs = Array.isArray(state.delivery?.jobs)
       ? state.delivery.jobs
       : [];
-    const activeCurrent = jobs.some((job) =>
-      job.current
-      && ["queued", "rendering", "completing", "ready", "approved"].includes(
-        String(job.status)
-      )
-    );
     summary.textContent = currentMaster
       ? text("deliveryAudioMasterReady", {
           revision: formatInteger(currentMaster.revision),
@@ -173,12 +192,13 @@ export function mountDeliveryAudio({
           )
         })
       : text("deliveryAudioMasterRequired");
-    queueButton.disabled = !(
-      currentMaster
-      && processorAvailable
-      && canQueue()
-      && !activeCurrent
-    );
+    queueButton.disabled = !canQueueCurrentOperation({
+      currentId: currentMaster?.id,
+      processorEnabled: processorAvailable,
+      authorized: canQueue(),
+      rows: jobs,
+      activeStatuses: ACTIVE_DELIVERY_STATUSES
+    });
     results.replaceChildren(
       ...(jobs.length
         ? jobs.map(renderJob)
@@ -377,6 +397,7 @@ export function mountDeliveryAudio({
     reset() {
       requestId += 1;
       state = null;
+      queueOperation.reset();
       releasePlayers();
       results?.replaceChildren();
       if (summary) summary.textContent = "";

@@ -656,12 +656,13 @@ function startPodcastAdmin(root) {
     resetBuilder: resetMarketingLinkForm,
     downloadQr: downloadMarketingQr
   });
-  const youtubeAudioRenditions = mountYouTubeAudioRenditions({
+  const youtubeAudio = mountYouTubeAudioRenditions({
     root,
     client,
     text: adminText,
     setStatus,
     friendlyError,
+    operationId,
     canQueue: () => canRunAudioQc
   });
   const deliveryAudio = mountDeliveryAudio({
@@ -762,7 +763,7 @@ function startPodcastAdmin(root) {
         loadChapters();
         loadProductionReviews();
         deliveryAudio.refresh();
-        youtubeAudioRenditions.refresh();
+        youtubeAudio.refresh();
       },
       analytics: () => podcastAnalytics.load(),
       subscribers: () => loadSubscribers({ reset: true }),
@@ -1231,6 +1232,7 @@ function startPodcastAdmin(root) {
     campaigns = [];
     podcastAnalytics.reset();
     deliveryAudio.reset();
+    youtubeAudio.reset();
     distributionRequestId += 1;
     billingRequestId += 1;
     subscriberRows = [];
@@ -2063,7 +2065,7 @@ function startPodcastAdmin(root) {
 
   function fillEpisodeSelects() {
     deliveryAudio.setEpisodes(episodes);
-    youtubeAudioRenditions.setEpisodes(episodes);
+    youtubeAudio.setEpisodes(episodes);
     const sponsorEpisodeSelect = sponsorForm?.elements.episodeId;
     if (sponsorEpisodeSelect) {
       const previousValue = sponsorEpisodeSelect.value;
