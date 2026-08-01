@@ -142,6 +142,13 @@ const showNotesScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-show-notes.js'),
   'utf8'
 );
+const showNotesContractScript = await readFile(
+  path.join(
+    repositoryRoot,
+    'src/js/podcast-admin-show-notes-contract.js'
+  ),
+  'utf8'
+);
 const chapterDraftScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-chapter-draft.js'),
   'utf8'
@@ -548,17 +555,18 @@ assert.match(adminTemplate, /data-podcast-episode-slug-help/);
 assert.match(adminTemplate, /data-podcast-show-notes/);
 assert.match(adminTemplate, /data-podcast-show-notes-review/);
 assert.match(
-  showNotesScript,
-  /reviewRequired !== true[\s\S]+value\.saved !== false/,
-  'AI show-notes responses must prove review-only, unsaved semantics'
+  showNotesContractScript,
+  /reviewRequired !== true[\s\S]+value\.saved !== false && value\.saved !== true/,
+  'AI show-notes responses must prove review-only proposal semantics'
 );
+assert.match(showNotesScript, /\/show-notes\/drafts/);
 assert.match(
   showNotesScript,
   /notesEditor\.setValue\(result\.draft\.showNotesMarkdown\)/,
   'AI show notes may enter only the existing sanitized editor'
 );
 assert.doesNotMatch(
-  showNotesScript,
+  `${showNotesScript}\n${showNotesContractScript}`,
   /innerHTML|insertAdjacentHTML/,
   'AI show-notes evidence and drafts must render without HTML sinks'
 );

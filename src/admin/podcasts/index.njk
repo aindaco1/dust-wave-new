@@ -134,26 +134,6 @@ eleventyComputed:
               <h4>{{ workbench.episodes.showNotesHeading }}</h4>
               <p>{{ workbench.episodes.showNotesIntro }}</p>
               <p class="podcast-admin__help">{{ workbench.episodes.showNotesReviewNotice }}</p>
-              <div class="podcast-admin__field-grid">
-                <label>{{ workbench.episodes.showNotesSourceLanguage }}
-                  <select name="showNotesSourceLanguage" data-podcast-show-notes-source-language>
-                    <option value="es">{{ workbench.common.spanish }}</option>
-                    <option value="en">{{ workbench.common.english }}</option>
-                  </select>
-                </label>
-                <label>{{ workbench.episodes.showNotesOutputLanguage }}
-                  <select name="showNotesOutputLanguage" data-podcast-show-notes-output-language>
-                    <option value="es">{{ workbench.common.spanish }}</option>
-                    <option value="en">{{ workbench.common.english }}</option>
-                  </select>
-                </label>
-              </div>
-              <div class="podcast-admin__form-actions">
-                <button
-                  class="btn btn-outline-light"
-                  type="button"
-                  data-podcast-show-notes-generate>{{ workbench.episodes.showNotesGenerate }}</button>
-              </div>
               <p
                 class="podcast-admin__status"
                 data-podcast-show-notes-status
@@ -188,9 +168,32 @@ eleventyComputed:
                   <button
                     class="btn btn-outline-light"
                     type="button"
-                    data-podcast-show-notes-dismiss>{{ workbench.episodes.showNotesDismiss }}</button>
+                  data-podcast-show-notes-dismiss>{{ workbench.episodes.showNotesDismiss }}</button>
                 </div>
               </section>
+              <details class="podcast-admin__advanced-tools podcast-admin__distribution-guidance">
+                <summary>{{ workbench.episodes.showNotesManualHeading }}</summary>
+                <div class="podcast-admin__field-grid">
+                  <label>{{ workbench.episodes.showNotesSourceLanguage }}
+                    <select name="showNotesSourceLanguage" data-podcast-show-notes-source-language>
+                      <option value="es">{{ workbench.common.spanish }}</option>
+                      <option value="en">{{ workbench.common.english }}</option>
+                    </select>
+                  </label>
+                  <label>{{ workbench.episodes.showNotesOutputLanguage }}
+                    <select name="showNotesOutputLanguage" data-podcast-show-notes-output-language>
+                      <option value="es">{{ workbench.common.spanish }}</option>
+                      <option value="en">{{ workbench.common.english }}</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="podcast-admin__form-actions">
+                  <button
+                    class="btn btn-outline-light"
+                    type="button"
+                    data-podcast-show-notes-generate>{{ workbench.episodes.showNotesGenerate }}</button>
+                </div>
+              </details>
             </section>
             <section
               class="podcast-admin__field-group podcast-admin__field-group--divided"

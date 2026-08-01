@@ -1717,6 +1717,12 @@ function responseFor(request) {
     return json({ updated: true, episodeId: episode.id });
   }
   if (
+    request.method === "GET"
+    && path === `/v1/admin/episodes/${episode.id}/show-notes/drafts`
+  ) {
+    return json({ episodeId: episode.id, drafts: [] });
+  }
+  if (
     request.method === "POST"
     && path === `/v1/admin/episodes/${episode.id}/show-notes/draft`
   ) {
