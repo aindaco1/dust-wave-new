@@ -64,6 +64,7 @@ import {
   renderDistributionLaunchClaim
 } from "./podcast-admin-distribution-certification.js";
 import { createDistributionDisclosureState, distributionEvidenceSummary } from "./podcast-admin-distribution-disclosure.js";
+import { createDirectorySubmissionPacketActions, createDistributionFeedActions } from "./podcast-admin-directory-packet.js";
 import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js?v=0.9.0";
 import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js?v=0.9.0";
 import { responsiveTurnstileSize } from "./dust-wave-admin-shell/turnstile.js?v=0.9.0";
@@ -6801,32 +6802,19 @@ function startPodcastAdmin(root) {
       })
     );
 
-    const feed = document.createElement("div");
-    feed.className = "podcast-admin__distribution-feed";
-    const feedText = document.createElement("label");
-    const feedLabel = document.createElement("strong");
-    feedLabel.textContent = adminText(
-      "canonicalRssFeed"
-    );
-    const feedUrl = document.createElement("input");
-    feedUrl.type = "url";
-    feedUrl.readOnly = true;
-    feedUrl.setAttribute("aria-readonly", "true");
-    feedUrl.value = String(payload.feedUrl || "");
-    feedUrl.dataset.podcastDistributionFeedUrl = "";
-    feedText.append(feedLabel, feedUrl);
-    const copy = document.createElement("button");
-    copy.className = "btn btn-outline-light";
-    copy.type = "button";
-    copy.dataset.podcastDistributionCopyFeed = String(payload.feedUrl || "");
-    copy.textContent = adminText("copyFeedUrl");
-    const copyStatus = document.createElement("p");
-    copyStatus.className = "podcast-admin__status";
-    copyStatus.dataset.podcastDistributionCopyStatus = "";
-    copyStatus.setAttribute("role", "status");
-    copyStatus.setAttribute("aria-live", "polite");
-    feed.append(feedText, copy, copyStatus);
-    fragment.append(feed);
+    fragment.append(createDistributionFeedActions({
+      feedUrl: payload.feedUrl,
+      text: adminText,
+      setStatus
+    }));
+
+    const packetActions = createDirectorySubmissionPacketActions({
+      packet: payload.submissionPacket,
+      text: adminText,
+      downloadJson,
+      setStatus
+    });
+    if (packetActions) fragment.append(packetActions);
 
     const list = document.createElement("div");
     list.className = "podcast-admin__directory-list";
@@ -7539,31 +7527,6 @@ function startPodcastAdmin(root) {
     if (retry) {
       await retryReleaseChannel(retry);
       return;
-    }
-    const button = event.target.closest(
-      "[data-podcast-distribution-copy-feed]"
-    );
-    if (!button) return;
-    const status = distributionRoot.querySelector(
-      "[data-podcast-distribution-copy-status]"
-    );
-    const value = button.dataset.podcastDistributionCopyFeed || "";
-    try {
-      await navigator.clipboard.writeText(value);
-      setStatus(status, adminText("feedUrlCopied"));
-    } catch (_error) {
-      const input = distributionRoot.querySelector(
-        "[data-podcast-distribution-feed-url]"
-      );
-      input?.focus();
-      input?.select();
-      setStatus(
-        status,
-        adminText(
-          "feedCopySelected"
-        ),
-        true
-      );
     }
   }
 

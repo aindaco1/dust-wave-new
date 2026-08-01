@@ -26,6 +26,10 @@ const adminScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin.js'),
   'utf8'
 );
+const directoryPacketScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-directory-packet.js'),
+  'utf8'
+);
 const workspaceScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-workspaces.js'),
   'utf8'
@@ -1574,7 +1578,16 @@ assert.match(
 );
 assert.match(adminScript, /method: "PATCH"/);
 assert.match(adminScript, /url\.protocol !== "https:"/);
-assert.match(adminScript, /navigator\.clipboard\.writeText\(value\)/);
+assert.match(
+  directoryPacketScript,
+  /navigator\.clipboard\.writeText\(input\.value\)/
+);
+assert.match(directoryPacketScript, /containsCredentials === false/);
+assert.match(englishRuntimeText, /No passwords, tokens, verification codes/);
+assert.match(
+  JSON.stringify(spanishRuntime),
+  /No incluye contraseñas, tokens, códigos de verificación/
+);
 assert.match(
   adminStyles,
   /\.podcast-admin__certification-list li \{[\s\S]+display: flex;[\s\S]+gap: var\(--dw-admin-space-sm\);/

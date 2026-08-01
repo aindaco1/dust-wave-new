@@ -473,6 +473,49 @@ const distributionDestinations = [
   };
 });
 
+const directorySubmissionPacket = {
+  schema: "dust-wave-directory-submission-packet",
+  version: 1,
+  containsCredentials: false,
+  show: {
+    id: show.id,
+    slug: show.slug,
+    title: show.title,
+    description: show.description,
+    language: show.language,
+    artworkUrl: show.artworkUrl,
+    canonicalUrl: show.canonicalUrl,
+    podcastGuid: show.podcastGuid,
+    authorName: show.authorName,
+    category: show.category,
+    explicit: show.explicit,
+    feedUrl: show.feedUrl,
+    owner: {
+      name: "Dust Wave",
+      email: "podcasts@dustwave.xyz"
+    }
+  },
+  feedValidation: {
+    status: "valid",
+    feedUrl: "https://feeds.dustwave.xyz/opera-en-la-selva/rss.xml",
+    validatorVersion: "dustwave-rss-launch-v3",
+    feedSha256: sha("f"),
+    itemCount: 1,
+    failureCode: null,
+    checkedAt: "2026-07-26T12:05:00.000Z",
+    validatedAt: "2026-07-26T12:05:00.000Z",
+    currentValidator: true
+  },
+  destinations: distributionDestinations.map((destination) => ({
+    id: destination.id,
+    name: destination.name,
+    enabled: destination.enabled,
+    submissionUrl: destination.submissionUrl,
+    ownerSetupStatus: destination.ownerSetupStatus,
+    listingUrl: destination.listingUrl
+  }))
+};
+
 let marketingLinks = [{
   id: "marketing_link_browser_fixture",
   showId: show.id,
@@ -998,6 +1041,7 @@ function responseFor(request) {
           validatedAt: "2026-07-26T12:05:00.000Z"
         }
       },
+      submissionPacket: directorySubmissionPacket,
       destinations: distributionDestinations
     });
   }
