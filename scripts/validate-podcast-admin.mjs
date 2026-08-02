@@ -15,10 +15,10 @@ const adminLayout = await readFile(
   path.join(repositoryRoot, 'src/_includes/layouts/podcast-admin.njk'),
   'utf8'
 );
-const authFooter = await readFile(
+const siteFooter = await readFile(
   path.join(
     repositoryRoot,
-    'src/_includes/snippets/podcast-auth-footer.njk'
+    'src/_includes/snippets/site-footer.njk'
   ),
   'utf8'
 );
@@ -460,8 +460,9 @@ assert.match(
 );
 assert.match(adminTemplate, /permalink: "\{\{ i18n\.config\.pages\.podcastAdmin\[language\] \}\}"/);
 assert.match(adminLayout, /noindex,nofollow,noarchive/);
-assert.match(adminLayout, /snippets\/podcast-auth-footer\.njk/);
-assert.match(authFooter, /snippets\/language-switcher\.njk/);
+assert.match(adminLayout, /snippets\/site-footer\.njk/);
+assert.match(siteFooter, /class="site-footer"/);
+assert.match(siteFooter, /snippets\/language-switcher\.njk/);
 assert.match(adminLayout, /type="module" src="\/js\/podcast-admin\.js\?v=\{\{ assets\.version/);
 assert.match(
   adminLayout,

@@ -103,13 +103,18 @@ assert.match(
 );
 assert.match(
   memberLayout,
-  /snippets\/podcast-auth-footer\.njk/,
-  "Podcast member auth must use the lightweight bilingual auth footer"
+  /snippets\/site-footer\.njk/,
+  "Podcast member auth must use the shared site footer"
 );
 assert.doesNotMatch(
   memberLayout,
   /snippets\/footer1\.njk/,
-  "Podcast member auth must not load the public footer's legacy scripts"
+  "Podcast member auth must not load unrelated public footer utilities"
+);
+assert.match(
+  adminLayout,
+  /snippets\/site-footer\.njk/,
+  "Podcast Admin must use the shared site footer"
 );
 assert.match(
   admin,

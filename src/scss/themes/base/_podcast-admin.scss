@@ -2846,19 +2846,6 @@
   margin-top: var(--dw-admin-space-md);
 }
 
-.podcast-auth-footer {
-  display: flex;
-  justify-content: center;
-  padding:
-    0
-    var(--dw-admin-space-md, 1rem)
-    var(--dw-admin-space-2xl, 2rem);
-}
-
-.podcast-auth-footer .site-footer__lang-switcher {
-  margin: 0;
-}
-
 @media (min-width: 48rem) {
   .podcast-admin__field-grid,
   .podcast-admin__field-grid--three {

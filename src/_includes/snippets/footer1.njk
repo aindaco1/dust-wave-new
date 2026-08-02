@@ -1,23 +1,4 @@
-{% from "snippets/social-icon.njk" import socialIcon %}
-<footer>
-	<div id="footer-items-column" class="container-100 text-center initialism py-vh-3">
-		<div class="site-footer__item site-footer__copyright">
-			<span>(ɔ) DUST WAVE</span>
-		</div>
-		<div class="site-footer__item footer-social">
-			<a href="https://instagram.com/waveofdust" class="link-fancy" target="_blank" rel="noopener noreferrer" aria-label="{{ i18n | t(language, 'footer.instagram') }}">{{ socialIcon("instagram") }}</a><span class="footer-sep"> | </span>
-			<a href="https://www.youtube.com/@dustwavecollective/videos" class="link-fancy" target="_blank" rel="noopener noreferrer" aria-label="{{ i18n | t(language, 'footer.youtube') }}">{{ socialIcon("youtube") }}</a><span class="footer-sep"> | </span>
-			<a href="https://www.tiktok.com/@waveofdust" class="link-fancy" target="_blank" rel="noopener noreferrer" aria-label="{{ i18n | t(language, 'footer.tiktok') }}">{{ socialIcon("tiktok") }}</a><span class="footer-sep"> | </span>
-			<a href="https://bsky.app/profile/dustwave.xyz.web.brid.gy" class="link-fancy" aria-label="{{ i18n | t(language, 'footer.bluesky') }}" target="_blank" rel="noopener noreferrer">{{ socialIcon("bluesky") }}</a><span class="footer-sep"> | </span>
-			<a href="https://fed.brid.gy/r/https://dustwave.xyz/" class="link-fancy" aria-label="{{ i18n | t(language, 'footer.fediverse') }}" target="_blank" rel="noopener noreferrer">{{ socialIcon("mastodon") }}</a>
-		</div>
-		<div class="site-footer__item site-footer__newsletter">
-			<a class="link-fancy" href="{{ i18n | localizedUrl(language, 'newsletter', '/newsletter.html') }}"><span>{{ i18n | t(language, "footer.newsletter") }}</span></a>
-		</div>
-		<div class="site-footer__item site-footer__language">
-			{% include "snippets/language-switcher.njk" %}
-		</div>
-	</div>
+{% include "snippets/site-footer.njk" %}
 	{% if environment == "production" %}
 	<!-- Newsletter Signup Popup -->
 	<div class="wrap">
@@ -775,4 +756,3 @@
 {% if content and '<div class="audio-card' in content %}
 <script src="/js/audio-player.js?v={{ assets.version | default('dev') }}" defer></script>
 {% endif %}
-</footer>
