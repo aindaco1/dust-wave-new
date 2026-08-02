@@ -1914,6 +1914,47 @@ eleventyComputed:
               </button>
             </form>
           </section>
+          <section
+            class="podcast-admin__form podcast-admin__form--settings"
+            data-podcast-launch-lab
+            aria-labelledby="podcast-launch-lab-heading"
+            hidden>
+            <div class="podcast-admin__autopilot-heading">
+              <div>
+                <h3 id="podcast-launch-lab-heading">{{ workbench.overview.launchLabHeading }}</h3>
+                <p>{{ workbench.overview.launchLabIntro }}</p>
+              </div>
+              <span
+                class="podcast-admin__autopilot-state"
+                data-podcast-launch-lab-state>{{ workbench.overview.launchLabPill }}</span>
+            </div>
+            <div class="podcast-admin__callout">
+              <p>{{ workbench.overview.launchLabSafety }}</p>
+            </div>
+            <dl
+              class="podcast-admin__autopilot-metrics"
+              data-podcast-launch-lab-metrics></dl>
+            <div class="podcast-admin__form-actions">
+              <button
+                class="btn btn-outline-light"
+                type="button"
+                data-podcast-launch-lab-refresh>{{ workbench.overview.launchLabRefresh }}</button>
+            </div>
+            <p
+              class="podcast-admin__status"
+              data-podcast-launch-lab-status
+              role="status"
+              aria-live="polite"></p>
+            <details
+              class="podcast-admin__workflow-more-blockers"
+              data-podcast-launch-lab-evidence
+              hidden>
+              <summary>{{ workbench.overview.launchLabEvidence }}</summary>
+              <div
+                class="podcast-admin__readiness-groups"
+                data-podcast-launch-lab-providers></div>
+            </details>
+          </section>
           <details class="podcast-admin__advanced-tools">
             <summary>{{ workbench.overview.advancedTools }}</summary>
             <form class="podcast-admin__form podcast-admin__form--settings" data-podcast-rss-import-form hidden>

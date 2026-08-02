@@ -59,6 +59,7 @@ import { mountYouTubeAudioRenditions } from "./podcast-admin-youtube-audio-rendi
 import { mountAudioEnhancementDerivatives } from "./podcast-admin-audio-derivatives.js";
 import { mountDeliveryAudio } from "./podcast-admin-delivery-audio.js";
 import { mountPodcastAnalytics } from "./podcast-admin-analytics.js";
+import { mountPodcastLaunchLab } from "./podcast-admin-launch-lab.js";
 import { mountClipPublications } from "./podcast-admin-clip-publications.js";
 import {
   distributionCertificationList,
@@ -731,6 +732,13 @@ function startPodcastAdmin(root) {
     setStatus,
     friendlyError
   });
+  const podcastLaunchLab = mountPodcastLaunchLab({
+    root,
+    client,
+    text: adminText,
+    setStatus,
+    friendlyError
+  });
   const showSiteProjection = mountShowSiteProjection({
     root,
     client,
@@ -1238,6 +1246,7 @@ function startPodcastAdmin(root) {
     clipDraftAssistant.setEditable(canEditTranscripts);
     root.querySelector("[data-podcast-session-summary]").textContent =
       adminText("authenticated", { roles: roles ? ` — ${roles}` : "" });
+    podcastLaunchLab.setAuthorized(isSuperAdmin());
   }
 
   function showLoggedOut() {
@@ -1251,6 +1260,7 @@ function startPodcastAdmin(root) {
     adminIdentity = null;
     campaigns = [];
     podcastAnalytics.reset();
+    podcastLaunchLab.reset();
     deliveryAudio.reset();
     youtubeAudio.reset();
     distributionRequestId += 1;

@@ -34,6 +34,10 @@ export function assertPodcastAdminSpacingContract(observed) {
 }
 
 export function assertPodcastAdminTraceContract(observed, { adminTab } = {}) {
+  if (adminTab === "settings") {
+    assertLaunchLabContract(observed);
+    return;
+  }
   if (adminTab !== "distribution") return;
   if (!observed?.authenticatedAdmin) {
     throw new Error(
@@ -101,6 +105,37 @@ export function assertPodcastAdminTraceContract(observed, { adminTab } = {}) {
   }
 }
 
+function assertLaunchLabContract(observed) {
+  if (!observed?.authenticatedAdmin) {
+    throw new Error(
+      "Settings trace requires an authenticated Podcast admin session."
+    );
+  }
+  const launchLab = observed.launchLab;
+  if (!launchLab?.visible) {
+    throw new Error(
+      "Settings trace did not render the super-admin Launch Lab evidence."
+    );
+  }
+  if (launchLab.metricCount !== 4) {
+    throw new Error(
+      "Launch Lab must present exactly four aggregate state metrics before "
+      + `technical evidence. Observed ${launchLab.metricCount ?? "unknown"}.`
+    );
+  }
+  if (launchLab.providerCount !== 7) {
+    throw new Error(
+      "Launch Lab must group the checked provider matrix into seven concise "
+      + `sections. Observed ${launchLab.providerCount ?? "unknown"}.`
+    );
+  }
+  if (launchLab.evidenceOpen !== false || launchLab.openProviderCount !== 0) {
+    throw new Error(
+      "Launch Lab technical evidence must remain collapsed by default."
+    );
+  }
+}
+
 export function assertPodcastAdminTabMatrixContract(observations) {
   if (!Array.isArray(observations)) {
     throw new Error("Podcast admin tab matrix was not measured.");
@@ -151,6 +186,10 @@ export function podcastAdminTraceContractSummary(observed, { adminTab } = {}) {
       : [];
     return `Admin tab matrix: ${tabs.length} workspaces audited (`
       + `${tabs.join(", ")}).`;
+  }
+  if (adminTab === "settings" && observed?.authenticatedAdmin) {
+    return `Launch Lab contract: ${observed.launchLab.metricCount} metrics; `
+      + `${observed.launchLab.providerCount} provider groups collapsed.`;
   }
   if (adminTab !== "distribution" || !observed?.authenticatedAdmin) return null;
   const distribution = observed.distribution;

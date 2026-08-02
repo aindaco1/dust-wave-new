@@ -12,6 +12,13 @@ function validObservation() {
   return {
     authenticatedAdmin: true,
     listItemMarginViolations: [],
+    launchLab: {
+      visible: true,
+      metricCount: 4,
+      providerCount: 7,
+      evidenceOpen: false,
+      openProviderCount: 0
+    },
     distribution: {
       guidancePresent: true,
       guidanceOpen: false,
@@ -52,6 +59,53 @@ test("accepts the concise authenticated Distribution contract", () => {
     "Distribution contract: 1 of 11 directories open; guidance collapsed."
   );
 });
+
+test("accepts concise, collapsed Settings Launch Lab evidence", () => {
+  const observed = validObservation();
+  assert.doesNotThrow(() => assertPodcastAdminTraceContract(
+    observed,
+    { adminTab: "settings" }
+  ));
+  assert.equal(
+    podcastAdminTraceContractSummary(observed, { adminTab: "settings" }),
+    "Launch Lab contract: 4 metrics; 7 provider groups collapsed."
+  );
+});
+
+for (const [name, mutate, message] of [
+  [
+    "missing Launch Lab",
+    (observed) => { observed.launchLab.visible = false; },
+    /did not render the super-admin Launch Lab/
+  ],
+  [
+    "extra aggregate metric",
+    (observed) => { observed.launchLab.metricCount = 5; },
+    /exactly four aggregate state metrics/
+  ],
+  [
+    "missing provider group",
+    (observed) => { observed.launchLab.providerCount = 6; },
+    /seven concise sections/
+  ],
+  [
+    "expanded provider evidence",
+    (observed) => { observed.launchLab.evidenceOpen = true; },
+    /must remain collapsed by default/
+  ]
+]) {
+  test(`fails closed for Settings ${name}`, () => {
+    const observed = validObservation();
+    mutate(observed);
+    assert.throws(
+      () => assertPodcastAdminTraceContract(
+        observed,
+        { adminTab: "settings" }
+      ),
+      message
+    );
+  });
+}
 
 test("accepts component-owned admin list spacing", () => {
   assert.doesNotThrow(() => assertPodcastAdminSpacingContract(

@@ -471,6 +471,12 @@ assert.match(
 );
 assert.match(adminTemplate, /data-tab="settings"/);
 assert.match(adminTemplate, /id="podcast-panel-settings"/);
+assert.match(adminTemplate, /data-podcast-launch-lab/);
+assert.match(
+  adminTemplate,
+  /data-podcast-launch-lab-evidence[\s\S]+hidden/
+);
+assert.match(adminScript, /mountPodcastLaunchLab/);
 assert.equal(
   [...adminTemplate.matchAll(/data-podcast-show-form/g)].length,
   1,
@@ -1267,6 +1273,11 @@ assert.match(
   adminMockApi,
   /PODCAST_ADMIN_MOCK_PUBLIC_CLIPS[\s\S]+ready[\s\S]+empty[\s\S]+missing/,
   "browser QA must provide controlled public clip visibility states"
+);
+assert.match(adminMockApi, /path === "\/v1\/admin\/launch-lab"/);
+assert.match(
+  adminMockApi,
+  /publiclyDiscoverable: false[\s\S]+billable: false/
 );
 assert.match(englishWorkbenchText, /Word timing gated/);
 assert.match(adminTemplate, /data-podcast-alignment/);

@@ -51,6 +51,17 @@ provider modes, production matches 17, all 17 required staging secret names are
 installed, the launch show and D1 foreign keys pass, and the system is safe to
 continue but not launch-ready.
 
+The separate staging Launch Lab now projects 41 immutable, content-free
+provider-lifecycle scenarios through one read-only Super-admin endpoint. Its
+current exact state is 15 passed, 25 pending, one running, and zero failed.
+That matrix is evidence for Resend, Stripe, YouTube, RSS, directories, dynamic
+ads, and Pool benefit behavior; it is not a substitute for the composed launch
+gate. Fixture rows are excluded from normal show listings, no listener, media,
+recipient, provider-object, or transcript data enters the response, and live
+provider reconciliation can only advance an allowlisted lifecycle state. In
+particular, the synthetic Resend suppression scenario remains running while
+the provider reports `accepted`; the platform does not manufacture a pass.
+
 | Area | Verified state | Remaining promotion evidence |
 |---|---|---|
 | Environment | PASS | Staging and production provider modes are fail-closed; required staging secret names are installed |
@@ -77,7 +88,8 @@ maintained readiness database.
 | Processor mode projection | Complete in staging | Five admin processor surfaces reuse one fail-closed mode primitive and report `staging_automatic` only when the durable pull dispatcher and processor prerequisites are present; delivery queue responses derive break-glass state from the same contract |
 | Dispatch health evidence | Complete in staging | Every signed claim returns internally consistent, content-free durable ledger counts; the scheduled Action publishes them in its run summary and warns on terminal dispatch failures. Protected run `30691943578` verified an empty healthy ledger without a D1 operator query |
 | Dispatch incident lifecycle | Complete in staging | A terminal ledger failure opens or updates one marker-owned GitHub issue containing only aggregate counts and its Actions evidence URL; recovery closes it. Human-authored lookalikes remain untouched. Unit tests cover open, update, close, ownership, validation, and bounded provider responses; protected healthy run `30691943578` exercised live `issues: write` reconciliation and correctly created no issue |
-| Full Podcast verification | Passing locally and in CI | Secret scan across 444 tracked text files, zero dependency vulnerabilities at the configured audit threshold, generated Cloudflare types, typecheck, 149 test files / 616 tests, workflow contracts, and staging/production dry-run bundles pass through Podcast roadmap PR #3 / merge `a3aa39e` and green CI run `30733044960`. The roadmap now matches the staged six-section, episode-centered interaction model; the documentation-only merge deployed no runtime |
+| Full Podcast verification | Passing locally and in CI | Podcast `0.2.2`, PR #67 / merge `b18dbe4c38d636085babac7bed01c13f4b209576`, and protected staging run `30735299933` pass the tracked secret scan, zero-vulnerability audit, generated Cloudflare types, typecheck, 157 test files / 638 tests, workflow contracts, and staging/production dry bundles. Staging Worker version `913ae223-71f4-4e32-9a79-b301c2623218` contains the Launch Lab read model and provider reconciliation fallback; production remains untouched and unmigrated |
+| Staging Launch Lab | Worker complete; bilingual Admin on the staging branch | One staging-only, Super-admin-only, private/no-store endpoint derives a fixed 41-scenario ledger from immutable fixture evidence and exact provider reconciliation without resending mail or writing on reads. Normal show listings exclude every fixture row. The Admin reuses the existing Settings panel, metric, disclosure, spacing, i18n, and authorization primitives rather than adding a seventh workspace. Unit, route-boundary, privacy, no-write, no-resend, locale-parity, and performance-budget tests pass. Authenticated Chrome contracts at 1440×900 English and 320×700 Spanish show exact viewport/document width, four summary metrics, seven collapsed provider groups, and CLS `0.0001` / `0.0000` |
 | Automatic launch-readiness monitor | Implemented; durable read credential intentionally outstanding | Podcast PRs #45 and #47 add one daily/on-demand, least-permission GitHub Action that runs the existing content-free composed gate, writes the bounded summary, retains exact evidence for 30 days, and never invents a second readiness store. GitHub environment variable `PODCAST_LAUNCH_EPISODE_ID` is configured. The Pool/Store local configuration and the Podcast GitHub environment contain no durable scoped Cloudflare API token; protected on-demand run `30710000206` therefore reported the missing credential as a safe `BLOCK`, skipped evidence generation, and completed successfully instead of copying a short-lived Wrangler OAuth token or failing noisily. Configure one read-only staging token when an operator can create it; until then, local authenticated gate runs remain read-only and authoritative |
 | Scheduled YouTube channel-access health | Complete in staging | Podcast PR #61 / merge `dd27d5f`, migration `0079`, and Worker version `57b041fb-8367-4107-be06-fdefffa3c0de` add one generic content-free provider-health row, an expiring lease, 12-hour success/one-hour failure cadence, and a separate launch-gate node. A remote no-secret probe identified Cloudflare's Google compatibility failure with `redirect: error`; the shared YouTube adapter now uses manual redirect handling and rejects every `3xx` without following or forwarding credentials. The scheduled Worker refreshed the grant and matched the exact configured `mine=true` channel at `2026-08-02 02:40:13 UTC`, stored no tokens or provider body, cleared its lease, scheduled the next check, and uploaded nothing. The composed gate is now 8 PASS / 5 BLOCK / 0 FAIL / 0 WAIT; the separately inspected unlisted-upload gate remains held until a publishable fixture exists. Production remains untouched and unmigrated |
 | Podcast subscription tax-policy import | Implemented in staging; exact owner review remains | Platform PR #14 / merge `deddd82` releases one shared, content-free Stripe Tax Rate client rather than duplicating provider plumbing. Podcast PR #62 / merge `3437cf9` adds a Super-admin-only, recent-auth, same-origin, typed-confirmation import that accepts only the checked-in immutable candidate, creates or retrieves an exact test-mode manual Tax Rate with a stable idempotency key, attests the returned object before an atomic D1 assignment, audits replacement, and never enables checkout. The candidate carries the existing Store policy's `7.625%` exclusive New Mexico rate and exact source revision but is explicitly unapproved and ZIP-specific, so it is evidence for review rather than inferred coverage. Five stateful D1/Stripe tests cover unsafe input, replay, recent auth, provider mismatch, and no-mutation failure. Worker version `172a6e2b-0ad7-40e6-9bca-2b118ff6f982` is deployed only to staging. The bilingual Admin on open site PR #13 exposes the exact candidate and assigned-policy state without Stripe IDs or a checkout control; local authenticated Chrome traces of its Billing workspace at 1440×900 and 390×844 report exact viewport/document width and CLS `0.0000`. Production remains untouched |
@@ -255,20 +267,22 @@ Automation implementation rules:
 
 Immediate execution queue:
 
-1. Merge the launch-scope gates, rerun all checks and dry bundles, then refresh
-   the protected exact-current virtual-audio evidence. Refresh the composed
-   read-only launch report from D1; never copy a short-lived Wrangler OAuth
-   token into GitHub to make the daily monitor appear green.
+1. Keep the composed launch gate and the 41-scenario Launch Lab matrix current
+   through their existing read-only reconciliation paths. A scenario advances
+   only from exact durable or provider evidence; synthetic rehearsal, an
+   accepted-but-not-suppressed message, or an unavailable provider must remain
+   visibly non-passing.
 2. Freeze and validate a dry-run release snapshot for a publishable staging
    fixture. Exercise canonical News, show page, RSS, existing player/download,
    premium/private feed, public absence of unapproved transcript/chapter
    resources, and rollback without public release. Do not publish the current
    source-test episode, which explicitly says `Do not publish`.
-3. Continue autonomous contract and recovery tests for Stripe, tax-core, Pool,
-   YouTube, Resend, directories, and ads, but stop at external facts: accountant
-   approval, OAuth/login/2FA/terms, consented recipient suppression, sponsor
-   contract/creative, native-client traffic, or a production promotion.
-4. Once those inputs exist, execute their purpose-bound staging workflows and
+3. Continue autonomous contract and recovery tests for Stripe test clocks,
+   tax-core, Pool grants, YouTube resumable uploads, Resend lifecycle events,
+   directories, and ads. Feed the resulting content-free evidence into the
+   existing ledger; do not create provider-specific readiness stores.
+4. Once a publishable fixture or irreducible provider input exists, execute its
+   purpose-bound staging workflow and
    reconcile outcomes automatically. Keep provider operations unlisted,
    consented, test-mode, or observation-only as applicable.
 5. After core launch, resume bilingual transcript review, H1 gold review and

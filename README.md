@@ -332,8 +332,11 @@ npm run perf:podcast-admin:trace -- \
   --admin-group production
 ```
 
-Use `--admin-tab settings` to measure the bilingual show form and the
-dry-run-first public-page projection controls at 320 px or desktop width.
+Use `--admin-tab settings` to measure the bilingual show form, dry-run-first
+public-page projection controls, and Super-admin Launch Lab at 320 px or
+desktop width. Authenticated Settings traces fail closed unless the Launch Lab
+has exactly four summary metrics, seven provider groups, and collapsed
+technical evidence by default.
 
 Use `--admin-tab all` with the authenticated repository mock to audit all six
 top-level workspaces in navigation order within one isolated browser session.

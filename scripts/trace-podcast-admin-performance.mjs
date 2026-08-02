@@ -170,6 +170,24 @@ const LAYOUT_PROBE = `(() => {
     activeGroups: Array.from(root.querySelectorAll(
       '[data-podcast-workspace-group][open]'
     )).map((group) => group.dataset.podcastWorkspaceGroup),
+    launchLab: (() => {
+      const panel = document.querySelector('[data-podcast-launch-lab]');
+      const evidence = document.querySelector(
+        '[data-podcast-launch-lab-evidence]'
+      );
+      const providerGroups = Array.from(document.querySelectorAll(
+        '[data-podcast-launch-lab-providers] > details'
+      ));
+      return {
+        visible: Boolean(panel && !panel.hidden),
+        metricCount: document.querySelectorAll(
+          '[data-podcast-launch-lab-metrics] > div'
+        ).length,
+        providerCount: providerGroups.length,
+        evidenceOpen: evidence?.open ?? null,
+        openProviderCount: providerGroups.filter((group) => group.open).length
+      };
+    })(),
     distribution: (() => {
       const guidance = document.querySelector(
         '.podcast-admin__distribution-guidance'

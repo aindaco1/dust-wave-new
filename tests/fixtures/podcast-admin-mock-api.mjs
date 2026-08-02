@@ -64,6 +64,66 @@ const show = {
   podcastGuid: "d21642df-1816-55c8-b308-6209066e9ef6"
 };
 
+const launchLabPassed = new Set([
+  "resend.delivered",
+  "resend.bounced",
+  "resend.complained",
+  "stripe.api_test_mode",
+  "stripe.product_price_contract",
+  "rss.public_fixture_hidden",
+  "rss.private_directory_block",
+  "ads.targeting_matrix",
+  "ads.house_fallback",
+  "ads.equal_byte_length",
+  "ads.partial_not_qualified",
+  "pool.grant",
+  "pool.redeem",
+  "pool.duplicate",
+  "pool.revoke"
+]);
+const launchLabScenarios = Object.entries({
+  resend: ["delivered", "bounced", "complained", "suppressed"],
+  stripe: [
+    "api_test_mode", "product_price_contract", "webhook_contract",
+    "checkout_success", "renewal", "payment_failure", "payment_recovery",
+    "cancellation", "refund", "duplicate_webhook", "out_of_order_webhook"
+  ],
+  youtube: [
+    "channel_identity", "unlisted_audio_only", "unlisted_native_video",
+    "early_access_hold", "premium_bonus_exclusion"
+  ],
+  rss: [
+    "public_fixture_hidden", "private_directory_block",
+    "enclosure_head_range", "transcript_chapter_contract"
+  ],
+  directory: [
+    "packet_generation", "owner_verification", "canonical_feed_validation",
+    "ingestion_observed", "failure_recovery"
+  ],
+  ads: [
+    "targeting_matrix", "house_fallback", "equal_byte_length",
+    "partial_not_qualified", "native_client_qualified"
+  ],
+  pool: [
+    "grant", "redeem", "duplicate", "revoke", "expiry", "overlap",
+    "feed_rotation"
+  ]
+}).flatMap(([provider, scenarios]) => scenarios.map((scenario) => {
+  const key = `${provider}.${scenario}`;
+  const passed = launchLabPassed.has(key);
+  return {
+    provider,
+    scenario,
+    state: passed
+      ? "passed"
+      : key === "resend.suppressed" ? "running" : "pending",
+    observedStatus: passed ? "verified" : key === "resend.suppressed"
+      ? "accepted"
+      : null,
+    failureCode: null
+  };
+}));
+
 const episode = {
   id: "episode_mock",
   showId: show.id,
@@ -906,6 +966,33 @@ function responseFor(request) {
         roles: [{ role: adminRole }]
       },
       csrfToken: "browser-qa-csrf"
+    });
+  }
+  if (request.method === "GET" && path === "/v1/admin/launch-lab") {
+    if (adminRole !== "super_admin") return json({ error: "forbidden" }, 403);
+    const latest = {
+      schemaVersion: "dust-wave-launch-lab-run-v1",
+      runId: "launch_browser_fixture_0001",
+      sourceCommit: "a".repeat(40),
+      status: "running",
+      startedAt: "2026-08-02T06:06:13.000Z",
+      completedAt: null,
+      scenarios: launchLabScenarios,
+      passed: false,
+      launchGateEligible: false
+    };
+    return json({
+      schemaVersion: "dust-wave-launch-lab-admin-v1",
+      available: true,
+      fixture: {
+        exists: true,
+        testFixture: true,
+        publiclyDiscoverable: false,
+        billable: false,
+        launchGateEligible: false
+      },
+      latest,
+      runs: [latest]
     });
   }
   if (request.method === "GET" && path === "/v1/admin/shows") {
