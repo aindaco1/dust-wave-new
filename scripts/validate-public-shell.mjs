@@ -33,6 +33,16 @@ assert.equal(
   4,
   "The shared footer must keep four top-level items."
 );
+assert.match(
+  siteFooter,
+  /class="site-footer__item site-footer__updates"/,
+  "The Newsletter link must use the neutral shared-footer hook."
+);
+assert.doesNotMatch(
+  siteFooter,
+  /class="[^"]*newsletter[^"]*"/i,
+  "The Newsletter link class must not trigger cosmetic content-blocker rules."
+);
 
 for (const [name, layout] of [
   ["Podcast Admin", adminLayout],
