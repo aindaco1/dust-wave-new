@@ -14,7 +14,8 @@ export function mountPodcastLaunchLab({
   client,
   text,
   setStatus,
-  friendlyError
+  friendlyError,
+  navigate = (url) => globalThis.location?.assign(url)
 }) {
   const panel = root.querySelector("[data-podcast-launch-lab]");
   const state = root.querySelector("[data-podcast-launch-lab-state]");
@@ -23,10 +24,12 @@ export function mountPodcastLaunchLab({
   const providers = root.querySelector("[data-podcast-launch-lab-providers]");
   const status = root.querySelector("[data-podcast-launch-lab-status]");
   const refresh = root.querySelector("[data-podcast-launch-lab-refresh]");
+  const checkout = root.querySelector("[data-podcast-launch-lab-checkout]");
   let authorized = false;
   let requestId = 0;
 
   refresh?.addEventListener("click", () => void load());
+  checkout?.addEventListener("click", () => void openCheckout());
 
   return { setAuthorized, load, reset };
 
@@ -43,7 +46,29 @@ export function mountPodcastLaunchLab({
     metrics?.replaceChildren();
     providers?.replaceChildren();
     if (refresh) refresh.disabled = false;
+    if (checkout) checkout.disabled = false;
     setStatus(status, "");
+  }
+
+  async function openCheckout() {
+    if (!authorized || !checkout) return;
+    checkout.disabled = true;
+    setStatus(status, text("launchLabCheckoutOpening"));
+    try {
+      const payload = await client.request(
+        "/v1/admin/launch-lab/stripe-checkout",
+        { method: "POST" }
+      );
+      const destination = validateLaunchLabCheckoutUrl(payload?.url);
+      if (!destination) {
+        throw new Error(text("launchLabCheckoutInvalid"));
+      }
+      navigate(destination);
+    } catch (error) {
+      setStatus(status, friendlyError(error), true);
+    } finally {
+      checkout.disabled = false;
+    }
   }
 
   async function load() {
@@ -77,6 +102,23 @@ export function mountPodcastLaunchLab({
     } finally {
       if (currentRequest === requestId && refresh) refresh.disabled = false;
     }
+  }
+}
+
+export function validateLaunchLabCheckoutUrl(value) {
+  try {
+    const target = new URL(String(value || ""));
+    if (
+      target.origin !== "https://checkout.stripe.com"
+      || target.username
+      || target.password
+      || !/^\/c\/pay\/cs_test_[A-Za-z0-9_]+$/u.test(target.pathname)
+    ) {
+      return "";
+    }
+    return target.toString();
+  } catch {
+    return "";
   }
 }
 

@@ -5,7 +5,8 @@ import test from "node:test";
 const {
   mountPodcastLaunchLab,
   renderLaunchLab,
-  summarizeLaunchLab
+  summarizeLaunchLab,
+  validateLaunchLabCheckoutUrl
 } = await import("../src/js/podcast-admin-launch-lab.js");
 
 test("derives all counts from allowlisted content-free scenarios", () => {
@@ -85,7 +86,66 @@ test("mount hides unavailable environments and restores refresh state", async ()
 
   assert.equal(nodes.panel.hidden, true);
   assert.equal(nodes.refresh.disabled, false);
+  assert.equal(nodes.checkout.disabled, false);
   assert.equal(nodes.status.textContent, "");
+});
+
+test("opens only the exact protected Stripe test Checkout destination", async () => {
+  const nodes = launchLabNodes();
+  const destinations = [];
+  const controller = mountPodcastLaunchLab({
+    root: fakeRoot(nodes),
+    client: {
+      async request(path, options) {
+        if (path === "/v1/admin/launch-lab") return rehearsalPayload();
+        assert.equal(path, "/v1/admin/launch-lab/stripe-checkout");
+        assert.deepEqual(options, { method: "POST" });
+        return {
+          url: "https://checkout.stripe.com/c/pay/cs_test_fixture#checkout"
+        };
+      }
+    },
+    text: translate,
+    setStatus(node, message) { if (node) node.textContent = message; },
+    friendlyError: (error) => error.message,
+    navigate: (url) => destinations.push(url)
+  });
+
+  await controller.setAuthorized(true);
+  await nodes.checkout.listeners.click();
+
+  assert.deepEqual(destinations, [
+    "https://checkout.stripe.com/c/pay/cs_test_fixture#checkout"
+  ]);
+  assert.equal(nodes.checkout.disabled, false);
+});
+
+test("rejects live, off-origin, credentialed, and malformed Checkout URLs", () => {
+  assert.equal(
+    validateLaunchLabCheckoutUrl(
+      "https://checkout.stripe.com/c/pay/cs_test_fixture#checkout"
+    ),
+    "https://checkout.stripe.com/c/pay/cs_test_fixture#checkout"
+  );
+  assert.equal(
+    validateLaunchLabCheckoutUrl(
+      "https://checkout.stripe.com/c/pay/cs_live_fixture"
+    ),
+    ""
+  );
+  assert.equal(
+    validateLaunchLabCheckoutUrl(
+      "https://example.com/c/pay/cs_test_fixture"
+    ),
+    ""
+  );
+  assert.equal(
+    validateLaunchLabCheckoutUrl(
+      "https://user:password@checkout.stripe.com/c/pay/cs_test_fixture"
+    ),
+    ""
+  );
+  assert.equal(validateLaunchLabCheckoutUrl("not-a-url"), "");
 });
 
 test("English and Spanish define the same Launch Lab copy surface", async () => {
@@ -100,7 +160,7 @@ test("English and Spanish define the same Launch Lab copy surface", async () => 
 
   assert.deepEqual(spanishStatic, englishStatic);
   assert.deepEqual(spanishRuntime, englishRuntime);
-  assert.equal(englishRuntime.length, 62);
+  assert.equal(englishRuntime.length, 64);
 });
 
 function rehearsalPayload() {
@@ -155,7 +215,8 @@ function launchLabNodes() {
     evidence: fakeNode("details"),
     providers: fakeNode("div"),
     status: fakeNode("p"),
-    refresh: fakeNode("button")
+    refresh: fakeNode("button"),
+    checkout: fakeNode("button")
   };
 }
 
@@ -167,7 +228,8 @@ function fakeRoot(nodes) {
     ["[data-podcast-launch-lab-evidence]", nodes.evidence],
     ["[data-podcast-launch-lab-providers]", nodes.providers],
     ["[data-podcast-launch-lab-status]", nodes.status],
-    ["[data-podcast-launch-lab-refresh]", nodes.refresh]
+    ["[data-podcast-launch-lab-refresh]", nodes.refresh],
+    ["[data-podcast-launch-lab-checkout]", nodes.checkout]
   ]);
   return { querySelector: (selector) => selectors.get(selector) || null };
 }
@@ -188,9 +250,10 @@ function fakeNode(tagName) {
     disabled: false,
     hidden: false,
     textContent: "",
+    listeners: {},
     append(...children) { this.children.push(...children); },
     replaceChildren(...children) { this.children = [...children]; },
-    addEventListener() {}
+    addEventListener(type, listener) { this.listeners[type] = listener; }
   };
 }
 
