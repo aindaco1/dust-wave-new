@@ -1326,6 +1326,12 @@ assert.match(englishWorkbenchText, /Private evidence only/);
 assert.match(adminTemplate, /data-tab="marketing"/);
 assert.match(adminTemplate, /data-podcast-workspace-group="sponsors"/);
 assert.match(adminTemplate, /data-podcast-workspace-group="analytics"/);
+assert.match(adminTemplate, /data-podcast-tax-policy/);
+assert.match(
+  adminTemplate,
+  /podcast\.admin\.billing\.taxPolicyHeading/
+);
+assert.doesNotMatch(adminTemplate, /workbench\.billing/);
 assert.match(adminTemplate, /data-podcast-reconciliation/);
 assert.match(englishWorkbenchText, /Qualified sponsor deliveries/);
 assert.match(adminTemplate, /data-podcast-sponsor-preview-form/);

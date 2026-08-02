@@ -1528,13 +1528,13 @@ eleventyComputed:
                   class="podcast-admin__form podcast-admin__form--settings"
                   data-podcast-tax-policy
                   hidden>
-                  <h3>{{ workbench.billing.taxPolicyHeading }}</h3>
-                  <p>{{ workbench.billing.taxPolicyIntro }}</p>
+                  <h3>{{ i18n | t(language, "podcast.admin.billing.taxPolicyHeading") }}</h3>
+                  <p>{{ i18n | t(language, "podcast.admin.billing.taxPolicyIntro") }}</p>
                   <dl
                     class="podcast-admin__readiness-evidence"
                     data-podcast-tax-policy-current></dl>
                   <div class="podcast-admin__callout">
-                    <h4>{{ workbench.billing.taxPolicyCandidate }}</h4>
+                    <h4>{{ i18n | t(language, "podcast.admin.billing.taxPolicyCandidate") }}</h4>
                     <dl
                       class="podcast-admin__readiness-evidence"
                       data-podcast-tax-policy-candidate></dl>
@@ -1543,9 +1543,9 @@ eleventyComputed:
                     class="podcast-admin__callout"
                     data-podcast-tax-policy-form
                     hidden>
-                    <p>{{ workbench.billing.taxPolicySafety }}</p>
+                    <p>{{ i18n | t(language, "podcast.admin.billing.taxPolicySafety") }}</p>
                     <p data-podcast-tax-policy-confirmation-hint></p>
-                    <label>{{ workbench.billing.taxPolicyConfirmation }}
+                    <label>{{ i18n | t(language, "podcast.admin.billing.taxPolicyConfirmation") }}
                       <input
                         name="confirmation"
                         type="text"
@@ -1555,7 +1555,7 @@ eleventyComputed:
                     </label>
                     <div class="podcast-admin__billing-actions">
                       <button class="btn btn-danger" type="submit">
-                        {{ workbench.billing.taxPolicyApprove }}
+                        {{ i18n | t(language, "podcast.admin.billing.taxPolicyApprove") }}
                       </button>
                     </div>
                   </form>
