@@ -127,10 +127,6 @@ test("publish submenu shows only its section without moving or scrolling", () =>
   }
 
   assert.equal(episodeList.classList.contains("is-workflow-hidden"), true);
-  assert.equal(
-    productionGroup.dataset.podcastWorkflowContainer,
-    ""
-  );
   assert.equal(mounted.select("unknown"), false);
 
   mounted.setEnabled(false);
@@ -140,10 +136,6 @@ test("publish submenu shows only its section without moving or scrolling", () =>
   }
 
   mounted.destroy();
-  assert.equal(
-    "podcastWorkflowContainer" in productionGroup.dataset,
-    false
-  );
 });
 
 test("new production sections fail closed until assigned to the submenu", () => {

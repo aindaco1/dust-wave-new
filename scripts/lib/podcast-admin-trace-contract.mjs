@@ -1,6 +1,15 @@
 const MINIMUM_LAUNCH_DIRECTORIES = 10;
 const MAXIMUM_INSET_DELTA_PX = 1;
 const MINIMUM_STACK_GAP_PX = 8;
+const MAXIMUM_WORKFLOW_GAP_PX = 32;
+const WORKFLOW_STEPS = new Set([
+  "details",
+  "media",
+  "transcript",
+  "monetization",
+  "review",
+  "publish"
+]);
 export const PODCAST_ADMIN_EPISODE_TRANSITIONS = Object.freeze([
   "details",
   "media",
@@ -180,15 +189,35 @@ function assertEpisodeWorkflowContract(observed) {
     );
   }
   if (!usesResponsiveSelect && (
-    workflow.tabListWidth < 140
-    || workflow.tabListWidth > 180
-    || workflow.tabColumnCount !== 1
-    || workflow.tabRowCount !== 6
-    || workflow.tabToContentGap < 16
+    workflow.tabListWidth < 600
+    || workflow.tabListHeight > 96
+    || workflow.tabColumnCount !== 6
+    || workflow.tabRowCount !== 1
   )) {
     throw new Error(
-      "Episode publishing must use one compact vertical Pool-style submenu "
-      + `beside its active section. Observed ${JSON.stringify(workflow)}.`
+      "Episode publishing must keep all six Pool-style submenu items on one "
+      + `compact desktop row. Observed ${JSON.stringify(workflow)}.`
+    );
+  }
+  if (
+    workflow.blockerNavigationVisible !== true
+    || workflow.blockerReadinessState !== "loaded"
+    || !Number.isInteger(workflow.blockerDeclaredCount)
+    || workflow.blockerDeclaredCount < 0
+    || !Number.isInteger(workflow.blockerLinkCount)
+    || workflow.blockerLinkCount !== workflow.blockerDeclaredCount
+    || !Array.isArray(workflow.blockerLinkSteps)
+    || workflow.blockerLinkSteps.length !== workflow.blockerLinkCount
+    || workflow.blockerLinkSteps.some((step) => !WORKFLOW_STEPS.has(step))
+    || !Number.isFinite(workflow.blockerNavigationGap)
+    || workflow.blockerNavigationGap < MINIMUM_STACK_GAP_PX
+    || workflow.blockerNavigationGap > MAXIMUM_WORKFLOW_GAP_PX
+  ) {
+    throw new Error(
+      "Episode publishing release blockers must sit directly below the "
+      + "workflow submenu and "
+      + "link every declared blocker to a valid owning section. "
+      + `Observed ${JSON.stringify(workflow)}.`
     );
   }
   const transitions = workflow.transitions;

@@ -4,7 +4,9 @@ import {
   workflowStepForNode,
   workflowTargetForNode
 } from "./podcast-admin-publish-workflow-core.js";
-import { mountWorkflowPriority } from "./podcast-admin-workflow-priority.js";
+import {
+  mountWorkflowPriority
+} from "./podcast-admin-workflow-priority.js?v=0.2.0";
 import { mountEpisodeAutopilot } from "./podcast-admin-autopilot.js";
 import {
   mountWorkflowResponsiveSelect
@@ -51,27 +53,30 @@ export function mountEpisodePublishWorkflow({
   const publishPanel = document.createElement("section");
   publishPanel.className = "podcast-admin__workflow-panel";
   publishPanel.dataset.podcastWorkflowPublishPanel = "";
+  const blockerNavigation = document.createElement("section");
+  blockerNavigation.className =
+    "podcast-admin__workflow-blocker-navigation";
+  blockerNavigation.dataset.podcastWorkflowBlockers = "";
   const summary = document.createElement("p");
   summary.className = "podcast-admin__workflow-summary";
+  summary.id = "podcast-publish-blocker-summary";
   summary.setAttribute("role", "status");
   summary.setAttribute("aria-live", "polite");
+  blockerNavigation.setAttribute("aria-labelledby", summary.id);
   const actions = document.createElement("div");
   actions.className =
     "podcast-admin__form-actions podcast-admin__workflow-actions";
-  const continueButton = document.createElement("button");
-  continueButton.className = "btn btn-danger";
-  continueButton.type = "button";
   const publishButton = document.createElement("button");
   publishButton.className = "btn btn-danger";
   publishButton.type = "button";
   publishButton.textContent = text("publishReviewedEpisode");
   publishButton.hidden = true;
-  actions.append(continueButton, publishButton);
+  actions.append(publishButton);
   const workflowPriority = mountWorkflowPriority({
     document,
-    text,
     nodeLabel,
     nodeDescription,
+    nodeStep: workflowStepForNode,
     onNavigate(node) {
       navigate(
         workflowStepForNode(node),
@@ -82,13 +87,12 @@ export function mountEpisodePublishWorkflow({
   const autopilot = mountEpisodeAutopilot({ document, text });
   root.append(heading);
   if (episodeLabel) root.append(episodeLabel);
+  blockerNavigation.append(summary, ...workflowPriority.elements);
   publishPanel.append(
-    summary,
     autopilot.element,
-    ...workflowPriority.elements,
     actions
   );
-  root.append(progressRoot, publishPanel);
+  root.append(progressRoot, blockerNavigation, publishPanel);
 
   const stepDefinitions = [
     ["details", text("workflowDetails")],
@@ -119,7 +123,6 @@ export function mountEpisodePublishWorkflow({
   let readiness = null;
   let requestId = 0;
   let nextStep = "details";
-  let nextTarget = "";
   let hasSelectedEpisode = null;
 
   function selectedEpisode() {
@@ -151,17 +154,14 @@ export function mountEpisodePublishWorkflow({
     progress.setSteps(steps);
     responsiveProgress.refresh({ activeValue: progress.getActive() });
     nextStep = derived.nextStep;
-    nextTarget = derived.nextTarget;
-    continueButton.textContent = derived.nextBlocker
-      ? text("continueWorkflowAction", {
-        action: nodeLabel(derived.nextBlocker)
-      })
-      : text("continueWorkflow", {
-        step: stepDefinitions.find(([id]) => id === nextStep)?.[1] || ""
-      });
-    continueButton.hidden = nextStep === "publish";
-    if (derived.waitingForAutomation) continueButton.hidden = true;
+    blockerNavigation.dataset.podcastWorkflowReadiness = readiness
+      ? "loaded"
+      : "loading";
+    blockerNavigation.dataset.podcastWorkflowBlockerCount = String(
+      derived.actionableBlockers.length
+    );
     publishButton.hidden = nextStep !== "publish";
+    actions.hidden = publishButton.hidden;
     publishButton.disabled = !readiness;
     if (!readiness) {
       summary.textContent = text("workflowLoading");
@@ -178,8 +178,7 @@ export function mountEpisodePublishWorkflow({
       });
     }
     workflowPriority.render({
-      nodes: derived.actionableBlockers,
-      next: derived.nextBlocker
+      nodes: derived.actionableBlockers
     });
     autopilot.render(readiness);
   }
@@ -206,6 +205,7 @@ export function mountEpisodePublishWorkflow({
       render();
     } catch {
       if (currentRequest !== requestId) return;
+      blockerNavigation.dataset.podcastWorkflowReadiness = "failed";
       summary.textContent = text("readinessFailed");
       workflowPriority.clear();
       autopilot.render({
@@ -217,10 +217,6 @@ export function mountEpisodePublishWorkflow({
 
   const handleEpisodeChange = () => refresh();
   if (!episodeSelect) select.addEventListener("change", handleEpisodeChange);
-  continueButton.addEventListener(
-    "click",
-    () => navigate(nextStep, nextTarget)
-  );
   publishButton.addEventListener("click", async () => {
     const episode = selectedEpisode();
     if (!episode || publishButton.disabled) return;

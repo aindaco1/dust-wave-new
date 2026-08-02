@@ -1475,8 +1475,8 @@ assert.match(
 );
 assert.match(
   adminStyles,
-  /@media \(min-width: 56\.3125rem\) \{[\s\S]+#podcast-panel-episodes\[data-podcast-workflow-step\][\s\S]+grid-template-columns: minmax\(8\.75rem, 11\.25rem\) minmax\(0, 1fr\);[\s\S]+\.podcast-admin__workflow-menu \.dw-admin-workflow__list \{[\s\S]+border-inline-end:[\s\S]+display: grid;[\s\S]+\.podcast-admin__workflow-menu \.dw-admin-workflow__button:is\([\s\S]+\[aria-selected="true"\]/,
-  'The episode workflow must use the compact vertical Pool Settings submenu on desktop'
+  /@media \(min-width: 56\.3125rem\) \{[\s\S]+\.podcast-admin__workflow-menu \.dw-admin-workflow__list \{[\s\S]+display: grid;[\s\S]+grid-template-columns: repeat\(6, minmax\(0, 1fr\)\);[\s\S]+\.podcast-admin__workflow-menu \.dw-admin-workflow__button \{[\s\S]+min-block-size: 3\.25rem;/,
+  'The episode workflow must keep the six compact Pool-style submenu items on one desktop row'
 );
 assert.match(
   adminStyles,

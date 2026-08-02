@@ -12,65 +12,79 @@ function element(tagName) {
     tagName,
     children: [],
     className: "",
+    dataset: {},
     hidden: false,
+    listeners: {},
     textContent: "",
     append(...children) {
       this.children.push(...children);
     },
-    addEventListener() {},
+    addEventListener(type, listener) {
+      this.listeners[type] = listener;
+    },
+    click() {
+      this.listeners.click?.();
+    },
     replaceChildren(...children) {
       this.children = children;
     }
   };
 }
 
-function findByClass(root, className) {
-  if (root.className === className) return root;
-  for (const child of root.children || []) {
-    const match = findByClass(child, className);
-    if (match) return match;
-  }
-  return null;
-}
-
-test("next action pairs the exact task with its localized explanation", () => {
+test("every release blocker links to its exact owning workflow step", () => {
   const document = { createElement: element };
+  const navigated = [];
   const priority = mountWorkflowPriority({
     document,
-    text: (key, values = {}) => key === "workflowOtherBlocker"
-      ? `${values.count} other blocker`
-      : key,
     nodeLabel: ({ label }) => label,
     nodeDescription: ({ description }) => description,
-    onNavigate() {}
+    nodeStep: ({ step }) => step,
+    onNavigate(node) {
+      navigated.push(node.label);
+    }
   });
-  const next = {
+  const media = {
     label: "Exact delivery audio",
-    description: "Exact delivery audio is missing required evidence."
+    description: "Exact delivery audio is missing required evidence.",
+    step: "media"
+  };
+  const review = {
+    label: "Editorial approval",
+    description: "Editorial approval is required.",
+    step: "review"
   };
 
   priority.render({
-    nodes: [next, { label: "Chapters", description: "Missing chapters." }],
-    next
+    nodes: [media, review]
   });
 
-  const [nextAction, remaining] = priority.elements;
-  assert.equal(nextAction.hidden, false);
+  const [blockers] = priority.elements;
+  assert.equal(blockers.hidden, false);
+  assert.equal(blockers.children.length, 2);
+  const [mediaLink, reviewLink] = blockers.children.map(
+    (item) => item.children[0]
+  );
   assert.equal(
-    findByClass(nextAction, "podcast-admin__workflow-next-title")
-      ?.textContent,
+    mediaLink.className,
+    "podcast-admin__workflow-blocker-link"
+  );
+  assert.equal(mediaLink.dataset.podcastWorkflowBlockerStep, "media");
+  assert.equal(reviewLink.dataset.podcastWorkflowBlockerStep, "review");
+  assert.equal(
+    mediaLink.children[0].textContent,
     "Exact delivery audio"
   );
   assert.equal(
-    findByClass(nextAction, "podcast-admin__workflow-next-description")
-      ?.textContent,
+    mediaLink.children[1].textContent,
     "Exact delivery audio is missing required evidence."
   );
-  assert.equal(remaining.hidden, false);
+  mediaLink.click();
+  reviewLink.click();
+  assert.deepEqual(navigated, ["Exact delivery audio", "Editorial approval"]);
 
   priority.clear();
-  assert.equal(nextAction.hidden, true);
-  assert.equal(remaining.hidden, true);
+  assert.equal(blockers.hidden, true);
+  assert.equal(blockers.children.length, 0);
 });
 
 test("readiness cards and next actions share the same localized copy", () => {

@@ -230,6 +230,17 @@ const LAYOUT_PROBE = `(() => {
         workflowTabs?.querySelectorAll('[data-workflow-step]') || []
       );
       const workflowTabRect = workflowTabs?.getBoundingClientRect();
+      const workflowSelectRect = workflowSelect?.getClientRects().length
+        ? workflowSelect.getBoundingClientRect()
+        : null;
+      const blockerNavigation = panel?.querySelector(
+        '[data-podcast-workflow-blockers]'
+      );
+      const blockerNavigationRect = blockerNavigation?.getBoundingClientRect();
+      const blockerLinks = Array.from(blockerNavigation?.querySelectorAll(
+        '[data-podcast-workflow-blocker-step]'
+      ) || []);
+      const workflowControlRect = workflowSelectRect || workflowTabRect;
       const visibleControlledSections = Array.from(
         panel?.querySelectorAll('[data-podcast-workflow-panels]') || []
       ).filter((section) => (
@@ -237,8 +248,6 @@ const LAYOUT_PROBE = `(() => {
         && !section.classList.contains('is-workflow-hidden')
         && section.getClientRects().length > 0
       ));
-      const controlledRect = visibleControlledSections[0]
-        ?.getBoundingClientRect();
       return {
         activeStep: panel?.dataset.podcastWorkflowStep || '',
         stepCount: panel?.querySelectorAll('[data-workflow-step]').length ?? 0,
@@ -258,14 +267,27 @@ const LAYOUT_PROBE = `(() => {
         ),
         tabListVisible: Boolean(workflowTabs?.getClientRects().length),
         tabListWidth: workflowTabRect?.width || 0,
+        tabListHeight: workflowTabRect?.height || 0,
         tabColumnCount: new Set(workflowButtons.map((button) => (
           Math.round(button.getBoundingClientRect().left)
         ))).size,
         tabRowCount: new Set(workflowButtons.map((button) => (
           Math.round(button.getBoundingClientRect().top)
         ))).size,
-        tabToContentGap: workflowTabRect && controlledRect
-          ? controlledRect.left - workflowTabRect.right
+        blockerNavigationVisible: Boolean(
+          blockerNavigation?.getClientRects().length
+        ),
+        blockerReadinessState:
+          blockerNavigation?.dataset.podcastWorkflowReadiness || '',
+        blockerDeclaredCount: Number(
+          blockerNavigation?.dataset.podcastWorkflowBlockerCount
+        ),
+        blockerLinkCount: blockerLinks.length,
+        blockerLinkSteps: blockerLinks.map((link) => (
+          link.dataset.podcastWorkflowBlockerStep || ''
+        )),
+        blockerNavigationGap: workflowControlRect && blockerNavigationRect
+          ? blockerNavigationRect.top - workflowControlRect.bottom
           : null
       };
     })(),
@@ -830,7 +852,10 @@ async function waitForAdminTabObservation(cdp, adminTab) {
     const distributionReady = adminTab !== "distribution"
       || observed?.distribution?.directoryCount >= 10;
     const episodeWorkflowReady = adminTab !== "episodes"
-      || observed?.episodeWorkflow?.formMode === "edit";
+      || (
+        observed?.episodeWorkflow?.formMode === "edit"
+        && observed?.episodeWorkflow?.blockerReadinessState === "loaded"
+      );
     if (
       observed?.authenticatedAdmin
       && observed?.activeTab === adminTab

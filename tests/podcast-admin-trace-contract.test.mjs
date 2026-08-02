@@ -29,11 +29,17 @@ function validObservation() {
       manualRefreshCount: 0,
       responsiveSelectVisible: false,
       stepCount: 6,
-      tabColumnCount: 1,
+      tabColumnCount: 6,
       tabListVisible: true,
-      tabListWidth: 180,
-      tabRowCount: 6,
-      tabToContentGap: 20,
+      tabListWidth: 1180,
+      tabListHeight: 64,
+      tabRowCount: 1,
+      blockerNavigationVisible: true,
+      blockerReadinessState: "loaded",
+      blockerDeclaredCount: 2,
+      blockerLinkCount: 2,
+      blockerLinkSteps: ["media", "review"],
+      blockerNavigationGap: 16,
       titlePresent: true,
       transitions,
       visibleControlledSectionCount: 1
@@ -102,13 +108,32 @@ test("accepts the populated, responsive episode publishing workflow", () => {
   ));
 });
 
+test("accepts a ready episode with no declared release blockers", () => {
+  const observed = validObservation();
+  observed.episodeWorkflow.blockerDeclaredCount = 0;
+  observed.episodeWorkflow.blockerLinkCount = 0;
+  observed.episodeWorkflow.blockerLinkSteps = [];
+  assert.doesNotThrow(() => assertPodcastAdminTraceContract(
+    observed,
+    { adminTab: "episodes" }
+  ));
+});
+
 test("rejects incomplete, manual, or unresponsive episode workflows", () => {
   for (const mutate of [
     (observed) => { observed.episodeWorkflow.stepCount = 5; },
     (observed) => { observed.episodeWorkflow.manualRefreshCount = 1; },
     (observed) => { observed.episodeWorkflow.formMode = "create"; },
     (observed) => { observed.episodeWorkflow.tabListVisible = false; },
-    (observed) => { observed.episodeWorkflow.tabColumnCount = 2; },
+    (observed) => { observed.episodeWorkflow.tabRowCount = 2; },
+    (observed) => {
+      observed.episodeWorkflow.blockerReadinessState = "loading";
+    },
+    (observed) => { observed.episodeWorkflow.blockerLinkCount = 0; },
+    (observed) => {
+      observed.episodeWorkflow.blockerLinkSteps = ["outside", "review"];
+    },
+    (observed) => { observed.episodeWorkflow.blockerNavigationGap = 2; },
     (observed) => {
       observed.episodeWorkflow.transitions[2].leakCount = 1;
     },
