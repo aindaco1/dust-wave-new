@@ -13,7 +13,6 @@ export function createEpisodeWorkflowNavigator({
   audioMasterEpisodeSelect,
   transcriptEpisodeSelect,
   chapterEpisodeSelect,
-  transcriptWorkbench,
   reviewEpisodeSelect,
   loadProductionReviews,
   loadPublicationReadiness,
@@ -23,9 +22,6 @@ export function createEpisodeWorkflowNavigator({
     throw new TypeError("Workflow root and tabs are required");
   }
   const document = root.ownerDocument;
-  const readinessWorkbench = root.querySelector(
-    "[data-podcast-publication-readiness]"
-  );
   const navigateExactTarget = createExactWorkflowNavigator(root);
 
   return function navigateEpisodeWorkflow(step, episode, target = "") {
@@ -40,7 +36,7 @@ export function createEpisodeWorkflowNavigator({
     if (step === "monetization") {
       tabs.select("episodes");
       selectWorkflowEpisode(adPlanForm?.elements.episodeId, episodeId);
-      revealWorkflowTarget(adPlanForm, document);
+      if (target) revealWorkflowTarget(adPlanForm, document);
       return;
     }
     if (step === "publish") {
@@ -50,23 +46,15 @@ export function createEpisodeWorkflowNavigator({
 
     tabs.select("episodes");
     if (step === "media") {
-      const exactTarget = target || (
-        episode?.mediaStatus !== "ready" ? "attach_media" : ""
-      );
-      if (exactTarget && navigateExactTarget(exactTarget, episodeId)) return;
+      if (target && navigateExactTarget(target, episodeId)) return;
       selectWorkflowEpisode(audioQcEpisodeSelect, episodeId);
       selectWorkflowEpisode(audioMasterEpisodeSelect, episodeId);
-      revealWorkflowTarget(
-        audioQcEpisodeSelect?.closest(".podcast-admin__form, section"),
-        document
-      );
       return;
     }
     if (step === "transcript") {
       if (target && navigateExactTarget(target, episodeId)) return;
       selectWorkflowEpisode(transcriptEpisodeSelect, episodeId);
       selectWorkflowEpisode(chapterEpisodeSelect, episodeId);
-      revealWorkflowTarget(transcriptWorkbench, document);
       return;
     }
     if (
@@ -77,6 +65,5 @@ export function createEpisodeWorkflowNavigator({
     loadProductionReviews();
     loadPublicationReadiness(episodeId);
     if (target && navigateExactTarget(target, episodeId)) return;
-    revealWorkflowTarget(readinessWorkbench, document);
   };
 }

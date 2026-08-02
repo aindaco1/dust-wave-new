@@ -555,10 +555,18 @@ function trendBar(value, maximum, label) {
   const bar = document.createElement("span");
   bar.className = "podcast-admin__analytics-bar";
   bar.style.setProperty("--analytics-ratio", String(count / maximum));
-  bar.setAttribute("aria-label", `${label}: ${formatInteger(count)}`);
+  bar.setAttribute("role", "meter");
+  bar.setAttribute("aria-label", label);
+  bar.setAttribute("aria-valuemin", "0");
+  bar.setAttribute("aria-valuemax", String(maximum));
+  bar.setAttribute("aria-valuenow", String(count));
+  const fill = document.createElement("span");
+  fill.className = "podcast-admin__analytics-bar-fill";
+  fill.setAttribute("aria-hidden", "true");
   const valueLabel = document.createElement("span");
+  valueLabel.className = "podcast-admin__analytics-bar-value";
   valueLabel.textContent = formatInteger(count);
-  bar.append(valueLabel);
+  bar.append(fill, valueLabel);
   return bar;
 }
 

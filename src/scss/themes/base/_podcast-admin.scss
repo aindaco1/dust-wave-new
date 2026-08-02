@@ -381,6 +381,18 @@
   min-height: var(--dw-admin-control-min-height);
 }
 
+.podcast-admin .btn-danger {
+  background-color: #c92f41;
+  border-color: #c92f41;
+  color: #fff;
+}
+
+.podcast-admin .btn-danger:is(:hover, :active) {
+  background-color: #b82b3b;
+  border-color: #b82b3b;
+  color: #fff;
+}
+
 .podcast-admin .btn.is-dirty {
   box-shadow: 0 0 0 3px rgba(255, 89, 100, 0.45);
 }
@@ -663,8 +675,6 @@
   background: #171717;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 0.75rem;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 6rem;
   margin-bottom: var(--dw-admin-space-md);
 }
 
@@ -690,8 +700,10 @@
 
 .podcast-admin__progressive-state {
   align-items: center;
+  background: #101010;
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 999px;
+  color: #fff;
   display: inline-flex;
   flex: 0 0 2rem;
   height: 2rem;
@@ -2670,33 +2682,42 @@
 }
 
 .podcast-admin__analytics-bar {
-  background:
-    linear-gradient(
-      90deg,
-      #ff5964 calc(var(--analytics-ratio) * 100%),
-      rgba(255, 255, 255, 0.1) 0
-    );
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 0.3rem;
   display: block;
   min-height: 1.6rem;
   overflow: hidden;
   padding: var(--dw-admin-space-xxs) var(--dw-admin-space-xs);
+  position: relative;
+}
+
+.podcast-admin__analytics-bar-fill {
+  background: #ff5964;
+  inset: 0 auto 0 0;
+  position: absolute;
+  width: calc(var(--analytics-ratio) * 100%);
 }
 
 .podcast-admin__analytics-bar + .podcast-admin__analytics-bar {
-  background:
-    linear-gradient(
-      90deg,
-      #ffd54d calc(var(--analytics-ratio) * 100%),
-      rgba(255, 255, 255, 0.1) 0
-    );
-  color: #111;
+  color: #fff;
 }
 
-.podcast-admin__analytics-bar > span {
+.podcast-admin__analytics-bar
+  + .podcast-admin__analytics-bar
+  .podcast-admin__analytics-bar-fill {
+  background: #ffd54d;
+}
+
+.podcast-admin__analytics-bar-value {
+  background: #101010;
+  border-radius: 0.2rem;
+  color: #fff;
   font-size: 0.8rem;
   font-variant-numeric: tabular-nums;
   font-weight: 700;
+  padding: 0.0625rem 0.25rem;
+  position: relative;
+  z-index: 1;
 }
 
 @container podcast-datatype-trend (max-width: 34rem) {
@@ -2807,6 +2828,10 @@
 .podcast-admin__subscriber-card h3,
 .podcast-admin__subscriber-card code {
   overflow-wrap: anywhere;
+}
+
+.podcast-admin__subscriber-card code {
+  color: #fff;
 }
 
 .podcast-admin__subscriber-card dl {

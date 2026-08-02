@@ -19,7 +19,7 @@
     {% endif %}
     {% include 'snippets/sticky.njk' %}
     {% include "snippets/navbar1.njk" %}
-      <main id="main-content">
+      <main id="main-content" tabindex="-1">
         {{ content | safe }}
       </main>
     {% include "snippets/" + footer + ".njk" %}

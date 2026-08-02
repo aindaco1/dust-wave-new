@@ -903,7 +903,6 @@ function startPodcastAdmin(root) {
     audioMasterEpisodeSelect,
     transcriptEpisodeSelect,
     chapterEpisodeSelect,
-    transcriptWorkbench,
     reviewEpisodeSelect,
     loadProductionReviews,
     loadPublicationReadiness,
