@@ -1,6 +1,6 @@
 import {
   setDirtyButtonState
-} from "./dust-wave-admin-shell/dirty-controls.js?v=0.9.0";
+} from "./dust-wave-admin-shell/dirty-controls.js?v=0.10.0";
 import {
   syncReviewDraftButton as syncDraftButton
 } from "./podcast-admin-dirty-controls-core.js";

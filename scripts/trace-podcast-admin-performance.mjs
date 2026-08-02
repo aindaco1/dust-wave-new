@@ -154,12 +154,40 @@ const LAYOUT_PROBE = `(() => {
       }];
     })
     .slice(0, 20);
+  const listActionGapViolations = Array.from(root.querySelectorAll('ul, ol'))
+    .flatMap((list) => {
+      const actions = list.nextElementSibling;
+      if (!actions?.matches?.(
+        '.podcast-admin__directory-links, '
+        + '.podcast-admin__form-actions, '
+        + '.podcast-admin__release-channel-actions, button, .btn'
+      )) return [];
+      const listStyle = getComputedStyle(list);
+      const actionStyle = getComputedStyle(actions);
+      const listRect = list.getBoundingClientRect();
+      const actionRect = actions.getBoundingClientRect();
+      const gap = actionRect.top - listRect.bottom;
+      if (
+        listStyle.display === 'none'
+        || actionStyle.display === 'none'
+        || listRect.height <= 0
+        || actionRect.height <= 0
+        || gap >= 8
+      ) return [];
+      return [{
+        gap: Math.round(gap * 100) / 100,
+        listClasses: Array.from(list.classList).slice(0, 4),
+        actionClasses: Array.from(actions.classList).slice(0, 4)
+      }];
+    })
+    .slice(0, 20);
   return {
     innerWidth,
     innerHeight,
     scrollWidth: document.documentElement.scrollWidth,
     viewportOverflow,
     listItemMarginViolations,
+    listActionGapViolations,
     authenticatedAdmin:
       document.querySelector('[data-podcast-app]')?.hidden === false,
     cumulativeLayoutShift: globalThis.__dustWaveCumulativeLayoutShift ?? null,
@@ -188,6 +216,41 @@ const LAYOUT_PROBE = `(() => {
         openProviderCount: providerGroups.filter((group) => group.open).length
       };
     })(),
+    episodeWorkflow: (() => {
+      const panel = document.querySelector('#podcast-panel-episodes');
+      const form = panel?.querySelector('[data-podcast-episode-form]');
+      const workflowSelect = panel?.querySelector(
+        '#podcast-publish-workflow-section'
+      );
+      const workflowTabs = panel?.querySelector(
+        '.podcast-admin__workflow-menu .dw-admin-workflow__list'
+      );
+      return {
+        activeStep: panel?.dataset.podcastWorkflowStep || '',
+        stepCount: panel?.querySelectorAll('[data-workflow-step]').length ?? 0,
+        visibleControlledSectionCount: Array.from(
+          panel?.querySelectorAll('[data-podcast-workflow-panels]') || []
+        ).filter((section) => (
+          !section.hidden
+          && !section.classList.contains('is-workflow-hidden')
+          && section.getClientRects().length > 0
+        )).length,
+        manualRefreshCount: panel?.querySelectorAll(
+          '[data-podcast-readiness-refresh], '
+          + '.podcast-admin__publish-workflow '
+          + '.podcast-admin__panel-heading > button'
+        ).length ?? 0,
+        currentEpisodeId: panel?.querySelector(
+          '[data-podcast-current-episode]'
+        )?.value || '',
+        formMode: form?.dataset.episodeMode || '',
+        titlePresent: Boolean(form?.elements?.title?.value.trim()),
+        responsiveSelectVisible: Boolean(
+          workflowSelect?.getClientRects().length
+        ),
+        tabListVisible: Boolean(workflowTabs?.getClientRects().length)
+      };
+    })(),
     distribution: (() => {
       const guidance = document.querySelector(
         '.podcast-admin__distribution-guidance'
@@ -205,8 +268,16 @@ const LAYOUT_PROBE = `(() => {
       const certificationRow = openDirectory?.querySelector(
         ':scope > .podcast-admin__certification-list > li'
       );
+      const certificationList = openDirectory?.querySelector(
+        ':scope > .podcast-admin__certification-list'
+      );
+      const directoryActions = openDirectory?.querySelector(
+        ':scope > .podcast-admin__directory-links'
+      );
       const detailsRect = directoryDetails?.getBoundingClientRect();
       const rowRect = certificationRow?.getBoundingClientRect();
+      const certificationRect = certificationList?.getBoundingClientRect();
+      const actionsRect = directoryActions?.getBoundingClientRect();
       return {
         guidancePresent: Boolean(guidance),
         guidanceOpen: guidance?.open ?? null,
@@ -225,6 +296,9 @@ const LAYOUT_PROBE = `(() => {
           start: Math.round((rowRect.left - detailsRect.left) * 100) / 100,
           end: Math.round((detailsRect.right - rowRect.right) * 100) / 100
         } : null,
+        certificationActionGap: certificationRect && actionsRect
+          ? Math.round((actionsRect.top - certificationRect.bottom) * 100) / 100
+          : null,
         statusText: String(distributionRoot?.textContent || '')
           .replace(/\s+/g, ' ')
           .trim()
@@ -737,10 +811,13 @@ async function waitForAdminTabObservation(cdp, adminTab) {
     observed = await measureLayout(cdp);
     const distributionReady = adminTab !== "distribution"
       || observed?.distribution?.directoryCount >= 10;
+    const episodeWorkflowReady = adminTab !== "episodes"
+      || observed?.episodeWorkflow?.formMode === "edit";
     if (
       observed?.authenticatedAdmin
       && observed?.activeTab === adminTab
       && distributionReady
+      && episodeWorkflowReady
     ) {
       return observed;
     }

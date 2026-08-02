@@ -477,7 +477,7 @@
           "readinessHeading": "Preparación para publicar",
           "readinessIntro": "Revisa la captura inmutable que Publicar vincula con las comprobaciones heredadas y el grafo completo de dependencias del lanzamiento.",
           "refreshSnapshot": "Actualizar captura",
-          "readinessCallout": "Publicar actualiza esta captura justo antes de actuar. La aplicación bloquea evidencia obsoleta o incompleta; solo una sesión reciente de Administración o Superadministración puede registrar un motivo privado y auditado y omitir explícitamente bloqueos candidatos sin resolver.",
+          "readinessCallout": "Esta captura se actualiza automáticamente al abrir o cambiar secciones de publicación y de nuevo justo antes de que actúe Publicar. La aplicación bloquea evidencia obsoleta o incompleta; solo una sesión reciente de Administración o Superadministración puede registrar un motivo privado y auditado y omitir explícitamente bloqueos candidatos sin resolver.",
           "readinessAria": "Captura de preparación para publicar",
           "chooseReviewEpisode": "Elige un episodio de revisión de producción para comprobar su preparación.",
           "clipsHeading": "Fábrica de clips",

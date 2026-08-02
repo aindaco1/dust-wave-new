@@ -207,6 +207,26 @@ const publicationScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-publication.js'),
   'utf8'
 );
+const publishWorkflowScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-publish-workflow.js'),
+  'utf8'
+);
+const publishSectionsScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-publish-sections.js'),
+  'utf8'
+);
+const readinessLoaderScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-readiness-loader.js'),
+  'utf8'
+);
+const workflowResponsiveScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-workflow-responsive.js'),
+  'utf8'
+);
+const workflowTargetScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-workflow-target.js'),
+  'utf8'
+);
 const publicationSecurityScript = await readFile(
   path.join(
     repositoryRoot,
@@ -1293,8 +1313,11 @@ assert.match(adminTemplate, /data-podcast-review-form/);
 assert.match(adminTemplate, /data-podcast-review-list/);
 assert.match(englishWorkbenchText, /feed the publication gate/);
 assert.match(adminTemplate, /data-podcast-publication-readiness/);
-assert.match(adminTemplate, /data-podcast-readiness-refresh/);
-assert.match(englishWorkbenchText, /Publish refreshes this snapshot immediately/);
+assert.doesNotMatch(adminTemplate, /data-podcast-readiness-refresh/);
+assert.match(
+  englishWorkbenchText,
+  /snapshot refreshes automatically when you open or switch publishing sections/
+);
 assert.match(englishWorkbenchText, /recently authenticated Admin or Super-admin/);
 assert.match(adminTemplate, /data-podcast-clip-form/);
 assert.match(adminTemplate, /data-podcast-clip-preview/);
@@ -1452,8 +1475,28 @@ assert.match(
 );
 assert.match(
   adminStyles,
-  /\.dw-admin-workflow__list \{[\s\S]+grid-template-columns: repeat\(3, minmax\(0, 1fr\)\);[\s\S]+@media \(max-width: 40rem\) \{[\s\S]+\.dw-admin-workflow__list \{[\s\S]+grid-template-columns: minmax\(0, 1fr\);/,
-  'The episode workflow must preserve readable three-, two-, and one-column states'
+  /\.podcast-admin__publish-workflow \{[\s\S]+grid-template-columns: minmax\(0, 1fr\);[\s\S]+\.dw-admin-workflow__list \{[\s\S]+display: flex;[\s\S]+overflow-x: auto;[\s\S]+\.dw-admin-workflow__button:is\([\s\S]+\[aria-selected="true"\]/,
+  'The episode workflow must use a bounded, responsive Pool-style submenu'
+);
+assert.match(
+  adminStyles,
+  /@media \(max-width: 56\.25rem\) \{[\s\S]+\.podcast-admin__workflow-menu \.dw-admin-workflow__list \{[\s\S]+display: none;/,
+  'The six-step publish submenu must collapse to one bounded mobile control'
+);
+assert.match(
+  adminStyles,
+  /\.podcast-admin \.is-workflow-hidden \{[\s\S]+display: none !important;/,
+  'Inactive publishing sections must disappear without changing their own hidden state'
+);
+assert.match(
+  adminStyles,
+  /#podcast-panel-episodes \{[\s\S]+overflow-anchor: none;/,
+  'Publishing section switches must not trigger browser scroll anchoring'
+);
+assert.match(
+  adminStyles,
+  /\.podcast-admin__directory-card[\s\S]+:is\(ul, ol\)[\s\S]+\+ \.podcast-admin__directory-links \{[\s\S]+margin-top: var\(--dw-admin-space-sm\);/,
+  'Directory actions must preserve a tokenized gap after certification lists'
 );
 assert.match(
   adminStyles,
@@ -1718,10 +1761,37 @@ assert.match(adminStyles, /\.podcast-admin__audio-enhancement-comparison/);
 assert.match(adminScript, /\/review-comments\//);
 assert.match(adminScript, /function publicationGateLabel/);
 assert.match(adminScript, /body\.textContent = comment\.bodyText/);
-assert.match(adminScript, /function loadPublicationReadiness/);
+assert.match(
+  readinessLoaderScript,
+  /function loadPublicationReadiness/
+);
+assert.match(adminScript, /if \(tab === "episodes"\) episodePublishWorkflow\?\.refresh\(\)/);
+assert.match(adminScript, /loadReadiness: loadPublicationReadiness/);
+assert.doesNotMatch(adminScript, /readinessRefresh\?\.addEventListener/);
+assert.match(publishWorkflowScript, /selectionMode: "tabs"/);
+assert.match(
+  publishWorkflowScript,
+  /mountWorkflowResponsiveSelect\(progressRoot[\s\S]+responsiveProgress\.refresh/
+);
+assert.match(
+  workflowResponsiveScript,
+  /mountResponsiveTabSelect\(root[\s\S]+optionLabel: workflowOptionLabel/
+);
+assert.match(publishWorkflowScript, /onNavigate\?\.\(id, episode, target\);[\s\S]+void refresh\(\);/);
 assert.match(
   adminScript,
-  /\/v1\/admin\/episodes\/\$\{encodeURIComponent\(episodeId\)\}\/readiness/
+  /editEpisode: episodeEditor\.edit/
+);
+assert.match(
+  publishWorkflowScript,
+  /const episode = selectedEpisode\(\);[\s\S]+onNavigate\?\.\(progress\.getActive\(\), episode\)/
+);
+assert.match(publishSectionsScript, /is-workflow-hidden/);
+assert.match(publishSectionsScript, /Every production section needs a publish step/);
+assert.doesNotMatch(workflowTargetScript, /scrollIntoView/);
+assert.match(
+  readinessLoaderScript,
+  /\/v1\/admin\/episodes\/\$\{encodeURIComponent\([\s\S]+normalizedEpisodeId[\s\S]+\)\}\/readiness/
 );
 assert.match(adminScript, /function renderPublicationReadiness/);
 assert.match(

@@ -7,7 +7,7 @@ import {
 
 test("workflow target moves focus after the initiating click completes", () => {
   let scheduled = null;
-  let scrollOptions = null;
+  let scrollCalled = false;
   let focusOptions = null;
   let hiddenFocusCalled = false;
   const sibling = {
@@ -64,8 +64,8 @@ test("workflow target moves focus after the initiating click completes", () => {
     querySelectorAll() {
       return [hiddenTarget, focusTarget];
     },
-    scrollIntoView(options) {
-      scrollOptions = options;
+    scrollIntoView() {
+      scrollCalled = true;
     }
   };
   disclosure.querySelector = (selector) =>
@@ -91,19 +91,19 @@ test("workflow target moves focus after the initiating click completes", () => {
   assert.equal(disclosure.open, true);
   assert.equal(sibling.open, false);
   assert.equal(typeof scheduled, "function");
-  assert.equal(scrollOptions, null);
+  assert.equal(scrollCalled, false);
   assert.equal(focusOptions, null);
 
   scheduled();
 
-  assert.deepEqual(scrollOptions, { behavior: "smooth", block: "start" });
+  assert.equal(scrollCalled, false);
   assert.deepEqual(focusOptions, { preventScroll: true });
   assert.equal(hiddenFocusCalled, false);
 });
 
 test("transcript review selects the linked episode and reveals the editor", () => {
   let selectedEpisode = "";
-  let revealed = false;
+  let scrolled = false;
   const control = {
     ownerDocument: {
       defaultView: {
@@ -122,7 +122,7 @@ test("transcript review selects the linked episode and reveals the editor", () =
     closest() { return null; },
     matches() { return false; },
     querySelectorAll() { return []; },
-    scrollIntoView() { revealed = true; }
+    scrollIntoView() { scrolled = true; }
   };
   const root = {
     ownerDocument: {
@@ -142,5 +142,5 @@ test("transcript review selects the linked episode and reveals the editor", () =
   const navigate = createExactWorkflowNavigator(root);
   assert.equal(navigate("transcript_review", "episode_1"), true);
   assert.equal(selectedEpisode, "episode_1");
-  assert.equal(revealed, true);
+  assert.equal(scrolled, false);
 });

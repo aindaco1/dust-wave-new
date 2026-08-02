@@ -1,7 +1,4 @@
 import { mountEpisodeContext } from "./podcast-admin-episode-context.js";
-import {
-  revealEpisodePublishWorkflow
-} from "./podcast-admin-publish-workflow.js";
 import { mountPodcastReviewDraftGuard } from "./podcast-admin-unsaved-changes.js";
 
 const episodeControlSelectors = [
@@ -15,6 +12,13 @@ const episodeControlSelectors = [
   "[data-podcast-chapter-episode]",
   "[data-podcast-review-episode]"
 ];
+
+function focusEpisodePublishWorkflow(root) {
+  root?.querySelector?.(
+    '[data-workflow-step][aria-selected="true"], '
+      + '[data-workflow-step][aria-current="step"]'
+  )?.focus?.({ preventScroll: true });
+}
 
 export function mountPodcastEpisodeContext({
   root,
@@ -65,7 +69,7 @@ export function mountPodcastEpisodeContext({
     ...context,
     selectEpisode(episodeId, options) {
       if (!context.selectEpisode(episodeId, options)) return false;
-      revealEpisodePublishWorkflow(
+      focusEpisodePublishWorkflow(
         root.querySelector("[data-podcast-publish-workflow]")
       );
       return true;

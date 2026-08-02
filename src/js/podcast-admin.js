@@ -1,8 +1,8 @@
-import { AdminApiClient, AdminApiError } from "./dust-wave-admin-shell/api-client.js?v=0.9.0";
-import { AdminDownloadError, requestCredentialedBlob, triggerBlobDownload } from "./dust-wave-admin-shell/credentialed-download.js?v=0.9.0";
-import { mountConfirmationDialog } from "./dust-wave-admin-shell/confirmation-dialog.js?v=0.9.0";
-import { mountRichTextEditor } from "./dust-wave-admin-shell/editor.js?v=0.9.0";
-import { markdownToEditorHtml } from "./dust-wave-admin-shell/editor-codec.js?v=0.9.0";
+import { AdminApiClient, AdminApiError } from "./dust-wave-admin-shell/api-client.js?v=0.10.0";
+import { AdminDownloadError, requestCredentialedBlob, triggerBlobDownload } from "./dust-wave-admin-shell/credentialed-download.js?v=0.10.0";
+import { mountConfirmationDialog } from "./dust-wave-admin-shell/confirmation-dialog.js?v=0.10.0";
+import { mountRichTextEditor } from "./dust-wave-admin-shell/editor.js?v=0.10.0";
+import { markdownToEditorHtml } from "./dust-wave-admin-shell/editor-codec.js?v=0.10.0";
 import {
   clipCueSummary,
   emptyTranscript,
@@ -20,14 +20,20 @@ import {
   drawQrCanvas,
   qrSvgMarkup,
   safeMarketingFilename
-} from "./dust-wave-admin-shell/marketing-assets.js?v=0.9.0";
+} from "./dust-wave-admin-shell/marketing-assets.js?v=0.10.0";
 import { mountSavedMarketingLinks } from "./podcast-admin-marketing-links.js";
 import { renderEpisodeCatalog, renderShowCatalog } from "./podcast-admin-catalog.js";
 import { mountEpisodePublishWorkflow } from "./podcast-admin-publish-workflow.js";
 import {
+  mountEpisodePublishSections
+} from "./podcast-admin-publish-sections.js";
+import {
   readinessNodeLabel,
   readinessNodeSummary
 } from "./podcast-admin-readiness-copy.js";
+import {
+  createPublicationReadinessLoader
+} from "./podcast-admin-readiness-loader.js";
 import { mountProgressiveSections } from "./podcast-admin-progressive-sections.js";
 import { mountPodcastAdminWorkspaces } from "./podcast-admin-workspaces.js";
 import { mountPodcastAdminToolDisclosure } from "./podcast-admin-tool-disclosure.js";
@@ -71,9 +77,9 @@ import {
   distributionSetupLinkLabelKey
 } from "./podcast-admin-distribution-disclosure.js";
 import { createDirectorySubmissionPacketActions, createDistributionFeedActions } from "./podcast-admin-directory-packet.js";
-import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js?v=0.9.0";
-import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js?v=0.9.0";
-import { responsiveTurnstileSize } from "./dust-wave-admin-shell/turnstile.js?v=0.9.0";
+import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js?v=0.10.0";
+import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js?v=0.10.0";
+import { responsiveTurnstileSize } from "./dust-wave-admin-shell/turnstile.js?v=0.10.0";
 
 const root = document.querySelector("[data-podcast-admin]");
 if (root) startPodcastAdmin(root);
@@ -222,9 +228,6 @@ function startPodcastAdmin(root) {
   );
   const readinessStatus = root.querySelector(
     "[data-podcast-readiness-status]"
-  );
-  const readinessRefresh = root.querySelector(
-    "[data-podcast-readiness-refresh]"
   );
   const audioQcEpisodeSelect = root.querySelector(
     "[data-podcast-audio-qc-episode]"
@@ -453,7 +456,6 @@ function startPodcastAdmin(root) {
   let productionReviews = null;
   let reviewRequestId = 0;
   let publicationReadiness = null;
-  let readinessRequestId = 0;
   let audioQcState = null;
   let audioQcRequestId = 0;
   let audioQcPolicy = null;
@@ -476,10 +478,26 @@ function startPodcastAdmin(root) {
   let latestProcessorManifest = null;
   let episodeProgressiveTools = null;
   let episodePublishWorkflow = null;
+  let episodePublishSections = null;
   let workspaceGroups = null;
   let turnstileToken = "";
   let turnstileWidgetId;
   let turnstileInitialization;
+
+  const loadPublicationReadiness = createPublicationReadinessLoader({
+    client,
+    summary: readinessSummary,
+    groups: readinessGroups,
+    status: readinessStatus,
+    text: adminText,
+    setStatus,
+    friendlyError,
+    selectedEpisodeId: () => reviewEpisodeSelect?.value || "",
+    onReadiness(value) {
+      publicationReadiness = value;
+      if (value) renderPublicationReadiness();
+    }
+  });
 
   const transcriptImport = mountTranscriptCaptionImport({
     root,
@@ -810,6 +828,7 @@ function startPodcastAdmin(root) {
         if (tab !== "episodes") pauseClipMediaPlayers(clipList);
         if (tab !== "marketing") pauseClipMediaPlayers(clipLibrary);
         workspaceGroups.loadTab(tab);
+        if (tab === "episodes") episodePublishWorkflow?.refresh();
         if (tab === "distribution") loadDistribution();
         if (tab === "marketing") {
           updateMarketingTools();
@@ -836,11 +855,43 @@ function startPodcastAdmin(root) {
     campaignForm,
     creativeForm
   });
-  const navigateEpisodeWorkflow = createEpisodeWorkflowNavigator({
-    root,
-    tabs: adminTabs,
+  const productionProgressiveSections = mountProgressiveSections(
+    root.querySelector("#podcast-panel-production"),
+    { label: adminText("productionSectionsAria") }
+  );
+  let navigateEpisodeWorkflow = () => {};
+  episodePublishWorkflow = mountEpisodePublishWorkflow({
+    root: root.querySelector("[data-podcast-publish-workflow]"),
+    client,
+    text: adminText,
+    nodeLabel: (node) => readinessNodeLabel(adminText, node),
+    nodeDescription: (node) => readinessNodeSummary(adminText, node),
+    episodeSelect: currentEpisodeSelect,
+    loadReadiness: loadPublicationReadiness,
+    onEpisodePresence(hasEpisode) {
+      episodePublishSections?.setEnabled(hasEpisode);
+    },
+    onNavigate(...args) {
+      navigateEpisodeWorkflow(...args);
+    },
+    onPublish: publishEpisode
+  });
+  episodePublishSections = mountEpisodePublishSections({
+    root: root.querySelector("#podcast-panel-episodes"),
+    publishPanel: episodePublishWorkflow.publishPanel,
     episodeList,
     episodeForm,
+    uploadForm,
+    adPlanForm,
+    productionGroup: root.querySelector(
+      '[data-podcast-workspace-group="production"]'
+    ),
+    productionSections: productionProgressiveSections.sections
+  });
+  navigateEpisodeWorkflow = createEpisodeWorkflowNavigator({
+    root,
+    tabs: adminTabs,
+    editEpisode: episodeEditor.edit,
     adPlanForm,
     audioQcEpisodeSelect,
     audioMasterEpisodeSelect,
@@ -849,22 +900,9 @@ function startPodcastAdmin(root) {
     transcriptWorkbench,
     reviewEpisodeSelect,
     loadProductionReviews,
-    loadPublicationReadiness
+    loadPublicationReadiness,
+    publishSections: episodePublishSections
   });
-  episodePublishWorkflow = mountEpisodePublishWorkflow({
-    root: root.querySelector("[data-podcast-publish-workflow]"),
-    client,
-    text: adminText,
-    nodeLabel: (node) => readinessNodeLabel(adminText, node),
-    nodeDescription: (node) => readinessNodeSummary(adminText, node),
-    episodeSelect: currentEpisodeSelect,
-    onNavigate: navigateEpisodeWorkflow,
-    onPublish: publishEpisode
-  });
-  mountProgressiveSections(
-    root.querySelector("#podcast-panel-production"),
-    { label: adminText("productionSectionsAria") }
-  );
 
   root.querySelector("[data-podcast-refresh]")?.addEventListener("click", loadShows);
   billingRefresh?.addEventListener("click", loadBilling);
@@ -1006,9 +1044,6 @@ function startPodcastAdmin(root) {
   reviewForm?.addEventListener("submit", createProductionReviewComment);
   reviewList?.addEventListener("change", handleProductionReviewChange);
   reviewList?.addEventListener("click", handleProductionReviewClick);
-  readinessRefresh?.addEventListener("click", () =>
-    loadPublicationReadiness()
-  );
   audioQcEpisodeSelect?.addEventListener("change", loadAudioQc);
   audioQcQueue?.addEventListener("click", queueAudioQc);
   audioQcRefresh?.addEventListener("click", loadAudioQc);
@@ -5211,37 +5246,6 @@ function startPodcastAdmin(root) {
   async function refreshReviewEvidenceForEpisode(episodeId) {
     if (episodeId === reviewEpisodeSelect?.value) {
       await loadProductionReviews();
-    }
-  }
-
-  async function loadPublicationReadiness(
-    episodeId = reviewEpisodeSelect?.value || ""
-  ) {
-    const requestId = ++readinessRequestId;
-    publicationReadiness = null;
-    readinessGroups?.replaceChildren();
-    if (!episodeId) {
-      if (readinessSummary) {
-        readinessSummary.textContent = adminText("createBeforeReadiness");
-      }
-      setStatus(readinessStatus, "");
-      return;
-    }
-    setStatus(readinessStatus, adminText("loadingReadiness"));
-    try {
-      const payload = await client.request(
-        `/v1/admin/episodes/${encodeURIComponent(episodeId)}/readiness`
-      );
-      if (requestId !== readinessRequestId) return;
-      publicationReadiness = payload;
-      renderPublicationReadiness();
-      setStatus(readinessStatus, "");
-    } catch (error) {
-      if (requestId !== readinessRequestId) return;
-      if (readinessSummary) {
-        readinessSummary.textContent = adminText("readinessFailed");
-      }
-      setStatus(readinessStatus, friendlyError(error), true);
     }
   }
 

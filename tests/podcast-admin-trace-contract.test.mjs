@@ -12,6 +12,19 @@ function validObservation() {
   return {
     authenticatedAdmin: true,
     listItemMarginViolations: [],
+    listActionGapViolations: [],
+    innerWidth: 1440,
+    episodeWorkflow: {
+      activeStep: "details",
+      currentEpisodeId: "episode_1",
+      formMode: "edit",
+      manualRefreshCount: 0,
+      responsiveSelectVisible: false,
+      stepCount: 6,
+      tabListVisible: true,
+      titlePresent: true,
+      visibleControlledSectionCount: 1
+    },
     launchLab: {
       visible: true,
       metricCount: 4,
@@ -26,7 +39,8 @@ function validObservation() {
       actionableDirectoryCount: 1,
       openDirectoryCount: 1,
       summaryCount: 11,
-      certificationRowInset: { start: 0, end: 0 }
+      certificationRowInset: { start: 0, end: 0 },
+      certificationActionGap: 16
     }
   };
 }
@@ -58,6 +72,40 @@ test("accepts the concise authenticated Distribution contract", () => {
     podcastAdminTraceContractSummary(observed, { adminTab: "distribution" }),
     "Distribution contract: 1 of 11 directories open; guidance collapsed."
   );
+});
+
+test("accepts the populated, responsive episode publishing workflow", () => {
+  const observed = validObservation();
+  assert.doesNotThrow(() => assertPodcastAdminTraceContract(
+    observed,
+    { adminTab: "episodes" }
+  ));
+  observed.innerWidth = 320;
+  observed.episodeWorkflow.responsiveSelectVisible = true;
+  observed.episodeWorkflow.tabListVisible = false;
+  assert.doesNotThrow(() => assertPodcastAdminTraceContract(
+    observed,
+    { adminTab: "episodes" }
+  ));
+});
+
+test("rejects incomplete, manual, or unresponsive episode workflows", () => {
+  for (const mutate of [
+    (observed) => { observed.episodeWorkflow.stepCount = 5; },
+    (observed) => { observed.episodeWorkflow.manualRefreshCount = 1; },
+    (observed) => { observed.episodeWorkflow.formMode = "create"; },
+    (observed) => { observed.episodeWorkflow.tabListVisible = false; }
+  ]) {
+    const observed = validObservation();
+    mutate(observed);
+    assert.throws(
+      () => assertPodcastAdminTraceContract(
+        observed,
+        { adminTab: "episodes" }
+      ),
+      /Episode publishing/
+    );
+  }
 });
 
 test("accepts concise, collapsed Settings Launch Lab evidence", () => {
@@ -174,6 +222,28 @@ test("fails closed when authenticated list spacing was not measured", () => {
   );
 });
 
+test("rejects collapsed gaps between lists and their actions", () => {
+  const observed = validObservation();
+  observed.listActionGapViolations = [{
+    gap: 1,
+    listClasses: ["podcast-admin__certification-list"],
+    actionClasses: ["podcast-admin__directory-links"]
+  }];
+  assert.throws(
+    () => assertPodcastAdminSpacingContract(observed),
+    /at least one 8px spacing step/
+  );
+});
+
+test("fails closed when list-to-action spacing was not measured", () => {
+  const observed = validObservation();
+  delete observed.listActionGapViolations;
+  assert.throws(
+    () => assertPodcastAdminSpacingContract(observed),
+    /could not inspect list-to-action spacing/
+  );
+});
+
 test("accepts a fully certified directory set with every card closed", () => {
   const observed = validObservation();
   observed.distribution.actionableDirectoryCount = 0;
@@ -184,10 +254,10 @@ test("accepts a fully certified directory set with every card closed", () => {
   ));
 });
 
-test("ignores Distribution-only checks for other admin views", () => {
+test("ignores Distribution-only checks for unrelated admin views", () => {
   assert.doesNotThrow(() => assertPodcastAdminTraceContract(
     {},
-    { adminTab: "episodes" }
+    { adminTab: "marketing" }
   ));
 });
 
@@ -235,6 +305,11 @@ for (const [name, mutate, message] of [
       observed.distribution.certificationRowInset = { start: 32, end: 0 };
     },
     /share the expanded card's horizontal inset/
+  ],
+  [
+    "collapsed certification action gap",
+    (observed) => { observed.distribution.certificationActionGap = 1; },
+    /visually separated from the certification checklist/
   ]
 ]) {
   test(`fails closed for ${name}`, () => {

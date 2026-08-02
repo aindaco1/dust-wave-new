@@ -1,4 +1,4 @@
-import { mountWorkflowProgress } from "./dust-wave-admin-shell/workflow-progress.js?v=0.9.0";
+import { mountWorkflowProgress } from "./dust-wave-admin-shell/workflow-progress.js?v=0.10.0";
 import {
   deriveEpisodeWorkflow,
   workflowStepForNode,
@@ -6,15 +6,9 @@ import {
 } from "./podcast-admin-publish-workflow-core.js";
 import { mountWorkflowPriority } from "./podcast-admin-workflow-priority.js";
 import { mountEpisodeAutopilot } from "./podcast-admin-autopilot.js";
-
-export function revealEpisodePublishWorkflow(root) {
-  const reduceMotion = root?.ownerDocument?.defaultView
-    ?.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-  root?.scrollIntoView?.({
-    behavior: reduceMotion ? "auto" : "smooth",
-    block: "start"
-  });
-}
+import {
+  mountWorkflowResponsiveSelect
+} from "./podcast-admin-workflow-responsive.js";
 
 export function mountEpisodePublishWorkflow({
   root,
@@ -23,6 +17,8 @@ export function mountEpisodePublishWorkflow({
   nodeLabel,
   nodeDescription,
   episodeSelect,
+  loadReadiness,
+  onEpisodePresence,
   onNavigate,
   onPublish
 }) {
@@ -38,11 +34,7 @@ export function mountEpisodePublishWorkflow({
   const intro = document.createElement("p");
   intro.textContent = text("publishWorkflowIntro");
   headingCopy.append(title, intro);
-  const refreshButton = document.createElement("button");
-  refreshButton.className = "btn btn-outline-light";
-  refreshButton.type = "button";
-  refreshButton.textContent = text("refreshReadiness");
-  heading.append(headingCopy, refreshButton);
+  heading.append(headingCopy);
 
   const select = episodeSelect || document.createElement("select");
   let episodeLabel = null;
@@ -55,6 +47,10 @@ export function mountEpisodePublishWorkflow({
     episodeLabel.append(select);
   }
   const progressRoot = document.createElement("div");
+  progressRoot.className = "podcast-admin__workflow-menu";
+  const publishPanel = document.createElement("section");
+  publishPanel.className = "podcast-admin__workflow-panel";
+  publishPanel.dataset.podcastWorkflowPublishPanel = "";
   const summary = document.createElement("p");
   summary.className = "podcast-admin__workflow-summary";
   summary.setAttribute("role", "status");
@@ -86,13 +82,13 @@ export function mountEpisodePublishWorkflow({
   const autopilot = mountEpisodeAutopilot({ document, text });
   root.append(heading);
   if (episodeLabel) root.append(episodeLabel);
-  root.append(
-    progressRoot,
+  publishPanel.append(
     summary,
     autopilot.element,
     ...workflowPriority.elements,
     actions
   );
+  root.append(progressRoot, publishPanel);
 
   const stepDefinitions = [
     ["details", text("workflowDetails")],
@@ -112,6 +108,11 @@ export function mountEpisodePublishWorkflow({
       not_started: text("workflowStatusNotStarted"),
       processing: text("workflowStatusProcessing")
     },
+    selectionMode: "tabs",
+    onSelect: (id) => navigate(id)
+  });
+  const responsiveProgress = mountWorkflowResponsiveSelect(progressRoot, {
+    label: text("publishWorkflowAria"),
     onSelect: (id) => navigate(id)
   });
   let episodes = [];
@@ -119,6 +120,7 @@ export function mountEpisodePublishWorkflow({
   let requestId = 0;
   let nextStep = "details";
   let nextTarget = "";
+  let hasSelectedEpisode = null;
 
   function selectedEpisode() {
     return episodes.find(({ id }) => String(id) === select.value) || null;
@@ -128,12 +130,18 @@ export function mountEpisodePublishWorkflow({
     const episode = selectedEpisode();
     if (!episode) return;
     progress.setActive(id);
+    responsiveProgress.sync(id);
     onNavigate?.(id, episode, target);
+    void refresh();
   }
 
   function render() {
     const episode = selectedEpisode();
     root.hidden = !episode;
+    if (hasSelectedEpisode !== Boolean(episode)) {
+      hasSelectedEpisode = Boolean(episode);
+      onEpisodePresence?.(hasSelectedEpisode);
+    }
     if (!episode) return;
     const derived = deriveEpisodeWorkflow(episode, readiness);
     const steps = derived.steps.map((step) => ({
@@ -141,6 +149,7 @@ export function mountEpisodePublishWorkflow({
       label: stepDefinitions.find(([id]) => id === step.id)?.[1] || step.id
     }));
     progress.setSteps(steps);
+    responsiveProgress.refresh({ activeValue: progress.getActive() });
     nextStep = derived.nextStep;
     nextTarget = derived.nextTarget;
     continueButton.textContent = derived.nextBlocker
@@ -186,9 +195,12 @@ export function mountEpisodePublishWorkflow({
     readiness = null;
     render();
     try {
-      const payload = await client.request(
-        `/v1/admin/episodes/${encodeURIComponent(episode.id)}/readiness`
-      );
+      const payload = loadReadiness
+        ? await loadReadiness(episode.id)
+        : await client.request(
+          `/v1/admin/episodes/${encodeURIComponent(episode.id)}/readiness`
+        );
+      if (!payload) throw new Error("Readiness is unavailable");
       if (currentRequest !== requestId || episode.id !== select.value) return;
       readiness = payload;
       render();
@@ -205,7 +217,6 @@ export function mountEpisodePublishWorkflow({
 
   const handleEpisodeChange = () => refresh();
   if (!episodeSelect) select.addEventListener("change", handleEpisodeChange);
-  refreshButton.addEventListener("click", refresh);
   continueButton.addEventListener(
     "click",
     () => navigate(nextStep, nextTarget)
@@ -218,6 +229,7 @@ export function mountEpisodePublishWorkflow({
   });
 
   return {
+    publishPanel,
     setEpisodes(nextEpisodes) {
       const previous = select.value;
       episodes = Array.from(nextEpisodes || []);
@@ -232,15 +244,8 @@ export function mountEpisodePublishWorkflow({
       }
       if (!select.value && episodes[0]) select.value = episodes[0].id;
       refresh();
-    },
-    selectEpisode(episodeId) {
-      if (!episodes.some(({ id }) => String(id) === String(episodeId))) {
-        return false;
-      }
-      select.value = String(episodeId);
-      refresh();
-      revealEpisodePublishWorkflow(root);
-      return true;
+      const episode = selectedEpisode();
+      if (episode) onNavigate?.(progress.getActive(), episode);
     },
     refresh,
     destroy() {
@@ -249,6 +254,7 @@ export function mountEpisodePublishWorkflow({
         select.removeEventListener("change", handleEpisodeChange);
       }
       progress.destroy();
+      responsiveProgress.destroy();
       root.replaceChildren();
     }
   };

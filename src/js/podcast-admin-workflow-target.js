@@ -61,12 +61,6 @@ export function revealWorkflowTarget(target, document) {
     disclosure = disclosure.parentElement?.closest?.("details") || null;
   }
   const reveal = () => {
-    const reduceMotion = document.defaultView
-      ?.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    target?.scrollIntoView?.({
-      behavior: reduceMotion ? "auto" : "smooth",
-      block: "start"
-    });
     const focusSelector = "button, input, select, textarea";
     const focusCandidates = target?.matches?.(focusSelector)
       ? [target]

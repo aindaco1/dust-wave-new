@@ -477,7 +477,7 @@
           "readinessHeading": "Publication readiness",
           "readinessIntro": "Inspect the immutable snapshot that Publish binds to the legacy checks and the fuller launch dependency graph.",
           "refreshSnapshot": "Refresh snapshot",
-          "readinessCallout": "Publish refreshes this snapshot immediately before acting. Enforcement blocks stale or incomplete evidence; only a recently authenticated Admin or Super-admin can record a private, audited reason and explicitly override unresolved candidate blockers.",
+          "readinessCallout": "This snapshot refreshes automatically when you open or switch publishing sections and again immediately before Publish acts. Enforcement blocks stale or incomplete evidence; only a recently authenticated Admin or Super-admin can record a private, audited reason and explicitly override unresolved candidate blockers.",
           "readinessAria": "Publication readiness snapshot",
           "chooseReviewEpisode": "Choose a production-review episode to inspect readiness.",
           "clipsHeading": "Clip factory",

@@ -1,5 +1,6 @@
 const MINIMUM_LAUNCH_DIRECTORIES = 10;
 const MAXIMUM_INSET_DELTA_PX = 1;
+const MINIMUM_STACK_GAP_PX = 8;
 export const PODCAST_ADMIN_TRACE_TABS = Object.freeze([
   "episodes",
   "distribution",
@@ -31,9 +32,25 @@ export function assertPodcastAdminSpacingContract(observed) {
       + JSON.stringify(observed.listItemMarginViolations)
     );
   }
+  if (!Array.isArray(observed.listActionGapViolations)) {
+    throw new Error(
+      "Podcast admin trace could not inspect list-to-action spacing."
+    );
+  }
+  if (observed.listActionGapViolations.length > 0) {
+    throw new Error(
+      "Podcast admin list actions must preserve at least one 8px spacing "
+      + "step from the preceding list. "
+      + JSON.stringify(observed.listActionGapViolations)
+    );
+  }
 }
 
 export function assertPodcastAdminTraceContract(observed, { adminTab } = {}) {
+  if (adminTab === "episodes") {
+    assertEpisodeWorkflowContract(observed);
+    return;
+  }
   if (adminTab === "settings") {
     assertLaunchLabContract(observed);
     return;
@@ -101,6 +118,56 @@ export function assertPodcastAdminTraceContract(observed, { adminTab } = {}) {
       "Distribution certification rows must share the expanded card's "
       + "horizontal inset. "
       + `Observed ${JSON.stringify(inset)}.`
+    );
+  }
+  if (
+    !Number.isFinite(distribution.certificationActionGap)
+    || distribution.certificationActionGap < MINIMUM_STACK_GAP_PX
+  ) {
+    throw new Error(
+      "Distribution actions must remain visually separated from the "
+      + "certification checklist. "
+      + `Observed ${distribution.certificationActionGap ?? "unknown"}px.`
+    );
+  }
+}
+
+function assertEpisodeWorkflowContract(observed) {
+  if (!observed?.authenticatedAdmin) {
+    throw new Error(
+      "Episodes trace requires an authenticated Podcast admin session."
+    );
+  }
+  const workflow = observed.episodeWorkflow;
+  if (
+    workflow?.activeStep !== "details"
+    || workflow.stepCount !== 6
+    || workflow.visibleControlledSectionCount !== 1
+  ) {
+    throw new Error(
+      "Episode publishing must open one Details section behind its six-step "
+      + `submenu. Observed ${JSON.stringify(workflow)}.`
+    );
+  }
+  if (
+    workflow.manualRefreshCount !== 0
+    || workflow.formMode !== "edit"
+    || !workflow.currentEpisodeId
+    || workflow.titlePresent !== true
+  ) {
+    throw new Error(
+      "Episode publishing must populate the current draft without manual "
+      + `readiness or reveal actions. Observed ${JSON.stringify(workflow)}.`
+    );
+  }
+  const usesResponsiveSelect = Number(observed.innerWidth) <= 900;
+  if (
+    workflow.responsiveSelectVisible !== usesResponsiveSelect
+    || workflow.tabListVisible === usesResponsiveSelect
+  ) {
+    throw new Error(
+      "Episode publishing must use one responsive select on narrow screens "
+      + `and the six-step tab strip otherwise. Observed ${JSON.stringify(workflow)}.`
     );
   }
 }

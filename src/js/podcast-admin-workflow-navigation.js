@@ -7,8 +7,7 @@ import {
 export function createEpisodeWorkflowNavigator({
   root,
   tabs,
-  episodeList,
-  episodeForm,
+  editEpisode,
   adPlanForm,
   audioQcEpisodeSelect,
   audioMasterEpisodeSelect,
@@ -17,7 +16,8 @@ export function createEpisodeWorkflowNavigator({
   transcriptWorkbench,
   reviewEpisodeSelect,
   loadProductionReviews,
-  loadPublicationReadiness
+  loadPublicationReadiness,
+  publishSections
 }) {
   if (!root?.ownerDocument || !tabs?.select) {
     throw new TypeError("Workflow root and tabs are required");
@@ -31,12 +31,10 @@ export function createEpisodeWorkflowNavigator({
   return function navigateEpisodeWorkflow(step, episode, target = "") {
     const episodeId = String(episode?.id || "");
     if (!episodeId) return;
+    publishSections?.select(step);
     if (step === "details") {
       tabs.select("episodes");
-      const escapedId = document.defaultView.CSS.escape(episodeId);
-      episodeList?.querySelector(`[data-edit-episode="${escapedId}"]`)
-        ?.click();
-      revealWorkflowTarget(episodeForm, document);
+      editEpisode?.(episodeId, { focus: false, scroll: false });
       return;
     }
     if (step === "monetization") {
@@ -47,10 +45,6 @@ export function createEpisodeWorkflowNavigator({
     }
     if (step === "publish") {
       tabs.select("episodes");
-      revealWorkflowTarget(
-        root.querySelector("[data-podcast-publish-workflow]"),
-        document
-      );
       return;
     }
 
