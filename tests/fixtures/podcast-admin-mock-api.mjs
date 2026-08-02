@@ -959,6 +959,48 @@ function responseFor(request) {
   }
   if (
     request.method === "GET"
+    && path === `/v1/admin/shows/${show.id}/tax-policy`
+  ) {
+    return json({
+      showId: show.id,
+      providerMode: "test",
+      showReady: true,
+      policies: [],
+      candidate: {
+        applicableMode: "test",
+        jurisdictionCode: "US-NM-87120",
+        ratePartsPerMillion: 76_250,
+        inclusive: false,
+        providerName: "nm_grt",
+        sourceReference: "github:aindaco1/store@fixture:_config.yml",
+        effectiveAt: "2026-08-02T00:00:00.000Z",
+        expiresAt: null,
+        displayName: "NM GRT",
+        confirmation:
+          `APPROVE_TAX_POLICY ${show.id} US-NM-87120 76250`
+      }
+    });
+  }
+  if (
+    request.method === "PUT"
+    && path === `/v1/admin/shows/${show.id}/tax-policy`
+  ) {
+    return json({
+      idempotent: false,
+      policy: {
+        jurisdictionCode: "US-NM-87120",
+        ratePartsPerMillion: 76_250,
+        inclusive: false,
+        providerName: "nm_grt",
+        providerMode: "test",
+        status: "approved",
+        assigned: true,
+        providerReady: true
+      }
+    }, 201);
+  }
+  if (
+    request.method === "GET"
     && path === `/v1/admin/shows/${show.id}/site-projection`
   ) {
     return json({

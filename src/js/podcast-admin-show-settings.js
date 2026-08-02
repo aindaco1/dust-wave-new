@@ -4,6 +4,7 @@ import {
 import {
   mountShowPremiumPrices
 } from "./podcast-admin-show-prices.js";
+import { mountShowTaxPolicy } from "./podcast-admin-tax-policy.js";
 
 export function mountShowSiteProjection(options) {
   const projection = mountProjection(options);
@@ -15,10 +16,15 @@ export function mountShowSiteProjection(options) {
       projection.setShow(show);
     }
   });
+  const taxPolicy = mountShowTaxPolicy({
+    ...options,
+    canConfigure: options.canPublish
+  });
   return {
     setShow(nextShow) {
       show = nextShow || null;
       prices.setShow(show);
+      taxPolicy.setShow(show);
       projection.setShow(show);
     }
   };

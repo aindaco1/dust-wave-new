@@ -1524,6 +1524,47 @@ eleventyComputed:
                   </div>
                 </div>
                 <p class="podcast-admin__status" data-podcast-billing-status role="status" aria-live="polite"></p>
+                <section
+                  class="podcast-admin__form podcast-admin__form--settings"
+                  data-podcast-tax-policy
+                  hidden>
+                  <h3>{{ workbench.billing.taxPolicyHeading }}</h3>
+                  <p>{{ workbench.billing.taxPolicyIntro }}</p>
+                  <dl
+                    class="podcast-admin__readiness-evidence"
+                    data-podcast-tax-policy-current></dl>
+                  <div class="podcast-admin__callout">
+                    <h4>{{ workbench.billing.taxPolicyCandidate }}</h4>
+                    <dl
+                      class="podcast-admin__readiness-evidence"
+                      data-podcast-tax-policy-candidate></dl>
+                  </div>
+                  <form
+                    class="podcast-admin__callout"
+                    data-podcast-tax-policy-form
+                    hidden>
+                    <p>{{ workbench.billing.taxPolicySafety }}</p>
+                    <p data-podcast-tax-policy-confirmation-hint></p>
+                    <label>{{ workbench.billing.taxPolicyConfirmation }}
+                      <input
+                        name="confirmation"
+                        type="text"
+                        autocomplete="off"
+                        maxlength="240"
+                        required>
+                    </label>
+                    <div class="podcast-admin__billing-actions">
+                      <button class="btn btn-danger" type="submit">
+                        {{ workbench.billing.taxPolicyApprove }}
+                      </button>
+                    </div>
+                  </form>
+                  <p
+                    class="podcast-admin__status"
+                    data-podcast-tax-policy-status
+                    role="status"
+                    aria-live="polite"></p>
+                </section>
                 <div data-podcast-billing></div>
               </section>
             </div>
