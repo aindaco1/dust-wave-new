@@ -87,7 +87,9 @@ const RUNTIME_PROBE = `(() => {
   }
 })();`;
 const LAYOUT_PROBE = `(() => {
-  const activePanel = document.querySelector('[role="tabpanel"]:not([hidden])');
+  const activePanel = document.querySelector(
+    '.podcast-admin__panel[role="tabpanel"]:not([hidden])'
+  );
   const root = activePanel || document.querySelector('main') || document.body;
   const isInsideIntentionalScroller = (element) => {
     for (
@@ -199,6 +201,35 @@ const LAYOUT_PROBE = `(() => {
     activeGroups: Array.from(root.querySelectorAll(
       '[data-podcast-workspace-group][open]'
     )).map((group) => group.dataset.podcastWorkspaceGroup),
+    sectionSwitchers: Array.from(root.querySelectorAll(
+      '[data-podcast-section-tabs]'
+    )).map((switcher) => {
+      const tabs = Array.from(switcher.querySelectorAll(
+        ':scope > nav [role="tab"]'
+      ));
+      const panels = Array.from(switcher.querySelectorAll(
+        ':scope > [role="tabpanel"]'
+      ));
+      const tabList = switcher.querySelector(':scope > nav [role="tablist"]');
+      const mobileSelect = switcher.querySelector(
+        ':scope > nav > .dw-admin-mobile-tabs'
+      );
+      return {
+        name: switcher.dataset.podcastSectionTabs,
+        tabCount: tabs.length,
+        selectedCount: tabs.filter(
+          (tab) => tab.getAttribute('aria-selected') === 'true'
+        ).length,
+        visiblePanelCount: panels.filter(
+          (panel) => !panel.hidden && panel.getClientRects().length > 0
+        ).length,
+        tabListVisible: Boolean(tabList?.getClientRects().length),
+        mobileSelectVisible: Boolean(mobileSelect?.getClientRects().length),
+        tabRowCount: new Set(tabs.map((tab) => (
+          Math.round(tab.getBoundingClientRect().top)
+        ))).size
+      };
+    }),
     launchLab: (() => {
       const panel = document.querySelector('[data-podcast-launch-lab]');
       const evidence = document.querySelector(

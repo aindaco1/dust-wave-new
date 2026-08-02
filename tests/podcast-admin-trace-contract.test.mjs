@@ -77,7 +77,20 @@ function validTabMatrix() {
   return PODCAST_ADMIN_TRACE_TABS.map((activeTab) => ({
     activeTab,
     activeGroups: TAB_GROUPS[activeTab],
-    authenticatedAdmin: true
+    authenticatedAdmin: true,
+    innerWidth: 1440,
+    sectionSwitchers: ({
+      marketing: [{ name: "podcast-marketing-sections", tabCount: 4 }],
+      audience: [{ name: "podcast-audience-sections", tabCount: 2 }],
+      monetization: [{ name: "podcast-monetization-sections", tabCount: 2 }]
+    }[activeTab] || []).map((switcher) => ({
+      ...switcher,
+      mobileSelectVisible: false,
+      selectedCount: 1,
+      tabListVisible: true,
+      tabRowCount: 1,
+      visiblePanelCount: 1
+    }))
   }));
 }
 
@@ -219,6 +232,19 @@ test("accepts one authenticated observation for every admin workspace", () => {
   );
 });
 
+test("accepts responsive contextual submenu selectors", () => {
+  const observations = validTabMatrix();
+  for (const observation of observations) {
+    observation.innerWidth = 390;
+    for (const switcher of observation.sectionSwitchers) {
+      switcher.mobileSelectVisible = true;
+      switcher.tabListVisible = false;
+      switcher.tabRowCount = 0;
+    }
+  }
+  assert.doesNotThrow(() => assertPodcastAdminTabMatrixContract(observations));
+});
+
 test("rejects incomplete, reordered, and signed-out admin matrices", () => {
   assert.throws(
     () => assertPodcastAdminTabMatrixContract(validTabMatrix().slice(0, -1)),
@@ -241,6 +267,18 @@ test("rejects incomplete, reordered, and signed-out admin matrices", () => {
   assert.throws(
     () => assertPodcastAdminTabMatrixContract(overwhelming),
     /progressively disclose only their primary operating group/
+  );
+  const leakingSubmenu = validTabMatrix();
+  leakingSubmenu[2].sectionSwitchers[0].visiblePanelCount = 2;
+  assert.throws(
+    () => assertPodcastAdminTabMatrixContract(leakingSubmenu),
+    /one visible panel/
+  );
+  const wrappedSubmenu = validTabMatrix();
+  wrappedSubmenu[3].sectionSwitchers[0].tabRowCount = 2;
+  assert.throws(
+    () => assertPodcastAdminTabMatrixContract(wrappedSubmenu),
+    /one desktop row/
   );
 });
 

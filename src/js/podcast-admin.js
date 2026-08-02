@@ -37,6 +37,7 @@ import {
 import { mountProgressiveSections } from "./podcast-admin-progressive-sections.js";
 import { mountPodcastAdminWorkspaces } from "./podcast-admin-workspaces.js";
 import { mountPodcastAdminToolDisclosure } from "./podcast-admin-tool-disclosure.js";
+import { mountPodcastAdminContextualTabs as mountContextTabs } from "./podcast-admin-section-tabs.js";
 import { createEpisodePublisher } from "./podcast-admin-publication.js";
 import { createEpisodeWorkflowNavigator } from "./podcast-admin-workflow-controller.js";
 import { mountEpisodeEditor } from "./podcast-admin-episode-editor.js";
@@ -854,6 +855,11 @@ function startPodcastAdmin(root) {
     announcementHistory,
     campaignForm,
     creativeForm
+  });
+  mountContextTabs({
+    root,
+    text: adminText,
+    tabs: mountAccessibleTabs
   });
   const productionProgressiveSections = mountProgressiveSections(
     root.querySelector("#podcast-panel-production"),

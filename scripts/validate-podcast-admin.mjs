@@ -215,6 +215,14 @@ const publishSectionsScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-publish-sections.js'),
   'utf8'
 );
+const sectionTabsScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-section-tabs.js'),
+  'utf8'
+);
+const progressiveSectionsScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-progressive-sections.js'),
+  'utf8'
+);
 const readinessLoaderScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-readiness-loader.js'),
   'utf8'
@@ -1788,6 +1796,21 @@ assert.match(
 );
 assert.match(publishSectionsScript, /is-workflow-hidden/);
 assert.match(publishSectionsScript, /Every production section needs a publish step/);
+assert.match(sectionTabsScript, /mountPodcastAdminSectionTabs/);
+assert.match(sectionTabsScript, /mountPodcastAdminContextualTabs/);
+assert.match(sectionTabsScript, /mountTabs\(root/);
+assert.match(sectionTabsScript, /panel\.open = value === name/);
+assert.match(
+  sectionTabsScript,
+  /name: "marketing"[\s\S]+name: "audience"[\s\S]+name: "monetization"/
+);
+assert.match(sectionTabsScript, /`podcast-\$\{name\}-sections`/);
+assert.match(progressiveSectionsScript, /podcastSectionPanel/);
+assert.match(adminStyles, /--podcast-section-count/);
+assert.match(
+  adminStyles,
+  /podcast-admin__section-switcher[\s\S]+\[role="tabpanel"\]\[hidden\]/
+);
 assert.doesNotMatch(workflowTargetScript, /scrollIntoView/);
 assert.match(
   readinessLoaderScript,

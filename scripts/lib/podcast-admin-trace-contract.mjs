@@ -35,6 +35,14 @@ const EXPECTED_OPEN_GROUPS = Object.freeze({
   monetization: ["sponsors"],
   settings: []
 });
+const EXPECTED_SECTION_SWITCHERS = Object.freeze({
+  episodes: [],
+  distribution: [],
+  marketing: [{ name: "podcast-marketing-sections", tabCount: 4 }],
+  audience: [{ name: "podcast-audience-sections", tabCount: 2 }],
+  monetization: [{ name: "podcast-monetization-sections", tabCount: 2 }],
+  settings: []
+});
 
 export function assertPodcastAdminSpacingContract(observed) {
   if (!observed?.authenticatedAdmin) return;
@@ -310,6 +318,40 @@ export function assertPodcastAdminTabMatrixContract(observations) {
         + `${observation.activeTab}: expected ${JSON.stringify(expectedGroups)}, `
         + `observed ${JSON.stringify(observation.activeGroups)}.`
       );
+    }
+    const expectedSwitchers = EXPECTED_SECTION_SWITCHERS[
+      observation.activeTab
+    ];
+    if (
+      !Array.isArray(observation.sectionSwitchers)
+      || observation.sectionSwitchers.length !== expectedSwitchers.length
+    ) {
+      throw new Error(
+        "Podcast admin contextual submenus must appear only in the relevant "
+        + `workspace. ${observation.activeTab}: expected `
+        + `${expectedSwitchers.length}, observed `
+        + `${observation.sectionSwitchers?.length ?? "unknown"}.`
+      );
+    }
+    const usesResponsiveSelect = Number(observation.innerWidth) <= 900;
+    for (const expected of expectedSwitchers) {
+      const switcher = observation.sectionSwitchers.find(
+        ({ name }) => name === expected.name
+      );
+      if (
+        switcher?.tabCount !== expected.tabCount
+        || switcher.selectedCount !== 1
+        || switcher.visiblePanelCount !== 1
+        || switcher.mobileSelectVisible !== usesResponsiveSelect
+        || switcher.tabListVisible === usesResponsiveSelect
+        || (!usesResponsiveSelect && switcher.tabRowCount !== 1)
+      ) {
+        throw new Error(
+          "Podcast admin contextual submenus must keep one selected task, "
+          + "one visible panel, one desktop row, and one responsive selector. "
+          + `${observation.activeTab}: ${JSON.stringify(switcher)}.`
+        );
+      }
     }
   }
 }
