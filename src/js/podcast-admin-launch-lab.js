@@ -59,7 +59,7 @@ export function mountPodcastLaunchLab({
         "/v1/admin/launch-lab/stripe-checkout",
         { method: "POST" }
       );
-      const destination = validateLaunchLabCheckoutUrl(payload?.url);
+      const destination = validateLaunchLabCheckoutUrl(payload?.checkout?.url);
       if (!destination) {
         throw new Error(text("launchLabCheckoutInvalid"));
       }

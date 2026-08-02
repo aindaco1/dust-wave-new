@@ -101,7 +101,10 @@ test("opens only the exact protected Stripe test Checkout destination", async ()
         assert.equal(path, "/v1/admin/launch-lab/stripe-checkout");
         assert.deepEqual(options, { method: "POST" });
         return {
-          url: "https://checkout.stripe.com/c/pay/cs_test_fixture#checkout"
+          checkout: {
+            url: "https://checkout.stripe.com/c/pay/cs_test_fixture#checkout",
+            expiresAt: "2026-08-02T10:00:00.000Z"
+          }
         };
       }
     },
