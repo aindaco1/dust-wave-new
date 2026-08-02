@@ -11,8 +11,10 @@ sitemap:
 ---
 {% set show = podcastShows | podcastShowBySlug(episode.showSlug) %}
 {% set isPremiumTeaser = episode.pageMode == "premium_teaser" %}
+{% set embedLanguage = show.language if show and show.language else "en" %}
+{% set subscribePath = "/es" + episode.subscribeUrl if embedLanguage == "es" else episode.subscribeUrl %}
 <!doctype html>
-<html lang="{{ show.language if show and show.language else 'en' }}">
+<html lang="{{ embedLanguage }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -21,25 +23,25 @@ sitemap:
   <meta
     http-equiv="Content-Security-Policy"
     content="default-src 'none'; {% if not isPremiumTeaser %}script-src 'self'; {% endif %}style-src 'self' 'unsafe-inline'; img-src 'self' data:; {% if not isPremiumTeaser %}media-src https://media.dustwave.xyz {{ podcastApi.apiOrigin }}; connect-src 'self' https://media.dustwave.xyz {{ podcastApi.apiOrigin }}; {% endif %}font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
-  <title>{{ episode.title }} · {{ show.title if show else "Dust Wave Podcasts" }}</title>
+  <title>{{ episode.title }} · {{ show.title if show else (i18n | t(embedLanguage, "podcast.brand")) }}</title>
   <link rel="canonical" href="{{ metadata.url }}/news/podcasts/{{ episode.showSlug }}/{{ episode.slug }}/">
   <link rel="stylesheet" href="/css/podcast-embed{% if environment == 'production' %}.min{% endif %}.css?v={{ assets.version | default('dev') }}">
 </head>
 <body>
   <main class="podcast-embed">
     <header class="podcast-embed__header">
-      <p>{{ show.title if show else "Dust Wave Podcasts" }}</p>
+      <p>{{ show.title if show else (i18n | t(embedLanguage, "podcast.brand")) }}</p>
       <h1>{{ episode.title }}</h1>
     </header>
 
     {% if isPremiumTeaser %}
     <section class="podcast-embed__premium" aria-labelledby="podcast-embed-premium-title">
-      <p>{{ i18n | t(show.language if show else "en", "podcast.episode.subscribersOnly") }}</p>
+      <p>{{ i18n | t(embedLanguage, "podcast.episode.subscribersOnly") }}</p>
       <h2 id="podcast-embed-premium-title">
-        {{ i18n | t(show.language if show else "en", "podcast.episode.premiumTitle") }}
+        {{ i18n | t(embedLanguage, "podcast.episode.premiumTitle") }}
       </h2>
-      <a href="{{ episode.subscribeUrl }}" target="_blank" rel="noopener noreferrer">
-        {{ i18n | t(show.language if show else "en", "podcast.episode.premiumCta") }}
+      <a href="{{ subscribePath }}" target="_blank" rel="noopener noreferrer">
+        {{ i18n | t(embedLanguage, "podcast.episode.premiumCta") }}
       </a>
     </section>
     {% else %}
@@ -48,9 +50,9 @@ sitemap:
       {% set audioUrl = episode.audioUrl %}
       {% set downloadUrl = episode.downloadUrl or episode.audioUrl %}
       {% set artworkUrl = show.artwork if show else null %}
-      {% set artworkAlt = i18n | t(show.language if show else "en", "podcast.artworkAlt", { title: (show.title if show else episode.title) }) %}
+      {% set artworkAlt = i18n | t(embedLanguage, "podcast.artworkAlt", { title: (show.title if show else episode.title) }) %}
       {% set peaksUrl = episode.peaksUrl %}
-      {% set playerLanguage = show.language if show else "es" %}
+      {% set playerLanguage = embedLanguage %}
       {% set analyticsEndpoint = podcastApi.apiOrigin + "/v1/analytics/player-events" %}
       {% set analyticsEpisodeId = episode.id %}
       {% include "snippets/audio-player.njk" %}
@@ -60,7 +62,7 @@ sitemap:
       class="podcast-embed__episode-link"
       href="/news/podcasts/{{ episode.showSlug }}/{{ episode.slug }}/"
       target="_blank"
-      rel="noopener noreferrer">{{ "Episode notes on Dust Wave" if show and show.language == "en" else "Notas del episodio en Dust Wave" }}</a>
+      rel="noopener noreferrer">{{ i18n | t(embedLanguage, "podcast.episode.notesOnDustWave") }}</a>
   </main>
   {% if not isPremiumTeaser %}<script src="/js/audio-player.js?v={{ assets.version | default('dev') }}" defer></script>{% endif %}
 </body>

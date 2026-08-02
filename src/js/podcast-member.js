@@ -10,6 +10,9 @@ import {
 } from "./dust-wave-admin-shell/turnstile.js?v=0.10.1";
 
 const translate = globalThis.DustWaveI18n?.t || ((key) => key);
+const pageLanguage = globalThis.DustWaveI18n?.language === "es"
+  ? "es"
+  : "en";
 const root = document.querySelector("[data-podcast-member]");
 if (root) startPodcastMember(root);
 
@@ -95,7 +98,7 @@ function startPodcastMember(rootElement) {
       await session.start({
         email: loginForm.elements.email.value,
         turnstileToken,
-        preferredLanguage: document.documentElement.lang || "es"
+        preferredLanguage: pageLanguage
       });
       setStatus(
         authStatus,
@@ -197,7 +200,7 @@ function startPodcastMember(rootElement) {
 
     const heading = document.createElement("h3");
     const showLink = document.createElement("a");
-    const localePrefix = document.documentElement.lang === "es" ? "/es" : "";
+    const localePrefix = pageLanguage === "es" ? "/es" : "";
     showLink.href = `${localePrefix}/podcasts/${encodeURIComponent(
       subscription.show?.slug || ""
     )}/`;
@@ -450,7 +453,7 @@ function startPodcastMember(rootElement) {
         const slug = encodeURIComponent(subscription.show?.slug || "");
         const result = await client.request(
           `/v1/member/shows/${slug}/billing/portal`,
-          { method: "POST" }
+          { method: "POST", body: { language: pageLanguage } }
         );
         globalThis.location.assign(
           trustedStripeUrl(result?.portal?.url, "billing.stripe.com")
@@ -528,7 +531,7 @@ function startPodcastMember(rootElement) {
         {
           sitekey: siteKey,
           action: "podcast_listener_login",
-          language: document.documentElement.lang || "en",
+          language: pageLanguage,
           size: responsiveTurnstileSize(turnstileContainer),
           callback: (token) => { turnstileToken = token; },
           "expired-callback": () => { turnstileToken = ""; },
@@ -569,7 +572,7 @@ function humanStatus(status) {
 function formatDate(value) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
-  return new Intl.DateTimeFormat(document.documentElement.lang || "es", {
+  return new Intl.DateTimeFormat(pageLanguage, {
     year: "numeric",
     month: "short",
     day: "numeric"

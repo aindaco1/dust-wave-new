@@ -46,6 +46,33 @@ function localizedUrl(i18n, language, translationKey, fallback = "/") {
   return i18n?.config?.pages?.[translationKey]?.[requestedLanguage] || fallback;
 }
 
+function runtimeTranslations(runtime, sections = []) {
+  if (!Array.isArray(sections) || sections.length === 0) return runtime || {};
+  return Object.fromEntries(
+    sections
+      .filter((section) => typeof section === "string" && runtime?.[section])
+      .map((section) => [section, runtime[section]])
+  );
+}
+
+function localizedPodcastPrice(
+  cents,
+  language = DEFAULT_LANGUAGE,
+  currency = "USD"
+) {
+  const amount = Number(cents);
+  if (!Number.isSafeInteger(amount) || amount < 0) return "";
+  const locale = language === "es" ? "es-US" : "en-US";
+  const fractionDigits = amount % 100 === 0 ? 0 : 2;
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency,
+    currencyDisplay: "narrowSymbol",
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits
+  }).format(amount / 100);
+}
+
 function resolveImagePath(imgPath) {
   if (!useWebp || !imgPath) return imgPath;
 
@@ -277,12 +304,17 @@ ${content}
     return (Array.isArray(shows) ? shows : []).find((show) => show?.slug === showSlug) || null;
   });
 
-  eleventyConfig.addFilter("readablePodcastDate", (value) => {
+  eleventyConfig.addFilter("readablePodcastDate", (value, language = DEFAULT_LANGUAGE) => {
     const parsed = DateTime.fromISO(String(value || ''), { setZone: true });
-    return parsed.isValid ? parsed.setZone('America/Denver').toFormat('LLLL d, yyyy') : '';
+    const locale = language === "es" ? "es-US" : "en-US";
+    return parsed.isValid
+      ? parsed.setZone('America/Denver').setLocale(locale).toFormat('LLLL d, yyyy')
+      : '';
   });
   eleventyConfig.addFilter("t", translate);
   eleventyConfig.addFilter("localizedUrl", localizedUrl);
+  eleventyConfig.addFilter("runtimeTranslations", runtimeTranslations);
+  eleventyConfig.addFilter("localizedPodcastPrice", localizedPodcastPrice);
   eleventyConfig.addFilter("localizedDate", (dateObj, language = DEFAULT_LANGUAGE, format = "dd LLL yyyy") => {
     const locale = language === "es" ? "es-US" : "en-US";
     return DateTime.fromJSDate(dateObj, { zone: "utc" }).setLocale(locale).toFormat(format);

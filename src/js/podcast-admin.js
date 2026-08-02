@@ -1,5 +1,9 @@
 import { AdminApiClient, AdminApiError } from "./dust-wave-admin-shell/api-client.js?v=0.10.1";
 import { AdminDownloadError, requestCredentialedBlob, triggerBlobDownload } from "./dust-wave-admin-shell/credentialed-download.js?v=0.10.1";
+import {
+  formatBytes,
+  formatInteger
+} from "./podcast-admin-formatters.js";
 import { mountConfirmationDialog } from "./dust-wave-admin-shell/confirmation-dialog.js?v=0.10.1";
 import { mountRichTextEditor } from "./dust-wave-admin-shell/editor.js?v=0.10.1";
 import { markdownToEditorHtml } from "./dust-wave-admin-shell/editor-codec.js?v=0.10.1";
@@ -8969,7 +8973,7 @@ function friendlyError(error) {
     }
   );
   if (translated && !translated.startsWith("[missing:")) return translated;
-  return error.message || error.code;
+  return adminText("unknownError");
 }
 
 function isoOrNull(value) {
@@ -8998,17 +9002,6 @@ function formatDate(value) {
     : adminText("notSet");
 }
 
-function formatBytes(value) {
-  const bytes = Number(value);
-  if (!Number.isFinite(bytes) || bytes <= 0) return "0 bytes";
-  if (bytes < 1_024) return `${Math.round(bytes)} bytes`;
-  if (bytes < 1_024 ** 2) return `${(bytes / 1_024).toFixed(1)} KiB`;
-  if (bytes < 1_024 ** 3) {
-    return `${(bytes / (1_024 ** 2)).toFixed(1)} MiB`;
-  }
-  return `${(bytes / (1_024 ** 3)).toFixed(2)} GiB`;
-}
-
 function formatDurationMilliseconds(value) {
   const milliseconds = Number(value);
   if (!Number.isFinite(milliseconds) || milliseconds < 1) {
@@ -9021,12 +9014,6 @@ function publicationGateLabel(value) {
   if (value === "enforce") return adminText("exactSnapshotEnforced");
   if (value === "shadow") return adminText("exactSnapshotShadow");
   return adminText("legacyPublishChecks");
-}
-
-function formatInteger(value) {
-  return new Intl.NumberFormat(
-    document.documentElement.lang || "en"
-  ).format(Number(value || 0));
 }
 
 function formatPercent(value) {

@@ -150,7 +150,8 @@
     "publicDescription": "Public episodes will be available here and in the podcast feed.",
     "miniEpisode": "Includes one free mini-episode so you can get to know the show.",
     "perMonth": "/month",
-    "orPerYear": "or $%{amount}/year",
+    "orPerYear": "or %{amount}/year",
+    "perYear": "/year",
     "bonusEpisodes": "Bonus episodes",
     "earlyAccess": "Early access",
     "earlyAccessDays": "%{days} days of early access, with per-episode adjustments.",
@@ -216,8 +217,9 @@
           "monetizationIntro": "Manage sponsors and subscription revenue outside the episode publishing path."
         },
         "common": {
-          "refresh": "Refresh",
-          "show": "Show",
+        "refresh": "Refresh",
+        "loadMore": "Load more",
+        "show": "Show",
           "episode": "Episode",
           "title": "Title",
           "spanish": "Spanish",
@@ -770,12 +772,26 @@
       "clips": "Clips",
       "clipsEmpty": "Approved captioned clips will appear here.",
       "transcript": "Transcript",
-      "transcriptEmpty": "Approved transcripts will appear here."
+      "transcriptEmpty": "Approved transcripts will appear here.",
+      "notesOnDustWave": "Episode notes on Dust Wave"
     }
   },
   "runtime": {
+    "player": {
+      "play": "Play",
+      "pause": "Pause",
+      "playTitle": "Play %{title}",
+      "pauseTitle": "Pause %{title}",
+      "rewindTen": "Rewind 10 seconds",
+      "skipThirty": "Skip forward 30 seconds",
+      "changeSpeed": "Change speed",
+      "playbackSpeed": "Playback speed: %{speed}",
+      "downloadTitle": "Download %{title}",
+      "playNow": "Play now"
+    },
     "admin": {
       "authenticated": "Authenticated Podcast administrator%{roles}.",
+      "unknownError": "We couldn’t complete that action safely. Refresh and retry.",
       "checkingSession": "Checking your session…",
       "sendingLink": "Sending a secure link…",
       "linkSent": "If that address is authorized, the sign-in link is on its way.",

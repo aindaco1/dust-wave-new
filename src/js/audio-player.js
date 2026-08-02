@@ -51,11 +51,18 @@ const WAVESURFER_PATH = "/js/vendor/wavesurfer.min.js";
 let wavesurferLoadPromise;
 
 // ----- utils -----
-function playerText(key, fallback, variables = {}) {
-	const translated = window.DustWaveI18n?.t(`admin.${key}`, variables);
-	return translated && !translated.startsWith("[missing:")
+function playerText(card, key, fallback, variables = {}) {
+	const datasetKey = `playerText${key.charAt(0).toUpperCase()}${key.slice(1)}`;
+	const local = card?.dataset?.[datasetKey];
+	const translated = local || window.DustWaveI18n?.t(`player.${key}`, variables);
+	const value = translated && !translated.startsWith("[missing:")
 		? translated
 		: fallback;
+	return Object.entries(variables).reduce(
+		(result, [name, replacement]) =>
+			result.replaceAll(`%{${name}}`, String(replacement ?? "")),
+		value
+	);
 }
 
 function ensureWavesurferLoaded() {
@@ -189,6 +196,7 @@ function setupHoverTooltip(el, ws){
 function wireControls(card, ws) {
 	const ctrls = card.querySelector('.controls');
 	if (!ctrls) return;
+	const playerTitle = card.dataset.playerTitle || "";
 
 	// Ensure play/pause exists & hardened
 	let ppBtn = ctrls.querySelector('.playpause');
@@ -196,7 +204,12 @@ function wireControls(card, ws) {
 	ppBtn = document.createElement('button');
 	ppBtn.className = 'playpause';
 	ppBtn.type = 'button';
-	ppBtn.setAttribute('aria-label', playerText('play', 'Play'));
+	ppBtn.setAttribute(
+		'aria-label',
+		playerTitle
+			? playerText(card, 'playTitle', `Play ${playerTitle}`, { title: playerTitle })
+			: playerText(card, 'play', 'Play')
+	);
 	ctrls.insertBefore(ppBtn, ctrls.firstChild);
 	}
 	(function harden(btn){
@@ -222,8 +235,12 @@ function wireControls(card, ws) {
 	ppBtn.setAttribute(
 		'aria-label',
 		playing
-			? playerText('pause', 'Pause')
-			: playerText('play', 'Play')
+			? playerTitle
+				? playerText(card, 'pauseTitle', `Pause ${playerTitle}`, { title: playerTitle })
+				: playerText(card, 'pause', 'Pause')
+			: playerTitle
+				? playerText(card, 'playTitle', `Play ${playerTitle}`, { title: playerTitle })
+				: playerText(card, 'play', 'Play')
 	);
 	};
 	setState(false);
@@ -289,6 +306,7 @@ function wireControls(card, ws) {
 		speedBtn.setAttribute(
 			'aria-label',
 			playerText(
+				card,
 				'playbackSpeed',
 				`Playback speed: ${visibleRate}`,
 				{ speed: visibleRate }
@@ -357,11 +375,8 @@ async function createWaveForCard(card, opts={eager:false}) {
 	waveEl.classList.add("wave--skeleton","wave--fallback","wave--loading");
 	const fb   = document.createElement('div');  fb.className = 'fallback-bar';
 	const hint = document.createElement('button');
-	const playerLanguage = card.getAttribute('lang') || document.documentElement.lang;
 	hint.className = 'play-hint';
-	hint.textContent = playerLanguage.toLowerCase().startsWith('es')
-		? 'Reproducir ahora'
-		: 'Play now';
+	hint.textContent = playerText(card, 'playNow', 'Play now');
 	hardenControl(hint);
 
 	// coordinate with scroll squelch (Arc/Safari)

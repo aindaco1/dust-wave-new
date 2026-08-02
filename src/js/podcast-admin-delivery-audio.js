@@ -3,6 +3,10 @@ import {
   canQueueCurrentOperation,
   createRetriableOperationId
 } from "./podcast-admin-retriable-operation.js";
+import {
+  formatBytes,
+  formatInteger
+} from "./podcast-admin-formatters.js";
 
 const WORKFLOW_NAME = "process-delivery-audio.yml";
 const ACTIVE_STATUSES = new Set(
@@ -419,21 +423,6 @@ function cardStatus(status) {
   if (["ready", "approved"].includes(status)) return "ready";
   if (["failed", "stale"].includes(status)) return "failed";
   return "pending";
-}
-
-function formatInteger(value) {
-  return Number(value || 0).toLocaleString();
-}
-
-function formatBytes(value) {
-  const bytes = Number(value || 0);
-  if (!Number.isFinite(bytes) || bytes <= 0) return "0 B";
-  const units = ["B", "KB", "MB", "GB"];
-  const index = Math.min(
-    Math.floor(Math.log(bytes) / Math.log(1024)),
-    units.length - 1
-  );
-  return `${(bytes / (1024 ** index)).toFixed(index ? 1 : 0)} ${units[index]}`;
 }
 
 function humanize(value) {

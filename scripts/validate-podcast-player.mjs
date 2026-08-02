@@ -38,7 +38,9 @@ assert.match(
   playerScript,
   /const cards = Array\.from\(document\.querySelectorAll\("\.audio-card"\)\);\s+if \(!cards\.length\) return;\s+\s*try \{ await ensureWavesurferLoaded\(\);/
 );
-assert.match(playerScript, /playerLanguage\.toLowerCase\(\)\.startsWith\('es'\)/);
+assert.match(playerScript, /card\?\.dataset\?\.\[datasetKey\]/);
+assert.match(playerScript, /window\.DustWaveI18n\?\.t\(`player\.\$\{key\}`/);
+assert.doesNotMatch(playerScript, /playerLanguage\.toLowerCase\(\)\.startsWith\('es'\)/);
 assert.match(playerScript, /seekTo\(playerId, seconds/);
 assert.match(playerScript, /async mount\(scope = document\)/);
 assert.match(playerScript, /card\.dataset\.audioCredentials === "include"/);
@@ -56,9 +58,9 @@ assert.match(playerScript, /credentials: "omit"/);
 assert.match(playerScript, /const svgBack = `<svg/);
 assert.match(playerScript, /const svgForward = `<svg/);
 assert.match(playerScript, /const svgDownload = `<svg/);
-assert.match(playerScript, /function playerText\(key, fallback, variables/);
-assert.match(playerScript, /playerText\('pause', 'Pause'\)/);
-assert.match(playerScript, /playerText\(\s*'playbackSpeed'/);
+assert.match(playerScript, /function playerText\(card, key, fallback, variables/);
+assert.match(playerScript, /playerText\(card, 'pause', 'Pause'\)/);
+assert.match(playerScript, /playerText\(\s*card,\s*'playbackSpeed'/);
 assert.match(playerScript, /document\.getElementById\(`wave_\$\{playerId\}`\)/);
 assert.doesNotMatch(playerScript, /unpkg\.com|cdn\.jsdelivr\.net/);
 assert.match(

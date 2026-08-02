@@ -2,6 +2,10 @@
 layout: layouts/new.njk
 bodyModifier: podcast-episode-page
 i18nRuntime: true
+i18nRuntimeSections:
+  - chapters
+  - clips
+  - transcript
 tags:
   - news
   - podcast
@@ -39,7 +43,7 @@ eleventyComputed:
     <p><a href="{% if language == 'es' %}/es{% endif %}/podcasts/{{ show.slug }}/">{{ show.title }}</a></p>
     {% endif %}
     <p class="p-summary">{{ episode.summary }}</p>
-    <time class="dt-published" datetime="{{ episode.publicAt }}">{{ episode.publicAt | readablePodcastDate }}</time>
+    <time class="dt-published" datetime="{{ episode.publicAt }}">{{ episode.publicAt | readablePodcastDate(language) }}</time>
 
     {% if not isPremiumTeaser %}
     {% set playerId = episode.showSlug + "_" + episode.slug %}
@@ -49,7 +53,7 @@ eleventyComputed:
     {% set artworkUrl = show.artwork if show else null %}
     {% set artworkAlt = i18n | t(language, "podcast.artworkAlt", { title: (show.title if show else episode.title) }) %}
     {% set peaksUrl = episode.peaksUrl %}
-    {% set playerLanguage = show.language if show else "es" %}
+    {% set playerLanguage = language %}
     {% set analyticsEndpoint = podcastApi.apiOrigin + "/v1/analytics/player-events" %}
     {% set analyticsEpisodeId = episode.id %}
     {% include "snippets/audio-player.njk" %}

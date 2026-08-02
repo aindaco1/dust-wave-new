@@ -1,3 +1,8 @@
+import {
+  formatBytes,
+  formatInteger
+} from "./podcast-admin-formatters.js";
+
 const DERIVATIVE_WORKFLOW =
   "process-audio-enhancement-derivative.yml";
 
@@ -457,24 +462,6 @@ function cardStatus(status) {
     ].includes(status)
   ) return "failed";
   return "pending";
-}
-
-function formatInteger(value) {
-  return new Intl.NumberFormat(document.documentElement.lang || "en")
-    .format(Math.max(0, Number(value) || 0));
-}
-
-function formatBytes(value) {
-  const bytes = Math.max(0, Number(value) || 0);
-  if (bytes < 1024) return `${formatInteger(bytes)} B`;
-  const units = ["KB", "MB", "GB"];
-  let amount = bytes / 1024;
-  let index = 0;
-  while (amount >= 1024 && index < units.length - 1) {
-    amount /= 1024;
-    index += 1;
-  }
-  return `${amount.toFixed(amount >= 10 ? 1 : 2)} ${units[index]}`;
 }
 
 function humanize(value) {

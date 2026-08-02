@@ -2,7 +2,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   {% set pageLanguage = language or metadata.language or i18n.config.defaultLang %}
   {% if i18nRuntime %}
-  <script id="dust-wave-runtime-i18n" type="application/json">{{ i18n[pageLanguage].runtime | safeJsonLd | safe }}</script>
+  {% set runtimeMessages = i18n[pageLanguage].runtime | runtimeTranslations(i18nRuntimeSections) %}
+  <script id="dust-wave-runtime-i18n" type="application/json">{{ runtimeMessages | safeJsonLd | safe }}</script>
   {% endif %}
   <script src="/js/site-i18n.js?v={{ assets.version | default('dev') }}" defer></script>
   {% if summary or description %}

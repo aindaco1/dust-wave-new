@@ -2,6 +2,10 @@ import {
   canQueueCurrentOperation,
   createRetriableOperationId
 } from "./podcast-admin-retriable-operation.js";
+import {
+  formatBytes,
+  formatInteger
+} from "./podcast-admin-formatters.js";
 
 const WORKFLOW_NAME = "process-youtube-audio-rendition.yml";
 const ACTIVE_RENDITION_STATUSES = new Set([
@@ -267,23 +271,6 @@ function emptyMessage(value) {
   return message;
 }
 
-function formatInteger(value) {
-  return new Intl.NumberFormat(document.documentElement.lang || "en")
-    .format(Math.max(0, Number(value) || 0));
-}
-
-function formatBytes(value) {
-  const bytes = Math.max(0, Number(value) || 0);
-  if (bytes < 1024) return `${formatInteger(bytes)} B`;
-  const units = ["KB", "MB", "GB"];
-  let amount = bytes / 1024;
-  let index = 0;
-  while (amount >= 1024 && index < units.length - 1) {
-    amount /= 1024;
-    index += 1;
-  }
-  return `${amount.toFixed(amount >= 10 ? 1 : 2)} ${units[index]}`;
-}
 
 function humanize(value) {
   return String(value || "").replaceAll("_", " ");

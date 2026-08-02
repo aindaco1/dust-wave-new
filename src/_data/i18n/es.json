@@ -150,7 +150,8 @@
     "publicDescription": "Los episodios públicos estarán disponibles aquí y en el feed del podcast.",
     "miniEpisode": "Incluye un mini episodio gratuito para conocer el programa.",
     "perMonth": "/mes",
-    "orPerYear": "o $%{amount}/año",
+    "orPerYear": "o %{amount}/año",
+    "perYear": "/año",
     "bonusEpisodes": "Episodios extra",
     "earlyAccess": "Acceso anticipado",
     "earlyAccessDays": "%{days} días de acceso anticipado, con ajustes por episodio.",
@@ -216,8 +217,9 @@
           "monetizationIntro": "Administra patrocinadores e ingresos por suscripción fuera del proceso de publicación de episodios."
         },
         "common": {
-          "refresh": "Actualizar",
-          "show": "Programa",
+        "refresh": "Actualizar",
+        "loadMore": "Cargar más",
+        "show": "Programa",
           "episode": "Episodio",
           "title": "Título",
           "spanish": "Español",
@@ -770,12 +772,26 @@
       "clips": "Clips",
       "clipsEmpty": "Los clips con subtítulos aprobados aparecerán aquí.",
       "transcript": "Transcripción",
-      "transcriptEmpty": "Las transcripciones aprobadas aparecerán aquí."
+      "transcriptEmpty": "Las transcripciones aprobadas aparecerán aquí.",
+      "notesOnDustWave": "Notas del episodio en Dust Wave"
     }
   },
   "runtime": {
+    "player": {
+      "play": "Reproducir",
+      "pause": "Pausar",
+      "playTitle": "Reproducir %{title}",
+      "pauseTitle": "Pausar %{title}",
+      "rewindTen": "Retroceder 10 segundos",
+      "skipThirty": "Avanzar 30 segundos",
+      "changeSpeed": "Cambiar velocidad",
+      "playbackSpeed": "Velocidad de reproducción: %{speed}",
+      "downloadTitle": "Descargar %{title}",
+      "playNow": "Reproducir ahora"
+    },
     "admin": {
       "authenticated": "Administración de podcasts autenticada%{roles}.",
+      "unknownError": "No pudimos completar esa acción de forma segura. Recarga la página e inténtalo de nuevo.",
       "checkingSession": "Comprobando tu sesión…",
       "sendingLink": "Enviando un enlace seguro…",
       "linkSent": "Si esa dirección está autorizada, el enlace para iniciar sesión ya va en camino.",
