@@ -1,6 +1,6 @@
 # Dust Wave Podcast Platform Completion Plan
 
-Status date: 2026-08-01
+Status date: 2026-08-02
 Primary launch show: `Ópera en la Selva`  
 Delivery model: multi-show-ready architecture with a single-show launch UI  
 Environments: staging evidence first; production remains fail-closed until every applicable promotion gate passes
@@ -41,9 +41,10 @@ production, delivery, and approved segment transcript pass; word-level
 controls and public chapter resources remain disabled until their unchanged
 post-launch gates pass.
 
-The composed read-only launch gate was rerun after that scope decision on
-2026-08-01. It reported seven passes, five intentional blockers, zero waits,
-zero failures, and confirmed that every launch-state query wrote zero rows.
+The composed read-only launch gate was rerun after the scheduled YouTube
+channel-access monitor passed on 2026-08-02. It reported eight passes, five
+intentional blockers, zero waits, zero failures, and confirmed that every
+launch-state query wrote zero rows.
 The nested episode gate is launch-ready at eight passes, zero blocks/waits,
 and two explicit post-launch deferrals. Staging matches 14 fail-closed
 provider modes, production matches 17, all 17 required staging secret names are
@@ -57,7 +58,7 @@ continue but not launch-ready.
 | Episode | PASS for launch scope | Enhanced master revision 2, its exact delivery MP3/player peaks, the current-audio production review, and English transcript revision 4 are approved. Word alignment and chapters are recorded as post-launch; word-level controls and public chapter resources remain disabled until their existing gates pass |
 | Stripe | BLOCK | The test-mode gate has 14 passes and one blocker: import an accountant-approved version of the existing Store tax policy before activation |
 | Distribution | BLOCK | Certify at least 10 destinations through setup, validation, ingestion, and recovery evidence |
-| YouTube | BLOCK | Complete and reconcile one tightly controlled unlisted production-channel test |
+| YouTube | Access PASS; upload evidence BLOCK | Scheduled OAuth refresh and exact-channel verification are current. Complete and reconcile one tightly controlled unlisted production-channel test only after a publishable fixture exists |
 | Resend | BLOCK | Complete one consented staging delivery and suppression exercise |
 | Dynamic ads | BLOCK | The signed virtual-audio/load evidence is current. Approve the episode ad plan, select a decision, and complete a qualified direct-sponsor download |
 
@@ -78,6 +79,7 @@ maintained readiness database.
 | Dispatch incident lifecycle | Complete in staging | A terminal ledger failure opens or updates one marker-owned GitHub issue containing only aggregate counts and its Actions evidence URL; recovery closes it. Human-authored lookalikes remain untouched. Unit tests cover open, update, close, ownership, validation, and bounded provider responses; protected healthy run `30691943578` exercised live `issues: write` reconciliation and correctly created no issue |
 | Full Podcast verification | Passing locally and in CI | Secret scan across 433 tracked text files, zero dependency vulnerabilities at the configured audit threshold, generated Cloudflare types, typecheck, 145 test files / 599 tests, workflow contracts, and staging/production dry-run bundles pass through Podcast PR #60 / merge `db70c95` and green CI run `30727225268` |
 | Automatic launch-readiness monitor | Implemented; durable read credential intentionally outstanding | Podcast PRs #45 and #47 add one daily/on-demand, least-permission GitHub Action that runs the existing content-free composed gate, writes the bounded summary, retains exact evidence for 30 days, and never invents a second readiness store. GitHub environment variable `PODCAST_LAUNCH_EPISODE_ID` is configured. The Pool/Store local configuration and the Podcast GitHub environment contain no durable scoped Cloudflare API token; protected on-demand run `30710000206` therefore reported the missing credential as a safe `BLOCK`, skipped evidence generation, and completed successfully instead of copying a short-lived Wrangler OAuth token or failing noisily. Configure one read-only staging token when an operator can create it; until then, local authenticated gate runs remain read-only and authoritative |
+| Scheduled YouTube channel-access health | Complete in staging | Podcast PR #61, migration `0079`, and Worker version `a058d279-2ef9-4dca-95f8-434ebce00a85` add one generic content-free provider-health row, an expiring lease, 12-hour success/one-hour failure cadence, and a separate launch-gate node. A remote no-secret probe identified Cloudflare's Google compatibility failure with `redirect: error`; the shared YouTube adapter now uses manual redirect handling and rejects every `3xx` without following or forwarding credentials. The scheduled Worker refreshed the grant and matched the exact configured `mine=true` channel at `2026-08-02 02:40:13 UTC`, stored no tokens or provider body, cleared its lease, scheduled the next check, and uploaded nothing. The composed gate is now 8 PASS / 5 BLOCK / 0 FAIL / 0 WAIT; the separately inspected unlisted-upload gate remains held until a publishable fixture exists. Production remains untouched and unmigrated |
 | Durable terminal Queue evidence | Complete in staging | Exhausted staging jobs enter isolated `dust-wave-podcast-jobs-staging-dlq`; a staging-only consumer persists one content-free, SHA-256-deduplicated D1 incident with bounded storage retries and no replay/provider capability. Migration `0068`, both consumers, and current Worker version `4888a7bf-b621-4905-be09-81f9cd2a3240` are verified; production remains unchanged and unmigrated |
 | Admin automatic-processing copy | Implemented; passing locally and in CI | English and Spanish status copy no longer asks producers to dispatch the eight automated workflows manually; clip rendering no longer downloads an obsolete manual manifest, and regression tests enforce both contracts |
 | Episode Autopilot | Implemented on the staging branch | The publication workflow separates automatic work, approval waits, platform delays, and terminal failures; transcript processing and review use exact content-free lifecycle evidence included in current Worker staging version `4888a7bf-b621-4905-be09-81f9cd2a3240`, so pending work is labeled Processing and no longer creates a misleading Fix/Continue action. Bilingual unit, i18n, performance-budget, desktop/mobile overflow, CLS, and browser-console checks pass at 1440×900 and 320×700 |
