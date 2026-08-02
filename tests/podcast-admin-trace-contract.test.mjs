@@ -4,11 +4,19 @@ import {
   assertPodcastAdminSpacingContract,
   assertPodcastAdminTabMatrixContract,
   assertPodcastAdminTraceContract,
+  PODCAST_ADMIN_EPISODE_TRANSITIONS,
   PODCAST_ADMIN_TRACE_TABS,
   podcastAdminTraceContractSummary
 } from "../scripts/lib/podcast-admin-trace-contract.mjs";
 
 function validObservation() {
+  const transitions = PODCAST_ADMIN_EPISODE_TRANSITIONS.map((step) => ({
+    activeStep: step,
+    leakCount: 0,
+    scrollDelta: 0,
+    step,
+    visibleCount: step === "media" ? 2 : 1
+  }));
   return {
     authenticatedAdmin: true,
     listItemMarginViolations: [],
@@ -21,8 +29,13 @@ function validObservation() {
       manualRefreshCount: 0,
       responsiveSelectVisible: false,
       stepCount: 6,
+      tabColumnCount: 1,
       tabListVisible: true,
+      tabListWidth: 180,
+      tabRowCount: 6,
+      tabToContentGap: 20,
       titlePresent: true,
+      transitions,
       visibleControlledSectionCount: 1
     },
     launchLab: {
@@ -94,7 +107,14 @@ test("rejects incomplete, manual, or unresponsive episode workflows", () => {
     (observed) => { observed.episodeWorkflow.stepCount = 5; },
     (observed) => { observed.episodeWorkflow.manualRefreshCount = 1; },
     (observed) => { observed.episodeWorkflow.formMode = "create"; },
-    (observed) => { observed.episodeWorkflow.tabListVisible = false; }
+    (observed) => { observed.episodeWorkflow.tabListVisible = false; },
+    (observed) => { observed.episodeWorkflow.tabColumnCount = 2; },
+    (observed) => {
+      observed.episodeWorkflow.transitions[2].leakCount = 1;
+    },
+    (observed) => {
+      observed.episodeWorkflow.transitions[4].scrollDelta = 20;
+    }
   ]) {
     const observed = validObservation();
     mutate(observed);

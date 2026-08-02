@@ -97,6 +97,10 @@ export function mountEpisodePublishSections({
   let activeStep = "details";
   let enabled = false;
 
+  if (productionGroup) {
+    productionGroup.dataset.podcastWorkflowContainer = "";
+  }
+
   function render() {
     root.dataset.podcastWorkflowStep = enabled ? activeStep : "";
     for (const section of controlledSections) {
@@ -153,6 +157,9 @@ export function mountEpisodePublishSections({
       delete root.dataset.podcastWorkflowStep;
       for (const section of controlledSections) {
         delete section.dataset.podcastWorkflowPanels;
+      }
+      if (productionGroup) {
+        delete productionGroup.dataset.podcastWorkflowContainer;
       }
     }
   });

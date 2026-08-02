@@ -1,6 +1,15 @@
 const MINIMUM_LAUNCH_DIRECTORIES = 10;
 const MAXIMUM_INSET_DELTA_PX = 1;
 const MINIMUM_STACK_GAP_PX = 8;
+export const PODCAST_ADMIN_EPISODE_TRANSITIONS = Object.freeze([
+  "details",
+  "media",
+  "transcript",
+  "monetization",
+  "review",
+  "publish",
+  "details"
+]);
 export const PODCAST_ADMIN_TRACE_TABS = Object.freeze([
   "episodes",
   "distribution",
@@ -168,6 +177,36 @@ function assertEpisodeWorkflowContract(observed) {
     throw new Error(
       "Episode publishing must use one responsive select on narrow screens "
       + `and the six-step tab strip otherwise. Observed ${JSON.stringify(workflow)}.`
+    );
+  }
+  if (!usesResponsiveSelect && (
+    workflow.tabListWidth < 140
+    || workflow.tabListWidth > 180
+    || workflow.tabColumnCount !== 1
+    || workflow.tabRowCount !== 6
+    || workflow.tabToContentGap < 16
+  )) {
+    throw new Error(
+      "Episode publishing must use one compact vertical Pool-style submenu "
+      + `beside its active section. Observed ${JSON.stringify(workflow)}.`
+    );
+  }
+  const transitions = workflow.transitions;
+  if (
+    !Array.isArray(transitions)
+    || transitions.length !== PODCAST_ADMIN_EPISODE_TRANSITIONS.length
+    || transitions.some((transition, index) => (
+      transition.step !== PODCAST_ADMIN_EPISODE_TRANSITIONS[index]
+      || transition.activeStep !== transition.step
+      || transition.visibleCount < 1
+      || transition.leakCount !== 0
+      || transition.scrollDelta > 1
+    ))
+  ) {
+    throw new Error(
+      "Episode publishing must replace the previous section across every "
+      + "submenu transition without scrolling. "
+      + `Observed ${JSON.stringify(transitions)}.`
     );
   }
 }

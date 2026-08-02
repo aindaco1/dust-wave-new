@@ -16,6 +16,7 @@ import {
   assertPodcastAdminSpacingContract,
   assertPodcastAdminTabMatrixContract,
   assertPodcastAdminTraceContract,
+  PODCAST_ADMIN_EPISODE_TRANSITIONS,
   PODCAST_ADMIN_TRACE_TABS,
   podcastAdminTraceContractSummary
 } from "./lib/podcast-admin-trace-contract.mjs";
@@ -225,16 +226,23 @@ const LAYOUT_PROBE = `(() => {
       const workflowTabs = panel?.querySelector(
         '.podcast-admin__workflow-menu .dw-admin-workflow__list'
       );
+      const workflowButtons = Array.from(
+        workflowTabs?.querySelectorAll('[data-workflow-step]') || []
+      );
+      const workflowTabRect = workflowTabs?.getBoundingClientRect();
+      const visibleControlledSections = Array.from(
+        panel?.querySelectorAll('[data-podcast-workflow-panels]') || []
+      ).filter((section) => (
+        !section.hidden
+        && !section.classList.contains('is-workflow-hidden')
+        && section.getClientRects().length > 0
+      ));
+      const controlledRect = visibleControlledSections[0]
+        ?.getBoundingClientRect();
       return {
         activeStep: panel?.dataset.podcastWorkflowStep || '',
         stepCount: panel?.querySelectorAll('[data-workflow-step]').length ?? 0,
-        visibleControlledSectionCount: Array.from(
-          panel?.querySelectorAll('[data-podcast-workflow-panels]') || []
-        ).filter((section) => (
-          !section.hidden
-          && !section.classList.contains('is-workflow-hidden')
-          && section.getClientRects().length > 0
-        )).length,
+        visibleControlledSectionCount: visibleControlledSections.length,
         manualRefreshCount: panel?.querySelectorAll(
           '[data-podcast-readiness-refresh], '
           + '.podcast-admin__publish-workflow '
@@ -248,7 +256,17 @@ const LAYOUT_PROBE = `(() => {
         responsiveSelectVisible: Boolean(
           workflowSelect?.getClientRects().length
         ),
-        tabListVisible: Boolean(workflowTabs?.getClientRects().length)
+        tabListVisible: Boolean(workflowTabs?.getClientRects().length),
+        tabListWidth: workflowTabRect?.width || 0,
+        tabColumnCount: new Set(workflowButtons.map((button) => (
+          Math.round(button.getBoundingClientRect().left)
+        ))).size,
+        tabRowCount: new Set(workflowButtons.map((button) => (
+          Math.round(button.getBoundingClientRect().top)
+        ))).size,
+        tabToContentGap: workflowTabRect && controlledRect
+          ? controlledRect.left - workflowTabRect.right
+          : null
       };
     })(),
     distribution: (() => {
@@ -826,6 +844,49 @@ async function waitForAdminTabObservation(cdp, adminTab) {
   return observed;
 }
 
+async function auditEpisodeWorkflowTransitions(cdp) {
+  const result = await cdp.send("Runtime.evaluate", {
+    expression: `(() => {
+      const root = document.querySelector('#podcast-panel-episodes');
+      const steps = ${JSON.stringify(PODCAST_ADMIN_EPISODE_TRANSITIONS)};
+      const startScroll = window.scrollY;
+      const transitions = [];
+      for (const step of steps) {
+        const button = root?.querySelector(
+          '[data-workflow-step="' + step + '"]'
+        );
+        if (!button) {
+          transitions.push({ step, missingButton: true });
+          continue;
+        }
+        button.click();
+        const visiblePanels = Array.from(root.querySelectorAll(
+          '[data-podcast-workflow-panels]'
+        )).filter((section) => (
+          !section.hidden
+          && !section.classList.contains('is-workflow-hidden')
+          && section.getClientRects().length > 0
+        ));
+        transitions.push({
+          step,
+          activeStep: root.dataset.podcastWorkflowStep || '',
+          visibleCount: visiblePanels.length,
+          leakCount: visiblePanels.filter((section) => !String(
+            section.dataset.podcastWorkflowPanels || ''
+          ).split(/\\s+/).includes(step)).length,
+          visiblePanelSteps: visiblePanels.map((section) => (
+            section.dataset.podcastWorkflowPanels || ''
+          )),
+          scrollDelta: Math.abs(window.scrollY - startScroll)
+        });
+      }
+      return transitions;
+    })()`,
+    returnByValue: true
+  });
+  return result.result?.value || [];
+}
+
 async function captureTrace({
   adminGroup,
   adminTab,
@@ -898,7 +959,13 @@ async function captureTrace({
     const tabMatrix = [];
     for (const tab of PODCAST_ADMIN_TRACE_TABS) {
       await activateAdminTab(cdp, tab);
-      const tabObservation = await waitForAdminTabObservation(cdp, tab);
+      let tabObservation = await waitForAdminTabObservation(cdp, tab);
+      if (tab === "episodes") {
+        const transitions = await auditEpisodeWorkflowTransitions(cdp);
+        await delay(100);
+        tabObservation = await waitForAdminTabObservation(cdp, tab);
+        tabObservation.episodeWorkflow.transitions = transitions;
+      }
       assertLayoutObservation(tabObservation, {
         adminGroup: null,
         adminTab: tab,
@@ -910,6 +977,12 @@ async function captureTrace({
     observed = { ...tabMatrix.at(-1), tabMatrix };
   } else {
     observed = await measureLayout(cdp);
+    if (adminTab === "episodes") {
+      const transitions = await auditEpisodeWorkflowTransitions(cdp);
+      await delay(100);
+      observed = await waitForAdminTabObservation(cdp, adminTab);
+      observed.episodeWorkflow.transitions = transitions;
+    }
     assertLayoutObservation(observed, { adminGroup, adminTab, viewport });
   }
   const tracingComplete = cdp.waitForEvent(

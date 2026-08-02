@@ -1475,8 +1475,8 @@ assert.match(
 );
 assert.match(
   adminStyles,
-  /\.podcast-admin__publish-workflow \{[\s\S]+grid-template-columns: minmax\(0, 1fr\);[\s\S]+\.dw-admin-workflow__list \{[\s\S]+display: flex;[\s\S]+overflow-x: auto;[\s\S]+\.dw-admin-workflow__button:is\([\s\S]+\[aria-selected="true"\]/,
-  'The episode workflow must use a bounded, responsive Pool-style submenu'
+  /@media \(min-width: 56\.3125rem\) \{[\s\S]+#podcast-panel-episodes\[data-podcast-workflow-step\][\s\S]+grid-template-columns: minmax\(8\.75rem, 11\.25rem\) minmax\(0, 1fr\);[\s\S]+\.podcast-admin__workflow-menu \.dw-admin-workflow__list \{[\s\S]+border-inline-end:[\s\S]+display: grid;[\s\S]+\.podcast-admin__workflow-menu \.dw-admin-workflow__button:is\([\s\S]+\[aria-selected="true"\]/,
+  'The episode workflow must use the compact vertical Pool Settings submenu on desktop'
 );
 assert.match(
   adminStyles,

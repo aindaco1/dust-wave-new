@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  EPISODE_PUBLISH_STEPS,
   mountEpisodePublishSections,
   productionSectionStep
 } from "../src/js/podcast-admin-publish-sections.js";
@@ -91,29 +92,45 @@ test("publish submenu shows only its section without moving or scrolling", () =>
   });
 
   mounted.setEnabled(true);
-  assert.equal(mounted.getActive(), "details");
-  assert.equal(details.classList.contains("is-workflow-hidden"), false);
-  assert.equal(upload.classList.contains("is-workflow-hidden"), true);
+  const sections = {
+    details,
+    upload,
+    monetization,
+    publish,
+    media,
+    transcript,
+    review
+  };
+  const expectedVisible = {
+    details: ["details"],
+    media: ["upload", "media"],
+    transcript: ["transcript"],
+    monetization: ["monetization"],
+    review: ["review"],
+    publish: ["publish"]
+  };
+
+  for (const step of [...EPISODE_PUBLISH_STEPS, "details"]) {
+    assert.equal(mounted.select(step), true);
+    assert.equal(mounted.getActive(), step);
+    for (const [name, section] of Object.entries(sections)) {
+      assert.equal(
+        section.classList.contains("is-workflow-hidden"),
+        !expectedVisible[step].includes(name),
+        `${name} visibility must be replaced when ${step} is selected`
+      );
+    }
+    assert.equal(
+      productionGroup.classList.contains("is-workflow-hidden"),
+      !["media", "transcript", "review"].includes(step)
+    );
+  }
+
   assert.equal(episodeList.classList.contains("is-workflow-hidden"), true);
   assert.equal(
-    productionGroup.classList.contains("is-workflow-hidden"),
-    true
+    productionGroup.dataset.podcastWorkflowContainer,
+    ""
   );
-
-  assert.equal(mounted.select("transcript"), true);
-  assert.equal(details.classList.contains("is-workflow-hidden"), true);
-  assert.equal(transcript.classList.contains("is-workflow-hidden"), false);
-  assert.equal(media.classList.contains("is-workflow-hidden"), true);
-  assert.equal(review.classList.contains("is-workflow-hidden"), true);
-  assert.equal(productionGroup.open, true);
-  assert.equal(
-    productionGroup.classList.contains("podcast-admin__workflow-production"),
-    true
-  );
-
-  assert.equal(mounted.select("publish"), true);
-  assert.equal(publish.classList.contains("is-workflow-hidden"), false);
-  assert.equal(transcript.classList.contains("is-workflow-hidden"), true);
   assert.equal(mounted.select("unknown"), false);
 
   mounted.setEnabled(false);
@@ -121,6 +138,12 @@ test("publish submenu shows only its section without moving or scrolling", () =>
     transcript, review, episodeList, productionGroup]) {
     assert.equal(section.classList.contains("is-workflow-hidden"), false);
   }
+
+  mounted.destroy();
+  assert.equal(
+    "podcastWorkflowContainer" in productionGroup.dataset,
+    false
+  );
 });
 
 test("new production sections fail closed until assigned to the submenu", () => {
