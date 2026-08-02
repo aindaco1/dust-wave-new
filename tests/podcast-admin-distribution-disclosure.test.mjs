@@ -3,7 +3,8 @@ import test from "node:test";
 import {
   createDistributionDisclosureState,
   distributionEvidenceProgress,
-  distributionEvidenceSummary
+  distributionEvidenceSummary,
+  distributionSetupLinkLabelKey
 } from "../src/js/podcast-admin-distribution-disclosure.js";
 
 const destinations = [
@@ -115,4 +116,16 @@ test("combines provider semantics with localized proof progress", () => {
     }, text),
     "RSS directory · 1/4 proofs"
   );
+});
+
+test("labels no-setup provider links as information instead of owner setup", () => {
+  assert.equal(
+    distributionSetupLinkLabelKey({ ownerSetupStatus: "not_required" }),
+    "openProviderInfo"
+  );
+  assert.equal(
+    distributionSetupLinkLabelKey({ ownerSetupStatus: "verified" }),
+    "openOwnerSetup"
+  );
+  assert.equal(distributionSetupLinkLabelKey(), "openOwnerSetup");
 });

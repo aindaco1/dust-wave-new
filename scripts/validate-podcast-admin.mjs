@@ -1158,7 +1158,19 @@ assert.match(
 );
 assert.match(
   englishWorkbench.distribution.canonicalFlow,
-  /Each platform still requires one-time owner setup/
+  /Most platforms require one-time owner setup/
+);
+assert.match(
+  spanishWorkbench.distribution.canonicalFlow,
+  /La mayoría de las plataformas requiere una configuración inicial/
+);
+assert.equal(
+  englishRuntime.openProviderInfo,
+  'Open provider information'
+);
+assert.equal(
+  spanishRuntime.openProviderInfo,
+  'Abrir información del proveedor'
 );
 assert.doesNotMatch(adminTemplate, /<p lang="es">/);
 assert.doesNotMatch(adminTemplate, /Publicación simplificada/);

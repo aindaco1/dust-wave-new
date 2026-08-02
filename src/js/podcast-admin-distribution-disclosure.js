@@ -29,6 +29,12 @@ export function distributionEvidenceSummary(destination, text) {
   )}${automatic}`;
 }
 
+export function distributionSetupLinkLabelKey(destination) {
+  return String(destination?.ownerSetupStatus || "") === "not_required"
+    ? "openProviderInfo"
+    : "openOwnerSetup";
+}
+
 export function createDistributionDisclosureState() {
   const expandedByShow = new Map();
   const initializedShows = new Set();

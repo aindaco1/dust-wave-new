@@ -64,7 +64,11 @@ import {
   distributionCertificationList,
   renderDistributionLaunchClaim
 } from "./podcast-admin-distribution-certification.js";
-import { createDistributionDisclosureState, distributionEvidenceSummary } from "./podcast-admin-distribution-disclosure.js";
+import {
+  createDistributionDisclosureState,
+  distributionEvidenceSummary,
+  distributionSetupLinkLabelKey
+} from "./podcast-admin-distribution-disclosure.js";
 import { createDirectorySubmissionPacketActions, createDistributionFeedActions } from "./podcast-admin-directory-packet.js";
 import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js?v=0.9.0";
 import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js?v=0.9.0";
@@ -7154,7 +7158,7 @@ function startPodcastAdmin(root) {
     links.className = "podcast-admin__directory-links";
     const setupLink = safeDistributionLink(
       destination.submissionUrl,
-      adminText("openOwnerSetup")
+      adminText(distributionSetupLinkLabelKey(destination))
     );
     const listingLink = safeDistributionLink(
       destination.listingUrl,
