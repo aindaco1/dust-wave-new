@@ -14,6 +14,7 @@ const [
   memberLayout,
   tracer,
   traceContract,
+  navigationContract,
   stagingBuild,
   webpBuild,
   publicStyles,
@@ -38,6 +39,13 @@ const [
   ),
   readFile(
     new URL("scripts/lib/podcast-admin-trace-contract.mjs", repositoryRoot),
+    "utf8"
+  ),
+  readFile(
+    new URL(
+      "scripts/lib/podcast-admin-cdp-navigation.mjs",
+      repositoryRoot
+    ),
     "utf8"
   ),
   readFile(
@@ -453,8 +461,13 @@ assert.match(
 );
 assert.match(
   tracer,
-  /Tracing\.start[\s\S]+Page\.navigate[\s\S]+Tracing\.end[\s\S]+IO\.read/,
+  /Tracing\.start[\s\S]+navigatePodcastAdminTrace[\s\S]+Tracing\.end[\s\S]+IO\.read/,
   "performance traces must capture navigation through a bounded CDP stream"
+);
+assert.match(
+  navigationContract,
+  /attemptTimeoutMs = 5_000[\s\S]+Page\.navigate[\s\S]+NAVIGATION_TIMEOUT_PATTERN[\s\S]+Page\.navigate/,
+  "performance navigation must be bounded and retry one transient CDP timeout"
 );
 assert.match(
   tracer,

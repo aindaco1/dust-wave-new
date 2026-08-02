@@ -19,12 +19,15 @@ import {
   PODCAST_ADMIN_TRACE_TABS,
   podcastAdminTraceContractSummary
 } from "./lib/podcast-admin-trace-contract.mjs";
+import { navigatePodcastAdminTrace } from
+  "./lib/podcast-admin-cdp-navigation.mjs";
 
 const DEFAULT_URL =
   "https://dust-wave-website-staging.pages.dev/admin/podcasts/";
 const DEFAULT_DURATION_SECONDS = 8;
 const DEFAULT_VIEWPORT = "1440x900";
 const MAX_AUTHENTICATED_CLS = 0.1;
+const TRACE_DEBUG = process.env.PODCAST_TRACE_DEBUG === "1";
 const ADMIN_TABS = new Set([...PODCAST_ADMIN_TRACE_TABS, "all"]);
 const ADMIN_GROUPS = new Set([
   "production",
@@ -540,6 +543,9 @@ class CdpSession {
         resolve: resolveResult,
         timeout
       });
+      if (TRACE_DEBUG) {
+        process.stderr.write(`CDP send ${id}: ${method}\n`);
+      }
       this.socket.send(JSON.stringify({ id, method, params }));
     });
   }
@@ -585,6 +591,12 @@ class CdpSession {
     if (Number.isInteger(message.id)) {
       const pending = this.pending.get(message.id);
       if (!pending) return;
+      if (TRACE_DEBUG) {
+        process.stderr.write(
+          `CDP receive ${message.id}: ${pending.method}`
+          + `${message.error ? " (error)" : ""}\n`
+        );
+      }
       this.pending.delete(message.id);
       clearTimeout(pending.timeout);
       if (message.error) {
@@ -774,10 +786,7 @@ async function captureTrace({
     options: "record-as-much-as-possible",
     transferMode: "ReturnAsStream"
   });
-  const navigation = await cdp.send("Page.navigate", { url });
-  if (navigation.errorText) {
-    throw new Error(`Chrome navigation failed: ${navigation.errorText}.`);
-  }
+  await navigatePodcastAdminTrace(cdp, url);
   await waitForTargetDocument(cdp, url);
   if (adminGroup) {
     await cdp.send("Runtime.evaluate", {
