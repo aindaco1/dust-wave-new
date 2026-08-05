@@ -1,12 +1,12 @@
-import { AdminApiClient, AdminApiError } from "./dust-wave-admin-shell/api-client.js?v=0.10.1";
-import { AdminDownloadError, requestCredentialedBlob, triggerBlobDownload } from "./dust-wave-admin-shell/credentialed-download.js?v=0.10.1";
+import { AdminApiClient, AdminApiError } from "./dust-wave-admin-shell/api-client.js?v=0.10.2";
+import { AdminDownloadError, requestCredentialedBlob, triggerBlobDownload } from "./dust-wave-admin-shell/credentialed-download.js?v=0.10.2";
 import {
   formatBytes,
   formatInteger
 } from "./podcast-admin-formatters.js";
-import { mountConfirmationDialog } from "./dust-wave-admin-shell/confirmation-dialog.js?v=0.10.1";
-import { mountRichTextEditor } from "./dust-wave-admin-shell/editor.js?v=0.10.1";
-import { markdownToEditorHtml } from "./dust-wave-admin-shell/editor-codec.js?v=0.10.1";
+import { mountConfirmationDialog } from "./dust-wave-admin-shell/confirmation-dialog.js?v=0.10.2";
+import { mountRichTextEditor } from "./dust-wave-admin-shell/editor.js?v=0.10.2";
+import { markdownToEditorHtml } from "./dust-wave-admin-shell/editor-codec.js?v=0.10.2";
 import {
   clipCueSummary,
   emptyTranscript,
@@ -24,7 +24,7 @@ import {
   drawQrCanvas,
   qrSvgMarkup,
   safeMarketingFilename
-} from "./dust-wave-admin-shell/marketing-assets.js?v=0.10.1";
+} from "./dust-wave-admin-shell/marketing-assets.js?v=0.10.2";
 import { mountSavedMarketingLinks } from "./podcast-admin-marketing-links.js";
 import { renderEpisodeCatalog, renderShowCatalog } from "./podcast-admin-catalog.js";
 import { mountEpisodePublishWorkflow } from "./podcast-admin-publish-workflow.js";
@@ -82,9 +82,9 @@ import {
   distributionSetupLinkLabelKey
 } from "./podcast-admin-distribution-disclosure.js";
 import { createDirectorySubmissionPacketActions, createDistributionFeedActions } from "./podcast-admin-directory-packet.js";
-import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js?v=0.10.1";
-import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js?v=0.10.1";
-import { responsiveTurnstileSize } from "./dust-wave-admin-shell/turnstile.js?v=0.10.1";
+import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js?v=0.10.2";
+import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js?v=0.10.2";
+import { responsiveTurnstileSize } from "./dust-wave-admin-shell/turnstile.js?v=0.10.2";
 
 const root = document.querySelector("[data-podcast-admin]");
 if (root) startPodcastAdmin(root);

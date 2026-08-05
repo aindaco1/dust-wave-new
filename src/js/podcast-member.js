@@ -1,13 +1,13 @@
 import {
   AdminApiClient as PodcastApiClient,
   AdminApiError as PodcastApiError
-} from "./dust-wave-admin-shell/api-client.js?v=0.10.1";
+} from "./dust-wave-admin-shell/api-client.js?v=0.10.2";
 import {
   PasswordlessAdminSession as PasswordlessSession
-} from "./dust-wave-admin-shell/passwordless-session.js?v=0.10.1";
+} from "./dust-wave-admin-shell/passwordless-session.js?v=0.10.2";
 import {
   responsiveTurnstileSize
-} from "./dust-wave-admin-shell/turnstile.js?v=0.10.1";
+} from "./dust-wave-admin-shell/turnstile.js?v=0.10.2";
 
 const translate = globalThis.DustWaveI18n?.t || ((key) => key);
 const pageLanguage = globalThis.DustWaveI18n?.language === "es"

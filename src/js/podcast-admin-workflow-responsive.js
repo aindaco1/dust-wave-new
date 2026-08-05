@@ -1,6 +1,6 @@
 import {
   mountResponsiveTabSelect
-} from "./dust-wave-admin-shell/tabs.js?v=0.10.1";
+} from "./dust-wave-admin-shell/tabs.js?v=0.10.2";
 import {
   workflowOptionLabel
 } from "./podcast-admin-workflow-option-label.js";
