@@ -1,4 +1,4 @@
-import { AdminApiError } from "./dust-wave-admin-shell/api-client.js?v=0.9.0";
+import { AdminApiError } from "./dust-wave-admin-shell/api-client.js?v=0.10.2";
 
 function unresolvedBlocker(node) {
   return node?.severity === "blocker"

@@ -1,4 +1,4 @@
-import { mountWorkflowProgress } from "./dust-wave-admin-shell/workflow-progress.js?v=0.9.0";
+import { mountWorkflowProgress } from "./dust-wave-admin-shell/workflow-progress.js?v=0.10.2";
 import {
   deriveEpisodeWorkflow,
   workflowStepForNode

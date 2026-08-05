@@ -8,10 +8,12 @@
   response, exposes every blocker with a direct repair path, and keeps draft
   episodes reviewable before their media is ready.
 - Advanced the independently versioned `@dustwave/admin-shell` boundary to
-  0.9.0 with reusable accessible workflow-progress and confirmation-dialog
-  primitives. Podcast retains its publication policy and audit payloads while
-  native dialog semantics, focus restoration, validation, and status
-  presentation remain shared with future Pool and Store consumers.
+  0.10.2 with reusable accessible workflow-progress and confirmation-dialog
+  primitives. Workflow navigation now preserves resilient roving focus when
+  tabs are hidden, disabled, removed, or rebuilt. Podcast retains its
+  publication policy and audit payloads while native dialog semantics, focus
+  restoration, validation, and status presentation remain shared with future
+  Pool and Store consumers.
 - Replaced browser prompts and confirms on the final publication path with a
   responsive, keyboard-safe review dialog. Normal releases summarize their
   News, RSS, and eligible YouTube effects; readiness overrides continue to
