@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.3.0 - Unreleased
+## v1.3.0 - 2026-08-06
 
 - Advanced the independently reversible Dust Wave Platform gitlink to
   immutable `v0.15.0` (`2e79a8d70cb6d30805ea141e53d32f9387441756`)
@@ -72,7 +72,7 @@
   YouTube rendition heading order, and added responsive/focus-visible styling
   for the new workflow and dialogs.
 
-## v1.2.0 - Unreleased
+## v1.2.0 - 2026-07-29
 
 - Added the pinned `aindaco1/dust-wave-platform` submodule and recursive CI checkout as the independently versioned shared-code boundary for Dust Wave, Pool, Store, and Podcast.
 - Advanced that boundary to `@dustwave/worker-core` 0.2.0 so all four
