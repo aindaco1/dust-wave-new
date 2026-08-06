@@ -13,6 +13,8 @@ export const AUTHENTICATED_PRODUCTION_PATHS = Object.freeze([
   "/es/podcasts/account/"
 ]);
 export const PUBLIC_PRODUCTION_PATH = "/podcasts/opera-en-la-selva/";
+export const PUBLIC_PODCAST_ARTWORK_PATH =
+  "/img/podcasts/opera-en-la-selva/artwork-feed.jpg";
 
 const DEFAULT_ATTEMPTS = 5;
 const DEFAULT_RETRY_DELAY_MS = 2_000;
@@ -60,6 +62,23 @@ export function validatePublicResponse(response, url) {
   }
 }
 
+export function validatePodcastArtworkResponse(response, url) {
+  if (!response.ok) {
+    fail(`${url} returned HTTP ${response.status}.`);
+  }
+  if (response.headers.get("content-type") !== "image/jpeg") {
+    fail(`${url} did not return image/jpeg.`);
+  }
+  const contentLength = Number(response.headers.get("content-length"));
+  if (
+    !Number.isSafeInteger(contentLength)
+    || contentLength < 1
+    || contentLength > 1_500_000
+  ) {
+    fail(`${url} returned an invalid Content-Length.`);
+  }
+}
+
 function delay(milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
@@ -100,9 +119,16 @@ export async function verifyProductionResponseHeaders({
         headers: { "Cache-Control": "no-cache" }
       });
       validatePublicResponse(publicResponse, publicUrl);
+
+      const artworkUrl = `${baseUrl}${PUBLIC_PODCAST_ARTWORK_PATH}`;
+      const artworkResponse = await fetchImpl(artworkUrl, {
+        method: "HEAD",
+        headers: { "Cache-Control": "no-cache" }
+      });
+      validatePodcastArtworkResponse(artworkResponse, artworkUrl);
       logger.log(
         "Production response-header verification passed for authenticated "
-        + "and public Podcast routes."
+        + "and public Podcast routes and feed artwork."
       );
       return;
     } catch (error) {

@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
-import { access, readFile } from 'node:fs/promises';
+import { access, readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
+
+import sharp from 'sharp';
 
 const repositoryRoot = path.resolve(import.meta.dirname, '..');
 const showsPath = path.join(repositoryRoot, 'src/_data/podcastShows.json');
@@ -48,7 +50,7 @@ for (const show of shows) {
   );
   assert.match(
     show.feedArtworkUrl,
-    /^https:\/\/dustwave\.xyz\/img\/podcasts\/[a-z0-9/_-]+\.png$/,
+    /^https:\/\/dustwave\.xyz\/img\/podcasts\/[a-z0-9/_-]+\.(?:jpe?g|png)$/,
     `${show.slug} feed artwork must use a permanent first-party HTTPS URL`
   );
   assert(Array.isArray(show.episodes), `${show.slug} episodes must be an array`);
@@ -139,6 +141,43 @@ for (const show of shows) {
     assert(asset.startsWith('/img/'), `${show.slug} asset must be site-local: ${asset}`);
     await access(path.join(repositoryRoot, 'src', asset.replace(/^\//, '')));
   }
+  const feedArtworkUrl = new URL(show.feedArtworkUrl);
+  assert.equal(
+    feedArtworkUrl.origin,
+    'https://dustwave.xyz',
+    `${show.slug} feed artwork must use the canonical site origin`
+  );
+  assert.match(
+    feedArtworkUrl.pathname,
+    /^\/img\/[a-z0-9/_-]+\.(?:jpe?g|png)$/,
+    `${show.slug} feed artwork must be a checked-in JPEG or PNG`
+  );
+  const feedArtworkPath = path.join(
+    repositoryRoot,
+    'src',
+    feedArtworkUrl.pathname.replace(/^\//, '')
+  );
+  const [feedArtworkMetadata, feedArtworkStat] = await Promise.all([
+    sharp(feedArtworkPath).metadata(),
+    stat(feedArtworkPath)
+  ]);
+  assert(
+    ['jpeg', 'png'].includes(feedArtworkMetadata.format),
+    `${show.slug} feed artwork must decode as JPEG or PNG`
+  );
+  assert.equal(
+    feedArtworkMetadata.width,
+    feedArtworkMetadata.height,
+    `${show.slug} feed artwork must be square`
+  );
+  assert(
+    feedArtworkMetadata.width >= 1400 && feedArtworkMetadata.width <= 3000,
+    `${show.slug} feed artwork must be between 1400 and 3000 pixels`
+  );
+  assert(
+    feedArtworkStat.size > 0 && feedArtworkStat.size <= 1_500_000,
+    `${show.slug} feed artwork must be non-empty and no larger than 1.5 MB`
+  );
   for (const [modernKey, fallbackKey] of [
     ['artworkWebpSmall', 'artwork'],
     ['artworkWebp', 'artwork'],
