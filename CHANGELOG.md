@@ -2,6 +2,11 @@
 
 ## v1.3.0 - Unreleased
 
+- Advanced the independently reversible Dust Wave Platform gitlink to
+  immutable `v0.15.0` (`2e79a8d70cb6d30805ea141e53d32f9387441756`)
+  and added an executable pin/package contract. Existing Admin Shell 0.10.2
+  and Media Core 0.3.0 behavior is unchanged; site content, Podcast UI policy,
+  Newsletter credentials, and deployment remain local.
 - Added an episode-centered bilingual Autopilot view that separates automatic
   processing, approval waits, platform delays, and terminal failures. Pending
   system work now reads as Processing, hides misleading Fix/Continue actions,

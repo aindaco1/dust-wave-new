@@ -18,6 +18,12 @@ npm install
 
 Clone with `--recurse-submodules` when possible. Existing checkouts must initialize the recorded `shared/dust-wave-platform` commit before installing or testing; CI pins that gitlink and does not follow the shared repository's moving branch.
 
+The current immutable pin is Dust Wave Platform `v0.15.0` at
+`2e79a8d70cb6d30805ea141e53d32f9387441756`. An executable contract verifies
+that gitlink plus the exact Admin Shell and Media Core versions used by this
+site. Dust Wave retains its content, templates, Podcast UI policy, Newsletter
+Worker credentials, Pages deployment, and independent one-commit rollback.
+
 ## Development
 
 Run local dev server with hot reload:
