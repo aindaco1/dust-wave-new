@@ -13,6 +13,7 @@ import {
 } from "../scripts/cloudflare-response-headers.mjs";
 import {
   validateAuthenticatedResponse,
+  validatePodcastArtworkResponse,
   validatePublicResponse
 } from "../scripts/verify-production-response-headers.mjs";
 
@@ -335,5 +336,46 @@ test("validates private headers while keeping a public Podcast page frameable", 
         "https://dustwave.xyz/podcasts/opera-en-la-selva/"
       ),
     /authenticated-only X-Frame-Options/
+  );
+});
+
+test("requires the production Podcast feed artwork to be a bounded JPEG", () => {
+  const url =
+    "https://dustwave.xyz/img/podcasts/opera-en-la-selva/artwork-feed.jpg";
+  validatePodcastArtworkResponse(
+    new Response(null, {
+      status: 200,
+      headers: {
+        "Content-Type": "image/jpeg",
+        "Content-Length": "350000"
+      }
+    }),
+    url
+  );
+  assert.throws(
+    () => validatePodcastArtworkResponse(
+      new Response(null, {
+        status: 200,
+        headers: {
+          "Content-Type": "image/png",
+          "Content-Length": "350000"
+        }
+      }),
+      url
+    ),
+    /did not return image\/jpeg/
+  );
+  assert.throws(
+    () => validatePodcastArtworkResponse(
+      new Response(null, {
+        status: 200,
+        headers: {
+          "Content-Type": "image/jpeg",
+          "Content-Length": "1500001"
+        }
+      }),
+      url
+    ),
+    /invalid Content-Length/
   );
 });
