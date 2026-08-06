@@ -1,4 +1,6 @@
-import { AdminApiError } from "./dust-wave-admin-shell/api-client.js?v=0.10.2";
+import {
+  normalizePublicationOverrideReason
+} from "./podcast-admin-publication-security.js";
 
 function unresolvedBlocker(node) {
   return node?.severity === "blocker"
@@ -40,6 +42,7 @@ function publishedStatus(result, text, humanizeCode) {
 
 export function createEpisodePublisher({
   client,
+  ApiError,
   confirmationDialog,
   text,
   nodeLabel,
@@ -50,8 +53,14 @@ export function createEpisodePublisher({
   onReadiness,
   onPublished
 }) {
-  if (!client?.request || !confirmationDialog?.open) {
-    throw new TypeError("Publication client and confirmation dialog are required");
+  if (
+    !client?.request
+    || typeof ApiError !== "function"
+    || !confirmationDialog?.open
+  ) {
+    throw new TypeError(
+      "Publication client, API error, and confirmation dialog are required"
+    );
   }
 
   return async function publishEpisode(episodeId, button) {
@@ -69,7 +78,7 @@ export function createEpisodePublisher({
 
       if (mode === "enforce" && !candidate.ready) {
         if (!candidate.overrideAvailable) {
-          throw new AdminApiError(text("resolvePublicationBlockers"), {
+          throw new ApiError(text("resolvePublicationBlockers"), {
             status: 409,
             code: "publication_not_ready",
             details: readiness
@@ -94,12 +103,11 @@ export function createEpisodePublisher({
           report(text("publicationOverrideCanceled"));
           return;
         }
-        const normalizedReason = override.value
-          .normalize("NFKC")
-          .replace(/\s+/g, " ")
-          .trim();
-        if (!normalizedReason || normalizedReason.length > 500) {
-          throw new AdminApiError(text("overrideReasonInvalid"), {
+        const normalizedReason = normalizePublicationOverrideReason(
+          override.value
+        );
+        if (!normalizedReason) {
+          throw new ApiError(text("overrideReasonInvalid"), {
             status: 400,
             code: "publication_override_reason_invalid"
           });

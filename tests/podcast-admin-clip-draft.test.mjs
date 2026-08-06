@@ -4,6 +4,7 @@ import test from "node:test";
 import {
   clipDurationLabel,
   mountClipDraftAssistant,
+  normalizeClipDraftCollection,
   normalizeClipDraftResponse,
   resolveClipCueRange
 } from "../src/js/podcast-admin-clip-draft.js";
@@ -46,6 +47,18 @@ const responsePayload = {
   saved: false
 };
 
+const savedResponsePayload = {
+  ...responsePayload,
+  id: "editorial_clip_draft_fixture",
+  source: {
+    ...responsePayload.source,
+    alignmentRevisionId: "alignment_revision_fixture"
+  },
+  draftSha256: "b".repeat(64),
+  completedAt: "2026-07-30 10:05:00",
+  saved: true
+};
+
 test("accepts only bounded, ordered, review-only clip candidates", () => {
   assert.deepEqual(
     normalizeClipDraftResponse(responsePayload),
@@ -56,15 +69,25 @@ test("accepts only bounded, ordered, review-only clip candidates", () => {
         revision: 4,
         contentSha256: "a".repeat(64),
         includedCueCount: 12,
-        totalCueCount: 12
+        totalCueCount: 12,
+        truncated: false
       },
-      outputLanguage: "es"
+      outputLanguage: "es",
+      reviewRequired: true,
+      saved: false
     }
   );
-  assert.throws(() => normalizeClipDraftResponse({
-    ...responsePayload,
-    saved: true
-  }), /evidence is invalid/);
+  assert.deepEqual(
+    normalizeClipDraftCollection({
+      episodeId: "episode_fixture",
+      drafts: [savedResponsePayload]
+    })[0],
+    normalizeClipDraftResponse(savedResponsePayload)
+  );
+  assert.throws(() => normalizeClipDraftCollection({
+    episodeId: "episode_fixture",
+    drafts: [responsePayload]
+  }), /Saved clip proposal is invalid/);
   assert.throws(() => normalizeClipDraftResponse({
     ...responsePayload,
     draft: {
@@ -94,20 +117,26 @@ test("keeps candidates in review until one explicitly fills an unsaved recipe", 
   const assistant = mountClipDraftAssistant(fixture.options);
 
   assistant.setEditable(true);
-  assistant.setTranscript("episode_fixture", approvedTranscript());
+  await assistant.setTranscript("episode_fixture", approvedTranscript());
   assert.equal(fixture.root.hidden, false);
   await fixture.controls.generate.dispatch("click");
 
-  assert.deepEqual(fixture.requests, [{
-    path: "/v1/admin/episodes/episode_fixture/clips/draft",
-    options: {
-      method: "POST",
-      body: {
-        sourceLanguage: "es",
-        outputLanguage: "es"
+  assert.deepEqual(fixture.requests, [
+    {
+      path: "/v1/admin/episodes/episode_fixture/clips/drafts",
+      options: undefined
+    },
+    {
+      path: "/v1/admin/episodes/episode_fixture/clips/draft",
+      options: {
+        method: "POST",
+        body: {
+          sourceLanguage: "es",
+          outputLanguage: "es"
+        }
       }
     }
-  }]);
+  ]);
   assert.equal(fixture.controls.review.hidden, false);
   assert.equal(fixture.controls.list.children.length, 2);
   assert.equal(fixture.applied.length, 0);
@@ -116,7 +145,7 @@ test("keeps candidates in review until one explicitly fills an unsaved recipe", 
   const firstUseButton = fixture.controls.list.children[0].children[3];
   await firstUseButton.dispatch("click");
   assert.deepEqual(fixture.applied, [responsePayload.draft.candidates[0]]);
-  assert.equal(fixture.requests.length, 1);
+  assert.equal(fixture.requests.length, 2);
   assert.equal(fixture.statuses.at(-1).text, "clipDraftApplied");
   assert.equal(
     fixture.controls.list.children[0].children[3].disabled,
@@ -131,7 +160,7 @@ test("rejects stale evidence and protects an existing recipe confirmation", asyn
   });
   const assistant = mountClipDraftAssistant(fixture.options);
   assistant.setEditable(true);
-  assistant.setTranscript("episode_fixture", approvedTranscript());
+  await assistant.setTranscript("episode_fixture", approvedTranscript());
   await fixture.controls.generate.dispatch("click");
   await fixture.controls.list.children[0].children[3].dispatch("click");
   assert.equal(fixture.applied.length, 0);
@@ -141,6 +170,24 @@ test("rejects stale evidence and protects an existing recipe confirmation", asyn
     contentSha256: "b".repeat(64)
   });
   assert.equal(fixture.controls.review.hidden, true);
+});
+
+test("loads an automatic proposal without applying or saving it", async () => {
+  const fixture = clipDraftFixture({
+    savedDrafts: [savedResponsePayload]
+  });
+  const assistant = mountClipDraftAssistant(fixture.options);
+  assistant.setEditable(true);
+  await assistant.setTranscript("episode_fixture", approvedTranscript());
+
+  assert.deepEqual(fixture.requests, [{
+    path: "/v1/admin/episodes/episode_fixture/clips/drafts",
+    options: undefined
+  }]);
+  assert.equal(fixture.controls.review.hidden, false);
+  assert.equal(fixture.controls.list.children.length, 2);
+  assert.equal(fixture.applied.length, 0);
+  assert.equal(fixture.statuses.at(-1).text, "clipDraftAutomaticReady");
 });
 
 test("shares deterministic clip range and duration presentation primitives", () => {
@@ -170,7 +217,8 @@ function approvedTranscript() {
 
 function clipDraftFixture({
   hasExistingRecipe = () => false,
-  confirmReplace = () => true
+  confirmReplace = () => true,
+  savedDrafts = []
 } = {}) {
   const document = new FakeDocument();
   const root = new FakeControl(document);
@@ -209,6 +257,12 @@ function clipDraftFixture({
       client: {
         async request(path, options) {
           requests.push({ path, options });
+          if (path.endsWith("/clips/drafts")) {
+            return {
+              episodeId: "episode_fixture",
+              drafts: structuredClone(savedDrafts)
+            };
+          }
           return structuredClone(responsePayload);
         }
       },

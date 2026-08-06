@@ -43,6 +43,16 @@ export function findEditableEpisode(episodes, episodeId) {
   return episodes.find(({ id }) => id === episodeId) || null;
 }
 
+export function revealEpisodeEditor(form, title, {
+  focus = true,
+  scroll = true
+} = {}) {
+  if (scroll) form?.scrollIntoView?.({ block: "start" });
+  if (focus) {
+    title?.focus?.(scroll ? undefined : { preventScroll: true });
+  }
+}
+
 export function mountEpisodeEditor({
   form,
   list,
@@ -126,10 +136,10 @@ export function mountEpisodeEditor({
     if (focus && !form.hidden) title.focus();
   }
 
-  function edit(episodeId) {
-    if (!canEdit()) return;
+  function edit(episodeId, revealOptions) {
+    if (!canEdit()) return false;
     const episode = findEditableEpisode(episodes, episodeId);
-    if (!episode) return;
+    if (!episode) return false;
     editingEpisodeId = episode.id;
     form.dataset.episodeMode = "edit";
     title.value = episode.title || "";
@@ -157,8 +167,8 @@ export function mountEpisodeEditor({
     if (heading) heading.textContent = text("editEpisode");
     submit.textContent = text("updateDraft");
     setStatus(status, text("editingEpisode", { title: episode.title }));
-    form.scrollIntoView({ block: "start" });
-    title.focus();
+    revealEpisodeEditor(form, title, revealOptions);
+    return true;
   }
 
   async function saveEpisode(event) {
@@ -196,6 +206,7 @@ export function mountEpisodeEditor({
 
   reset();
   return {
+    edit,
     refreshPermissions,
     reset,
     setEpisodes(nextEpisodes) {

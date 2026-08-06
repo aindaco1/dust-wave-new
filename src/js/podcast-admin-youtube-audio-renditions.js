@@ -1,4 +1,19 @@
+import {
+  canQueueCurrentOperation,
+  createRetriableOperationId
+} from "./podcast-admin-retriable-operation.js";
+import {
+  formatBytes,
+  formatInteger
+} from "./podcast-admin-formatters.js";
+
 const WORKFLOW_NAME = "process-youtube-audio-rendition.yml";
+const ACTIVE_RENDITION_STATUSES = new Set([
+  "queued",
+  "rendering",
+  "completing",
+  "ready"
+]);
 
 export function mountYouTubeAudioRenditions({
   root,
@@ -6,6 +21,7 @@ export function mountYouTubeAudioRenditions({
   text,
   setStatus,
   friendlyError,
+  operationId,
   canQueue
 }) {
   const select = root.querySelector(
@@ -27,8 +43,16 @@ export function mountYouTubeAudioRenditions({
     "[data-podcast-youtube-audio-status]"
   );
   const productionPanel = root.querySelector("#podcast-panel-production");
+  const episodePanel = root.querySelector("#podcast-panel-episodes");
+  const productionGroup = productionPanel?.closest(
+    "[data-podcast-workspace-group]"
+  );
   let requestId = 0;
   let state = null;
+  const queueOperation = createRetriableOperationId(
+    operationId,
+    "youtube_rendition"
+  );
 
   select?.addEventListener("change", refresh);
   refreshButton?.addEventListener("click", refresh);
@@ -55,7 +79,12 @@ export function mountYouTubeAudioRenditions({
       setStatus(status, "");
       return;
     }
-    if (productionPanel && !productionPanel.hidden) {
+    if (
+      productionPanel
+      && productionGroup?.open
+      && episodePanel
+      && !episodePanel.hidden
+    ) {
       refresh();
     } else {
       summary.textContent = text("youtubeAudioChooseEpisode");
@@ -105,17 +134,24 @@ export function mountYouTubeAudioRenditions({
   async function queue() {
     const episodeId = select?.value || "";
     const currentMaster = state?.master?.current;
+    const rows = Array.isArray(state?.renditions?.renditions)
+      ? state.renditions.renditions
+      : [];
     if (
       !episodeId
-      || !currentMaster?.id
-      || !state?.renditions?.processorEnabled
-      || !canQueue()
+      || !canQueueCurrentOperation({
+        currentId: currentMaster?.id,
+        processorEnabled: state?.renditions?.processorEnabled,
+        authorized: canQueue(),
+        rows,
+        activeStatuses: ACTIVE_RENDITION_STATUSES
+      })
     ) return;
     queueButton.disabled = true;
     setStatus(status, text("youtubeAudioQueuing"));
+    const operationContext = `${episodeId}:${currentMaster.id}`;
     try {
-      const renditionId =
-        `youtube_rendition_${crypto.randomUUID().replaceAll("-", "")}`;
+      const renditionId = queueOperation.get(operationContext);
       const response = await client.request(
         `/v1/admin/episodes/${encodeURIComponent(
           episodeId
@@ -128,6 +164,7 @@ export function mountYouTubeAudioRenditions({
           }
         }
       );
+      queueOperation.accept(operationContext, renditionId);
       setStatus(status, text("youtubeAudioQueued", {
         id: response.rendition?.id || renditionId,
         workflow: WORKFLOW_NAME
@@ -152,11 +189,13 @@ export function mountYouTubeAudioRenditions({
           bytes: formatBytes(currentMaster.objectBytes)
         })
       : text("youtubeAudioMasterRequired");
-    queueButton.disabled = !(
-      currentMaster
-      && processorEnabled
-      && canQueue()
-    );
+    queueButton.disabled = !canQueueCurrentOperation({
+      currentId: currentMaster?.id,
+      processorEnabled,
+      authorized: canQueue(),
+      rows,
+      activeStatuses: ACTIVE_RENDITION_STATUSES
+    });
     results.replaceChildren(
       ...(rows.length
         ? rows.map(renderRendition)
@@ -216,6 +255,7 @@ export function mountYouTubeAudioRenditions({
     reset() {
       requestId += 1;
       state = null;
+      queueOperation.reset();
       results?.replaceChildren();
       if (summary) summary.textContent = "";
       if (queueButton) queueButton.disabled = true;
@@ -231,23 +271,6 @@ function emptyMessage(value) {
   return message;
 }
 
-function formatInteger(value) {
-  return new Intl.NumberFormat(document.documentElement.lang || "en")
-    .format(Math.max(0, Number(value) || 0));
-}
-
-function formatBytes(value) {
-  const bytes = Math.max(0, Number(value) || 0);
-  if (bytes < 1024) return `${formatInteger(bytes)} B`;
-  const units = ["KB", "MB", "GB"];
-  let amount = bytes / 1024;
-  let index = 0;
-  while (amount >= 1024 && index < units.length - 1) {
-    amount /= 1024;
-    index += 1;
-  }
-  return `${amount.toFixed(amount >= 10 ? 1 : 2)} ${units[index]}`;
-}
 
 function humanize(value) {
   return String(value || "").replaceAll("_", " ");

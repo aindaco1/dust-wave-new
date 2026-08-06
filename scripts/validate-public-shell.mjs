@@ -1,26 +1,62 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [footer, icons, styles, notFound, navbar, navbarContent, sticky] = await Promise.all([
+const [
+  footer,
+  siteFooter,
+  icons,
+  styles,
+  notFound,
+  navbar,
+  navbarContent,
+  sticky,
+  adminLayout,
+  memberLayout
+] = await Promise.all([
   readFile(new URL("../src/_includes/snippets/footer1.njk", import.meta.url), "utf8"),
+  readFile(new URL("../src/_includes/snippets/site-footer.njk", import.meta.url), "utf8"),
   readFile(new URL("../src/_includes/snippets/social-icon.njk", import.meta.url), "utf8"),
   readFile(new URL("../src/scss/themes/base/_style-theme.scss", import.meta.url), "utf8"),
   readFile(new URL("../src/404.njk", import.meta.url), "utf8"),
   readFile(new URL("../src/_includes/snippets/navbar1.njk", import.meta.url), "utf8"),
   readFile(new URL("../src/_includes/snippets/navbar-content.njk", import.meta.url), "utf8"),
-  readFile(new URL("../src/_includes/snippets/sticky.njk", import.meta.url), "utf8")
+  readFile(new URL("../src/_includes/snippets/sticky.njk", import.meta.url), "utf8"),
+  readFile(new URL("../src/_includes/layouts/podcast-admin.njk", import.meta.url), "utf8"),
+  readFile(new URL("../src/_includes/layouts/podcast-member.njk", import.meta.url), "utf8")
 ]);
 
-assert.match(footer, /from "snippets\/social-icon\.njk" import socialIcon/);
-assert.doesNotMatch(footer, /fa-brands|font-awesome/i);
+assert.match(footer, /snippets\/site-footer\.njk/);
+assert.match(siteFooter, /from "snippets\/social-icon\.njk" import socialIcon/);
+assert.doesNotMatch(siteFooter, /fa-brands|font-awesome/i);
 assert.equal(
-  (footer.match(/class="site-footer__item/g) || []).length,
+  (siteFooter.match(/class="site-footer__item/g) || []).length,
   4,
-  "The public footer must keep four shared top-level items."
+  "The shared footer must keep four top-level items."
+);
+assert.match(
+  siteFooter,
+  /class="site-footer__item site-footer__updates"/,
+  "The Newsletter link must use the neutral shared-footer hook."
+);
+assert.doesNotMatch(
+  siteFooter,
+  /class="[^"]*newsletter[^"]*"/i,
+  "The Newsletter link class must not trigger cosmetic content-blocker rules."
 );
 
+for (const [name, layout] of [
+  ["Podcast Admin", adminLayout],
+  ["Podcast member account", memberLayout]
+]) {
+  assert.match(
+    layout,
+    /snippets\/site-footer\.njk/,
+    `${name} must render the same shared site footer`
+  );
+}
+
 for (const name of ["instagram", "youtube", "tiktok", "bluesky", "mastodon"]) {
-  assert.match(footer, new RegExp(`socialIcon\\("${name}"\\)`));
+  assert.match(siteFooter, new RegExp(`socialIcon\\("${name}"\\)`));
   assert.match(icons, new RegExp(`name == "${name}"`));
 }
 

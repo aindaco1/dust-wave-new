@@ -1,14 +1,26 @@
 import { mountWorkflowProgress } from "./dust-wave-admin-shell/workflow-progress.js?v=0.10.2";
 import {
   deriveEpisodeWorkflow,
-  workflowStepForNode
+  workflowStepForNode,
+  workflowTargetForNode
 } from "./podcast-admin-publish-workflow-core.js";
+import {
+  mountWorkflowPriority
+} from "./podcast-admin-workflow-priority.js?v=0.2.0";
+import { mountEpisodeAutopilot } from "./podcast-admin-autopilot.js";
+import {
+  mountWorkflowResponsiveSelect
+} from "./podcast-admin-workflow-responsive.js";
 
 export function mountEpisodePublishWorkflow({
   root,
   client,
   text,
   nodeLabel,
+  nodeDescription,
+  episodeSelect,
+  loadReadiness,
+  onEpisodePresence,
   onNavigate,
   onPublish
 }) {
@@ -24,46 +36,63 @@ export function mountEpisodePublishWorkflow({
   const intro = document.createElement("p");
   intro.textContent = text("publishWorkflowIntro");
   headingCopy.append(title, intro);
-  const refreshButton = document.createElement("button");
-  refreshButton.className = "btn btn-outline-light";
-  refreshButton.type = "button";
-  refreshButton.textContent = text("refreshReadiness");
-  heading.append(headingCopy, refreshButton);
+  heading.append(headingCopy);
 
-  const episodeLabel = document.createElement("label");
-  episodeLabel.className = "podcast-admin__workflow-episode";
-  episodeLabel.append(document.createTextNode(text("workflowEpisode")));
-  const select = document.createElement("select");
-  select.name = "workflowEpisodeId";
-  select.dataset.podcastWorkflowEpisode = "";
-  episodeLabel.append(select);
+  const select = episodeSelect || document.createElement("select");
+  let episodeLabel = null;
+  if (!episodeSelect) {
+    episodeLabel = document.createElement("label");
+    episodeLabel.className = "podcast-admin__workflow-episode";
+    episodeLabel.append(document.createTextNode(text("workflowEpisode")));
+    select.name = "workflowEpisodeId";
+    select.dataset.podcastWorkflowEpisode = "";
+    episodeLabel.append(select);
+  }
   const progressRoot = document.createElement("div");
+  progressRoot.className = "podcast-admin__workflow-menu";
+  const publishPanel = document.createElement("section");
+  publishPanel.className = "podcast-admin__workflow-panel";
+  publishPanel.dataset.podcastWorkflowPublishPanel = "";
+  const blockerNavigation = document.createElement("section");
+  blockerNavigation.className =
+    "podcast-admin__workflow-blocker-navigation";
+  blockerNavigation.dataset.podcastWorkflowBlockers = "";
   const summary = document.createElement("p");
   summary.className = "podcast-admin__workflow-summary";
+  summary.id = "podcast-publish-blocker-summary";
   summary.setAttribute("role", "status");
   summary.setAttribute("aria-live", "polite");
-  const blockers = document.createElement("ul");
-  blockers.className = "podcast-admin__workflow-blockers";
+  blockerNavigation.setAttribute("aria-labelledby", summary.id);
   const actions = document.createElement("div");
   actions.className =
     "podcast-admin__form-actions podcast-admin__workflow-actions";
-  const continueButton = document.createElement("button");
-  continueButton.className = "btn btn-danger";
-  continueButton.type = "button";
   const publishButton = document.createElement("button");
   publishButton.className = "btn btn-danger";
   publishButton.type = "button";
   publishButton.textContent = text("publishReviewedEpisode");
   publishButton.hidden = true;
-  actions.append(continueButton, publishButton);
-  root.append(
-    heading,
-    episodeLabel,
-    progressRoot,
-    summary,
-    blockers,
+  actions.append(publishButton);
+  const workflowPriority = mountWorkflowPriority({
+    document,
+    nodeLabel,
+    nodeDescription,
+    nodeStep: workflowStepForNode,
+    onNavigate(node) {
+      navigate(
+        workflowStepForNode(node),
+        workflowTargetForNode(node)
+      );
+    }
+  });
+  const autopilot = mountEpisodeAutopilot({ document, text });
+  root.append(heading);
+  if (episodeLabel) root.append(episodeLabel);
+  blockerNavigation.append(summary, ...workflowPriority.elements);
+  publishPanel.append(
+    autopilot.element,
     actions
   );
+  root.append(progressRoot, blockerNavigation, publishPanel);
 
   const stepDefinitions = [
     ["details", text("workflowDetails")],
@@ -80,29 +109,42 @@ export function mountEpisodePublishWorkflow({
       ready: text("workflowStatusReady"),
       needs_action: text("workflowStatusNeedsAction"),
       optional: text("workflowStatusOptional"),
-      not_started: text("workflowStatusNotStarted")
+      not_started: text("workflowStatusNotStarted"),
+      processing: text("workflowStatusProcessing")
     },
+    selectionMode: "tabs",
+    onSelect: (id) => navigate(id)
+  });
+  const responsiveProgress = mountWorkflowResponsiveSelect(progressRoot, {
+    label: text("publishWorkflowAria"),
     onSelect: (id) => navigate(id)
   });
   let episodes = [];
   let readiness = null;
   let requestId = 0;
   let nextStep = "details";
+  let hasSelectedEpisode = null;
 
   function selectedEpisode() {
     return episodes.find(({ id }) => String(id) === select.value) || null;
   }
 
-  function navigate(id) {
+  function navigate(id, target = "") {
     const episode = selectedEpisode();
     if (!episode) return;
     progress.setActive(id);
-    onNavigate?.(id, episode);
+    responsiveProgress.sync(id);
+    onNavigate?.(id, episode, target);
+    void refresh();
   }
 
   function render() {
     const episode = selectedEpisode();
     root.hidden = !episode;
+    if (hasSelectedEpisode !== Boolean(episode)) {
+      hasSelectedEpisode = Boolean(episode);
+      onEpisodePresence?.(hasSelectedEpisode);
+    }
     if (!episode) return;
     const derived = deriveEpisodeWorkflow(episode, readiness);
     const steps = derived.steps.map((step) => ({
@@ -110,42 +152,35 @@ export function mountEpisodePublishWorkflow({
       label: stepDefinitions.find(([id]) => id === step.id)?.[1] || step.id
     }));
     progress.setSteps(steps);
+    responsiveProgress.refresh({ activeValue: progress.getActive() });
     nextStep = derived.nextStep;
-    continueButton.textContent = text("continueWorkflow", {
-      step: stepDefinitions.find(([id]) => id === nextStep)?.[1] || ""
-    });
-    continueButton.hidden = nextStep === "publish";
+    blockerNavigation.dataset.podcastWorkflowReadiness = readiness
+      ? "loaded"
+      : "loading";
+    blockerNavigation.dataset.podcastWorkflowBlockerCount = String(
+      derived.actionableBlockers.length
+    );
     publishButton.hidden = nextStep !== "publish";
+    actions.hidden = publishButton.hidden;
     publishButton.disabled = !readiness;
-    const blockerNodes = derived.blockers;
     if (!readiness) {
       summary.textContent = text("workflowLoading");
     } else if (readiness.candidateGate?.ready) {
       summary.textContent = text("workflowReadySummary");
+    } else if (
+      derived.waitingForAutomation
+      && derived.actionableBlockers.length === 0
+    ) {
+      summary.textContent = text("workflowProcessingSummary");
     } else {
       summary.textContent = text("workflowNeedsActionSummary", {
-        count: Math.max(
-          blockerNodes.length,
-          Number(readiness.candidateGate?.blockerCount || 0)
-        )
+        count: derived.actionableBlockers.length
       });
     }
-    blockers.replaceChildren(...blockerNodes.map((node) => {
-      const item = document.createElement("li");
-      const copy = document.createElement("span");
-      copy.textContent = nodeLabel(node);
-      const fix = document.createElement("button");
-      fix.className = "btn btn-outline-light";
-      fix.type = "button";
-      fix.textContent = text("fixWorkflowIssue");
-      fix.addEventListener(
-        "click",
-        () => navigate(workflowStepForNode(node))
-      );
-      item.append(copy, fix);
-      return item;
-    }));
-    blockers.hidden = blockerNodes.length === 0;
+    workflowPriority.render({
+      nodes: derived.actionableBlockers
+    });
+    autopilot.render(readiness);
   }
 
   async function refresh() {
@@ -159,23 +194,29 @@ export function mountEpisodePublishWorkflow({
     readiness = null;
     render();
     try {
-      const payload = await client.request(
-        `/v1/admin/episodes/${encodeURIComponent(episode.id)}/readiness`
-      );
+      const payload = loadReadiness
+        ? await loadReadiness(episode.id)
+        : await client.request(
+          `/v1/admin/episodes/${encodeURIComponent(episode.id)}/readiness`
+        );
+      if (!payload) throw new Error("Readiness is unavailable");
       if (currentRequest !== requestId || episode.id !== select.value) return;
       readiness = payload;
       render();
     } catch {
       if (currentRequest !== requestId) return;
+      blockerNavigation.dataset.podcastWorkflowReadiness = "failed";
       summary.textContent = text("readinessFailed");
-      blockers.replaceChildren();
-      blockers.hidden = true;
+      workflowPriority.clear();
+      autopilot.render({
+        candidateGate: { ready: false },
+        nodes: [{ status: "failed", severity: "blocker" }]
+      });
     }
   }
 
-  select.addEventListener("change", refresh);
-  refreshButton.addEventListener("click", refresh);
-  continueButton.addEventListener("click", () => navigate(nextStep));
+  const handleEpisodeChange = () => refresh();
+  if (!episodeSelect) select.addEventListener("change", handleEpisodeChange);
   publishButton.addEventListener("click", async () => {
     const episode = selectedEpisode();
     if (!episode || publishButton.disabled) return;
@@ -184,37 +225,32 @@ export function mountEpisodePublishWorkflow({
   });
 
   return {
+    publishPanel,
     setEpisodes(nextEpisodes) {
       const previous = select.value;
       episodes = Array.from(nextEpisodes || []);
-      select.replaceChildren(...episodes.map((episode) => {
-        const option = document.createElement("option");
-        option.value = String(episode.id);
-        option.textContent = String(episode.title || "");
-        option.selected = episode.id === previous;
-        return option;
-      }));
+      if (!episodeSelect) {
+        select.replaceChildren(...episodes.map((episode) => {
+          const option = document.createElement("option");
+          option.value = String(episode.id);
+          option.textContent = String(episode.title || "");
+          option.selected = episode.id === previous;
+          return option;
+        }));
+      }
       if (!select.value && episodes[0]) select.value = episodes[0].id;
       refresh();
-    },
-    selectEpisode(episodeId) {
-      if (!episodes.some(({ id }) => String(id) === String(episodeId))) {
-        return false;
-      }
-      select.value = String(episodeId);
-      refresh();
-      const reduceMotion = document.defaultView
-        ?.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-      root.scrollIntoView?.({
-        behavior: reduceMotion ? "auto" : "smooth",
-        block: "start"
-      });
-      return true;
+      const episode = selectedEpisode();
+      if (episode) onNavigate?.(progress.getActive(), episode);
     },
     refresh,
     destroy() {
       requestId += 1;
+      if (!episodeSelect) {
+        select.removeEventListener("change", handleEpisodeChange);
+      }
       progress.destroy();
+      responsiveProgress.destroy();
       root.replaceChildren();
     }
   };

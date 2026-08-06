@@ -5,7 +5,8 @@ import {
   datetimeInputIsoOrNull,
   datetimeLocalInputValue,
   findEditableEpisode,
-  readEpisodeFormPayload
+  readEpisodeFormPayload,
+  revealEpisodeEditor
 } from "../src/js/podcast-admin-episode-editor.js";
 
 test("restores UTC release timestamps as browser-local datetime values", () => {
@@ -61,6 +62,29 @@ test("matches edit targets by exact API identity", () => {
 
   assert.equal(findEditableEpisode(episodes, "episode_one"), episodes[0]);
   assert.equal(findEditableEpisode(episodes, "episode"), null);
+});
+
+test("workflow edits can update in place without scrolling or focusing", () => {
+  const calls = [];
+  const form = {
+    scrollIntoView(options) { calls.push(["scroll", options]); }
+  };
+  const title = {
+    focus(options) { calls.push(["focus", options]); }
+  };
+
+  revealEpisodeEditor(form, title, { focus: false, scroll: false });
+  assert.deepEqual(calls, []);
+
+  revealEpisodeEditor(form, title, { scroll: false });
+  assert.deepEqual(calls, [["focus", { preventScroll: true }]]);
+
+  calls.length = 0;
+  revealEpisodeEditor(form, title);
+  assert.deepEqual(calls, [
+    ["scroll", { block: "start" }],
+    ["focus", undefined]
+  ]);
 });
 
 function fixtureForm(values) {

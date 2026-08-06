@@ -1,66 +1,13 @@
-const LANGUAGES = new Set(["en", "es"]);
+import {
+  normalizeShowNotesDraftCollection,
+  normalizeShowNotesDraftResponse,
+  SHOW_NOTES_LANGUAGES
+} from "./podcast-admin-show-notes-contract.js";
 
-export function normalizeShowNotesDraftResponse(value) {
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
-    throw new TypeError("Show-notes response must be an object");
-  }
-  const draft = value.draft;
-  const source = value.source;
-  if (
-    !draft
-    || typeof draft !== "object"
-    || Array.isArray(draft)
-    || !source
-    || typeof source !== "object"
-    || Array.isArray(source)
-  ) {
-    throw new TypeError("Show-notes response is incomplete");
-  }
-  const summary = boundedText(draft.summary, 1_200, "summary");
-  const showNotesMarkdown = boundedText(
-    draft.showNotesMarkdown,
-    8_000,
-    "showNotesMarkdown"
-  );
-  if (!Array.isArray(draft.keywords) || draft.keywords.length > 10) {
-    throw new TypeError("Show-notes keywords are invalid");
-  }
-  const keywords = draft.keywords.map((keyword) =>
-    boundedText(keyword, 60, "keyword", { allowNewlines: false })
-  );
-  const language = String(source.language || "");
-  const outputLanguage = String(value.outputLanguage || "");
-  const revision = Number(source.revision);
-  const includedCueCount = Number(source.includedCueCount);
-  const totalCueCount = Number(source.totalCueCount);
-  if (
-    !LANGUAGES.has(language)
-    || !LANGUAGES.has(outputLanguage)
-    || !Number.isSafeInteger(revision)
-    || revision < 1
-    || !Number.isSafeInteger(includedCueCount)
-    || includedCueCount < 1
-    || !Number.isSafeInteger(totalCueCount)
-    || totalCueCount < includedCueCount
-    || typeof source.truncated !== "boolean"
-    || !/^[a-f0-9]{64}$/i.test(String(source.contentSha256 || ""))
-    || value.reviewRequired !== true
-    || value.saved !== false
-  ) {
-    throw new TypeError("Show-notes evidence is invalid");
-  }
-  return {
-    draft: { summary, showNotesMarkdown, keywords },
-    source: {
-      language,
-      revision,
-      includedCueCount,
-      totalCueCount,
-      truncated: source.truncated
-    },
-    outputLanguage
-  };
-}
+export {
+  normalizeShowNotesDraftCollection,
+  normalizeShowNotesDraftResponse
+} from "./podcast-admin-show-notes-contract.js";
 
 export function mountShowNotesAssistant({
   root,
@@ -108,6 +55,7 @@ export function mountShowNotesAssistant({
   let episodeId = "";
   let editable = false;
   let generating = false;
+  let loading = false;
   let generationRevision = 0;
   let result = null;
 
@@ -119,9 +67,9 @@ export function mountShowNotesAssistant({
 
   function refresh() {
     root.hidden = !episodeId || !editable;
-    generate.disabled = generating || !episodeId || !editable;
-    sourceLanguage.disabled = generating || !editable;
-    outputLanguage.disabled = generating || !editable;
+    generate.disabled = generating || loading || !episodeId || !editable;
+    sourceLanguage.disabled = generating || loading || !editable;
+    outputLanguage.disabled = generating || loading || !editable;
     apply.disabled = generating || !result || !editable;
     dismiss.disabled = generating || !result;
   }
@@ -162,23 +110,7 @@ export function mountShowNotesAssistant({
         requestRevision !== generationRevision
         || requestedEpisodeId !== episodeId
       ) return;
-      result = normalizeShowNotesDraftResponse(payload);
-      evidence.textContent = text(
-        result.source.truncated
-          ? "showNotesEvidencePartial"
-          : "showNotesEvidenceComplete",
-        {
-          language: text(`language_${result.source.language}`),
-          revision: result.source.revision,
-          included: result.source.includedCueCount,
-          total: result.source.totalCueCount
-        }
-      );
-      summary.textContent = result.draft.summary;
-      draft.textContent = result.draft.showNotesMarkdown;
-      keywords.textContent = result.draft.keywords.join(" · ");
-      review.hidden = false;
-      setStatus(status, text("showNotesReady"));
+      renderResult(normalizeShowNotesDraftResponse(payload));
     } catch (error) {
       if (
         requestRevision === generationRevision
@@ -190,6 +122,74 @@ export function mountShowNotesAssistant({
       if (requestRevision === generationRevision) generating = false;
       refresh();
     }
+  }
+
+  async function loadSavedDraft() {
+    if (!episodeId) return;
+    const requestRevision = ++generationRevision;
+    const requestedEpisodeId = episodeId;
+    loading = true;
+    resetReview();
+    setStatus(status, text("showNotesLoadingAutomatic"));
+    refresh();
+    try {
+      const payload = await client.request(
+        `/v1/admin/episodes/${encodeURIComponent(
+          requestedEpisodeId
+        )}/show-notes/drafts`
+      );
+      if (
+        requestRevision !== generationRevision
+        || requestedEpisodeId !== episodeId
+      ) return;
+      const drafts = normalizeShowNotesDraftCollection(payload);
+      const preferred = drafts.find((candidate) =>
+        candidate.source.language === sourceLanguage.value
+        && candidate.outputLanguage === outputLanguage.value
+      ) || drafts.find((candidate) =>
+        candidate.outputLanguage === outputLanguage.value
+      ) || drafts[0];
+      if (preferred) {
+        sourceLanguage.value = preferred.source.language;
+        outputLanguage.value = preferred.outputLanguage;
+        renderResult(preferred);
+      } else {
+        setStatus(status, text("showNotesAutomaticPending"));
+      }
+    } catch (error) {
+      if (
+        requestRevision === generationRevision
+        && requestedEpisodeId === episodeId
+      ) {
+        setStatus(status, friendlyError(error), true);
+      }
+    } finally {
+      if (requestRevision === generationRevision) loading = false;
+      refresh();
+    }
+  }
+
+  function renderResult(nextResult) {
+    result = nextResult;
+    evidence.textContent = text(
+      result.source.truncated
+        ? "showNotesEvidencePartial"
+        : "showNotesEvidenceComplete",
+      {
+        language: text(`language_${result.source.language}`),
+        revision: result.source.revision,
+        included: result.source.includedCueCount,
+        total: result.source.totalCueCount
+      }
+    );
+    summary.textContent = result.draft.summary;
+    draft.textContent = result.draft.showNotesMarkdown;
+    keywords.textContent = result.draft.keywords.join(" · ");
+    review.hidden = false;
+    setStatus(
+      status,
+      text(result.saved ? "showNotesAutomaticReady" : "showNotesReady")
+    );
   }
 
   function applyDraft() {
@@ -222,36 +222,16 @@ export function mountShowNotesAssistant({
         episodeId = normalizedEpisodeId;
         generationRevision += 1;
         generating = false;
+        loading = false;
         resetReview();
       }
-      const language = LANGUAGES.has(nextSourceLanguage)
+      const language = SHOW_NOTES_LANGUAGES.has(nextSourceLanguage)
         ? nextSourceLanguage
         : "es";
       sourceLanguage.value = language;
       outputLanguage.value = language;
       refresh();
+      return normalizedEpisodeId ? loadSavedDraft() : Promise.resolve();
     }
   };
-}
-
-function boundedText(
-  value,
-  maximumCharacters,
-  field,
-  { allowNewlines = true } = {}
-) {
-  if (typeof value !== "string") {
-    throw new TypeError(`Show-notes ${field} must be text`);
-  }
-  const normalized = value.replace(/\r\n?/g, "\n").trim();
-  if (
-    !normalized
-    || normalized.length > maximumCharacters
-    || /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F\u202A-\u202E\u2066-\u2069]/u
-      .test(normalized)
-    || (!allowNewlines && normalized.includes("\n"))
-  ) {
-    throw new TypeError(`Show-notes ${field} is invalid`);
-  }
-  return normalized;
 }

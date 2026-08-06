@@ -1,90 +1,69 @@
-function selectEpisode(control, episodeId) {
-  if (!control || !episodeId) return;
-  control.value = String(episodeId);
-  control.dispatchEvent(new Event("change", { bubbles: true }));
-}
-
-function reveal(target, document) {
-  target?.closest?.("details")?.setAttribute("open", "");
-  queueMicrotask(() => {
-    const reduceMotion = document.defaultView
-      ?.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    target?.scrollIntoView?.({
-      behavior: reduceMotion ? "auto" : "smooth",
-      block: "start"
-    });
-    const focusTarget = target?.matches?.("button, input, select, textarea")
-      ? target
-      : target?.querySelector?.("button, input, select, textarea");
-    focusTarget?.focus?.({ preventScroll: true });
-  });
-}
+import {
+  createExactWorkflowNavigator,
+  revealWorkflowTarget,
+  selectWorkflowEpisode
+} from "./podcast-admin-workflow-target.js";
 
 export function createEpisodeWorkflowNavigator({
   root,
   tabs,
-  episodeList,
-  episodeForm,
+  editEpisode,
   adPlanForm,
   audioQcEpisodeSelect,
   audioMasterEpisodeSelect,
   transcriptEpisodeSelect,
   chapterEpisodeSelect,
-  transcriptWorkbench,
   reviewEpisodeSelect,
   loadProductionReviews,
-  loadPublicationReadiness
+  loadPublicationReadiness,
+  publishSections
 }) {
   if (!root?.ownerDocument || !tabs?.select) {
     throw new TypeError("Workflow root and tabs are required");
   }
   const document = root.ownerDocument;
+  const navigateExactTarget = createExactWorkflowNavigator(root);
 
-  return function navigateEpisodeWorkflow(step, episode) {
+  return function navigateEpisodeWorkflow(step, episode, target = "") {
     const episodeId = String(episode?.id || "");
     if (!episodeId) return;
+    publishSections?.select(step);
     if (step === "details") {
       tabs.select("episodes");
-      const escapedId = document.defaultView.CSS.escape(episodeId);
-      episodeList?.querySelector(`[data-edit-episode="${escapedId}"]`)
-        ?.click();
-      reveal(episodeForm, document);
+      editEpisode?.(episodeId, { focus: false, scroll: false });
       return;
     }
     if (step === "monetization") {
       tabs.select("episodes");
-      selectEpisode(adPlanForm?.elements.episodeId, episodeId);
-      reveal(adPlanForm, document);
+      selectWorkflowEpisode(adPlanForm?.elements.episodeId, episodeId);
+      if (target) revealWorkflowTarget(adPlanForm, document);
       return;
     }
     if (step === "publish") {
       tabs.select("episodes");
-      reveal(root.querySelector("[data-podcast-publish-workflow]"), document);
       return;
     }
 
-    tabs.select("production");
+    tabs.select("episodes");
     if (step === "media") {
-      selectEpisode(audioQcEpisodeSelect, episodeId);
-      selectEpisode(audioMasterEpisodeSelect, episodeId);
-      reveal(
-        audioQcEpisodeSelect?.closest(".podcast-admin__form, section"),
-        document
-      );
+      if (target && navigateExactTarget(target, episodeId)) return;
+      selectWorkflowEpisode(audioQcEpisodeSelect, episodeId);
+      selectWorkflowEpisode(audioMasterEpisodeSelect, episodeId);
       return;
     }
     if (step === "transcript") {
-      selectEpisode(transcriptEpisodeSelect, episodeId);
-      selectEpisode(chapterEpisodeSelect, episodeId);
-      reveal(transcriptWorkbench, document);
+      if (target && navigateExactTarget(target, episodeId)) return;
+      selectWorkflowEpisode(transcriptEpisodeSelect, episodeId);
+      selectWorkflowEpisode(chapterEpisodeSelect, episodeId);
       return;
     }
-    selectEpisode(reviewEpisodeSelect, episodeId);
+    if (
+      target === "promotion_clips"
+      && navigateExactTarget(target, episodeId)
+    ) return;
+    selectWorkflowEpisode(reviewEpisodeSelect, episodeId);
     loadProductionReviews();
     loadPublicationReadiness(episodeId);
-    reveal(
-      root.querySelector("[data-podcast-publication-readiness]"),
-      document
-    );
+    if (target && navigateExactTarget(target, episodeId)) return;
   };
 }

@@ -27,6 +27,27 @@ assert.deepEqual(
   shapeOf(spanish),
   "English and Spanish dictionaries must expose the same contract"
 );
+const englishLeaves = translationLeaves(english);
+const spanishLeaves = translationLeaves(spanish);
+assert.equal(englishLeaves.length, spanishLeaves.length);
+assert(
+  englishLeaves.length > 2_000,
+  "the established bilingual catalog unexpectedly lost substantial coverage"
+);
+for (let index = 0; index < englishLeaves.length; index += 1) {
+  const [englishPath, englishValue] = englishLeaves[index];
+  const [spanishPath, spanishValue] = spanishLeaves[index];
+  assert.equal(englishPath, spanishPath);
+  assert(englishValue.trim(), `${englishPath} has an empty English translation`);
+  assert(spanishValue.trim(), `${spanishPath} has an empty Spanish translation`);
+  assert.deepEqual(
+    placeholders(englishValue),
+    placeholders(spanishValue),
+    `${englishPath} must preserve interpolation variables across languages`
+  );
+  assert.doesNotMatch(englishValue, /\[missing:/i);
+  assert.doesNotMatch(spanishValue, /\[missing:/i);
+}
 
 const sourceFiles = await listFiles(sourceRoot);
 const templateFiles = sourceFiles.filter((file) => file.endsWith(".njk"));
@@ -54,6 +75,36 @@ for (const [file, source] of templateSources) {
         `${path.relative(repositoryRoot, file)} references missing ${language} key ${match[1]}`
       );
     }
+  }
+
+  for (const match of source.matchAll(/workbench\.([A-Za-z0-9_.]+)/g)) {
+    const key = `podcast.admin.workbench.${match[1]}`;
+    assert.notEqual(
+      valueAtPath(english, key),
+      undefined,
+      `${path.relative(repositoryRoot, file)} references missing workbench key ${key}`
+    );
+  }
+}
+
+const podcastJavascript = sourceFiles.filter((file) =>
+  file.endsWith(".js") && path.basename(file).startsWith("podcast-")
+);
+for (const file of podcastJavascript) {
+  const source = await readFile(file, "utf8");
+  for (const match of source.matchAll(/adminText\(\s*["']([^"']+)["']/g)) {
+    assert.notEqual(
+      valueAtPath(english.runtime.admin, match[1]),
+      undefined,
+      `${path.relative(repositoryRoot, file)} references missing runtime.admin.${match[1]}`
+    );
+  }
+  for (const match of source.matchAll(/translate\(\s*["']([^"']+)["']/g)) {
+    assert.notEqual(
+      valueAtPath(english.runtime, match[1]),
+      undefined,
+      `${path.relative(repositoryRoot, file)} references missing runtime.${match[1]}`
+    );
   }
 }
 
@@ -149,6 +200,98 @@ assert.match(
   /{% if i18nRuntime %}[\s\S]+dust-wave-runtime-i18n[\s\S]+{% endif %}/,
   "interactive translations must not inflate every marketing page"
 );
+assert.match(
+  head,
+  /runtimeTranslations\(i18nRuntimeSections\)/,
+  "interactive pages must ship only the translation namespaces they use"
+);
+
+const runtimeContracts = new Map([
+  ["admin/podcasts/index.njk", ["admin"]],
+  ["podcasts/account.njk", ["member"]],
+  ["podcasts/show.njk", ["checkout"]],
+  ["news/podcasts/episode.njk", ["chapters", "clips", "transcript"]]
+]);
+for (const [relativePath, sections] of runtimeContracts) {
+  const source = await readFile(path.join(sourceRoot, relativePath), "utf8");
+  assert.match(source, /^i18nRuntime: true$/m);
+  for (const section of sections) {
+    assert.match(
+      source,
+      new RegExp(`^  - ${escapeRegExp(section)}$`, "m"),
+      `${relativePath} must include the ${section} runtime namespace`
+    );
+    assert.notEqual(english.runtime[section], undefined);
+  }
+}
+
+const podcastShowTemplate = await readFile(
+  path.join(sourceRoot, "podcasts", "show.njk"),
+  "utf8"
+);
+assert.match(podcastShowTemplate, /localizedPodcastPrice\(language,/);
+assert.match(podcastShowTemplate, /set playerLanguage = language/);
+assert.match(podcastShowTemplate, /for state in usStates/);
+assert.doesNotMatch(
+  podcastShowTemplate,
+  /<option value="(?:NM|NY|WV)">/,
+  "US subdivision labels must come from the shared bilingual data source"
+);
+assert.doesNotMatch(
+  podcastShowTemplate,
+  /"año"\s+if\s+language\s*==\s*"es"\s+else\s+"year"/,
+  "billing-period copy belongs in the translation catalog"
+);
+
+const episodeTemplate = await readFile(
+  path.join(sourceRoot, "news", "podcasts", "episode.njk"),
+  "utf8"
+);
+assert.match(episodeTemplate, /readablePodcastDate\(language\)/);
+
+const embedTemplate = await readFile(
+  path.join(sourceRoot, "news", "podcasts", "embed.njk"),
+  "utf8"
+);
+assert.match(embedTemplate, /podcast\.episode\.notesOnDustWave/);
+assert.doesNotMatch(embedTemplate, /Episode notes on Dust Wave.+if/s);
+
+const playerTemplate = await readFile(
+  path.join(sourceRoot, "_includes", "snippets", "audio-player.njk"),
+  "utf8"
+);
+assert.match(playerTemplate, /runtime\.player\.playTitle/);
+assert.match(playerTemplate, /data-player-text-play-now/);
+assert.doesNotMatch(playerTemplate, /"Play "\s+if|"Reproducir "\s+if/);
+
+const adminRuntime = await readFile(
+  path.join(sourceRoot, "js", "podcast-admin.js"),
+  "utf8"
+);
+assert.doesNotMatch(
+  adminRuntime,
+  /return error\.message \|\| error\.code/,
+  "unknown server messages must not bypass the active UI language"
+);
+
+const checkoutRuntime = await readFile(
+  path.join(sourceRoot, "js", "podcast-checkout.js"),
+  "utf8"
+);
+assert.match(checkoutRuntime, /language:\s*pageLanguage/);
+assert.match(checkoutRuntime, /Intl\.DisplayNames\(\s*\[pageLanguage, "en"\]/);
+assert.match(checkoutRuntime, /Intl\.NumberFormat\(pageLanguage/);
+
+const memberRuntime = await readFile(
+  path.join(sourceRoot, "js", "podcast-member.js"),
+  "utf8"
+);
+assert.match(memberRuntime, /preferredLanguage:\s*pageLanguage/);
+assert.match(
+  memberRuntime,
+  /billing\/portal[\s\S]{0,180}body:\s*\{\s*language:\s*pageLanguage\s*\}/
+);
+assert.match(memberRuntime, /Intl\.DateTimeFormat\(pageLanguage/);
 
 const languageRuntime = await readFile(
   path.join(sourceRoot, "js", "site-i18n.js"),
@@ -186,7 +329,7 @@ assert.doesNotMatch(
 );
 
 console.log(
-  "i18n contract validation passed: one active locale, 36 translated projects, 34 data-only member cards, authored-language News."
+  `i18n contract validation passed: ${englishLeaves.length} bilingual messages, scoped interactive catalogs, one active locale, 36 translated projects, 34 data-only member cards, authored-language News.`
 );
 
 async function readJson(file) {
@@ -221,6 +364,28 @@ function shapeOf(value, prefix = "") {
       .flatMap((key) => shapeOf(value[key], prefix ? `${prefix}.${key}` : key));
   }
   return [`${prefix}:${typeof value}`];
+}
+
+function translationLeaves(value, prefix = "") {
+  if (Array.isArray(value)) {
+    return value.flatMap((item, index) =>
+      translationLeaves(item, `${prefix}[${index}]`)
+    );
+  }
+  if (value && typeof value === "object") {
+    return Object.keys(value)
+      .sort()
+      .flatMap((key) =>
+        translationLeaves(value[key], prefix ? `${prefix}.${key}` : key)
+      );
+  }
+  return typeof value === "string" ? [[prefix, value]] : [];
+}
+
+function placeholders(value) {
+  return Array.from(String(value).matchAll(/%\{([^}]+)\}/g))
+    .map((match) => match[1])
+    .sort();
 }
 
 function escapeRegExp(value) {

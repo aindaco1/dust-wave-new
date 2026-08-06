@@ -20,7 +20,7 @@ export function renderShowCatalog({
           ? text("configured")
           : text("off"))}</dd></div>
       </dl>
-      <p><a href="${escapeAttribute(show.canonicalUrl)}">${escapeHtml(text("canonicalShowPage"))}</a></p>`;
+      <p><a class="btn btn-outline-light" href="${escapeAttribute(show.canonicalUrl)}">${escapeHtml(text("canonicalShowPage"))}</a></p>`;
     return card;
   }));
 }

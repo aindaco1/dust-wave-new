@@ -679,12 +679,12 @@ li p { margin-bottom: 0; }
     width: 1.25rem;
   }
 
-  .site-footer__newsletter {
+  .site-footer__updates {
     grid-area: newsletter;
     justify-content: flex-end;
   }
 
-  .site-footer__newsletter a {
+  .site-footer__updates a {
     align-items: center;
     display: inline-flex;
     min-height: 2.75rem;
@@ -793,7 +793,7 @@ li p { margin-bottom: 0; }
 .podcast-tier-card__label,
 .podcast-show__empty-kicker {
   margin-bottom: .75rem;
-  color: #f34a36;
+  color: #ff8b7e;
   font-size: .8rem;
   font-weight: 700;
   letter-spacing: .14em;

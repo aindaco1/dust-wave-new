@@ -12,22 +12,30 @@ import {
 } from "node:fs/promises";
 import { homedir, tmpdir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
+import {
+  assertPodcastAdminSpacingContract,
+  assertPodcastAdminTabMatrixContract,
+  assertPodcastAdminTraceContract,
+  PODCAST_ADMIN_EPISODE_TRANSITIONS,
+  PODCAST_ADMIN_TRACE_TABS,
+  podcastAdminTraceContractSummary
+} from "./lib/podcast-admin-trace-contract.mjs";
+import { navigatePodcastAdminTrace } from
+  "./lib/podcast-admin-cdp-navigation.mjs";
 
 const DEFAULT_URL =
   "https://dust-wave-website-staging.pages.dev/admin/podcasts/";
 const DEFAULT_DURATION_SECONDS = 8;
 const DEFAULT_VIEWPORT = "1440x900";
-const ADMIN_TABS = new Set([
-  "overview",
-  "episodes",
+const MAX_AUTHENTICATED_CLS = 0.1;
+const TRACE_DEBUG = process.env.PODCAST_TRACE_DEBUG === "1";
+const ADMIN_TABS = new Set([...PODCAST_ADMIN_TRACE_TABS, "all"]);
+const ADMIN_GROUPS = new Set([
   "production",
-  "distribution",
-  "marketing",
-  "sponsors",
   "analytics",
   "subscribers",
-  "billing",
-  "settings"
+  "sponsors",
+  "billing"
 ]);
 const SUPPORTED_EXECUTABLE_NAMES = new Set([
   "chrome",
@@ -54,8 +62,9 @@ const SAFE_CHROME_STARTUP_DOCUMENTS = new Set([
   "chrome://newtab/",
   "chrome://webui-toolbar.top-chrome/"
 ]);
-const CSP_VIOLATION_PROBE = `(() => {
+const RUNTIME_PROBE = `(() => {
   globalThis.__dustWaveCspViolations = [];
+  globalThis.__dustWaveCumulativeLayoutShift = 0;
   document.addEventListener("securitypolicyviolation", (event) => {
     globalThis.__dustWaveCspViolations.push({
       blockedUrl: event.blockedURI,
@@ -65,7 +74,310 @@ const CSP_VIOLATION_PROBE = `(() => {
       sourceFile: event.sourceFile
     });
   });
+  try {
+    new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        if (!entry.hadRecentInput) {
+          globalThis.__dustWaveCumulativeLayoutShift += entry.value;
+        }
+      }
+    }).observe({ type: "layout-shift", buffered: true });
+  } catch {
+    globalThis.__dustWaveCumulativeLayoutShift = null;
+  }
 })();`;
+const LAYOUT_PROBE = `(() => {
+  const activePanel = document.querySelector(
+    '.podcast-admin__panel[role="tabpanel"]:not([hidden])'
+  );
+  const root = activePanel || document.querySelector('main') || document.body;
+  const isInsideIntentionalScroller = (element) => {
+    for (
+      let ancestor = element.parentElement;
+      ancestor && ancestor !== root.parentElement;
+      ancestor = ancestor.parentElement
+    ) {
+      const overflowX = getComputedStyle(ancestor).overflowX;
+      if (
+        (overflowX === 'auto' || overflowX === 'scroll')
+        && ancestor.scrollWidth > ancestor.clientWidth + 1
+      ) {
+        return true;
+      }
+    }
+    return false;
+  };
+  const viewportOverflow = Array.from(root.querySelectorAll('*'))
+    .flatMap((element) => {
+      const style = getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      if (
+        style.display === 'none'
+        || style.visibility === 'hidden'
+        || rect.width <= 0
+        || rect.height <= 0
+        || isInsideIntentionalScroller(element)
+        || (rect.left >= -1 && rect.right <= innerWidth + 1)
+      ) {
+        return [];
+      }
+      return [{
+        tag: element.tagName.toLowerCase(),
+        id: element.id || null,
+        classes: Array.from(element.classList).slice(0, 4),
+        left: Math.round(rect.left),
+        right: Math.round(rect.right),
+        width: Math.round(rect.width)
+      }];
+    })
+    .slice(0, 20);
+  const listItemMarginViolations = Array.from(root.querySelectorAll('li'))
+    .flatMap((element) => {
+      const style = getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      const marginStart = Number.parseFloat(style.marginInlineStart) || 0;
+      const marginEnd = Number.parseFloat(style.marginInlineEnd) || 0;
+      if (
+        style.display === 'none'
+        || style.visibility === 'hidden'
+        || rect.width <= 0
+        || rect.height <= 0
+        || (Math.abs(marginStart) <= 0.5 && Math.abs(marginEnd) <= 0.5)
+      ) {
+        return [];
+      }
+      return [{
+        classes: Array.from(element.classList).slice(0, 4),
+        marginStart,
+        marginEnd,
+        text: String(element.textContent || '')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .slice(0, 100)
+      }];
+    })
+    .slice(0, 20);
+  const listActionGapViolations = Array.from(root.querySelectorAll('ul, ol'))
+    .flatMap((list) => {
+      const actions = list.nextElementSibling;
+      if (!actions?.matches?.(
+        '.podcast-admin__directory-links, '
+        + '.podcast-admin__form-actions, '
+        + '.podcast-admin__release-channel-actions, button, .btn'
+      )) return [];
+      const listStyle = getComputedStyle(list);
+      const actionStyle = getComputedStyle(actions);
+      const listRect = list.getBoundingClientRect();
+      const actionRect = actions.getBoundingClientRect();
+      const gap = actionRect.top - listRect.bottom;
+      if (
+        listStyle.display === 'none'
+        || actionStyle.display === 'none'
+        || listRect.height <= 0
+        || actionRect.height <= 0
+        || gap >= 8
+      ) return [];
+      return [{
+        gap: Math.round(gap * 100) / 100,
+        listClasses: Array.from(list.classList).slice(0, 4),
+        actionClasses: Array.from(actions.classList).slice(0, 4)
+      }];
+    })
+    .slice(0, 20);
+  return {
+    innerWidth,
+    innerHeight,
+    scrollWidth: document.documentElement.scrollWidth,
+    viewportOverflow,
+    listItemMarginViolations,
+    listActionGapViolations,
+    authenticatedAdmin:
+      document.querySelector('[data-podcast-app]')?.hidden === false,
+    cumulativeLayoutShift: globalThis.__dustWaveCumulativeLayoutShift ?? null,
+    securityPolicyViolations: globalThis.__dustWaveCspViolations ?? null,
+    activeTab: document.querySelector(
+      '[role="tab"][aria-selected="true"]'
+    )?.dataset.tab ?? null,
+    activeGroups: Array.from(root.querySelectorAll(
+      '[data-podcast-workspace-group][open]'
+    )).map((group) => group.dataset.podcastWorkspaceGroup),
+    sectionSwitchers: Array.from(root.querySelectorAll(
+      '[data-podcast-section-tabs]'
+    )).map((switcher) => {
+      const tabs = Array.from(switcher.querySelectorAll(
+        ':scope > nav [role="tab"]'
+      ));
+      const panels = Array.from(switcher.querySelectorAll(
+        ':scope > [role="tabpanel"]'
+      ));
+      const tabList = switcher.querySelector(':scope > nav [role="tablist"]');
+      const mobileSelect = switcher.querySelector(
+        ':scope > nav > .dw-admin-mobile-tabs'
+      );
+      return {
+        name: switcher.dataset.podcastSectionTabs,
+        tabCount: tabs.length,
+        selectedCount: tabs.filter(
+          (tab) => tab.getAttribute('aria-selected') === 'true'
+        ).length,
+        visiblePanelCount: panels.filter(
+          (panel) => !panel.hidden && panel.getClientRects().length > 0
+        ).length,
+        tabListVisible: Boolean(tabList?.getClientRects().length),
+        mobileSelectVisible: Boolean(mobileSelect?.getClientRects().length),
+        tabRowCount: new Set(tabs.map((tab) => (
+          Math.round(tab.getBoundingClientRect().top)
+        ))).size
+      };
+    }),
+    launchLab: (() => {
+      const panel = document.querySelector('[data-podcast-launch-lab]');
+      const evidence = document.querySelector(
+        '[data-podcast-launch-lab-evidence]'
+      );
+      const providerGroups = Array.from(document.querySelectorAll(
+        '[data-podcast-launch-lab-providers] > details'
+      ));
+      return {
+        visible: Boolean(panel && !panel.hidden),
+        metricCount: document.querySelectorAll(
+          '[data-podcast-launch-lab-metrics] > div'
+        ).length,
+        providerCount: providerGroups.length,
+        evidenceOpen: evidence?.open ?? null,
+        openProviderCount: providerGroups.filter((group) => group.open).length
+      };
+    })(),
+    episodeWorkflow: (() => {
+      const panel = document.querySelector('#podcast-panel-episodes');
+      const form = panel?.querySelector('[data-podcast-episode-form]');
+      const workflowSelect = panel?.querySelector(
+        '#podcast-publish-workflow-section'
+      );
+      const workflowTabs = panel?.querySelector(
+        '.podcast-admin__workflow-menu .dw-admin-workflow__list'
+      );
+      const workflowButtons = Array.from(
+        workflowTabs?.querySelectorAll('[data-workflow-step]') || []
+      );
+      const workflowTabRect = workflowTabs?.getBoundingClientRect();
+      const workflowSelectRect = workflowSelect?.getClientRects().length
+        ? workflowSelect.getBoundingClientRect()
+        : null;
+      const blockerNavigation = panel?.querySelector(
+        '[data-podcast-workflow-blockers]'
+      );
+      const blockerNavigationRect = blockerNavigation?.getBoundingClientRect();
+      const blockerLinks = Array.from(blockerNavigation?.querySelectorAll(
+        '[data-podcast-workflow-blocker-step]'
+      ) || []);
+      const workflowControlRect = workflowSelectRect || workflowTabRect;
+      const visibleControlledSections = Array.from(
+        panel?.querySelectorAll('[data-podcast-workflow-panels]') || []
+      ).filter((section) => (
+        !section.hidden
+        && !section.classList.contains('is-workflow-hidden')
+        && section.getClientRects().length > 0
+      ));
+      return {
+        activeStep: panel?.dataset.podcastWorkflowStep || '',
+        stepCount: panel?.querySelectorAll('[data-workflow-step]').length ?? 0,
+        visibleControlledSectionCount: visibleControlledSections.length,
+        manualRefreshCount: panel?.querySelectorAll(
+          '[data-podcast-readiness-refresh], '
+          + '.podcast-admin__publish-workflow '
+          + '.podcast-admin__panel-heading > button'
+        ).length ?? 0,
+        currentEpisodeId: panel?.querySelector(
+          '[data-podcast-current-episode]'
+        )?.value || '',
+        formMode: form?.dataset.episodeMode || '',
+        titlePresent: Boolean(form?.elements?.title?.value.trim()),
+        responsiveSelectVisible: Boolean(
+          workflowSelect?.getClientRects().length
+        ),
+        tabListVisible: Boolean(workflowTabs?.getClientRects().length),
+        tabListWidth: workflowTabRect?.width || 0,
+        tabListHeight: workflowTabRect?.height || 0,
+        tabColumnCount: new Set(workflowButtons.map((button) => (
+          Math.round(button.getBoundingClientRect().left)
+        ))).size,
+        tabRowCount: new Set(workflowButtons.map((button) => (
+          Math.round(button.getBoundingClientRect().top)
+        ))).size,
+        blockerNavigationVisible: Boolean(
+          blockerNavigation?.getClientRects().length
+        ),
+        blockerReadinessState:
+          blockerNavigation?.dataset.podcastWorkflowReadiness || '',
+        blockerDeclaredCount: Number(
+          blockerNavigation?.dataset.podcastWorkflowBlockerCount
+        ),
+        blockerLinkCount: blockerLinks.length,
+        blockerLinkSteps: blockerLinks.map((link) => (
+          link.dataset.podcastWorkflowBlockerStep || ''
+        )),
+        blockerNavigationGap: workflowControlRect && blockerNavigationRect
+          ? blockerNavigationRect.top - workflowControlRect.bottom
+          : null
+      };
+    })(),
+    distribution: (() => {
+      const guidance = document.querySelector(
+        '.podcast-admin__distribution-guidance'
+      );
+      const distributionRoot = document.querySelector(
+        '[data-podcast-distribution]'
+      );
+      const directories = Array.from(document.querySelectorAll(
+        '.podcast-admin__directory-card'
+      ));
+      const openDirectory = directories.find((directory) => directory.open);
+      const directoryDetails = openDirectory?.querySelector(
+        ':scope > .podcast-admin__directory-details'
+      );
+      const certificationRow = openDirectory?.querySelector(
+        ':scope > .podcast-admin__certification-list > li'
+      );
+      const certificationList = openDirectory?.querySelector(
+        ':scope > .podcast-admin__certification-list'
+      );
+      const directoryActions = openDirectory?.querySelector(
+        ':scope > .podcast-admin__directory-links'
+      );
+      const detailsRect = directoryDetails?.getBoundingClientRect();
+      const rowRect = certificationRow?.getBoundingClientRect();
+      const certificationRect = certificationList?.getBoundingClientRect();
+      const actionsRect = directoryActions?.getBoundingClientRect();
+      return {
+        guidancePresent: Boolean(guidance),
+        guidanceOpen: guidance?.open ?? null,
+        directoryCount: directories.length,
+        actionableDirectoryCount: directories.filter(
+          (directory) => directory.dataset.actionable === 'true'
+        ).length,
+        openDirectoryCount: directories.filter((directory) => directory.open)
+          .length,
+        summaryCount: directories.filter((directory) => Boolean(
+          directory.querySelector(
+            'summary .podcast-admin__directory-heading p'
+          )
+        )).length,
+        certificationRowInset: detailsRect && rowRect ? {
+          start: Math.round((rowRect.left - detailsRect.left) * 100) / 100,
+          end: Math.round((detailsRect.right - rowRect.right) * 100) / 100
+        } : null,
+        certificationActionGap: certificationRect && actionsRect
+          ? Math.round((actionsRect.top - certificationRect.bottom) * 100) / 100
+          : null,
+        statusText: String(distributionRoot?.textContent || '')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .slice(0, 240)
+      };
+    })()
+  };
+})()`;
 
 function usage() {
   return `Capture an isolated Chrome performance trace for Podcast Admin.
@@ -79,7 +391,8 @@ Options:
   --duration <seconds>    Recording time, 3-60 (default: ${DEFAULT_DURATION_SECONDS})
   --viewport <WIDTHxHEIGHT>
                           Browser viewport (default: ${DEFAULT_VIEWPORT})
-  --admin-tab <name>      Open a specific admin tab before recording
+  --admin-tab <name|all>  Open one admin tab, or audit all six in one session
+  --admin-group <name>    Open a contextual workspace within that tab
   --chrome <path>         Chrome/Chromium executable
   --help                  Show this help
 
@@ -148,6 +461,16 @@ function validateAdminTab(value) {
     );
   }
   return tab;
+}
+
+function validateAdminGroup(value) {
+  const group = String(value || "").trim();
+  if (group && !ADMIN_GROUPS.has(group)) {
+    throw new Error(
+      `Admin group must be one of: ${[...ADMIN_GROUPS].join(", ")}.`
+    );
+  }
+  return group;
 }
 
 function assertSupportedExecutable(candidate) {
@@ -266,6 +589,25 @@ function delay(milliseconds) {
   return new Promise((resolveDelay) => setTimeout(resolveDelay, milliseconds));
 }
 
+async function waitForTargetDocument(cdp, url) {
+  const deadline = Date.now() + 15_000;
+  while (Date.now() < deadline) {
+    try {
+      const result = await cdp.send("Runtime.evaluate", {
+        expression:
+          `({ href: location.href, readyState: document.readyState })`,
+        returnByValue: true
+      });
+      const state = result.result?.value;
+      if (state?.href === url && state.readyState !== "loading") return;
+    } catch {
+      // Navigation can replace the execution context between polls.
+    }
+    await delay(100);
+  }
+  throw new Error("Chrome did not finish loading the requested trace URL.");
+}
+
 async function connectToCdp(
   profileDirectory,
   child,
@@ -364,6 +706,9 @@ class CdpSession {
         resolve: resolveResult,
         timeout
       });
+      if (TRACE_DEBUG) {
+        process.stderr.write(`CDP send ${id}: ${method}\n`);
+      }
       this.socket.send(JSON.stringify({ id, method, params }));
     });
   }
@@ -409,6 +754,12 @@ class CdpSession {
     if (Number.isInteger(message.id)) {
       const pending = this.pending.get(message.id);
       if (!pending) return;
+      if (TRACE_DEBUG) {
+        process.stderr.write(
+          `CDP receive ${message.id}: ${pending.method}`
+          + `${message.error ? " (error)" : ""}\n`
+        );
+      }
       this.pending.delete(message.id);
       clearTimeout(pending.timeout);
       if (message.error) {
@@ -438,7 +789,162 @@ class CdpSession {
   }
 }
 
+async function measureLayout(cdp) {
+  const measured = await cdp.send("Runtime.evaluate", {
+    expression: LAYOUT_PROBE,
+    returnByValue: true
+  });
+  return measured.result?.value;
+}
+
+function assertLayoutObservation(observed, {
+  adminGroup,
+  adminTab,
+  viewport
+}) {
+  if (!Array.isArray(observed?.securityPolicyViolations)) {
+    throw new Error(
+      "Chrome did not install the CSP violation probe before navigation."
+    );
+  }
+  if (!Number.isFinite(observed?.cumulativeLayoutShift)) {
+    throw new Error(
+      "Chrome did not install the layout-shift performance probe before navigation."
+    );
+  }
+  const enforcedViolations = observed.securityPolicyViolations.filter(
+    (violation) => violation?.disposition !== "report"
+  );
+  if (enforcedViolations.length > 0) {
+    throw new Error(
+      "The page triggered enforced Content Security Policy violations: "
+      + JSON.stringify(enforcedViolations)
+    );
+  }
+  if (
+    observed?.innerWidth !== viewport.width
+    || observed?.innerHeight !== viewport.height
+    || observed?.scrollWidth > viewport.width
+    || observed?.viewportOverflow?.length > 0
+  ) {
+    throw new Error(
+      "Chrome did not honor the exact requested viewport or the page "
+      + "overflowed horizontally. "
+      + `Expected ${viewport.width}x${viewport.height}; observed `
+      + `${observed?.innerWidth ?? "unknown"}x`
+      + `${observed?.innerHeight ?? "unknown"} with `
+      + `${observed?.scrollWidth ?? "unknown"}px document width. `
+      + `Clipped elements: ${JSON.stringify(observed?.viewportOverflow ?? [])}`
+    );
+  }
+  if (adminTab && observed?.activeTab !== adminTab) {
+    throw new Error(
+      `Chrome did not activate the requested admin tab "${adminTab}". `
+      + `Observed: "${observed?.activeTab ?? "none"}".`
+    );
+  }
+  if (adminGroup && !observed?.activeGroups?.includes(adminGroup)) {
+    throw new Error(
+      `Chrome did not open the requested admin group "${adminGroup}".`
+    );
+  }
+  if (
+    observed.authenticatedAdmin
+    && observed.cumulativeLayoutShift > MAX_AUTHENTICATED_CLS
+  ) {
+    throw new Error(
+      "Authenticated Podcast Admin exceeded the good CLS threshold. "
+      + `Observed ${observed.cumulativeLayoutShift.toFixed(4)}; `
+      + `maximum ${MAX_AUTHENTICATED_CLS.toFixed(1)}.`
+    );
+  }
+  assertPodcastAdminSpacingContract(observed);
+  assertPodcastAdminTraceContract(observed, { adminTab });
+}
+
+async function activateAdminTab(cdp, adminTab) {
+  const selector = `[role="tab"][data-tab="${adminTab}"]`;
+  const activation = await cdp.send("Runtime.evaluate", {
+    expression:
+      `(() => { const tab = document.querySelector(${JSON.stringify(selector)});`
+      + `if (!tab) return false; tab.click(); return true; })()`,
+    returnByValue: true
+  });
+  if (activation.result?.value !== true) {
+    throw new Error(`Chrome could not find admin tab "${adminTab}".`);
+  }
+}
+
+async function waitForAdminTabObservation(cdp, adminTab) {
+  const deadline = Date.now() + 8_000;
+  let observed;
+  do {
+    observed = await measureLayout(cdp);
+    const distributionReady = adminTab !== "distribution"
+      || observed?.distribution?.directoryCount >= 10;
+    const episodeWorkflowReady = adminTab !== "episodes"
+      || (
+        observed?.episodeWorkflow?.formMode === "edit"
+        && observed?.episodeWorkflow?.blockerReadinessState === "loaded"
+      );
+    if (
+      observed?.authenticatedAdmin
+      && observed?.activeTab === adminTab
+      && distributionReady
+      && episodeWorkflowReady
+    ) {
+      return observed;
+    }
+    await delay(250);
+  } while (Date.now() < deadline);
+  return observed;
+}
+
+async function auditEpisodeWorkflowTransitions(cdp) {
+  const result = await cdp.send("Runtime.evaluate", {
+    expression: `(() => {
+      const root = document.querySelector('#podcast-panel-episodes');
+      const steps = ${JSON.stringify(PODCAST_ADMIN_EPISODE_TRANSITIONS)};
+      const startScroll = window.scrollY;
+      const transitions = [];
+      for (const step of steps) {
+        const button = root?.querySelector(
+          '[data-workflow-step="' + step + '"]'
+        );
+        if (!button) {
+          transitions.push({ step, missingButton: true });
+          continue;
+        }
+        button.click();
+        const visiblePanels = Array.from(root.querySelectorAll(
+          '[data-podcast-workflow-panels]'
+        )).filter((section) => (
+          !section.hidden
+          && !section.classList.contains('is-workflow-hidden')
+          && section.getClientRects().length > 0
+        ));
+        transitions.push({
+          step,
+          activeStep: root.dataset.podcastWorkflowStep || '',
+          visibleCount: visiblePanels.length,
+          leakCount: visiblePanels.filter((section) => !String(
+            section.dataset.podcastWorkflowPanels || ''
+          ).split(/\\s+/).includes(step)).length,
+          visiblePanelSteps: visiblePanels.map((section) => (
+            section.dataset.podcastWorkflowPanels || ''
+          )),
+          scrollDelta: Math.abs(window.scrollY - startScroll)
+        });
+      }
+      return transitions;
+    })()`,
+    returnByValue: true
+  });
+  return result.result?.value || [];
+}
+
 async function captureTrace({
+  adminGroup,
   adminTab,
   cdp,
   durationSeconds,
@@ -447,17 +953,29 @@ async function captureTrace({
   viewport
 }) {
   const mobile = viewport.width < 768;
+  const adminGroupSelector = adminGroup
+    ? `[data-podcast-workspace-group="${adminGroup}"]`
+    : "";
   await cdp.send("Page.enable");
   await cdp.send("Runtime.enable");
   await cdp.send("Page.addScriptToEvaluateOnNewDocument", {
-    source: CSP_VIOLATION_PROBE
+    source: RUNTIME_PROBE
   });
   if (adminTab) {
     await cdp.send("Page.addScriptToEvaluateOnNewDocument", {
       source:
         `sessionStorage.setItem("dustwave-podcast-admin-tab", ${
-          JSON.stringify(adminTab)
+          JSON.stringify(adminTab === "all" ? "episodes" : adminTab)
         });`
+    });
+  }
+  if (adminGroup) {
+    await cdp.send("Page.addScriptToEvaluateOnNewDocument", {
+      source:
+        `document.addEventListener("DOMContentLoaded", () => {`
+        + `document.querySelector(${JSON.stringify(adminGroupSelector)}`
+        + `)?.setAttribute("open", "");`
+        + `}, { once: true });`
     });
   }
   await cdp.send("Emulation.setDeviceMetricsOverride", {
@@ -480,56 +998,48 @@ async function captureTrace({
     options: "record-as-much-as-possible",
     transferMode: "ReturnAsStream"
   });
-  const navigation = await cdp.send("Page.navigate", { url });
-  if (navigation.errorText) {
-    throw new Error(`Chrome navigation failed: ${navigation.errorText}.`);
+  await navigatePodcastAdminTrace(cdp, url);
+  await waitForTargetDocument(cdp, url);
+  if (adminGroup) {
+    await cdp.send("Runtime.evaluate", {
+      expression:
+        `(() => { const group = document.querySelector(`
+        + `${JSON.stringify(adminGroupSelector)});`
+        + `group?.setAttribute("open", "");`
+        + `group?.scrollIntoView({ block: "start" }); })();`
+    });
   }
   await delay(durationSeconds * 1_000);
-  const measured = await cdp.send("Runtime.evaluate", {
-    expression:
-      "({ innerWidth, innerHeight, "
-      + "scrollWidth: document.documentElement.scrollWidth, "
-      + "securityPolicyViolations: "
-      + "globalThis.__dustWaveCspViolations ?? null, "
-      + "activeTab: document.querySelector("
-      + "'[role=\"tab\"][aria-selected=\"true\"]'"
-      + ")?.dataset.tab ?? null })",
-    returnByValue: true
-  });
-  const observed = measured.result?.value;
-  if (!Array.isArray(observed?.securityPolicyViolations)) {
-    throw new Error(
-      "Chrome did not install the CSP violation probe before navigation."
-    );
-  }
-  const enforcedViolations = observed.securityPolicyViolations.filter(
-    (violation) => violation?.disposition !== "report"
-  );
-  if (enforcedViolations.length > 0) {
-    throw new Error(
-      "The page triggered enforced Content Security Policy violations: "
-      + JSON.stringify(enforcedViolations)
-    );
-  }
-  if (
-    observed?.innerWidth !== viewport.width
-    || observed?.innerHeight !== viewport.height
-    || observed?.scrollWidth > viewport.width
-  ) {
-    throw new Error(
-      "Chrome did not honor the exact requested viewport or the page "
-      + "overflowed horizontally. "
-      + `Expected ${viewport.width}x${viewport.height}; observed `
-      + `${observed?.innerWidth ?? "unknown"}x`
-      + `${observed?.innerHeight ?? "unknown"} with `
-      + `${observed?.scrollWidth ?? "unknown"}px document width.`
-    );
-  }
-  if (adminTab && observed?.activeTab !== adminTab) {
-    throw new Error(
-      `Chrome did not activate the requested admin tab "${adminTab}". `
-      + `Observed: "${observed?.activeTab ?? "none"}".`
-    );
+  let observed;
+  if (adminTab === "all") {
+    const tabMatrix = [];
+    for (const tab of PODCAST_ADMIN_TRACE_TABS) {
+      await activateAdminTab(cdp, tab);
+      let tabObservation = await waitForAdminTabObservation(cdp, tab);
+      if (tab === "episodes") {
+        const transitions = await auditEpisodeWorkflowTransitions(cdp);
+        await delay(100);
+        tabObservation = await waitForAdminTabObservation(cdp, tab);
+        tabObservation.episodeWorkflow.transitions = transitions;
+      }
+      assertLayoutObservation(tabObservation, {
+        adminGroup: null,
+        adminTab: tab,
+        viewport
+      });
+      tabMatrix.push(tabObservation);
+    }
+    assertPodcastAdminTabMatrixContract(tabMatrix);
+    observed = { ...tabMatrix.at(-1), tabMatrix };
+  } else {
+    observed = await measureLayout(cdp);
+    if (adminTab === "episodes") {
+      const transitions = await auditEpisodeWorkflowTransitions(cdp);
+      await delay(100);
+      observed = await waitForAdminTabObservation(cdp, adminTab);
+      observed.episodeWorkflow.transitions = transitions;
+    }
+    assertLayoutObservation(observed, { adminGroup, adminTab, viewport });
   }
   const tracingComplete = cdp.waitForEvent(
     "Tracing.tracingComplete",
@@ -635,6 +1145,13 @@ async function main() {
     argumentsMap.get("viewport") || DEFAULT_VIEWPORT
   );
   const adminTab = validateAdminTab(argumentsMap.get("admin-tab"));
+  const adminGroup = validateAdminGroup(argumentsMap.get("admin-group"));
+  if (adminTab === "all" && adminGroup) {
+    throw new Error(
+      "--admin-group cannot be combined with --admin-tab all. "
+      + "Run the contextual workspace as a focused trace instead."
+    );
+  }
   const chromePath = await findChrome(argumentsMap.get("chrome"));
   const timestamp = new Date().toISOString().replaceAll(":", "-");
   const outputPath = resolve(
@@ -695,6 +1212,7 @@ async function main() {
       () => launchError
     );
     const observed = await captureTrace({
+      adminGroup,
       adminTab,
       cdp,
       durationSeconds,
@@ -706,6 +1224,10 @@ async function main() {
     await stopChrome(child);
     await verifyJsonTrace(outputPath, url);
     const traceDetails = await stat(outputPath);
+    const contractSummary = podcastAdminTraceContractSummary(
+      observed,
+      { adminTab }
+    );
     process.stdout.write(
       [
         "Podcast Admin Chrome trace captured.",
@@ -713,7 +1235,12 @@ async function main() {
         `Viewport: ${viewport.width}x${viewport.height}`,
         `Verified CSS viewport: ${observed.innerWidth}x${observed.innerHeight}`,
         `Document width: ${observed.scrollWidth}px`,
-        `Active admin tab: ${observed.activeTab || "not detected"}`,
+        `Authenticated admin: ${observed.authenticatedAdmin ? "yes" : "no"}`,
+        `Cumulative layout shift: ${observed.cumulativeLayoutShift.toFixed(4)}`,
+        adminTab === "all"
+          ? `Final admin tab: ${observed.activeTab || "not detected"}`
+          : `Active admin tab: ${observed.activeTab || "not detected"}`,
+        ...(contractSummary ? [contractSummary] : []),
         `Duration: ${durationSeconds}s`,
         `Trace: ${outputPath}`,
         `Size: ${traceDetails.size.toLocaleString("en-US")} bytes`,

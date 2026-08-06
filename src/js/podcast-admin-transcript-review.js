@@ -118,6 +118,15 @@ export function transcriptCuePlainText(value) {
     .trim();
 }
 
+export function canAcknowledgeTranscriptSpeakerLabels(cues) {
+  return Array.isArray(cues)
+    && cues.length > 0
+    && cues.every((cue) =>
+      !String(cue?.speakerLabel || "").trim()
+      || cue?.speakerConfirmed === true
+    );
+}
+
 export function millisecondsToTimestamp(value) {
   const totalMilliseconds = Math.max(0, Math.round(Number(value || 0)));
   const minutes = Math.floor(totalMilliseconds / 60_000);

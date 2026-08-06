@@ -3,6 +3,7 @@ import test from "node:test";
 
 import {
   mountChapterDraftAssistant,
+  normalizeChapterDraftCollection,
   normalizeChapterDraftResponse
 } from "../src/js/podcast-admin-chapter-draft.js";
 
@@ -48,10 +49,14 @@ test("accepts only complete, bounded, review-only chapter proposals", () => {
       source: {
         language: "es",
         revision: 4,
+        contentSha256: "a".repeat(64),
         includedCueCount: 12,
-        totalCueCount: 12
+        totalCueCount: 12,
+        truncated: false
       },
-      outputLanguage: "es"
+      outputLanguage: "es",
+      reviewRequired: true,
+      saved: false
     }
   );
   assert.throws(() => normalizeChapterDraftResponse({
@@ -77,25 +82,58 @@ test("accepts only complete, bounded, review-only chapter proposals", () => {
   }), /title is invalid/);
 });
 
+test("accepts only alignment-pinned saved proposal collections", () => {
+  const saved = {
+    ...responsePayload,
+    id: "editorial_chapter_draft_fixture",
+    source: {
+      ...responsePayload.source,
+      alignmentRevisionId: "alignment_revision_fixture"
+    },
+    draftSha256: "b".repeat(64),
+    completedAt: "2026-07-30 10:05:00",
+    saved: true
+  };
+  const [normalized] = normalizeChapterDraftCollection({
+    episodeId: "episode_fixture",
+    drafts: [saved]
+  });
+  assert.equal(normalized.saved, true);
+  assert.equal(
+    normalized.source.alignmentRevisionId,
+    "alignment_revision_fixture"
+  );
+  assert.throws(() => normalizeChapterDraftCollection({
+    episodeId: "episode_fixture",
+    drafts: [{ ...saved, source: responsePayload.source }]
+  }), /evidence is invalid/);
+});
+
 test("keeps generated chapters in review until explicit unsaved application", async () => {
   const fixture = chapterDraftFixture();
   const assistant = mountChapterDraftAssistant(fixture.options);
 
   assistant.setEditable(true);
-  assistant.setEpisode("episode_fixture", "es");
+  await assistant.setEpisode("episode_fixture", "es");
   assert.equal(fixture.root.hidden, false);
   await fixture.controls.generate.dispatch("click");
 
-  assert.deepEqual(fixture.requests, [{
-    path: "/v1/admin/episodes/episode_fixture/chapters/draft",
-    options: {
-      method: "POST",
-      body: {
-        sourceLanguage: "es",
-        outputLanguage: "es"
+  assert.deepEqual(fixture.requests, [
+    {
+      path: "/v1/admin/episodes/episode_fixture/chapters/drafts",
+      options: undefined
+    },
+    {
+      path: "/v1/admin/episodes/episode_fixture/chapters/draft",
+      options: {
+        method: "POST",
+        body: {
+          sourceLanguage: "es",
+          outputLanguage: "es"
+        }
       }
     }
-  }]);
+  ]);
   assert.equal(fixture.controls.review.hidden, false);
   assert.equal(fixture.controls.list.children.length, 2);
   assert.equal(fixture.applied.length, 0);
@@ -103,7 +141,7 @@ test("keeps generated chapters in review until explicit unsaved application", as
 
   await fixture.controls.apply.dispatch("click");
   assert.deepEqual(fixture.applied, [responsePayload.draft.chapters]);
-  assert.equal(fixture.requests.length, 1);
+  assert.equal(fixture.requests.length, 2);
   assert.equal(fixture.statuses.at(-1).text, "chapterDraftApplied");
   assert.equal(fixture.controls.apply.disabled, true);
 });
@@ -116,14 +154,43 @@ test("does not replace existing chapter work without confirmation", async () => 
   const assistant = mountChapterDraftAssistant(fixture.options);
 
   assistant.setEditable(true);
-  assistant.setEpisode("episode_fixture", "es");
+  await assistant.setEpisode("episode_fixture", "es");
   await fixture.controls.generate.dispatch("click");
   await fixture.controls.apply.dispatch("click");
 
   assert.equal(fixture.applied.length, 0);
 });
 
+test("loads an automatic proposal without applying or saving it", async () => {
+  const saved = {
+    ...responsePayload,
+    id: "editorial_chapter_draft_fixture",
+    source: {
+      ...responsePayload.source,
+      alignmentRevisionId: "alignment_revision_fixture"
+    },
+    draftSha256: "b".repeat(64),
+    completedAt: "2026-07-30 10:05:00",
+    saved: true
+  };
+  const fixture = chapterDraftFixture({ automaticDrafts: [saved] });
+  const assistant = mountChapterDraftAssistant(fixture.options);
+
+  assistant.setEditable(true);
+  await assistant.setEpisode("episode_fixture", "es");
+
+  assert.equal(fixture.controls.review.hidden, false);
+  assert.equal(fixture.controls.list.children.length, 2);
+  assert.equal(fixture.applied.length, 0);
+  assert.equal(fixture.statuses.at(-1).text, "chapterDraftAutomaticReady");
+  assert.deepEqual(fixture.requests, [{
+    path: "/v1/admin/episodes/episode_fixture/chapters/drafts",
+    options: undefined
+  }]);
+});
+
 function chapterDraftFixture({
+  automaticDrafts = [],
   hasExistingChapters = () => false,
   confirmReplace = () => true
 } = {}) {
@@ -166,6 +233,12 @@ function chapterDraftFixture({
       client: {
         async request(path, options) {
           requests.push({ path, options });
+          if (path.endsWith("/chapters/drafts")) {
+            return structuredClone({
+              episodeId: "episode_fixture",
+              drafts: automaticDrafts
+            });
+          }
           return structuredClone(responsePayload);
         }
       },

@@ -7,6 +7,9 @@ import {
 } from "./dust-wave-admin-shell/turnstile.js?v=0.10.2";
 
 const translate = globalThis.DustWaveI18n?.t || ((key) => key);
+const pageLanguage = globalThis.DustWaveI18n?.language === "es"
+  ? "es"
+  : "en";
 const COUNTRY_CODES = (
   "AD AE AF AG AI AL AM AO AQ AR AS AT AU AW AX AZ BA BB BD BE BF BG BH BI "
   + "BJ BL BM BN BO BQ BR BS BT BV BW BY BZ CA CC CD CF CG CH CI CK CL CM "
@@ -254,6 +257,7 @@ function startPodcastCheckout(rootElement) {
           csrf: false,
           body: {
             email: String(form.elements.email.value || "").trim(),
+            language: pageLanguage,
             priceId: selection.id,
             destination: destinationFromForm(),
             turnstileToken
@@ -320,7 +324,7 @@ function startPodcastCheckout(rootElement) {
         {
           sitekey: siteKey,
           action: "podcast_subscription_checkout",
-          language: document.documentElement.lang || "en",
+          language: pageLanguage,
           size: responsiveTurnstileSize(turnstileContainer),
           callback: (token) => {
             turnstileToken = token;
@@ -393,7 +397,7 @@ function populateCountries(select) {
   let displayNames;
   try {
     displayNames = new Intl.DisplayNames(
-      [document.documentElement.lang || "es", "en"],
+      [pageLanguage, "en"],
       { type: "region" }
     );
   } catch {
@@ -447,7 +451,7 @@ function trustedStripeUrl(value, expectedHost) {
 }
 
 function formatMoney(cents) {
-  return new Intl.NumberFormat(document.documentElement.lang || "es", {
+  return new Intl.NumberFormat(pageLanguage, {
     style: "currency",
     currency: "USD"
   }).format(cents / 100);

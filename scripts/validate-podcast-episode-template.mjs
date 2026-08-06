@@ -39,7 +39,9 @@ const environment = new nunjucks.Environment(
 environment.addFilter('podcastShowBySlug', (shows, showSlug) => {
   return shows.find((show) => show.slug === showSlug) ?? null;
 });
-environment.addFilter('readablePodcastDate', () => 'July 23, 2026');
+environment.addFilter('readablePodcastDate', (_value, language) =>
+  language === 'es' ? '23 de julio de 2026' : 'July 23, 2026'
+);
 environment.addFilter('safeJsonLd', safeJsonLd);
 environment.addFilter('t', (translations, language, key, variables = {}) => {
   const value = String(key)
@@ -91,7 +93,9 @@ const rendered = environment.renderString(body, {
 });
 
 assert.match(rendered, /id="wave_opera-en-la-selva_una-charla-sobre-codigo"/);
-assert.match(rendered, /<div class="audio-card" lang="es">/);
+assert.match(rendered, /<div[\s\S]{0,80}class="audio-card"[\s\S]{0,80}lang="es"/);
+assert.match(rendered, /data-player-text-play-now="Reproducir ahora"/);
+assert.match(rendered, />23 de julio de 2026</);
 assert.match(rendered, /data-analytics-episode-id="episode_fixture"/);
 assert.match(
   rendered,
@@ -187,7 +191,8 @@ const renderedEnglishEmbed = environment.renderString(embedBody, {
   podcastApi: { apiOrigin: 'https://feeds.dustwave.xyz' },
   podcastShows: [{ ...show, language: 'en' }]
 });
-assert.match(renderedEnglishEmbed, /<div class="audio-card" lang="en">/);
+assert.match(renderedEnglishEmbed, /<div[\s\S]{0,80}class="audio-card"[\s\S]{0,80}lang="en"/);
+assert.match(renderedEnglishEmbed, /data-player-text-play-now="Play now"/);
 assert.match(renderedEnglishEmbed, /aria-label="Play Una charla/);
 assert.match(renderedEnglishEmbed, /aria-label="Rewind 10 seconds"/);
 assert.match(renderedEnglishEmbed, /Episode notes on Dust Wave/);
@@ -246,7 +251,7 @@ assert.match(renderedPremiumEmbed, /Solo para suscriptores/);
 assert.doesNotMatch(renderedPremiumEmbed, /Subscribers only/);
 assert.match(
   renderedPremiumEmbed,
-  /href="\/podcasts\/opera-en-la-selva\/#podcast-membership"/
+  /href="\/es\/podcasts\/opera-en-la-selva\/#podcast-membership"/
 );
 assert.doesNotMatch(
   renderedPremiumEmbed,

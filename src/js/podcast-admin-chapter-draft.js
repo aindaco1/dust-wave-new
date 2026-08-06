@@ -1,93 +1,13 @@
-const LANGUAGES = new Set(["en", "es"]);
-const MAXIMUM_CHAPTERS = 24;
+import {
+  CHAPTER_DRAFT_LANGUAGES,
+  normalizeChapterDraftCollection,
+  normalizeChapterDraftResponse
+} from "./podcast-admin-chapter-draft-contract.js";
 
-export function normalizeChapterDraftResponse(value) {
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
-    throw new TypeError("Chapter-draft response must be an object");
-  }
-  const draft = value.draft;
-  const source = value.source;
-  if (
-    !draft
-    || typeof draft !== "object"
-    || Array.isArray(draft)
-    || !source
-    || typeof source !== "object"
-    || Array.isArray(source)
-    || !Array.isArray(draft.chapters)
-    || draft.chapters.length < 1
-    || draft.chapters.length > MAXIMUM_CHAPTERS
-  ) {
-    throw new TypeError("Chapter-draft response is incomplete");
-  }
-  let previousStart = -1;
-  const identifiers = new Set();
-  const chapters = draft.chapters.map((candidate, index) => {
-    if (
-      !candidate
-      || typeof candidate !== "object"
-      || Array.isArray(candidate)
-    ) {
-      throw new TypeError("Chapter-draft chapter is invalid");
-    }
-    const id = String(candidate.id || "");
-    const startsAtMs = Number(candidate.startsAtMs);
-    const title = boundedTitle(candidate.title);
-    if (
-      !/^[A-Za-z0-9_-]{1,128}$/.test(id)
-      || identifiers.has(id)
-      || !Number.isSafeInteger(startsAtMs)
-      || startsAtMs < 0
-      || startsAtMs <= previousStart
-      || (index === 0 && startsAtMs !== 0)
-      || candidate.url !== ""
-      || candidate.imageUrl !== ""
-      || candidate.toc !== true
-    ) {
-      throw new TypeError("Chapter-draft chapter evidence is invalid");
-    }
-    identifiers.add(id);
-    previousStart = startsAtMs;
-    return {
-      id,
-      startsAtMs,
-      title,
-      url: "",
-      imageUrl: "",
-      toc: true
-    };
-  });
-  const language = String(source.language || "");
-  const outputLanguage = String(value.outputLanguage || "");
-  const revision = Number(source.revision);
-  const includedCueCount = Number(source.includedCueCount);
-  const totalCueCount = Number(source.totalCueCount);
-  if (
-    !LANGUAGES.has(language)
-    || !LANGUAGES.has(outputLanguage)
-    || !Number.isSafeInteger(revision)
-    || revision < 1
-    || !Number.isSafeInteger(includedCueCount)
-    || includedCueCount < 1
-    || includedCueCount !== totalCueCount
-    || source.truncated !== false
-    || !/^[a-f0-9]{64}$/i.test(String(source.contentSha256 || ""))
-    || value.reviewRequired !== true
-    || value.saved !== false
-  ) {
-    throw new TypeError("Chapter-draft evidence is invalid");
-  }
-  return {
-    draft: { chapters },
-    source: {
-      language,
-      revision,
-      includedCueCount,
-      totalCueCount
-    },
-    outputLanguage
-  };
-}
+export {
+  normalizeChapterDraftCollection,
+  normalizeChapterDraftResponse
+} from "./podcast-admin-chapter-draft-contract.js";
 
 export function mountChapterDraftAssistant({
   root,
@@ -132,6 +52,7 @@ export function mountChapterDraftAssistant({
   let episodeId = "";
   let editable = false;
   let generating = false;
+  let loading = false;
   let generationRevision = 0;
   let result = null;
   let applied = false;
@@ -144,9 +65,9 @@ export function mountChapterDraftAssistant({
 
   function refresh() {
     root.hidden = !episodeId || !editable;
-    generate.disabled = generating || !episodeId || !editable;
-    sourceLanguage.disabled = generating || !editable;
-    outputLanguage.disabled = generating || !editable;
+    generate.disabled = generating || loading || !episodeId || !editable;
+    sourceLanguage.disabled = generating || loading || !editable;
+    outputLanguage.disabled = generating || loading || !editable;
     apply.disabled = generating || !result || !editable || applied;
     dismiss.disabled = generating || !result;
   }
@@ -186,15 +107,7 @@ export function mountChapterDraftAssistant({
         requestRevision !== generationRevision
         || requestedEpisodeId !== episodeId
       ) return;
-      result = normalizeChapterDraftResponse(payload);
-      evidence.textContent = text("chapterDraftEvidence", {
-        language: text(`language_${result.source.language}`),
-        revision: result.source.revision,
-        total: result.source.totalCueCount
-      });
-      renderChapterList(list, result.draft.chapters);
-      review.hidden = false;
-      setStatus(status, text("chapterDraftReady"));
+      renderResult(normalizeChapterDraftResponse(payload));
     } catch (error) {
       if (
         requestRevision === generationRevision
@@ -206,6 +119,65 @@ export function mountChapterDraftAssistant({
       if (requestRevision === generationRevision) generating = false;
       refresh();
     }
+  }
+
+  async function loadSavedDraft() {
+    if (!episodeId) return;
+    const requestRevision = ++generationRevision;
+    const requestedEpisodeId = episodeId;
+    loading = true;
+    resetReview();
+    setStatus(status, text("chapterDraftLoadingAutomatic"));
+    refresh();
+    try {
+      const payload = await client.request(
+        `/v1/admin/episodes/${encodeURIComponent(
+          requestedEpisodeId
+        )}/chapters/drafts`
+      );
+      if (
+        requestRevision !== generationRevision
+        || requestedEpisodeId !== episodeId
+      ) return;
+      const drafts = normalizeChapterDraftCollection(payload);
+      const preferred = drafts.find((candidate) =>
+        candidate.source.language === sourceLanguage.value
+        && candidate.outputLanguage === outputLanguage.value
+      ) || drafts.find((candidate) =>
+        candidate.outputLanguage === outputLanguage.value
+      ) || drafts[0];
+      if (preferred) {
+        sourceLanguage.value = preferred.source.language;
+        outputLanguage.value = preferred.outputLanguage;
+        renderResult(preferred);
+      } else {
+        setStatus(status, text("chapterDraftAutomaticPending"));
+      }
+    } catch (error) {
+      if (
+        requestRevision === generationRevision
+        && requestedEpisodeId === episodeId
+      ) setStatus(status, friendlyError(error), true);
+    } finally {
+      if (requestRevision === generationRevision) loading = false;
+      refresh();
+    }
+  }
+
+  function renderResult(nextResult) {
+    result = nextResult;
+    applied = false;
+    evidence.textContent = text("chapterDraftEvidence", {
+      language: text(`language_${result.source.language}`),
+      revision: result.source.revision,
+      total: result.source.totalCueCount
+    });
+    renderChapterList(list, result.draft.chapters);
+    review.hidden = false;
+    setStatus(
+      status,
+      text(result.saved ? "chapterDraftAutomaticReady" : "chapterDraftReady")
+    );
   }
 
   function applyDraft() {
@@ -239,14 +211,16 @@ export function mountChapterDraftAssistant({
         episodeId = normalizedEpisodeId;
         generationRevision += 1;
         generating = false;
+        loading = false;
         resetReview();
       }
-      const language = LANGUAGES.has(nextSourceLanguage)
+      const language = CHAPTER_DRAFT_LANGUAGES.has(nextSourceLanguage)
         ? nextSourceLanguage
         : "es";
       sourceLanguage.value = language;
       outputLanguage.value = language;
       refresh();
+      return normalizedEpisodeId ? loadSavedDraft() : Promise.resolve();
     }
   };
 }
@@ -264,22 +238,6 @@ function renderChapterList(target, chapters) {
     return item;
   });
   target.replaceChildren(...items);
-}
-
-function boundedTitle(value) {
-  if (typeof value !== "string") {
-    throw new TypeError("Chapter-draft title must be text");
-  }
-  const normalized = value.trim();
-  if (
-    !normalized
-    || normalized.length > 160
-    || /[\u0000-\u001F\u007F\u202A-\u202E\u2066-\u2069]/u.test(normalized)
-    || /<[^>]*>/u.test(normalized)
-  ) {
-    throw new TypeError("Chapter-draft title is invalid");
-  }
-  return normalized;
 }
 
 function millisecondsToTimestamp(value) {

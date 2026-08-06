@@ -11,6 +11,7 @@ const source = await readFile(
 );
 const {
   applyTranscriptSpeakerRange,
+  canAcknowledgeTranscriptSpeakerLabels,
   clipCueSummary,
   millisecondsToTimestamp,
   navigateToTranscriptReviewCue,
@@ -23,6 +24,17 @@ const {
 } = await import(
   `data:text/javascript;base64,${Buffer.from(source).toString("base64")}`
 );
+
+test("allows an explicit review of intentionally unlabeled cues", () => {
+  assert.equal(canAcknowledgeTranscriptSpeakerLabels([
+    cue({ speakerLabel: "", speakerConfirmed: false }),
+    cue({ speakerLabel: "Jay Renteria", speakerConfirmed: true })
+  ]), true);
+  assert.equal(canAcknowledgeTranscriptSpeakerLabels([
+    cue({ speakerLabel: "Guest", speakerConfirmed: false })
+  ]), false);
+  assert.equal(canAcknowledgeTranscriptSpeakerLabels([]), false);
+});
 
 test("applies one reviewed speaker label without changing cue content", () => {
   const cues = [

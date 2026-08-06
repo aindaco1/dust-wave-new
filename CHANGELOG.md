@@ -2,6 +2,47 @@
 
 ## v1.3.0 - Unreleased
 
+- Added an episode-centered bilingual Autopilot view that separates automatic
+  processing, approval waits, platform delays, and terminal failures. Pending
+  system work now reads as Processing, hides misleading Fix/Continue actions,
+  and tells producers when no action is needed; responsive four-to-one-column
+  metrics remain within the admin container down to 320 px.
+- Turned release readiness into one prioritized, bilingual next action. The
+  primary Continue control now opens the exact production tool for that
+  blocker, while secondary blockers stay available in one collapsed list so
+  editors can finish an episode without confronting the full evidence graph.
+- Restored the shared Pool/Store section rhythm before Podcast Admin
+  disclosures. Episode cards, marketing clips, and show settings no longer
+  visually collide with the next tool group, while consecutive disclosures
+  retain their compact spacing at every responsive width.
+- Simplified the single-show launch UI by presenting the current show as
+  compact context instead of an unnecessary selector. The same shared
+  controller restores synchronized selectors automatically when a second show
+  exists, so the underlying architecture remains multi-show ready.
+- Added one bilingual, responsive Current episode context above the publishing
+  workflow. Its selection now keeps all nine episode-scoped production tools
+  synchronized, removes their repeated selectors from view, preserves the
+  existing unsaved transcript/chapter guard, and keeps review shortcuts
+  focused on the selected episode without adding browser persistence.
+- Routed the episode workflow to the exact missing media, transcript, chapter,
+  review, or clip control, including Attach media for a new draft, while
+  preserving the existing progressive disclosures. Guided navigation focuses
+  one disclosure at each level so unrelated technical evidence does not remain
+  open beside the requested fix.
+- Made the isolated Chrome performance tracer reassert a requested contextual
+  workspace after the final page load, eliminating a race in tablet/mobile
+  production-workbench coverage.
+- Standardized Podcast Admin form composition around the Pool/Store spacing
+  rhythm: predictable one-column mobile and two-column desktop grids,
+  explicit three-column opt-ins, semantic episode/show/sponsor field groups,
+  compact related controls, full-width narrow actions, and reduced nested
+  padding. The publishing workflow now uses readable three-, two-, and
+  one-column arrangements instead of forcing six dense cards into one row.
+- Reduced the Podcast workbench from ten system-oriented tabs to six
+  task-oriented sections. Episodes now opens first and contains production;
+  Audience groups analytics with subscribers; Monetization groups sponsors
+  with premium evidence; and show overview, configuration, and migration live
+  together under Settings. Contextual workspaces load only when opened.
 - Reframed episode publishing as one bilingual, six-step workflow across
   details, media, transcript and chapters, monetization, review, and publish.
   The workflow derives its state from the existing immutable readiness

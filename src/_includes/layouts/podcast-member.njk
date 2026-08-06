@@ -14,7 +14,7 @@
     <main id="main-content" class="podcast-member" tabindex="-1">
       {{ content | safe }}
     </main>
-    {% include "snippets/podcast-auth-footer.njk" %}
+    {% include "snippets/site-footer.njk" %}
     {% if podcastMember.turnstileSiteKey %}
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
     {% endif %}

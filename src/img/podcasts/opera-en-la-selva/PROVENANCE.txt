@@ -7,6 +7,13 @@ artwork.png
   Source: Substack publication cover 7af7d6da-bbf7-4ac9-8209-d1a47c9924ed_505x505.png
   SHA-256: f0c758f7e3a6a14f6f57aab0d4b724ce3707aa0dd0db2065f4b42385d9cd015c
 
+artwork-feed.jpg
+  Source: deterministic 3000x3000 Lanczos resample of artwork.png
+  Encoding: JPEG quality 82, progressive, 4:2:0, metadata stripped
+  Purpose: square podcast-directory feed artwork; the retained source remains
+    the visual and rights provenance
+  SHA-256: c1a8a4badb127eaa2ec31b31897adba99b8019a9cda49157f4cde1d71eba5137
+
 wordmark.png
   Source: Substack wide logo d1258a95-12a7-490f-b17e-2e5dc139d63e_2708x532.png
   SHA-256: cf8549c7d57bfe2c1260389871bddba989320430cceaad70aa2b6ad595eb9086

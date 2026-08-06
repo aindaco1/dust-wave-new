@@ -90,7 +90,11 @@ export function mountProgressiveTools(entries, {
     function sync() {
       const titleText = sourceTitle.textContent.trim();
       title.textContent = titleText;
-      details.hidden = element.hidden;
+      if (details.dataset.podcastSectionPanel) {
+        details.dataset.podcastSectionUnavailable = String(element.hidden);
+      } else {
+        details.hidden = element.hidden;
+      }
       details.setAttribute("aria-label", `${label}: ${titleText}`);
       state.textContent = details.open ? "−" : "+";
     }

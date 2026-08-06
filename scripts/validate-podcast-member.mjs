@@ -4,7 +4,7 @@ import {
   sharedAdminShellImportPattern
 } from "./lib/shared-admin-shell-version.mjs";
 
-const [page, layout, authFooter, script, buildPipeline] = await Promise.all([
+const [page, layout, siteFooter, script, buildPipeline] = await Promise.all([
   readFile(new URL("../src/podcasts/account.njk", import.meta.url), "utf8"),
   readFile(
     new URL("../src/_includes/layouts/podcast-member.njk", import.meta.url),
@@ -12,7 +12,7 @@ const [page, layout, authFooter, script, buildPipeline] = await Promise.all([
   ),
   readFile(
     new URL(
-      "../src/_includes/snippets/podcast-auth-footer.njk",
+      "../src/_includes/snippets/site-footer.njk",
       import.meta.url
     ),
     "utf8"
@@ -34,9 +34,10 @@ assert.match(page, /maxlength="42"/);
 assert.match(page, /aria-live="polite"/);
 assert.match(layout, /noindex,nofollow,noarchive/);
 assert.match(layout, /name="referrer" content="no-referrer"/);
-assert.match(layout, /snippets\/podcast-auth-footer\.njk/);
-assert.doesNotMatch(layout, /snippets\/footer1\.njk/);
-assert.match(authFooter, /snippets\/language-switcher\.njk/);
+assert.match(layout, /snippets\/site-footer\.njk/);
+assert.match(siteFooter, /class="site-footer"/);
+assert.match(siteFooter, /class="site-footer__item/g);
+assert.match(siteFooter, /snippets\/language-switcher\.njk/);
 assert.match(page, /disableFontAwesome: true/);
 assert.match(page, /disableTypekit: true/);
 assert.match(script, sharedAdminShellImportPattern("api-client"));

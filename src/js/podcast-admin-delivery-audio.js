@@ -1,4 +1,17 @@
-const DELIVERY_AUDIO_WORKFLOW = "process-delivery-audio.yml";
+import { buildDeliveryAudioApprovalRequest } from "./podcast-admin-delivery-audio-approval.js";
+import {
+  canQueueCurrentOperation,
+  createRetriableOperationId
+} from "./podcast-admin-retriable-operation.js";
+import {
+  formatBytes,
+  formatInteger
+} from "./podcast-admin-formatters.js";
+
+const WORKFLOW_NAME = "process-delivery-audio.yml";
+const ACTIVE_STATUSES = new Set(
+  ["queued", "rendering", "completing", "ready", "approved"]
+);
 
 export function mountDeliveryAudio({
   root,
@@ -22,8 +35,16 @@ export function mountDeliveryAudio({
   const results = root.querySelector("[data-podcast-delivery-audio-results]");
   const status = root.querySelector("[data-podcast-delivery-audio-status]");
   const productionPanel = root.querySelector("#podcast-panel-production");
+  const episodePanel = root.querySelector("#podcast-panel-episodes");
+  const productionGroup = productionPanel?.closest(
+    "[data-podcast-workspace-group]"
+  );
   let requestId = 0;
   let state = null;
+  const queueOperation = createRetriableOperationId(
+    operationId,
+    "delivery_audio"
+  );
 
   select?.addEventListener("change", refresh);
   refreshButton?.addEventListener("click", refresh);
@@ -51,7 +72,12 @@ export function mountDeliveryAudio({
       setStatus(status, "");
       return;
     }
-    if (productionPanel && !productionPanel.hidden) {
+    if (
+      productionPanel
+      && productionGroup?.open
+      && episodePanel
+      && !episodePanel.hidden
+    ) {
       refresh();
     } else {
       summary.textContent = text("deliveryAudioChooseEpisode");
@@ -100,16 +126,24 @@ export function mountDeliveryAudio({
   async function queue() {
     const episodeId = select?.value || "";
     const currentMaster = state?.master?.current;
+    const jobs = Array.isArray(state?.delivery?.jobs)
+      ? state.delivery.jobs
+      : [];
     if (
       !episodeId
-      || !currentMaster?.id
-      || !state?.delivery?.processor?.available
-      || !canQueue()
+      || !canQueueCurrentOperation({
+        currentId: currentMaster?.id,
+        processorEnabled: state?.delivery?.processor?.available,
+        authorized: canQueue(),
+        rows: jobs,
+        activeStatuses: ACTIVE_STATUSES
+      })
     ) return;
     queueButton.disabled = true;
     setStatus(status, text("deliveryAudioQueuing"));
+    const operationContext = `${episodeId}:${currentMaster.id}`;
     try {
-      const jobId = operationId("delivery_audio");
+      const jobId = queueOperation.get(operationContext);
       const response = await client.request(
         `/v1/admin/episodes/${encodeURIComponent(
           episodeId
@@ -122,10 +156,11 @@ export function mountDeliveryAudio({
           }
         }
       );
+      queueOperation.accept(operationContext, jobId);
       setStatus(status, text("deliveryAudioQueued", {
         id: String(response.job?.id || jobId),
         workflow: String(
-          response.processor?.workflow || DELIVERY_AUDIO_WORKFLOW
+          response.processor?.workflow || WORKFLOW_NAME
         )
       }));
       await refresh();
@@ -150,12 +185,6 @@ export function mountDeliveryAudio({
     const jobs = Array.isArray(state.delivery?.jobs)
       ? state.delivery.jobs
       : [];
-    const activeCurrent = jobs.some((job) =>
-      job.current
-      && ["queued", "rendering", "completing", "ready", "approved"].includes(
-        String(job.status)
-      )
-    );
     summary.textContent = currentMaster
       ? text("deliveryAudioMasterReady", {
           revision: formatInteger(currentMaster.revision),
@@ -164,12 +193,13 @@ export function mountDeliveryAudio({
           )
         })
       : text("deliveryAudioMasterRequired");
-    queueButton.disabled = !(
-      currentMaster
-      && processorAvailable
-      && canQueue()
-      && !activeCurrent
-    );
+    queueButton.disabled = !canQueueCurrentOperation({
+      currentId: currentMaster?.id,
+      processorEnabled: processorAvailable,
+      authorized: canQueue(),
+      rows: jobs,
+      activeStatuses: ACTIVE_STATUSES
+    });
     results.replaceChildren(
       ...(jobs.length
         ? jobs.map(renderJob)
@@ -251,7 +281,7 @@ export function mountDeliveryAudio({
     const detail = document.createElement("p");
     if (["queued", "rendering", "completing"].includes(jobStatus)) {
       detail.textContent = text("deliveryAudioRunWorkflow", {
-        workflow: DELIVERY_AUDIO_WORKFLOW,
+        workflow: WORKFLOW_NAME,
         id: String(job.id || "")
       });
     } else if (jobStatus === "failed") {
@@ -291,6 +321,7 @@ export function mountDeliveryAudio({
     acknowledgeLabel.className = "podcast-admin__checkbox";
     const acknowledge = document.createElement("input");
     acknowledge.type = "checkbox";
+    acknowledge.name = "acknowledgeExactDeliveryAudio";
     acknowledge.required = true;
     acknowledgeLabel.append(
       acknowledge,
@@ -305,12 +336,7 @@ export function mountDeliveryAudio({
     formStatus.setAttribute("role", "status");
     formStatus.setAttribute("aria-live", "polite");
     form.append(
-      heading,
-      intro,
-      reasonLabel,
-      acknowledgeLabel,
-      button,
-      formStatus
+      heading, intro, reasonLabel, acknowledgeLabel, button, formStatus
     );
     form.addEventListener("submit", (event) =>
       approve(event, job, form, formStatus)
@@ -320,34 +346,34 @@ export function mountDeliveryAudio({
 
   async function approve(event, job, form, formStatus) {
     event.preventDefault();
-    const currentMaster = state?.master?.current;
-    if (
-      !job?.id
-      || !job.approval?.eligible
-      || !currentMaster?.id
-      || !canApprove()
-    ) return;
+    if (!canApprove()) return;
+    if (form.reportValidity && !form.reportValidity()) return;
+    const request = buildDeliveryAudioApprovalRequest({
+      job,
+      selectedEpisodeId: select?.value,
+      currentMasterId: state?.master?.current?.id,
+      approvalReason: form.elements.approvalReason.value,
+      acknowledged:
+        form.elements.acknowledgeExactDeliveryAudio?.checked === true
+    });
+    if (!request) {
+      setStatus(formStatus, text("deliveryAudioApprovalInvalid"), true);
+      return;
+    }
     const button = form.querySelector('button[type="submit"]');
+    if (!button) return;
     button.disabled = true;
     setStatus(formStatus, text("approvingDeliveryAudio"));
     try {
-      await client.request(
-        `/v1/admin/delivery-audio-jobs/${
-          encodeURIComponent(String(job.id))
-        }/approve`,
-        {
-          method: "POST",
-          body: {
-            workingMasterId: currentMaster.id,
-            approvalReason: form.elements.approvalReason.value
-          }
-        }
-      );
-      await onApproved(select?.value || "");
+      await client.request(request.path, request.options);
       setStatus(status, text("deliveryAudioApproved"));
+      try {
+        await onApproved(select?.value || "");
+      } catch {
+        setStatus(formStatus, text("deliveryAudioApprovalRefreshFailed"), true);
+      }
     } catch (error) {
       setStatus(formStatus, friendlyError(error), true);
-    } finally {
       button.disabled = false;
     }
   }
@@ -368,6 +394,7 @@ export function mountDeliveryAudio({
     reset() {
       requestId += 1;
       state = null;
+      queueOperation.reset();
       releasePlayers();
       results?.replaceChildren();
       if (summary) summary.textContent = "";
@@ -396,21 +423,6 @@ function cardStatus(status) {
   if (["ready", "approved"].includes(status)) return "ready";
   if (["failed", "stale"].includes(status)) return "failed";
   return "pending";
-}
-
-function formatInteger(value) {
-  return Number(value || 0).toLocaleString();
-}
-
-function formatBytes(value) {
-  const bytes = Number(value || 0);
-  if (!Number.isFinite(bytes) || bytes <= 0) return "0 B";
-  const units = ["B", "KB", "MB", "GB"];
-  const index = Math.min(
-    Math.floor(Math.log(bytes) / Math.log(1024)),
-    units.length - 1
-  );
-  return `${(bytes / (1024 ** index)).toFixed(index ? 1 : 0)} ${units[index]}`;
 }
 
 function humanize(value) {

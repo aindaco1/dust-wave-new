@@ -1,93 +1,13 @@
-const LANGUAGES = new Set(["en", "es"]);
-const MAXIMUM_CANDIDATES = 6;
+import {
+  CLIP_DRAFT_LANGUAGES,
+  normalizeClipDraftCollection,
+  normalizeClipDraftResponse
+} from "./podcast-admin-clip-draft-contract.js";
 
-export function normalizeClipDraftResponse(value) {
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
-    throw new TypeError("Clip-draft response must be an object");
-  }
-  const draft = value.draft;
-  const source = value.source;
-  if (
-    !draft
-    || typeof draft !== "object"
-    || Array.isArray(draft)
-    || !source
-    || typeof source !== "object"
-    || Array.isArray(source)
-    || !Array.isArray(draft.candidates)
-    || draft.candidates.length < 1
-    || draft.candidates.length > MAXIMUM_CANDIDATES
-  ) {
-    throw new TypeError("Clip-draft response is incomplete");
-  }
-  let previousEnd = -1;
-  const identifiers = new Set();
-  const candidates = draft.candidates.map((candidate) => {
-    if (
-      !candidate
-      || typeof candidate !== "object"
-      || Array.isArray(candidate)
-    ) {
-      throw new TypeError("Clip-draft candidate is invalid");
-    }
-    const normalized = {
-      id: validIdentifier(candidate.id, "candidate id"),
-      title: boundedText(candidate.title, "candidate title", 160),
-      reason: boundedText(candidate.reason, "candidate reason", 280),
-      startCueId: validIdentifier(candidate.startCueId, "start cue id"),
-      endCueId: validIdentifier(candidate.endCueId, "end cue id"),
-      startsAtMs: validMilliseconds(candidate.startsAtMs),
-      endsAtMs: validMilliseconds(candidate.endsAtMs),
-      durationMs: validMilliseconds(candidate.durationMs)
-    };
-    if (
-      identifiers.has(normalized.id)
-      || normalized.startsAtMs <= previousEnd
-      || normalized.endsAtMs <= normalized.startsAtMs
-      || normalized.durationMs
-        !== normalized.endsAtMs - normalized.startsAtMs
-      || normalized.durationMs < 15_000
-      || normalized.durationMs > 90_000
-    ) {
-      throw new TypeError("Clip-draft candidate evidence is invalid");
-    }
-    identifiers.add(normalized.id);
-    previousEnd = normalized.endsAtMs;
-    return normalized;
-  });
-  const language = String(source.language || "");
-  const outputLanguage = String(value.outputLanguage || "");
-  const revision = Number(source.revision);
-  const includedCueCount = Number(source.includedCueCount);
-  const totalCueCount = Number(source.totalCueCount);
-  const contentSha256 = String(source.contentSha256 || "").toLowerCase();
-  if (
-    !LANGUAGES.has(language)
-    || !LANGUAGES.has(outputLanguage)
-    || !Number.isSafeInteger(revision)
-    || revision < 1
-    || !Number.isSafeInteger(includedCueCount)
-    || includedCueCount < 1
-    || includedCueCount !== totalCueCount
-    || source.truncated !== false
-    || !/^[a-f0-9]{64}$/.test(contentSha256)
-    || value.reviewRequired !== true
-    || value.saved !== false
-  ) {
-    throw new TypeError("Clip-draft evidence is invalid");
-  }
-  return {
-    draft: { candidates },
-    source: {
-      language,
-      revision,
-      contentSha256,
-      includedCueCount,
-      totalCueCount
-    },
-    outputLanguage
-  };
-}
+export {
+  normalizeClipDraftCollection,
+  normalizeClipDraftResponse
+} from "./podcast-admin-clip-draft-contract.js";
 
 export function mountClipDraftAssistant({
   root,
@@ -143,6 +63,7 @@ export function mountClipDraftAssistant({
   let context = emptyContext();
   let editable = false;
   let generating = false;
+  let loading = false;
   let generationRevision = 0;
   let result = null;
   let appliedCandidateId = "";
@@ -154,7 +75,7 @@ export function mountClipDraftAssistant({
   function eligible() {
     return editable
       && context.episodeId
-      && LANGUAGES.has(context.language)
+      && CLIP_DRAFT_LANGUAGES.has(context.language)
       && context.status === "approved"
       && context.revision > 0
       && context.approvedRevision === context.revision
@@ -164,9 +85,9 @@ export function mountClipDraftAssistant({
 
   function refresh() {
     root.hidden = !editable || !context.episodeId;
-    generate.disabled = generating || !eligible();
+    generate.disabled = generating || loading || !eligible();
     sourceLanguage.disabled = true;
-    outputLanguage.disabled = generating || !editable;
+    outputLanguage.disabled = generating || loading || !editable;
     dismiss.disabled = generating || !result;
   }
 
@@ -205,18 +126,11 @@ export function mountClipDraftAssistant({
         requestRevision !== generationRevision
         || requestedContext.key !== context.key
       ) return;
-      result = normalizeClipDraftResponse(payload);
-      if (!matchesContext(result.source, context)) {
+      const normalized = normalizeClipDraftResponse(payload);
+      if (!matchesContext(normalized.source, context)) {
         throw new TypeError("Clip-draft source evidence changed");
       }
-      evidence.textContent = text("clipDraftEvidence", {
-        language: text(`language_${result.source.language}`),
-        revision: result.source.revision,
-        total: result.source.totalCueCount
-      });
-      renderCandidates();
-      review.hidden = false;
-      setStatus(status, text("clipDraftReady"));
+      renderResult(normalized);
     } catch (error) {
       if (
         requestRevision === generationRevision
@@ -226,6 +140,68 @@ export function mountClipDraftAssistant({
       if (requestRevision === generationRevision) generating = false;
       refresh();
     }
+  }
+
+  async function loadSavedDraft() {
+    if (!eligible()) {
+      setStatus(status, text("clipDraftAutomaticPending"));
+      return;
+    }
+    const requestRevision = ++generationRevision;
+    const requestedContext = { ...context };
+    loading = true;
+    resetReview();
+    setStatus(status, text("clipDraftLoadingAutomatic"));
+    refresh();
+    try {
+      const payload = await client.request(
+        `/v1/admin/episodes/${encodeURIComponent(
+          requestedContext.episodeId
+        )}/clips/drafts`
+      );
+      if (
+        requestRevision !== generationRevision
+        || requestedContext.key !== context.key
+      ) return;
+      const drafts = normalizeClipDraftCollection(payload);
+      const preferred = drafts.find((candidate) =>
+        candidate.source.language === context.language
+        && candidate.outputLanguage === outputLanguage.value
+      ) || drafts.find((candidate) =>
+        candidate.outputLanguage === outputLanguage.value
+      ) || drafts[0];
+      if (preferred) {
+        sourceLanguage.value = preferred.source.language;
+        outputLanguage.value = preferred.outputLanguage;
+        renderResult(preferred);
+      } else {
+        setStatus(status, text("clipDraftAutomaticPending"));
+      }
+    } catch (error) {
+      if (
+        requestRevision === generationRevision
+        && requestedContext.key === context.key
+      ) setStatus(status, friendlyError(error), true);
+    } finally {
+      if (requestRevision === generationRevision) loading = false;
+      refresh();
+    }
+  }
+
+  function renderResult(nextResult) {
+    result = nextResult;
+    appliedCandidateId = "";
+    evidence.textContent = text("clipDraftEvidence", {
+      language: text(`language_${result.source.language}`),
+      revision: result.source.revision,
+      total: result.source.totalCueCount
+    });
+    renderCandidates();
+    review.hidden = false;
+    setStatus(
+      status,
+      text(result.saved ? "clipDraftAutomaticReady" : "clipDraftReady")
+    );
   }
 
   function renderCandidates() {
@@ -281,24 +257,30 @@ export function mountClipDraftAssistant({
   resetReview();
   return {
     setEditable(nextEditable) {
+      const wasEditable = editable;
       editable = Boolean(nextEditable);
       refresh();
+      if (!wasEditable && editable && eligible()) void loadSavedDraft();
     },
     setTranscript(nextEpisodeId, transcript, dirty = false) {
       const next = transcriptContext(nextEpisodeId, transcript, dirty);
-      if (next.key !== context.key) {
+      const changed = next.key !== context.key;
+      if (changed) {
         context = next;
         generationRevision += 1;
         generating = false;
+        loading = false;
         resetReview();
       } else {
         context = next;
       }
       sourceLanguage.value = context.language || "es";
-      if (!LANGUAGES.has(outputLanguage.value)) {
+    if (!CLIP_DRAFT_LANGUAGES.has(outputLanguage.value)) {
         outputLanguage.value = context.language || "es";
       }
       refresh();
+      if (changed && editable && context.episodeId) return loadSavedDraft();
+      return Promise.resolve();
     }
   };
 }
@@ -344,7 +326,8 @@ function transcriptContext(episodeId, transcript, dirty) {
     context.status,
     context.revision,
     context.approvedRevision,
-    context.contentSha256
+    context.contentSha256,
+    context.dirty ? "dirty" : "clean"
   ].join(":");
   return context;
 }
@@ -357,38 +340,6 @@ function matchesContext(source, context) {
   return source.language === context.language
     && source.revision === context.revision
     && source.contentSha256 === context.contentSha256;
-}
-
-function validIdentifier(value, field) {
-  const normalized = String(value || "");
-  if (!/^[A-Za-z0-9_-]{1,128}$/.test(normalized)) {
-    throw new TypeError(`Clip-draft ${field} is invalid`);
-  }
-  return normalized;
-}
-
-function validMilliseconds(value) {
-  const normalized = Number(value);
-  if (!Number.isSafeInteger(normalized) || normalized < 0) {
-    throw new TypeError("Clip-draft timing is invalid");
-  }
-  return normalized;
-}
-
-function boundedText(value, field, maximumCharacters) {
-  if (typeof value !== "string") {
-    throw new TypeError(`Clip-draft ${field} must be text`);
-  }
-  const normalized = value.trim();
-  if (
-    !normalized
-    || normalized.length > maximumCharacters
-    || /[\u0000-\u001F\u007F\u202A-\u202E\u2066-\u2069]/u.test(normalized)
-    || /<[^>]*>/u.test(normalized)
-  ) {
-    throw new TypeError(`Clip-draft ${field} is invalid`);
-  }
-  return normalized;
 }
 
 function millisecondsToTimestamp(value) {

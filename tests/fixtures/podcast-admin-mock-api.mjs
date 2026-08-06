@@ -19,6 +19,27 @@ const publicClipMode = ["ready", "empty", "missing"].includes(
 )
   ? process.env.PODCAST_ADMIN_MOCK_PUBLIC_CLIPS
   : "ready";
+const workflowTarget = new Set([
+  "default",
+  "attach_media",
+  "working_master",
+  "delivery_audio",
+  "alignment",
+  "chapters",
+  "production_review",
+  "promotion_clips",
+  "multiple"
+]).has(process.env.PODCAST_ADMIN_MOCK_WORKFLOW_TARGET)
+  ? process.env.PODCAST_ADMIN_MOCK_WORKFLOW_TARGET
+  : "default";
+const workflowStatus = new Set([
+  "missing",
+  "pending",
+  "stale",
+  "failed"
+]).has(process.env.PODCAST_ADMIN_MOCK_WORKFLOW_STATUS)
+  ? process.env.PODCAST_ADMIN_MOCK_WORKFLOW_STATUS
+  : "missing";
 const sha = (character) => character.repeat(64);
 
 const show = {
@@ -43,6 +64,66 @@ const show = {
   podcastGuid: "d21642df-1816-55c8-b308-6209066e9ef6"
 };
 
+const launchLabPassed = new Set([
+  "resend.delivered",
+  "resend.bounced",
+  "resend.complained",
+  "stripe.api_test_mode",
+  "stripe.product_price_contract",
+  "rss.public_fixture_hidden",
+  "rss.private_directory_block",
+  "ads.targeting_matrix",
+  "ads.house_fallback",
+  "ads.equal_byte_length",
+  "ads.partial_not_qualified",
+  "pool.grant",
+  "pool.redeem",
+  "pool.duplicate",
+  "pool.revoke"
+]);
+const launchLabScenarios = Object.entries({
+  resend: ["delivered", "bounced", "complained", "suppressed"],
+  stripe: [
+    "api_test_mode", "product_price_contract", "webhook_contract",
+    "checkout_success", "renewal", "payment_failure", "payment_recovery",
+    "cancellation", "refund", "duplicate_webhook", "out_of_order_webhook"
+  ],
+  youtube: [
+    "channel_identity", "unlisted_audio_only", "unlisted_native_video",
+    "early_access_hold", "premium_bonus_exclusion"
+  ],
+  rss: [
+    "public_fixture_hidden", "private_directory_block",
+    "enclosure_head_range", "transcript_chapter_contract"
+  ],
+  directory: [
+    "packet_generation", "owner_verification", "canonical_feed_validation",
+    "ingestion_observed", "failure_recovery"
+  ],
+  ads: [
+    "targeting_matrix", "house_fallback", "equal_byte_length",
+    "partial_not_qualified", "native_client_qualified"
+  ],
+  pool: [
+    "grant", "redeem", "duplicate", "revoke", "expiry", "overlap",
+    "feed_rotation"
+  ]
+}).flatMap(([provider, scenarios]) => scenarios.map((scenario) => {
+  const key = `${provider}.${scenario}`;
+  const passed = launchLabPassed.has(key);
+  return {
+    provider,
+    scenario,
+    state: passed
+      ? "passed"
+      : key === "resend.suppressed" ? "running" : "pending",
+    observedStatus: passed ? "verified" : key === "resend.suppressed"
+      ? "accepted"
+      : null,
+    failureCode: null
+  };
+}));
+
 const episode = {
   id: "episode_mock",
   showId: show.id,
@@ -53,7 +134,7 @@ const episode = {
     "<h2>Notas del episodio</h2><p>Contenido revisable y seguro.</p>",
   status: "draft",
   access: "public",
-  mediaStatus: "ready",
+  mediaStatus: workflowTarget === "attach_media" ? "pending" : "ready",
   sourceLanguage: "es",
   audioFilename: "episode-source.wav",
   publicationRevision: 0,
@@ -452,6 +533,49 @@ const distributionDestinations = [
   };
 });
 
+const directorySubmissionPacket = {
+  schema: "dust-wave-directory-submission-packet",
+  version: 1,
+  containsCredentials: false,
+  show: {
+    id: show.id,
+    slug: show.slug,
+    title: show.title,
+    description: show.description,
+    language: show.language,
+    artworkUrl: show.artworkUrl,
+    canonicalUrl: show.canonicalUrl,
+    podcastGuid: show.podcastGuid,
+    authorName: show.authorName,
+    category: show.category,
+    explicit: show.explicit,
+    feedUrl: show.feedUrl,
+    owner: {
+      name: "Dust Wave",
+      email: "podcasts@dustwave.xyz"
+    }
+  },
+  feedValidation: {
+    status: "valid",
+    feedUrl: "https://feeds.dustwave.xyz/opera-en-la-selva/rss.xml",
+    validatorVersion: "dustwave-rss-launch-v3",
+    feedSha256: sha("f"),
+    itemCount: 1,
+    failureCode: null,
+    checkedAt: "2026-07-26T12:05:00.000Z",
+    validatedAt: "2026-07-26T12:05:00.000Z",
+    currentValidator: true
+  },
+  destinations: distributionDestinations.map((destination) => ({
+    id: destination.id,
+    name: destination.name,
+    enabled: destination.enabled,
+    submissionUrl: destination.submissionUrl,
+    ownerSetupStatus: destination.ownerSetupStatus,
+    listingUrl: destination.listingUrl
+  }))
+};
+
 let marketingLinks = [{
   id: "marketing_link_browser_fixture",
   showId: show.id,
@@ -844,6 +968,33 @@ function responseFor(request) {
       csrfToken: "browser-qa-csrf"
     });
   }
+  if (request.method === "GET" && path === "/v1/admin/launch-lab") {
+    if (adminRole !== "super_admin") return json({ error: "forbidden" }, 403);
+    const latest = {
+      schemaVersion: "dust-wave-launch-lab-run-v1",
+      runId: "launch_browser_fixture_0001",
+      sourceCommit: "a".repeat(40),
+      status: "running",
+      startedAt: "2026-08-02T06:06:13.000Z",
+      completedAt: null,
+      scenarios: launchLabScenarios,
+      passed: false,
+      launchGateEligible: false
+    };
+    return json({
+      schemaVersion: "dust-wave-launch-lab-admin-v1",
+      available: true,
+      fixture: {
+        exists: true,
+        testFixture: true,
+        publiclyDiscoverable: false,
+        billable: false,
+        launchGateEligible: false
+      },
+      latest,
+      runs: [latest]
+    });
+  }
   if (request.method === "GET" && path === "/v1/admin/shows") {
     return json({ shows: [show] });
   }
@@ -892,6 +1043,48 @@ function responseFor(request) {
       updated: true,
       idempotent: false
     });
+  }
+  if (
+    request.method === "GET"
+    && path === `/v1/admin/shows/${show.id}/tax-policy`
+  ) {
+    return json({
+      showId: show.id,
+      providerMode: "test",
+      showReady: true,
+      policies: [],
+      candidate: {
+        applicableMode: "test",
+        jurisdictionCode: "US-NM-87120",
+        ratePartsPerMillion: 76_250,
+        inclusive: false,
+        providerName: "nm_grt",
+        sourceReference: "github:aindaco1/store@fixture:_config.yml",
+        effectiveAt: "2026-08-02T00:00:00.000Z",
+        expiresAt: null,
+        displayName: "NM GRT",
+        confirmation:
+          `APPROVE_TAX_POLICY ${show.id} US-NM-87120 76250`
+      }
+    });
+  }
+  if (
+    request.method === "PUT"
+    && path === `/v1/admin/shows/${show.id}/tax-policy`
+  ) {
+    return json({
+      idempotent: false,
+      policy: {
+        jurisdictionCode: "US-NM-87120",
+        ratePartsPerMillion: 76_250,
+        inclusive: false,
+        providerName: "nm_grt",
+        providerMode: "test",
+        status: "approved",
+        assigned: true,
+        providerReady: true
+      }
+    }, 201);
   }
   if (
     request.method === "GET"
@@ -977,6 +1170,7 @@ function responseFor(request) {
           validatedAt: "2026-07-26T12:05:00.000Z"
         }
       },
+      submissionPacket: directorySubmissionPacket,
       destinations: distributionDestinations
     });
   }
@@ -1696,6 +1890,12 @@ function responseFor(request) {
     return json({ updated: true, episodeId: episode.id });
   }
   if (
+    request.method === "GET"
+    && path === `/v1/admin/episodes/${episode.id}/show-notes/drafts`
+  ) {
+    return json({ episodeId: episode.id, drafts: [] });
+  }
+  if (
     request.method === "POST"
     && path === `/v1/admin/episodes/${episode.id}/show-notes/draft`
   ) {
@@ -1723,6 +1923,12 @@ function responseFor(request) {
       reviewRequired: true,
       saved: false
     });
+  }
+  if (
+    request.method === "GET"
+    && path === `/v1/admin/episodes/${episode.id}/chapters/drafts`
+  ) {
+    return json({ episodeId: episode.id, drafts: [] });
   }
   if (
     request.method === "POST"
@@ -1763,6 +1969,12 @@ function responseFor(request) {
       reviewRequired: true,
       saved: false
     });
+  }
+  if (
+    request.method === "GET"
+    && path === `/v1/admin/episodes/${episode.id}/clips/drafts`
+  ) {
+    return json({ episodeId: episode.id, drafts: [] });
   }
   if (
     request.method === "POST"
@@ -2306,6 +2518,53 @@ function responseFor(request) {
     request.method === "GET"
     && path === `/v1/admin/episodes/${episode.id}/readiness`
   ) {
+    const workflowNodes = {
+      working_master: ["core.working_master", "Working master"],
+      delivery_audio: ["core.delivery_audio", "Delivery audio"],
+      alignment: ["editorial.word_alignment", "Word alignment"],
+      chapters: ["editorial.chapters", "Chapters"],
+      production_review: [
+        "editorial.production_review",
+        "Production review"
+      ],
+      promotion_clips: [
+        "editorial.promotion_clips",
+        "Promotion clips"
+      ]
+    };
+    const workflowNode = workflowNodes[workflowTarget];
+    const readinessNodes = workflowTarget === "multiple"
+      ? [
+          ["editorial.production_review", "Production review"],
+          ["core.delivery_audio", "Delivery audio"],
+          ["editorial.word_alignment", "Word alignment"],
+          ["editorial.chapters", "Chapters"]
+        ].map(([id, label]) => ({
+          id,
+          group: id.split(".")[0],
+          label,
+          status: "missing",
+          severity: "blocker",
+          summary: "Controlled multi-blocker workflow fixture.",
+          evidence: {}
+        }))
+      : [{
+          id: workflowNode?.[0] || "core.working_master",
+          group: String(workflowNode?.[0] || "core").split(".")[0],
+          label: workflowNode?.[1] || "Working master",
+          status: workflowNode ? workflowStatus : "ready",
+          severity: "blocker",
+          summary: workflowNode
+            ? "Controlled workflow-navigation blocker."
+            : "Exact source and QC evidence are approved.",
+          evidence: {
+            revision: 1,
+            sourceSha256: sha("a"),
+            alignmentStatus: workflowTarget === "alignment"
+              ? (workflowStatus === "pending" ? "queued" : workflowStatus)
+              : undefined
+          }
+        }];
     return json({
       publicationRevision: 0,
       publicationGateMode: "shadow",
@@ -2313,21 +2572,13 @@ function responseFor(request) {
       legacyGate: { ready: false, missing: ["publication"] },
       candidateGate: {
         ready: false,
-        blockerCount: 1,
+        blockerCount: readinessNodes.filter(
+          ({ status }) => status !== "ready"
+        ).length,
         warningCount: 1,
         overrideAvailable: true
       },
-      nodes: [
-        {
-          id: "core.working_master",
-          group: "core",
-          label: "Working master",
-          status: "ready",
-          severity: "blocker",
-          summary: "Exact source and QC evidence are approved.",
-          evidence: { revision: 1, sourceSha256: sha("a") }
-        }
-      ]
+      nodes: readinessNodes
     });
   }
   if (
@@ -2552,6 +2803,6 @@ server.listen(port, host, () => {
   process.stdout.write(
     `Podcast admin mock API listening on http://${host}:${port}`
       + ` (${transcriptCueCount} transcript cues, `
-      + `${publicClipMode} public clips)\n`
+      + `${publicClipMode} public clips, ${workflowTarget} workflow target)\n`
   );
 });

@@ -82,8 +82,15 @@ Build the isolated Cloudflare Pages staging artifact with:
 
 ```bash
 PODCAST_STAGING_TURNSTILE_SITE_KEY="<public staging site key>" \
-  npm run build:podcast-staging
+npm run build:podcast-staging
 ```
+
+The staging build retrieves Cloudflare's secret-free widget list and fails
+before building unless that public key identifies exactly one managed
+`Dust Wave Podcasts staging` widget whose only hostname is
+`dust-wave-website-staging.pages.dev`. This prevents a Pool, Store, production,
+or expanded-hostname widget from being embedded accidentally. Wrangler must be
+authenticated, but the build never reads or prints a Turnstile secret.
 
 That command deliberately overrides the public, member, Admin, and Checkout
 API origins with
@@ -293,6 +300,10 @@ The command launches a temporary, extension-free Chrome profile, records an
 by Git). It never reuses browser cookies or an authenticated session. The
 tracer discovers system Chrome/Chromium and Playwright's standard browser cache;
 set `PLAYWRIGHT_BROWSERS_PATH` or pass `--chrome` for a custom installation.
+It also verifies the exact CSS viewport, enforced CSP, requested admin context,
+and clipped descendants outside intentional horizontal scrollers. The summary
+reports cumulative layout shift and rejects authenticated traces above the 0.1
+good-experience threshold.
 
 Use `--viewport 390x844` for the mobile breakpoint, or override the safe
 staging default explicitly:
@@ -303,8 +314,9 @@ npm run perf:podcast-admin:trace -- \
   --url https://dust-wave-website-staging.pages.dev/es/admin/podcasts/
 ```
 
-Use `--admin-tab production` with the repository mock API to capture the
-transcript workbench directly. For a bounded large-transcript regression,
+Use `--admin-tab episodes --admin-group production` with the repository mock
+API to capture the transcript workbench directly. For a bounded
+large-transcript regression,
 build once and run the next two server commands in separate terminals:
 
 ```bash
@@ -316,11 +328,35 @@ python3 -m http.server 4173 --bind 127.0.0.1 --directory dev
 PODCAST_ADMIN_MOCK_TRANSCRIPT_CUES=1300 npm run qa:podcast-admin:mock-api
 npm run perf:podcast-admin:trace -- \
   --url http://127.0.0.1:4173/admin/podcasts/ \
-  --admin-tab production
+  --admin-tab episodes \
+  --admin-group production
 ```
 
-Use `--admin-tab settings` to measure the bilingual show form and the
-dry-run-first public-page projection controls at 320 px or desktop width.
+Use `--admin-tab settings` to measure the bilingual show form, dry-run-first
+public-page projection controls, and Super-admin Launch Lab at 320 px or
+desktop width. Authenticated Settings traces fail closed unless the Launch Lab
+has exactly four summary metrics, seven provider groups, and collapsed
+technical evidence by default.
+
+Use `--admin-tab all` with the authenticated repository mock to audit all six
+top-level workspaces in navigation order within one isolated browser session.
+The matrix verifies the exact desktop or mobile viewport, horizontal fit, CSP,
+layout stability, active-tab state, shared list spacing, and progressive
+disclosure defaults for every workspace:
+
+```bash
+npm run perf:podcast-admin:trace -- \
+  --url http://127.0.0.1:4173/admin/podcasts/ \
+  --admin-tab all \
+  --viewport 1440x900
+npm run perf:podcast-admin:trace -- \
+  --url http://127.0.0.1:4173/admin/podcasts/ \
+  --admin-tab all \
+  --viewport 320x700
+```
+
+Keep focused `--admin-group` traces separate from `--admin-tab all`; they test
+an explicitly expanded workbench rather than the concise launch state.
 
 Load the resulting JSON from Chrome DevTools **Performance → Load profile**.
 Trace files contain visited URLs and page metadata, so review them before
@@ -340,6 +376,12 @@ The fixture endpoint is
 the browser contract validates Spanish/English labels, canonical sharing,
 safe text-only rendering, MP4 download URLs, and complete concealment when no
 approved selection remains.
+
+Set `PODCAST_ADMIN_MOCK_WORKFLOW_TARGET` to `attach_media`,
+`working_master`, `delivery_audio`, `alignment`, `chapters`,
+`production_review`, or `promotion_clips` to expose one controlled readiness
+state and verify that the guided workflow opens and focuses the exact repair
+control.
 
 ### WebP Images
 

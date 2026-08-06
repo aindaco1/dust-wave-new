@@ -1,5 +1,9 @@
 import { AdminApiClient, AdminApiError } from "./dust-wave-admin-shell/api-client.js?v=0.10.2";
 import { AdminDownloadError, requestCredentialedBlob, triggerBlobDownload } from "./dust-wave-admin-shell/credentialed-download.js?v=0.10.2";
+import {
+  formatBytes,
+  formatInteger
+} from "./podcast-admin-formatters.js";
 import { mountConfirmationDialog } from "./dust-wave-admin-shell/confirmation-dialog.js?v=0.10.2";
 import { mountRichTextEditor } from "./dust-wave-admin-shell/editor.js?v=0.10.2";
 import { markdownToEditorHtml } from "./dust-wave-admin-shell/editor-codec.js?v=0.10.2";
@@ -24,14 +28,22 @@ import {
 import { mountSavedMarketingLinks } from "./podcast-admin-marketing-links.js";
 import { renderEpisodeCatalog, renderShowCatalog } from "./podcast-admin-catalog.js";
 import { mountEpisodePublishWorkflow } from "./podcast-admin-publish-workflow.js";
+import {
+  mountEpisodePublishSections
+} from "./podcast-admin-publish-sections.js";
+import {
+  readinessNodeLabel,
+  readinessNodeSummary
+} from "./podcast-admin-readiness-copy.js";
+import {
+  createPublicationReadinessLoader
+} from "./podcast-admin-readiness-loader.js";
 import { mountProgressiveSections } from "./podcast-admin-progressive-sections.js";
-import {
-  mountPodcastAdminToolDisclosure
-} from "./podcast-admin-tool-disclosure.js";
+import { mountPodcastAdminWorkspaces } from "./podcast-admin-workspaces.js";
+import { mountPodcastAdminToolDisclosure } from "./podcast-admin-tool-disclosure.js";
+import { mountPodcastAdminContextualTabs as mountContextTabs } from "./podcast-admin-section-tabs.js";
 import { createEpisodePublisher } from "./podcast-admin-publication.js";
-import {
-  createEpisodeWorkflowNavigator
-} from "./podcast-admin-workflow-navigation.js";
+import { createEpisodeWorkflowNavigator } from "./podcast-admin-workflow-controller.js";
 import { mountEpisodeEditor } from "./podcast-admin-episode-editor.js";
 import { mountShowNotesAssistant } from "./podcast-admin-show-notes.js";
 import { mountChapterDraftAssistant } from "./podcast-admin-chapter-draft.js";
@@ -40,7 +52,9 @@ import { renderClipRecipePreview } from "./podcast-admin-clip-preview.js";
 import { clipDownloadActionMarkup, mountTranscriptDownloads } from "./podcast-admin-download-actions.js";
 import { mountTranscriptCaptionImport } from "./podcast-admin-transcript-import.js";
 import { mountTranscriptSearch } from "./podcast-admin-transcript-search.js";
-import { mountPodcastReviewDraftGuard } from "./podcast-admin-unsaved-changes.js";
+import { mountTranscriptLabelReview } from "./podcast-admin-transcript-label-review.js";
+import { mountPodcastEpisodeContext } from "./podcast-admin-episode-context-setup.js";
+import { mountPodcastShowContext } from "./podcast-admin-show-context.js";
 import { syncReviewDraftButton } from "./podcast-admin-dirty-controls.js";
 import { adminText, editorLabels } from "./podcast-admin-text.js";
 import { ALIGNMENT_WORKFLOW, AUDIO_QC_POLICY_FIELDS, MAXIMUM_ALIGNMENT_BENCHMARK_BYTES, TRANSCRIPTION_CHUNK_WORKFLOW, TRANSCRIPT_CUES_PER_PAGE } from "./podcast-admin-constants.js";
@@ -56,11 +70,18 @@ import { mountYouTubeAudioRenditions } from "./podcast-admin-youtube-audio-rendi
 import { mountAudioEnhancementDerivatives } from "./podcast-admin-audio-derivatives.js";
 import { mountDeliveryAudio } from "./podcast-admin-delivery-audio.js";
 import { mountPodcastAnalytics } from "./podcast-admin-analytics.js";
+import { mountPodcastLaunchLab } from "./podcast-admin-launch-lab.js";
 import { mountClipPublications } from "./podcast-admin-clip-publications.js";
 import {
   distributionCertificationList,
   renderDistributionLaunchClaim
 } from "./podcast-admin-distribution-certification.js";
+import {
+  createDistributionDisclosureState,
+  distributionEvidenceSummary,
+  distributionSetupLinkLabelKey
+} from "./podcast-admin-distribution-disclosure.js";
+import { createDirectorySubmissionPacketActions, createDistributionFeedActions } from "./podcast-admin-directory-packet.js";
 import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js?v=0.10.2";
 import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js?v=0.10.2";
 import { responsiveTurnstileSize } from "./dust-wave-admin-shell/turnstile.js?v=0.10.2";
@@ -85,9 +106,8 @@ function startPodcastAdmin(root) {
   const showCards = root.querySelector("[data-podcast-show-cards]");
   const showForm = root.querySelector("[data-podcast-show-form]");
   const showStatus = root.querySelector("[data-podcast-show-status]");
-  const showSelects = Array.from(
-    root.querySelectorAll("[data-podcast-show-select]")
-  );
+  const showContext = mountPodcastShowContext(root);
+  const showSelects = showContext.selects;
   const episodeForm = root.querySelector("[data-podcast-episode-form]");
   const episodeStatus = root.querySelector("[data-podcast-episode-status]");
   const episodeList = root.querySelector("[data-podcast-episode-list]");
@@ -213,9 +233,6 @@ function startPodcastAdmin(root) {
   );
   const readinessStatus = root.querySelector(
     "[data-podcast-readiness-status]"
-  );
-  const readinessRefresh = root.querySelector(
-    "[data-podcast-readiness-refresh]"
   );
   const audioQcEpisodeSelect = root.querySelector(
     "[data-podcast-audio-qc-episode]"
@@ -366,6 +383,7 @@ function startPodcastAdmin(root) {
   const adPlanStatus = root.querySelector("[data-podcast-ad-plan-status]");
   const adPlanResult = root.querySelector("[data-podcast-ad-plan-result]");
   const distributionRoot = root.querySelector("[data-podcast-distribution]");
+  const distributionDisclosures = createDistributionDisclosureState();
   const distributionFilter = root.querySelector(
     "[data-podcast-distribution-filter]"
   );
@@ -443,7 +461,6 @@ function startPodcastAdmin(root) {
   let productionReviews = null;
   let reviewRequestId = 0;
   let publicationReadiness = null;
-  let readinessRequestId = 0;
   let audioQcState = null;
   let audioQcRequestId = 0;
   let audioQcPolicy = null;
@@ -465,9 +482,27 @@ function startPodcastAdmin(root) {
   let announcementHistoryRequestId = 0;
   let latestProcessorManifest = null;
   let episodeProgressiveTools = null;
+  let episodePublishWorkflow = null;
+  let episodePublishSections = null;
+  let workspaceGroups = null;
   let turnstileToken = "";
   let turnstileWidgetId;
   let turnstileInitialization;
+
+  const loadPublicationReadiness = createPublicationReadinessLoader({
+    client,
+    summary: readinessSummary,
+    groups: readinessGroups,
+    status: readinessStatus,
+    text: adminText,
+    setStatus,
+    friendlyError,
+    selectedEpisodeId: () => reviewEpisodeSelect?.value || "",
+    onReadiness(value) {
+      publicationReadiness = value;
+      if (value) renderPublicationReadiness();
+    }
+  });
 
   const transcriptImport = mountTranscriptCaptionImport({
     root,
@@ -507,15 +542,38 @@ function startPodcastAdmin(root) {
     onOpenCue: openTranscriptCue,
     formatError: transcriptInputError
   });
-  const reviewDraftGuard = mountPodcastReviewDraftGuard({
-    showSelects, transcriptEpisodeSelect, transcriptLanguageSelect,
-    chapterEpisodeSelect, logoutButton,
+  const transcriptLabelReview = mountTranscriptLabelReview({
+    root,
+    text: adminText,
+    canEdit: () => canEditTranscripts,
+    getTranscript: () => transcript,
+    syncCues: () => syncVisibleTranscriptCues({ requireText: false }),
+    markDirty() {
+      transcriptDirty = true;
+      syncReviewDraftButton(transcriptSaveButton, true, adminText);
+      transcriptApproveButton.disabled = true;
+    },
+    setStatus: (message, error) => setStatus(transcriptStatus, message, error),
+    formatError: transcriptInputError
+  });
+  const {
+    context: episodeContext,
+    reviewDraftGuard,
+    select: currentEpisodeSelect
+  } = mountPodcastEpisodeContext({
+    root, text: adminText,
     hasTranscriptChanges: () => transcriptDirty,
     hasChapterChanges: () => chapterDirty,
-    discardTranscriptChanges: () => { transcriptDirty = false; },
-    discardChapterChanges: () => { chapterDirty = false; },
+    discardTranscriptChanges() { transcriptDirty = false; },
+    discardChapterChanges() { chapterDirty = false; },
     loadTranscript, loadChapters,
-    message: () => adminText("discardUnsavedReviewChanges")
+    onChange({ primary }) {
+      episodePublishWorkflow?.refresh();
+      if (!primary) return;
+      void loadAdPlan();
+      if (workspaceGroups?.isOpen("production"))
+        workspaceGroups.loadTab("episodes");
+    }
   });
   const rssImport = mountRssImportWorkbench({
     root,
@@ -642,12 +700,13 @@ function startPodcastAdmin(root) {
     resetBuilder: resetMarketingLinkForm,
     downloadQr: downloadMarketingQr
   });
-  const youtubeAudioRenditions = mountYouTubeAudioRenditions({
+  const youtubeAudio = mountYouTubeAudioRenditions({
     root,
     client,
     text: adminText,
     setStatus,
     friendlyError,
+    operationId,
     canQueue: () => canRunAudioQc
   });
   const deliveryAudio = mountDeliveryAudio({
@@ -696,6 +755,13 @@ function startPodcastAdmin(root) {
     setStatus,
     friendlyError
   });
+  const podcastLaunchLab = mountPodcastLaunchLab({
+    root,
+    client,
+    text: adminText,
+    setStatus,
+    friendlyError
+  });
   const showSiteProjection = mountShowSiteProjection({
     root,
     client,
@@ -713,9 +779,10 @@ function startPodcastAdmin(root) {
   });
   const publishEpisode = createEpisodePublisher({
     client,
+    ApiError: AdminApiError,
     confirmationDialog,
     text: adminText,
-    nodeLabel: localizedReadinessNodeLabel,
+    nodeLabel: (node) => readinessNodeLabel(adminText, node),
     operationId,
     report(message, error = false) {
       setStatus(episodeStatus, message, error);
@@ -735,6 +802,26 @@ function startPodcastAdmin(root) {
       await loadDistribution(episodeId);
     }
   });
+  workspaceGroups = mountPodcastAdminWorkspaces({
+    root,
+    loaders: {
+      production() {
+        loadAudioQcPolicy();
+        loadAudioQc();
+        loadAudioMaster();
+        loadTranscript();
+        loadAlignmentBenchmarks();
+        loadChapters();
+        loadProductionReviews();
+        deliveryAudio.refresh();
+        youtubeAudio.refresh();
+      },
+      analytics: () => podcastAnalytics.load(),
+      subscribers: () => loadSubscribers({ reset: true }),
+      sponsors: loadCampaigns,
+      billing: loadBilling
+    }
+  });
   const adminTabs = mountAccessibleTabs(
     root.querySelector("[data-podcast-tabs]"),
     {
@@ -743,19 +830,10 @@ function startPodcastAdmin(root) {
       },
       storageKey: "dustwave-podcast-admin-tab",
       onSelect(tab) {
-        if (tab !== "production") pauseClipMediaPlayers(clipList);
+        if (tab !== "episodes") pauseClipMediaPlayers(clipList);
         if (tab !== "marketing") pauseClipMediaPlayers(clipLibrary);
-        if (tab === "production") {
-          loadAudioQcPolicy();
-          loadAudioQc();
-          loadAudioMaster();
-          loadTranscript();
-          loadAlignmentBenchmarks();
-          loadChapters();
-          loadProductionReviews();
-          deliveryAudio.refresh();
-          youtubeAudioRenditions.refresh();
-        }
+        workspaceGroups.loadTab(tab);
+        if (tab === "episodes") episodePublishWorkflow?.refresh();
         if (tab === "distribution") loadDistribution();
         if (tab === "marketing") {
           updateMarketingTools();
@@ -763,10 +841,6 @@ function startPodcastAdmin(root) {
           loadAnnouncementHistory();
           savedMarketingLinks.load({ reset: true });
         }
-        if (tab === "subscribers") loadSubscribers({ reset: true });
-        if (tab === "billing") loadBilling();
-        if (tab === "sponsors") loadCampaigns();
-        if (tab === "analytics") podcastAnalytics.load();
       }
     }
   );
@@ -786,33 +860,58 @@ function startPodcastAdmin(root) {
     campaignForm,
     creativeForm
   });
-  const navigateEpisodeWorkflow = createEpisodeWorkflowNavigator({
+  mountContextTabs({
     root,
-    tabs: adminTabs,
+    text: adminText,
+    tabs: mountAccessibleTabs
+  });
+  const productionProgressiveSections = mountProgressiveSections(
+    root.querySelector("#podcast-panel-production"),
+    { label: adminText("productionSectionsAria") }
+  );
+  let navigateEpisodeWorkflow = () => {};
+  episodePublishWorkflow = mountEpisodePublishWorkflow({
+    root: root.querySelector("[data-podcast-publish-workflow]"),
+    client,
+    text: adminText,
+    nodeLabel: (node) => readinessNodeLabel(adminText, node),
+    nodeDescription: (node) => readinessNodeSummary(adminText, node),
+    episodeSelect: currentEpisodeSelect,
+    loadReadiness: loadPublicationReadiness,
+    onEpisodePresence(hasEpisode) {
+      episodePublishSections?.setEnabled(hasEpisode);
+    },
+    onNavigate(...args) {
+      navigateEpisodeWorkflow(...args);
+    },
+    onPublish: publishEpisode
+  });
+  episodePublishSections = mountEpisodePublishSections({
+    root: root.querySelector("#podcast-panel-episodes"),
+    publishPanel: episodePublishWorkflow.publishPanel,
     episodeList,
     episodeForm,
+    uploadForm,
+    adPlanForm,
+    productionGroup: root.querySelector(
+      '[data-podcast-workspace-group="production"]'
+    ),
+    productionSections: productionProgressiveSections.sections
+  });
+  navigateEpisodeWorkflow = createEpisodeWorkflowNavigator({
+    root,
+    tabs: adminTabs,
+    editEpisode: episodeEditor.edit,
     adPlanForm,
     audioQcEpisodeSelect,
     audioMasterEpisodeSelect,
     transcriptEpisodeSelect,
     chapterEpisodeSelect,
-    transcriptWorkbench,
     reviewEpisodeSelect,
     loadProductionReviews,
-    loadPublicationReadiness
+    loadPublicationReadiness,
+    publishSections: episodePublishSections
   });
-  const episodePublishWorkflow = mountEpisodePublishWorkflow({
-    root: root.querySelector("[data-podcast-publish-workflow]"),
-    client,
-    text: adminText,
-    nodeLabel: localizedReadinessNodeLabel,
-    onNavigate: navigateEpisodeWorkflow,
-    onPublish: publishEpisode
-  });
-  mountProgressiveSections(
-    root.querySelector("#podcast-panel-production"),
-    { label: adminText("productionSectionsAria") }
-  );
 
   root.querySelector("[data-podcast-refresh]")?.addEventListener("click", loadShows);
   billingRefresh?.addEventListener("click", loadBilling);
@@ -883,9 +982,14 @@ function startPodcastAdmin(root) {
           savedMarketingLinks.load({ reset: true })
         ]);
       }
-      const analyticsPanel = root.querySelector("#podcast-panel-analytics");
-      if (analyticsPanel && !analyticsPanel.hidden) {
-        await podcastAnalytics.load();
+      const audiencePanel = root.querySelector("#podcast-panel-audience");
+      if (audiencePanel && !audiencePanel.hidden) {
+        if (workspaceGroups.isOpen("analytics")) {
+          await podcastAnalytics.load();
+        }
+        if (workspaceGroups.isOpen("subscribers")) {
+          await loadSubscribers({ reset: true });
+        }
       }
       const distributionPanel = root.querySelector(
         "#podcast-panel-distribution"
@@ -893,15 +997,15 @@ function startPodcastAdmin(root) {
       if (distributionPanel && !distributionPanel.hidden) {
         await loadDistribution();
       }
-      const billingPanel = root.querySelector("#podcast-panel-billing");
-      if (billingPanel && !billingPanel.hidden) {
-        await loadBilling();
-      }
-      const subscribersPanel = root.querySelector(
-        "#podcast-panel-subscribers"
+      const monetizationPanel = root.querySelector(
+        "#podcast-panel-monetization"
       );
-      if (subscribersPanel && !subscribersPanel.hidden) {
-        await loadSubscribers({ reset: true });
+      if (
+        monetizationPanel
+        && !monetizationPanel.hidden
+        && workspaceGroups.isOpen("billing")
+      ) {
+        await loadBilling();
       }
     });
   }
@@ -949,9 +1053,6 @@ function startPodcastAdmin(root) {
   reviewForm?.addEventListener("submit", createProductionReviewComment);
   reviewList?.addEventListener("change", handleProductionReviewChange);
   reviewList?.addEventListener("click", handleProductionReviewClick);
-  readinessRefresh?.addEventListener("click", () =>
-    loadPublicationReadiness()
-  );
   audioQcEpisodeSelect?.addEventListener("change", loadAudioQc);
   audioQcQueue?.addEventListener("click", queueAudioQc);
   audioQcRefresh?.addEventListener("click", loadAudioQc);
@@ -1068,7 +1169,7 @@ function startPodcastAdmin(root) {
   episodeList?.addEventListener("click", async (event) => {
     const review = event.target.closest("[data-review-episode]");
     if (review) {
-      episodePublishWorkflow.selectEpisode(review.dataset.reviewEpisode);
+      episodeContext.selectEpisode(review.dataset.reviewEpisode);
       return;
     }
     const button = event.target.closest("[data-publish-episode]");
@@ -1091,6 +1192,7 @@ function startPodcastAdmin(root) {
       if (token) session.clearFragment();
       showAuthenticated(result.identity);
       await Promise.all([loadShows(), loadAlignmentBenchmarks()]);
+      app.hidden = false;
       setStatus(globalStatus, "");
     } catch (error) {
       showLoggedOut();
@@ -1144,7 +1246,6 @@ function startPodcastAdmin(root) {
   function showAuthenticated(identity) {
     adminIdentity = identity || null;
     authPanel.hidden = true;
-    app.hidden = false;
     logoutButton.hidden = false;
     const roles = (identity?.roles || [])
       .map(({ role }) =>
@@ -1189,6 +1290,7 @@ function startPodcastAdmin(root) {
     clipDraftAssistant.setEditable(canEditTranscripts);
     root.querySelector("[data-podcast-session-summary]").textContent =
       adminText("authenticated", { roles: roles ? ` — ${roles}` : "" });
+    podcastLaunchLab.setAuthorized(isSuperAdmin());
   }
 
   function showLoggedOut() {
@@ -1202,7 +1304,9 @@ function startPodcastAdmin(root) {
     adminIdentity = null;
     campaigns = [];
     podcastAnalytics.reset();
+    podcastLaunchLab.reset();
     deliveryAudio.reset();
+    youtubeAudio.reset();
     distributionRequestId += 1;
     billingRequestId += 1;
     subscriberRows = [];
@@ -1339,9 +1443,9 @@ function startPodcastAdmin(root) {
       const payload = await client.request("/v1/admin/shows");
       shows = payload.shows || [];
       const previousShowId = selectedShowId;
-      selectedShowId = shows.some(({ id }) => id === selectedShowId)
-        ? selectedShowId
-        : shows[0]?.id || "";
+      selectedShowId = navigateEpisodeWorkflow.selectLinkedShow(
+        shows, selectedShowId
+      );
       if (selectedShowId !== previousShowId) {
         clearClipLibraryState();
         clipPublications.close();
@@ -1354,6 +1458,9 @@ function startPodcastAdmin(root) {
         showChanged: selectedShowId !== previousShowId
       });
       await Promise.all([loadEpisodes(), loadCampaigns()]);
+      if (!root.querySelector("#podcast-panel-distribution").hidden) {
+        await loadDistribution();
+      }
       const marketingPanel = root.querySelector("#podcast-panel-marketing");
       if (marketingPanel && !marketingPanel.hidden) {
         await Promise.all([
@@ -1362,8 +1469,12 @@ function startPodcastAdmin(root) {
           savedMarketingLinks.load({ reset: true })
         ]);
       }
-      const analyticsPanel = root.querySelector("#podcast-panel-analytics");
-      if (analyticsPanel && !analyticsPanel.hidden) {
+      const audiencePanel = root.querySelector("#podcast-panel-audience");
+      if (
+        audiencePanel
+        && !audiencePanel.hidden
+        && workspaceGroups.isOpen("analytics")
+      ) {
         await podcastAnalytics.load();
       }
       setStatus(globalStatus, "");
@@ -1384,11 +1495,7 @@ function startPodcastAdmin(root) {
   }
 
   function fillShowSelect() {
-    for (const showSelect of showSelects) {
-      showSelect.replaceChildren(...shows.map((show) =>
-        new Option(show.title, show.id, false, show.id === selectedShowId)
-      ));
-    }
+    showContext.setShows(shows, selectedShowId);
   }
 
   function fillShowForm() {
@@ -1994,8 +2101,12 @@ function startPodcastAdmin(root) {
       renderEpisodes();
       fillEpisodeSelects();
       await loadAdPlan();
-      const productionPanel = root.querySelector("#podcast-panel-production");
-      if (productionPanel && !productionPanel.hidden) {
+      const episodePanel = root.querySelector("#podcast-panel-episodes");
+      if (
+        episodePanel
+        && !episodePanel.hidden
+        && workspaceGroups.isOpen("production")
+      ) {
         await Promise.all([
           loadAudioQcPolicy(),
           loadAudioQc(),
@@ -2005,6 +2116,9 @@ function startPodcastAdmin(root) {
           loadProductionReviews()
         ]);
       }
+      navigateEpisodeWorkflow.openDeepLink(
+        selectedShowId, episodes, episodeContext.selectEpisode
+      );
     } catch (error) {
       setStatus(episodeStatus, friendlyError(error), true);
     }
@@ -2022,24 +2136,17 @@ function startPodcastAdmin(root) {
       canEdit: canManageCreatives
     });
     episodeProgressiveTools?.setOpen(episodeForm, episodes.length === 0);
+    episodeContext.setEpisodes(episodes);
     episodePublishWorkflow.setEpisodes(episodes);
   }
 
   function fillEpisodeSelects() {
     deliveryAudio.setEpisodes(episodes);
-    youtubeAudioRenditions.setEpisodes(episodes);
-    for (const select of [
-      uploadForm?.elements.episodeId,
-      sponsorForm?.elements.episodeId,
-      adPlanForm?.elements.episodeId,
-      transcriptEpisodeSelect,
-      chapterEpisodeSelect,
-      reviewEpisodeSelect,
-      audioQcEpisodeSelect,
-      audioMasterEpisodeSelect
-    ].filter(Boolean)) {
-      const previousValue = select.value;
-      select.replaceChildren(...episodes.map((episode) =>
+    youtubeAudio.setEpisodes(episodes);
+    const sponsorEpisodeSelect = sponsorForm?.elements.episodeId;
+    if (sponsorEpisodeSelect) {
+      const previousValue = sponsorEpisodeSelect.value;
+      sponsorEpisodeSelect.replaceChildren(...episodes.map((episode) =>
         new Option(
           `${episode.title} — ${episode.mediaStatus}`,
           episode.id,
@@ -3639,6 +3746,7 @@ function startPodcastAdmin(root) {
     transcriptAddButton.hidden = !canEditTranscripts;
     transcriptSaveButton.hidden = !canEditTranscripts;
     syncReviewDraftButton(transcriptSaveButton, transcriptDirty, adminText);
+    transcriptLabelReview.render(transcript, cues);
     transcriptApproveButton.hidden = !canApproveTranscripts;
     transcriptApproveButton.disabled = !canApproveTranscripts
       || Number(transcript.revision || 0) < 1
@@ -5150,37 +5258,6 @@ function startPodcastAdmin(root) {
     }
   }
 
-  async function loadPublicationReadiness(
-    episodeId = reviewEpisodeSelect?.value || ""
-  ) {
-    const requestId = ++readinessRequestId;
-    publicationReadiness = null;
-    readinessGroups?.replaceChildren();
-    if (!episodeId) {
-      if (readinessSummary) {
-        readinessSummary.textContent = adminText("createBeforeReadiness");
-      }
-      setStatus(readinessStatus, "");
-      return;
-    }
-    setStatus(readinessStatus, adminText("loadingReadiness"));
-    try {
-      const payload = await client.request(
-        `/v1/admin/episodes/${encodeURIComponent(episodeId)}/readiness`
-      );
-      if (requestId !== readinessRequestId) return;
-      publicationReadiness = payload;
-      renderPublicationReadiness();
-      setStatus(readinessStatus, "");
-    } catch (error) {
-      if (requestId !== readinessRequestId) return;
-      if (readinessSummary) {
-        readinessSummary.textContent = adminText("readinessFailed");
-      }
-      setStatus(readinessStatus, friendlyError(error), true);
-    }
-  }
-
   function renderPublicationReadiness() {
     if (
       !publicationReadiness
@@ -5255,7 +5332,7 @@ function startPodcastAdmin(root) {
     const card = document.createElement("article");
     const status = String(readinessNode.status || "missing");
     const severity = String(readinessNode.severity || "info");
-    const label = localizedReadinessNodeLabel(readinessNode);
+    const label = readinessNodeLabel(adminText, readinessNode);
     card.className =
       `podcast-admin__readiness-card is-${status} severity-${severity}`;
     const heading = document.createElement("div");
@@ -5270,11 +5347,7 @@ function startPodcastAdmin(root) {
     ].join(" · ");
     heading.append(title, pill);
     const summary = document.createElement("p");
-    summary.textContent = adminText(
-      `readinessSummary_${status}`,
-      String(readinessNode.summary || ""),
-      { label }
-    );
+    summary.textContent = readinessNodeSummary(adminText, readinessNode);
     const evidence = document.createElement("details");
     const evidenceSummary = document.createElement("summary");
     evidenceSummary.textContent = adminText("evidenceLabel");
@@ -5290,18 +5363,6 @@ function startPodcastAdmin(root) {
     evidence.append(evidenceSummary, values);
     card.append(heading, summary, evidence);
     return card;
-  }
-
-  function localizedReadinessNodeLabel(readinessNode) {
-    const id = String(readinessNode?.id || "")
-      .replace(/[^A-Za-z0-9]+/g, "_")
-      .replace(/^_+|_+$/g, "");
-    return adminText(
-      `readinessNode_${id}`,
-      String(
-        readinessNode?.label || adminText("dependencyFallback")
-      )
-    );
   }
 
   function readinessEvidenceValue(value) {
@@ -6506,10 +6567,6 @@ function startPodcastAdmin(root) {
           }
         }
       );
-      downloadJson(
-        `podcast-clip-${clip.id}-revision-${clip.revision}.json`,
-        payload.processorManifest
-      );
       await loadClips({ preserveStatus: true });
       setStatus(
         clipStatus,
@@ -6788,39 +6845,31 @@ function startPodcastAdmin(root) {
       })
     );
 
-    const feed = document.createElement("div");
-    feed.className = "podcast-admin__distribution-feed";
-    const feedText = document.createElement("label");
-    const feedLabel = document.createElement("strong");
-    feedLabel.textContent = adminText(
-      "canonicalRssFeed"
-    );
-    const feedUrl = document.createElement("input");
-    feedUrl.type = "url";
-    feedUrl.readOnly = true;
-    feedUrl.setAttribute("aria-readonly", "true");
-    feedUrl.value = String(payload.feedUrl || "");
-    feedUrl.dataset.podcastDistributionFeedUrl = "";
-    feedText.append(feedLabel, feedUrl);
-    const copy = document.createElement("button");
-    copy.className = "btn btn-outline-light";
-    copy.type = "button";
-    copy.dataset.podcastDistributionCopyFeed = String(payload.feedUrl || "");
-    copy.textContent = adminText("copyFeedUrl");
-    const copyStatus = document.createElement("p");
-    copyStatus.className = "podcast-admin__status";
-    copyStatus.dataset.podcastDistributionCopyStatus = "";
-    copyStatus.setAttribute("role", "status");
-    copyStatus.setAttribute("aria-live", "polite");
-    feed.append(feedText, copy, copyStatus);
-    fragment.append(feed);
+    fragment.append(createDistributionFeedActions({
+      feedUrl: payload.feedUrl,
+      text: adminText,
+      setStatus
+    }));
+
+    const packetActions = createDirectorySubmissionPacketActions({
+      packet: payload.submissionPacket,
+      text: adminText,
+      downloadJson,
+      setStatus
+    });
+    if (packetActions) fragment.append(packetActions);
 
     const list = document.createElement("div");
     list.className = "podcast-admin__directory-list";
+    const disclosure = distributionDisclosures.context(
+      selectedShowId,
+      destinations
+    );
     for (const destination of destinations) {
       list.append(
         distributionDestinationCard(destination, {
-          episodeId: payload.episodeId || ""
+          episodeId: payload.episodeId || "",
+          disclosure
         })
       );
     }
@@ -7020,20 +7069,16 @@ function startPodcastAdmin(root) {
     );
   }
 
-  function distributionDestinationCard(destination, { episodeId }) {
+  function distributionDestinationCard(destination, {
+    episodeId,
+    disclosure
+  }) {
     const card = document.createElement("details");
     card.className = "podcast-admin__directory-card";
-    card.dataset.destinationId = String(destination.id || "");
-    card.open = Boolean(
-      destination.ownerSetupStatus !== "verified"
-      || destination.setupError
-      || destination.publicationError
-      || destination.publicationStatus === "failed"
-      || (
-        destination.certification
-        && !destination.certification.certified
-      )
+    card.dataset.actionable = String(
+      destination.enabled && !destination.certification?.certified
     );
+    distributionDisclosures.mount(card, disclosure, destination.id);
 
     const summary = document.createElement("summary");
     const heading = document.createElement("div");
@@ -7044,9 +7089,10 @@ function startPodcastAdmin(root) {
       destination.name || adminText("directoryFallback")
     );
     const semantics = document.createElement("p");
-    semantics.textContent = destination.mode === "direct_api"
-      ? adminText("directProviderAdapter")
-      : adminText("rssFollowingDirectory");
+    semantics.textContent = distributionEvidenceSummary(
+      destination,
+      adminText
+    );
     titleGroup.append(title, semantics);
     const badges = document.createElement("div");
     badges.className = "podcast-admin__badges";
@@ -7135,7 +7181,7 @@ function startPodcastAdmin(root) {
     links.className = "podcast-admin__directory-links";
     const setupLink = safeDistributionLink(
       destination.submissionUrl,
-      adminText("openOwnerSetup")
+      adminText(distributionSetupLinkLabelKey(destination))
     );
     const listingLink = safeDistributionLink(
       destination.listingUrl,
@@ -7239,6 +7285,8 @@ function startPodcastAdmin(root) {
       submissionDateLabel.append(submissionDate);
 
       const submissionEvidenceLabel = document.createElement("label");
+      submissionEvidenceLabel.className =
+        "podcast-admin__distribution-form-link";
       submissionEvidenceLabel.textContent = adminText(
         "submissionEvidenceOptional"
       );
@@ -7254,6 +7302,7 @@ function startPodcastAdmin(root) {
       submissionEvidenceLabel.append(submissionEvidence);
 
       const listingLabel = document.createElement("label");
+      listingLabel.className = "podcast-admin__distribution-form-link";
       listingLabel.textContent = adminText(
         "publicListingOptional"
       );
@@ -7521,31 +7570,6 @@ function startPodcastAdmin(root) {
     if (retry) {
       await retryReleaseChannel(retry);
       return;
-    }
-    const button = event.target.closest(
-      "[data-podcast-distribution-copy-feed]"
-    );
-    if (!button) return;
-    const status = distributionRoot.querySelector(
-      "[data-podcast-distribution-copy-status]"
-    );
-    const value = button.dataset.podcastDistributionCopyFeed || "";
-    try {
-      await navigator.clipboard.writeText(value);
-      setStatus(status, adminText("feedUrlCopied"));
-    } catch (_error) {
-      const input = distributionRoot.querySelector(
-        "[data-podcast-distribution-feed-url]"
-      );
-      input?.focus();
-      input?.select();
-      setStatus(
-        status,
-        adminText(
-          "feedCopySelected"
-        ),
-        true
-      );
     }
   }
 
@@ -8949,7 +8973,7 @@ function friendlyError(error) {
     }
   );
   if (translated && !translated.startsWith("[missing:")) return translated;
-  return error.message || error.code;
+  return adminText("unknownError");
 }
 
 function isoOrNull(value) {
@@ -8978,17 +9002,6 @@ function formatDate(value) {
     : adminText("notSet");
 }
 
-function formatBytes(value) {
-  const bytes = Number(value);
-  if (!Number.isFinite(bytes) || bytes <= 0) return "0 bytes";
-  if (bytes < 1_024) return `${Math.round(bytes)} bytes`;
-  if (bytes < 1_024 ** 2) return `${(bytes / 1_024).toFixed(1)} KiB`;
-  if (bytes < 1_024 ** 3) {
-    return `${(bytes / (1_024 ** 2)).toFixed(1)} MiB`;
-  }
-  return `${(bytes / (1_024 ** 3)).toFixed(2)} GiB`;
-}
-
 function formatDurationMilliseconds(value) {
   const milliseconds = Number(value);
   if (!Number.isFinite(milliseconds) || milliseconds < 1) {
@@ -9001,12 +9014,6 @@ function publicationGateLabel(value) {
   if (value === "enforce") return adminText("exactSnapshotEnforced");
   if (value === "shadow") return adminText("exactSnapshotShadow");
   return adminText("legacyPublishChecks");
-}
-
-function formatInteger(value) {
-  return new Intl.NumberFormat(
-    document.documentElement.lang || "en"
-  ).format(Number(value || 0));
 }
 
 function formatPercent(value) {

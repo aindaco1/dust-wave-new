@@ -15,15 +15,39 @@ const adminLayout = await readFile(
   path.join(repositoryRoot, 'src/_includes/layouts/podcast-admin.njk'),
   'utf8'
 );
-const authFooter = await readFile(
+const siteFooter = await readFile(
   path.join(
     repositoryRoot,
-    'src/_includes/snippets/podcast-auth-footer.njk'
+    'src/_includes/snippets/site-footer.njk'
   ),
   'utf8'
 );
 const adminScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin.js'),
+  'utf8'
+);
+const directoryPacketScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-directory-packet.js'),
+  'utf8'
+);
+const workspaceScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-workspaces.js'),
+  'utf8'
+);
+const episodeContextScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-episode-context.js'),
+  'utf8'
+);
+const episodeContextSetupScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-episode-context-setup.js'),
+  'utf8'
+);
+const readinessCopyScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-readiness-copy.js'),
+  'utf8'
+);
+const showContextScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-show-context.js'),
   'utf8'
 );
 const showSettingsScript = await readFile(
@@ -77,6 +101,13 @@ const deliveryAudioScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-delivery-audio.js'),
   'utf8'
 );
+const deliveryAudioApprovalScript = await readFile(
+  path.join(
+    repositoryRoot,
+    'src/js/podcast-admin-delivery-audio-approval.js'
+  ),
+  'utf8'
+);
 const marketingLinksScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-marketing-links.js'),
   'utf8'
@@ -115,12 +146,33 @@ const showNotesScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-show-notes.js'),
   'utf8'
 );
+const showNotesContractScript = await readFile(
+  path.join(
+    repositoryRoot,
+    'src/js/podcast-admin-show-notes-contract.js'
+  ),
+  'utf8'
+);
 const chapterDraftScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-chapter-draft.js'),
   'utf8'
 );
+const chapterDraftContractScript = await readFile(
+  path.join(
+    repositoryRoot,
+    'src/js/podcast-admin-chapter-draft-contract.js'
+  ),
+  'utf8'
+);
 const clipDraftScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-clip-draft.js'),
+  'utf8'
+);
+const clipDraftContractScript = await readFile(
+  path.join(
+    repositoryRoot,
+    'src/js/podcast-admin-clip-draft-contract.js'
+  ),
   'utf8'
 );
 const clipPreviewScript = await readFile(
@@ -155,6 +207,45 @@ const publicationScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-publication.js'),
   'utf8'
 );
+const publishWorkflowScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-publish-workflow.js'),
+  'utf8'
+);
+const publishSectionsScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-publish-sections.js'),
+  'utf8'
+);
+const sectionTabsScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-section-tabs.js'),
+  'utf8'
+);
+const progressiveSectionsScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-progressive-sections.js'),
+  'utf8'
+);
+const readinessLoaderScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-readiness-loader.js'),
+  'utf8'
+);
+const workflowResponsiveScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-workflow-responsive.js'),
+  'utf8'
+);
+const workflowTargetScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-workflow-target.js'),
+  'utf8'
+);
+const publicationSecurityScript = await readFile(
+  path.join(
+    repositoryRoot,
+    'src/js/podcast-admin-publication-security.js'
+  ),
+  'utf8'
+);
+const requestSecurityScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-request-security.js'),
+  'utf8'
+);
 const analyticsScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-analytics.js'),
   'utf8'
@@ -166,11 +257,22 @@ const distributionCertificationScript = await readFile(
   ),
   'utf8'
 );
+const distributionDisclosureScript = await readFile(
+  path.join(
+    repositoryRoot,
+    'src/js/podcast-admin-distribution-disclosure.js'
+  ),
+  'utf8'
+);
 const youtubeAudioRenditionScript = await readFile(
   path.join(
     repositoryRoot,
     'src/js/podcast-admin-youtube-audio-renditions.js'
   ),
+  'utf8'
+);
+const episodeYoutubeScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-episode-youtube.js'),
   'utf8'
 );
 const adminMockApi = await readFile(
@@ -201,6 +303,66 @@ const englishWorkbenchText = JSON.stringify(englishWorkbench);
 const englishRuntime = englishI18n.runtime.admin;
 const spanishRuntime = spanishI18n.runtime.admin;
 const englishRuntimeText = JSON.stringify(englishRuntime);
+const topLevelAdminTabs = Array.from(
+  adminTemplate.matchAll(/role="tab"\s+data-tab="([^"]+)"/g),
+  (match) => match[1]
+);
+assert.deepEqual(
+  topLevelAdminTabs,
+  [
+    'episodes',
+    'distribution',
+    'marketing',
+    'audience',
+    'monetization',
+    'settings'
+  ],
+  'Podcast Admin must expose six task-oriented top-level sections'
+);
+assert.doesNotMatch(
+  adminTemplate,
+  /podcast-tab-(?:overview|production|sponsors|analytics|subscribers|billing)/,
+  'System-oriented tools must not return as top-level Podcast Admin tabs'
+);
+assert.match(
+  adminTemplate,
+  /data-podcast-workspace-group="production"/,
+  'Production tools must remain inside the episode-centered workflow'
+);
+assert.match(
+  adminTemplate,
+  /id="podcast-panel-audience"[\s\S]+data-podcast-workspace-group="analytics"[\s\S]+data-podcast-workspace-group="subscribers"/,
+  'Audience must group analytics and subscribers contextually'
+);
+assert.match(
+  adminTemplate,
+  /id="podcast-panel-monetization"[\s\S]+data-podcast-workspace-group="sponsors"[\s\S]+data-podcast-workspace-group="billing"/,
+  'Monetization must group sponsors and premium evidence contextually'
+);
+assert.equal(
+  [...adminTemplate.matchAll(/data-podcast-current-episode/g)].length,
+  1,
+  'Episodes must expose one canonical current-episode selector'
+);
+assert.equal(
+  [...adminTemplate.matchAll(/data-podcast-show-context/g)].length,
+  2,
+  'Episode and Settings headings must reuse the same show-context contract'
+);
+assert.equal(
+  [...adminTemplate.matchAll(/data-podcast-show-name/g)].length,
+  2,
+  'Each show context must support a non-interactive single-show label'
+);
+assert.match(
+  adminTemplate,
+  /data-podcast-episode-context[\s\S]+data-podcast-current-episode[\s\S]+data-podcast-publish-workflow/,
+  'The current episode must precede and control the publishing workflow'
+);
+for (const workbench of [englishWorkbench, spanishWorkbench]) {
+  assert.equal(typeof workbench.episodes.currentEpisode, 'string');
+  assert.equal(typeof workbench.episodes.currentEpisodeHelp, 'string');
+}
 const controlledYoutubeErrorCodes = [
   'youtube_controlled_test_not_configured',
   'youtube_not_configured',
@@ -226,6 +388,7 @@ for (const code of controlledYoutubeErrorCodes) {
 const staticRuntimeKeys = [
   ...adminScript.matchAll(/adminText\(\s*"([^"]+)"/g),
   ...distributionCertificationScript.matchAll(/text\(\s*"([^"]+)"/g),
+  ...distributionDisclosureScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...audioDerivativeScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...analyticsScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...marketingLinksScript.matchAll(/text\(\s*"([^"]+)"/g),
@@ -235,6 +398,7 @@ const staticRuntimeKeys = [
   ...rssImportCutoverScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...rssImportActivationApprovalScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...youtubeAudioRenditionScript.matchAll(/text\(\s*"([^"]+)"/g),
+  ...episodeYoutubeScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...showPricesScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...transcriptDiagnosticsScript.matchAll(/text\(\s*"([^"]+)"/g),
   ...transcriptDiagnosticNavigationScript.matchAll(/text\(\s*"([^"]+)"/g),
@@ -296,8 +460,9 @@ assert.match(
 );
 assert.match(adminTemplate, /permalink: "\{\{ i18n\.config\.pages\.podcastAdmin\[language\] \}\}"/);
 assert.match(adminLayout, /noindex,nofollow,noarchive/);
-assert.match(adminLayout, /snippets\/podcast-auth-footer\.njk/);
-assert.match(authFooter, /snippets\/language-switcher\.njk/);
+assert.match(adminLayout, /snippets\/site-footer\.njk/);
+assert.match(siteFooter, /class="site-footer"/);
+assert.match(siteFooter, /snippets\/language-switcher\.njk/);
 assert.match(adminLayout, /type="module" src="\/js\/podcast-admin\.js\?v=\{\{ assets\.version/);
 assert.match(
   adminLayout,
@@ -316,6 +481,11 @@ assert.match(
 );
 assert.match(
   adminScript,
+  /showAuthenticated\(result\.identity\);[\s\S]+await Promise\.all\(\[loadShows\(\), loadAlignmentBenchmarks\(\)\]\);[\s\S]+app\.hidden = false;/,
+  'Authenticated admin content must reveal only after its initial data has settled'
+);
+assert.match(
+  adminScript,
   /function loadTurnstile\(\) \{[\s\S]+document\.head\.append\(script\);/,
   'The login surface must load Turnstile on demand'
 );
@@ -323,9 +493,19 @@ assert.match(adminConfig, /require\("\.\/podcastApi\.js"\)\.apiOrigin/);
 assert.match(podcastApiConfig, /https:\/\/feeds\.dustwave\.xyz/);
 assert.doesNotMatch(adminConfig, /workers\.dev/);
 assert.doesNotMatch(podcastApiConfig, /workers\.dev/);
-assert.match(adminTemplate, /data-podcast-auth/);
+assert.match(
+  adminTemplate,
+  /data-podcast-auth aria-labelledby="podcast-login-title" hidden/,
+  'The login surface must remain concealed until the session check resolves'
+);
 assert.match(adminTemplate, /data-tab="settings"/);
 assert.match(adminTemplate, /id="podcast-panel-settings"/);
+assert.match(adminTemplate, /data-podcast-launch-lab/);
+assert.match(
+  adminTemplate,
+  /data-podcast-launch-lab-evidence[\s\S]+hidden/
+);
+assert.match(adminScript, /mountPodcastLaunchLab/);
 assert.equal(
   [...adminTemplate.matchAll(/data-podcast-show-form/g)].length,
   1,
@@ -409,7 +589,17 @@ assert.equal(englishI18n.podcast.admin.tabs.settings, 'Settings');
 assert.equal(spanishI18n.podcast.admin.tabs.settings, 'Configuración');
 assert.match(
   adminScript,
-  /const showSelects = Array\.from\([\s\S]+for \(const showSelect of showSelects\)/
+  /const showContext = mountPodcastShowContext\(root\);[\s\S]+const showSelects = showContext\.selects;[\s\S]+showContext\.setShows\(shows, selectedShowId\)/
+);
+assert.match(
+  showContextScript,
+  /singleShow = normalized\.length === 1[\s\S]+select\.hidden = Boolean\(singleShow\)[\s\S]+name\.hidden = !singleShow/,
+  'single-show mode must remove selector chrome without removing its state'
+);
+assert.doesNotMatch(
+  showContextScript,
+  /innerHTML|insertAdjacentHTML|localStorage|sessionStorage|\bfetch\s*\(/,
+  'show context must remain local and render only through DOM text'
 );
 assert.match(adminTemplate, /data-podcast-episode-form/);
 assert.match(adminTemplate, /data-podcast-episode-form-heading/);
@@ -418,51 +608,54 @@ assert.match(adminTemplate, /data-podcast-episode-slug-help/);
 assert.match(adminTemplate, /data-podcast-show-notes/);
 assert.match(adminTemplate, /data-podcast-show-notes-review/);
 assert.match(
-  showNotesScript,
-  /reviewRequired !== true[\s\S]+value\.saved !== false/,
-  'AI show-notes responses must prove review-only, unsaved semantics'
+  showNotesContractScript,
+  /reviewRequired !== true[\s\S]+value\.saved !== false && value\.saved !== true/,
+  'AI show-notes responses must prove review-only proposal semantics'
 );
+assert.match(showNotesScript, /\/show-notes\/drafts/);
 assert.match(
   showNotesScript,
   /notesEditor\.setValue\(result\.draft\.showNotesMarkdown\)/,
   'AI show notes may enter only the existing sanitized editor'
 );
 assert.doesNotMatch(
-  showNotesScript,
+  `${showNotesScript}\n${showNotesContractScript}`,
   /innerHTML|insertAdjacentHTML/,
   'AI show-notes evidence and drafts must render without HTML sinks'
 );
 assert.match(adminTemplate, /data-podcast-chapter-draft/);
 assert.match(adminTemplate, /data-podcast-chapter-draft-review/);
 assert.match(
-  chapterDraftScript,
+  chapterDraftContractScript,
   /includedCueCount !== totalCueCount[\s\S]+source\.truncated !== false/,
   'AI chapter proposals must prove complete transcript coverage'
 );
+assert.match(chapterDraftScript, /\/chapters\/drafts/);
 assert.match(
   chapterDraftScript,
   /applyChapters\(result\.draft\.chapters\.map/,
   'AI chapter proposals may enter only the unsaved chapter editor'
 );
 assert.doesNotMatch(
-  chapterDraftScript,
+  `${chapterDraftScript}\n${chapterDraftContractScript}`,
   /innerHTML|insertAdjacentHTML/,
   'AI chapter evidence and proposals must render without HTML sinks'
 );
 assert.match(adminTemplate, /data-podcast-clip-draft/);
 assert.match(adminTemplate, /data-podcast-clip-draft-review/);
 assert.match(
-  clipDraftScript,
+  clipDraftContractScript,
   /includedCueCount !== totalCueCount[\s\S]+source\.truncated !== false/,
   'AI clip candidates must prove complete transcript coverage'
 );
+assert.match(clipDraftScript, /\/clips\/drafts/);
 assert.match(
   clipDraftScript,
   /form\.reset\(\)[\s\S]+fillCueSelects\(candidate\)[\s\S]+refreshRecipe\(\)/,
   'AI clip candidates may enter only a new unsaved clip recipe'
 );
 assert.doesNotMatch(
-  clipDraftScript,
+  `${clipDraftScript}\n${clipDraftContractScript}`,
   /innerHTML|insertAdjacentHTML/,
   'AI clip evidence and candidates must render without HTML sinks'
 );
@@ -605,9 +798,26 @@ assert.match(
   'transcript search must reuse the current unsaved cue state and pagination'
 );
 assert.match(
-  adminScript,
-  /mountPodcastReviewDraftGuard\([\s\S]+hasTranscriptChanges:\s*\(\) => transcriptDirty[\s\S]+hasChapterChanges:\s*\(\) => chapterDirty/,
+  episodeContextSetupScript,
+  /mountPodcastReviewDraftGuard\([\s\S]+hasTranscriptChanges[\s\S]+hasChapterChanges/,
   'review drafts must expose consumer-owned dirty state to the shared guard'
+);
+assert.match(
+  adminScript,
+  /mountPodcastEpisodeContext\([\s\S]+episodeSelect: currentEpisodeSelect/,
+  'the publishing workflow must reuse the canonical current-episode selector'
+);
+assert.match(
+  episodeContextScript,
+  /new Set\(controls\)/,
+  'internal tools must share one guarded, deduplicated episode context'
+);
+assert.match(episodeContextScript, /label\.hidden = true/);
+assert.match(episodeContextScript, /stopImmediatePropagation/);
+assert.doesNotMatch(
+  episodeContextScript,
+  /innerHTML|insertAdjacentHTML|localStorage|sessionStorage|\bfetch\s*\(/,
+  'episode context must remain local and avoid HTML sinks or persistence'
 );
 assert.match(
   unsavedChangesCoreScript,
@@ -878,6 +1088,11 @@ assert.match(
   catalogScript,
   /localizedCode\("language", episode\.sourceLanguage \|\| "not_set"\)/
 );
+assert.match(
+  catalogScript,
+  /<a class="btn btn-outline-light" href="\$\{escapeAttribute\(show\.canonicalUrl\)\}">/,
+  'The standalone canonical show-page action must retain the shared 44px control target'
+);
 assert.match(catalogScript, /data-edit-episode=/);
 assert.match(adminScript, /renderShowCatalog\(\{/);
 assert.match(adminScript, /renderEpisodeCatalog\(\{/);
@@ -950,7 +1165,7 @@ assert.match(adminTemplate, /data-podcast-analytics-apps/);
 assert.match(analyticsScript, /\/analytics\/overview\?days=/);
 assert.match(analyticsScript, /\/analytics\/overview\.csv\?days=/);
 assert.doesNotMatch(analyticsScript, /innerHTML/);
-assert.match(adminTemplate, /data-tab="subscribers"/);
+assert.match(adminTemplate, /data-podcast-workspace-group="subscribers"/);
 assert.match(adminTemplate, /data-podcast-subscribers-filters/);
 assert.match(adminTemplate, /data-podcast-subscribers-export/);
 assert.match(adminTemplate, /data-podcast-subscribers-more/);
@@ -964,8 +1179,33 @@ assert.match(
   /más de 10 plataformas/
 );
 assert.match(
+  adminTemplate,
+  /<details class="podcast-admin__advanced-tools podcast-admin__distribution-guidance">[\s\S]+workbench\.distribution\.guidanceSummary[\s\S]+workbench\.distribution\.canonicalFlow[\s\S]+<\/details>/,
+  'Distribution operating detail must remain available without overwhelming the default view'
+);
+assert.match(
+  englishWorkbench.distribution.guidanceIntro,
+  /one-time provider setup and evidence requirements/
+);
+assert.match(
+  spanishWorkbench.distribution.guidanceIntro,
+  /configuración inicial y los requisitos de evidencia/
+);
+assert.match(
   englishWorkbench.distribution.canonicalFlow,
-  /Each platform still requires one-time owner setup/
+  /Most platforms require one-time owner setup/
+);
+assert.match(
+  spanishWorkbench.distribution.canonicalFlow,
+  /La mayoría de las plataformas requiere una configuración inicial/
+);
+assert.equal(
+  englishRuntime.openProviderInfo,
+  'Open provider information'
+);
+assert.equal(
+  spanishRuntime.openProviderInfo,
+  'Abrir información del proveedor'
 );
 assert.doesNotMatch(adminTemplate, /<p lang="es">/);
 assert.doesNotMatch(adminTemplate, /Publicación simplificada/);
@@ -974,7 +1214,7 @@ assert.match(
   englishWorkbench.distribution.filterHelp,
   /exact RSS, News, YouTube, and per-directory states/
 );
-assert.match(adminTemplate, /data-tab="production"/);
+assert.match(adminTemplate, /data-podcast-workspace-group="production"/);
 assert.match(adminTemplate, /data-podcast-audio-qc/);
 assert.match(adminTemplate, /data-podcast-audio-qc-queue/);
 assert.match(adminTemplate, /data-podcast-audio-qc-policy-form/);
@@ -1063,6 +1303,11 @@ assert.match(
   /PODCAST_ADMIN_MOCK_PUBLIC_CLIPS[\s\S]+ready[\s\S]+empty[\s\S]+missing/,
   "browser QA must provide controlled public clip visibility states"
 );
+assert.match(adminMockApi, /path === "\/v1\/admin\/launch-lab"/);
+assert.match(
+  adminMockApi,
+  /publiclyDiscoverable: false[\s\S]+billable: false/
+);
 assert.match(englishWorkbenchText, /Word timing gated/);
 assert.match(adminTemplate, /data-podcast-alignment/);
 assert.match(adminTemplate, /data-podcast-alignment-adapter/);
@@ -1077,8 +1322,11 @@ assert.match(adminTemplate, /data-podcast-review-form/);
 assert.match(adminTemplate, /data-podcast-review-list/);
 assert.match(englishWorkbenchText, /feed the publication gate/);
 assert.match(adminTemplate, /data-podcast-publication-readiness/);
-assert.match(adminTemplate, /data-podcast-readiness-refresh/);
-assert.match(englishWorkbenchText, /Publish refreshes this snapshot immediately/);
+assert.doesNotMatch(adminTemplate, /data-podcast-readiness-refresh/);
+assert.match(
+  englishWorkbenchText,
+  /snapshot refreshes automatically when you open or switch publishing sections/
+);
 assert.match(englishWorkbenchText, /recently authenticated Admin or Super-admin/);
 assert.match(adminTemplate, /data-podcast-clip-form/);
 assert.match(adminTemplate, /data-podcast-clip-preview/);
@@ -1119,8 +1367,14 @@ assert.match(adminTemplate, /data-podcast-announcement-approve/);
 assert.match(adminTemplate, /data-podcast-announcement-history/);
 assert.match(englishWorkbenchText, /Private evidence only/);
 assert.match(adminTemplate, /data-tab="marketing"/);
-assert.match(adminTemplate, /data-tab="sponsors"/);
-assert.match(adminTemplate, /data-tab="analytics"/);
+assert.match(adminTemplate, /data-podcast-workspace-group="sponsors"/);
+assert.match(adminTemplate, /data-podcast-workspace-group="analytics"/);
+assert.match(adminTemplate, /data-podcast-tax-policy/);
+assert.match(
+  adminTemplate,
+  /podcast\.admin\.billing\.taxPolicyHeading/
+);
+assert.doesNotMatch(adminTemplate, /workbench\.billing/);
 assert.match(adminTemplate, /data-podcast-reconciliation/);
 assert.match(englishWorkbenchText, /Qualified sponsor deliveries/);
 assert.match(adminTemplate, /data-podcast-sponsor-preview-form/);
@@ -1200,13 +1454,83 @@ assert.match(
 );
 assert.match(
   adminStyles,
+  /\.podcast-admin__panel[\s\S]+> :not\(\.podcast-admin__progressive-section\)[\s\S]+\+ \.podcast-admin__progressive-section \{[\s\S]+margin-top: var\(--dw-admin-section-gap\);/,
+  'Podcast Admin disclosures must preserve section spacing after non-disclosure content'
+);
+assert.match(
+  adminStyles,
   /\.podcast-admin label \{[\s\S]+gap: var\(--dw-admin-field-gap\);[\s\S]+margin: 0;/,
   'Podcast Admin labels must not add margins inside already-gapped grids'
 );
 assert.match(
   adminStyles,
-  /repeat\(auto-fit, minmax\(min\(100%, 16rem\), 1fr\)\)/,
-  'Podcast Admin field grids must collapse responsively without overflow'
+  /\.podcast-admin__field-grid \{[\s\S]+grid-template-columns: minmax\(0, 1fr\);[\s\S]+@media \(min-width: 48rem\) \{[\s\S]+\.podcast-admin__field-grid,[\s\S]+grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/,
+  'Podcast Admin field grids must use one predictable mobile column and at most two default desktop columns'
+);
+assert.match(
+  adminStyles,
+  /@media \(min-width: 64rem\) \{[\s\S]+\.podcast-admin__field-grid--three \{[\s\S]+grid-template-columns: repeat\(3, minmax\(0, 1fr\)\);/,
+  'Explicit compact field groups may use three columns only when enough width is available'
+);
+assert.match(
+  adminStyles,
+  /\.podcast-admin__field-group \{[\s\S]+gap: var\(--dw-admin-grid-row-gap\);[\s\S]+\.podcast-admin__field-group \+ \.podcast-admin__field-group,[\s\S]+border-top:/,
+  'Long Podcast Admin forms must use the shared grouped-field rhythm'
+);
+assert.match(
+  adminTemplate,
+  /workbench\.episodes\.copyGroup[\s\S]+workbench\.episodes\.releaseGroup[\s\S]+workbench\.sponsors\.identityGroup[\s\S]+workbench\.sponsors\.commercialGroup[\s\S]+workbench\.overview\.identityGroup[\s\S]+workbench\.overview\.releaseDefaultsGroup/,
+  'Episode, sponsor, and show forms must expose clear semantic field groups'
+);
+assert.match(
+  adminStyles,
+  /@media \(min-width: 56\.3125rem\) \{[\s\S]+\.podcast-admin__workflow-menu \.dw-admin-workflow__list \{[\s\S]+display: grid;[\s\S]+grid-template-columns: repeat\(6, minmax\(0, 1fr\)\);[\s\S]+\.podcast-admin__workflow-menu \.dw-admin-workflow__button \{[\s\S]+min-block-size: 3\.25rem;/,
+  'The episode workflow must keep the six compact Pool-style submenu items on one desktop row'
+);
+assert.match(
+  adminStyles,
+  /@media \(max-width: 56\.25rem\) \{[\s\S]+\.podcast-admin__workflow-menu \.dw-admin-workflow__list \{[\s\S]+display: none;/,
+  'The six-step publish submenu must collapse to one bounded mobile control'
+);
+assert.match(
+  adminStyles,
+  /\.podcast-admin \.is-workflow-hidden \{[\s\S]+display: none !important;/,
+  'Inactive publishing sections must disappear without changing their own hidden state'
+);
+assert.match(
+  adminStyles,
+  /#podcast-panel-episodes \{[\s\S]+overflow-anchor: none;/,
+  'Publishing section switches must not trigger browser scroll anchoring'
+);
+assert.match(
+  adminStyles,
+  /\.podcast-admin__directory-card[\s\S]+:is\(ul, ol\)[\s\S]+\+ \.podcast-admin__directory-links \{[\s\S]+margin-top: var\(--dw-admin-space-sm\);/,
+  'Directory actions must preserve a tokenized gap after certification lists'
+);
+assert.match(
+  adminStyles,
+  /\.podcast-admin__episode-context \{[\s\S]+grid-template-columns: minmax\(0, 1fr\) minmax\(15rem, 24rem\);[\s\S]+@media \(max-width: 47\.9375rem\) \{[\s\S]+\.podcast-admin__episode-context \{[\s\S]+grid-template-columns: minmax\(0, 1fr\);[\s\S]+position: static;/,
+  'Current episode context must stay bounded and become one non-sticky mobile column'
+);
+assert.match(
+  adminStyles,
+  /\.podcast-admin__show-context \{[\s\S]+min-width: 0;[\s\S]+\.podcast-admin__show-context select \{[\s\S]+width: 100%;[\s\S]+@media \(max-width: 760px\)[\s\S]+\.podcast-admin__panel-heading > \.podcast-admin__show-context[\s\S]+width: 100%;/,
+  'show context must remain bounded and fill the available mobile heading width'
+);
+assert.match(
+  adminStyles,
+  /\.podcast-admin__workspace-content \{[\s\S]+grid-template-columns: minmax\(0, 1fr\);[\s\S]+min-width: 0;/,
+  'Nested admin workspaces must constrain intrinsic field widths instead of clipping narrow-screen content'
+);
+assert.match(
+  adminStyles,
+  /\.podcast-admin__option-grid \{[\s\S]+repeat\(auto-fit, minmax\(min\(100%, 15rem\), 1fr\)\)/,
+  'Related show policy toggles must share one responsive option-grid primitive'
+);
+assert.match(
+  adminStyles,
+  /@media \(max-width: 30rem\) \{[\s\S]+\.podcast-admin__progressive-body \{[\s\S]+var\(--dw-admin-space-xs\)[\s\S]+\.podcast-admin__progressive-body \.podcast-admin__form \{[\s\S]+padding: var\(--dw-admin-space-sm\);/,
+  'Nested technical forms must recover usable field width on small screens'
 );
 assert.match(
   adminStyles,
@@ -1256,6 +1580,31 @@ assert.match(
 assert.match(distributionCertificationScript, /requiredDestinations/);
 assert.match(distributionCertificationScript, /failureRecoveryVerified/);
 assert.match(
+  distributionDisclosureScript,
+  /firstActionable[\s\S]+destination\?\.enabled[\s\S]+!destination\?\.certification\?\.certified/,
+  'Distribution should initially disclose only the first actionable directory'
+);
+assert.match(
+  distributionDisclosureScript,
+  /expandedByShow[\s\S]+openDestinationIds[\s\S]+addEventListener\("toggle"/,
+  'Distribution disclosure choices must persist by show across rerenders'
+);
+assert.match(
+  adminStyles,
+  /\.podcast-admin__directory-card > summary \{[\s\S]+grid-template-columns: minmax\(0, 1fr\) 2\.25rem;/,
+  'Directory summaries must reserve responsive space for their disclosure control'
+);
+assert.match(
+  adminStyles,
+  /\.podcast-admin__distribution-form-link \{[\s\S]+grid-column: span 2;/,
+  'Directory evidence URLs must share balanced desktop rows'
+);
+assert.match(
+  adminStyles,
+  /@media \(max-width: 56\.25rem\)[\s\S]+\.podcast-admin__distribution-form \{[\s\S]+repeat\(2, minmax\(0, 1fr\)\)/,
+  'Directory forms must use an intermediate two-column tablet layout'
+);
+assert.match(
   distributionCertificationScript,
   /feed\.status === "valid" && feed\.currentValidator === false/,
   'A legacy valid feed result must render as stale instead of launch-ready'
@@ -1289,7 +1638,12 @@ assert.match(adminScript, /function canOperateSelectedShowPublication/);
 assert.match(adminScript, /function directoryObservationForm/);
 assert.match(adminScript, /function updateDirectoryObservation/);
 assert.match(adminScript, /data-podcast-directory-observation-form/);
-assert.match(englishRuntimeText, /Save episode evidence/);
+assert.match(englishRuntimeText, /Save manual evidence/);
+assert.match(englishRuntimeText, /Automatic listing checks active/);
+assert.match(
+  JSON.stringify(spanishRuntime),
+  /Verificaciones automáticas activas/
+);
 assert.match(adminScript, /function canManageSelectedShowDistribution/);
 assert.match(englishRuntimeText, /RSS-following directory/);
 assert.match(adminScript, /data-podcast-distribution-form/);
@@ -1305,10 +1659,24 @@ assert.match(
 );
 assert.match(adminScript, /method: "PATCH"/);
 assert.match(adminScript, /url\.protocol !== "https:"/);
-assert.match(adminScript, /navigator\.clipboard\.writeText\(value\)/);
+assert.match(
+  directoryPacketScript,
+  /navigator\.clipboard\.writeText\(input\.value\)/
+);
+assert.match(directoryPacketScript, /containsCredentials === false/);
+assert.match(englishRuntimeText, /No passwords, tokens, verification codes/);
+assert.match(
+  JSON.stringify(spanishRuntime),
+  /No incluye contraseñas, tokens, códigos de verificación/
+);
 assert.match(
   adminStyles,
   /\.podcast-admin__certification-list li \{[\s\S]+display: flex;[\s\S]+gap: var\(--dw-admin-space-sm\);/
+);
+assert.match(
+  adminStyles,
+  /\.podcast-admin :is\(ol, ul\) > li \{[\s\S]+margin-inline: 0 !important;/,
+  'Admin list items must not inherit the public theme one-sided indentation'
 );
 assert.match(
   adminStyles,
@@ -1387,19 +1755,76 @@ assert.match(deliveryAudioScript, /workingMasterId: currentMaster\.id/);
 assert.match(deliveryAudioScript, /contract: "deliveryAudio"/);
 assert.match(deliveryAudioScript, /async function approve/);
 assert.match(deliveryAudioScript, /exactDeliveryAudioAck/);
+assert.match(deliveryAudioScript, /form\.reportValidity\(\)/);
+assert.match(deliveryAudioScript, /acknowledgeExactDeliveryAudio/);
+assert.match(
+  deliveryAudioApprovalScript,
+  /jobEpisodeId !== episodeId/
+);
+assert.match(
+  deliveryAudioApprovalScript,
+  /sourceMasterId !== masterId/
+);
 assert.match(adminStyles, /\[data-podcast-delivery-audio-queue\]/);
 assert.match(adminStyles, /\.podcast-admin__audio-enhancement-comparison/);
 assert.match(adminScript, /\/review-comments\//);
 assert.match(adminScript, /function publicationGateLabel/);
 assert.match(adminScript, /body\.textContent = comment\.bodyText/);
-assert.match(adminScript, /function loadPublicationReadiness/);
+assert.match(
+  readinessLoaderScript,
+  /function loadPublicationReadiness/
+);
+assert.match(adminScript, /if \(tab === "episodes"\) episodePublishWorkflow\?\.refresh\(\)/);
+assert.match(adminScript, /loadReadiness: loadPublicationReadiness/);
+assert.doesNotMatch(adminScript, /readinessRefresh\?\.addEventListener/);
+assert.match(publishWorkflowScript, /selectionMode: "tabs"/);
+assert.match(
+  publishWorkflowScript,
+  /mountWorkflowResponsiveSelect\(progressRoot[\s\S]+responsiveProgress\.refresh/
+);
+assert.match(
+  workflowResponsiveScript,
+  /mountResponsiveTabSelect\(root[\s\S]+optionLabel: workflowOptionLabel/
+);
+assert.match(publishWorkflowScript, /onNavigate\?\.\(id, episode, target\);[\s\S]+void refresh\(\);/);
 assert.match(
   adminScript,
-  /\/v1\/admin\/episodes\/\$\{encodeURIComponent\(episodeId\)\}\/readiness/
+  /editEpisode: episodeEditor\.edit/
+);
+assert.match(
+  publishWorkflowScript,
+  /const episode = selectedEpisode\(\);[\s\S]+onNavigate\?\.\(progress\.getActive\(\), episode\)/
+);
+assert.match(publishSectionsScript, /is-workflow-hidden/);
+assert.match(publishSectionsScript, /Every production section needs a publish step/);
+assert.match(sectionTabsScript, /mountPodcastAdminSectionTabs/);
+assert.match(sectionTabsScript, /mountPodcastAdminContextualTabs/);
+assert.match(sectionTabsScript, /mountTabs\(root/);
+assert.match(sectionTabsScript, /panel\.open = value === name/);
+assert.match(
+  sectionTabsScript,
+  /name: "marketing"[\s\S]+name: "audience"[\s\S]+name: "monetization"/
+);
+assert.match(sectionTabsScript, /`podcast-\$\{name\}-sections`/);
+assert.match(progressiveSectionsScript, /podcastSectionPanel/);
+assert.match(adminStyles, /--podcast-section-count/);
+assert.match(
+  adminStyles,
+  /podcast-admin__section-switcher[\s\S]+\[role="tabpanel"\]\[hidden\]/
+);
+assert.doesNotMatch(workflowTargetScript, /scrollIntoView/);
+assert.match(
+  readinessLoaderScript,
+  /\/v1\/admin\/episodes\/\$\{encodeURIComponent\([\s\S]+normalizedEpisodeId[\s\S]+\)\}\/readiness/
 );
 assert.match(adminScript, /function renderPublicationReadiness/);
-assert.match(adminScript, /function localizedReadinessNodeLabel/);
-assert.match(adminScript, /`readinessSummary_\$\{status\}`/);
+assert.match(
+  adminScript,
+  /nodeDescription: \(node\) => readinessNodeSummary\(adminText, node\)/
+);
+assert.match(readinessCopyScript, /export function readinessNodeLabel/);
+assert.match(readinessCopyScript, /export function readinessNodeSummary/);
+assert.match(readinessCopyScript, /`readinessSummary_\$\{status\}`/);
 assert.match(adminScript, /localizedCode\("readinessStatus", status\)/);
 assert.match(adminScript, /localizedCode\("readinessSeverity", severity\)/);
 assert.match(adminScript, /publicationGateMode/);
@@ -1408,6 +1833,27 @@ assert.match(publicationScript, /publication_override/);
 assert.match(publicationScript, /basePublicationRevision/);
 assert.match(publicationScript, /mode === "enforce"/);
 assert.match(publicationScript, /mode === "shadow"/);
+assert.match(
+  requestSecurityScript,
+  /UNSAFE_ADMIN_TEXT[\s\S]+normalizeAdminReason/,
+  "publication overrides must reject control and bidirectional text before the API call"
+);
+assert.match(publicationSecurityScript, /normalizeAdminReason/);
+assert.match(
+  publicationScript,
+  /normalizePublicationOverrideReason[\s\S]+publication_override_reason_invalid/,
+  "the publication coordinator must fail closed on an unsafe override reason"
+);
+assert.doesNotMatch(
+  publicationScript,
+  /dust-wave-admin-shell\/api-client/,
+  "the publication coordinator must remain source-testable through API-error injection"
+);
+assert.match(
+  adminScript,
+  /createEpisodePublisher\(\{[\s\S]+ApiError: AdminApiError/,
+  "Podcast Admin must inject its existing localized API error type"
+);
 assert.match(
   adminStyles,
   /\.podcast-admin \.btn[\s\S]*min-height: var\(--dw-admin-control-min-height\)/
@@ -1461,7 +1907,11 @@ assert.match(adminScript, /endCueId: clipForm\.elements\.endCueId\.value/);
 assert.match(adminScript, /boundaryMode: "segment"/);
 assert.match(adminScript, /captioned-waveform-v1/);
 assert.match(adminScript, /downloadJson/);
-assert.match(englishRuntimeText, /This is not a completed render/);
+assert.match(
+  englishRuntimeText,
+  /Captioned render queued\. The protected staging processor starts automatically\./
+);
+assert.doesNotMatch(englishRuntimeText, /This is not a completed render/);
 assert.match(adminScript, /data-podcast-clip-render-preview/);
 assert.match(adminScript, /crossOrigin = "use-credentials"/);
 assert.match(adminScript, /downloadPath/);
@@ -1539,6 +1989,15 @@ assert.match(
   youtubeAudioRenditionScript,
   /process-youtube-audio-rendition\.yml/
 );
+assert.match(
+  youtubeAudioRenditionScript,
+  /createRetriableOperationId/
+);
+assert.match(
+  deliveryAudioScript,
+  /createRetriableOperationId/
+);
+assert.match(adminScript, /youtubeAudio\.reset\(\)/);
 assert.doesNotMatch(
   youtubeAudioRenditionScript,
   /(?:localStorage|sessionStorage)/
@@ -1548,8 +2007,12 @@ assert.doesNotMatch(
   /podcast-tab-production/
 );
 assert.match(
+  workspaceScript,
+  /episodes:\s*\["production"\][\s\S]+audience:\s*\["analytics", "subscribers"\][\s\S]+monetization:\s*\["sponsors", "billing"\]/
+);
+assert.match(
   adminScript,
-  /if \(tab === "production"\) \{[\s\S]*youtubeAudioRenditions\.refresh\(\)/
+  /production\(\) \{[\s\S]*youtubeAudio\.refresh\(\)/
 );
 assert.match(
   adminMockApi,

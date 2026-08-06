@@ -3,6 +3,7 @@ import test from "node:test";
 
 import {
   mountShowNotesAssistant,
+  normalizeShowNotesDraftCollection,
   normalizeShowNotesDraftResponse
 } from "../src/js/podcast-admin-show-notes.js";
 
@@ -37,13 +38,19 @@ test("accepts only bounded, review-only responses with exact evidence", () => {
         totalCueCount: 12,
         truncated: false
       },
-      outputLanguage: "es"
+      outputLanguage: "es",
+      saved: false,
+      id: "",
+      completedAt: ""
     }
   );
-  assert.throws(() => normalizeShowNotesDraftResponse({
+  assert.equal(normalizeShowNotesDraftResponse({
     ...responsePayload,
     saved: true
-  }), /evidence is invalid/);
+  }).saved, true);
+  assert.equal(normalizeShowNotesDraftCollection({
+    drafts: [{ ...responsePayload, saved: true }]
+  }).length, 1);
   assert.throws(() => normalizeShowNotesDraftResponse({
     ...responsePayload,
     source: {
@@ -65,20 +72,26 @@ test("reviews a generated draft before placing it in the unsaved editor", async 
   const assistant = mountShowNotesAssistant(fixture.options);
 
   assistant.setEditable(true);
-  assistant.setEpisode("episode_fixture", "es");
+  await assistant.setEpisode("episode_fixture", "es");
   assert.equal(fixture.root.hidden, false);
   await fixture.controls.generate.dispatch("click");
 
-  assert.deepEqual(fixture.requests, [{
-    path: "/v1/admin/episodes/episode_fixture/show-notes/draft",
-    options: {
-      method: "POST",
-      body: {
-        sourceLanguage: "es",
-        outputLanguage: "es"
+  assert.deepEqual(fixture.requests, [
+    {
+      path: "/v1/admin/episodes/episode_fixture/show-notes/drafts",
+      options: undefined
+    },
+    {
+      path: "/v1/admin/episodes/episode_fixture/show-notes/draft",
+      options: {
+        method: "POST",
+        body: {
+          sourceLanguage: "es",
+          outputLanguage: "es"
+        }
       }
     }
-  }]);
+  ]);
   assert.equal(fixture.controls.review.hidden, false);
   assert.equal(
     fixture.controls.draft.textContent,
@@ -93,7 +106,7 @@ test("reviews a generated draft before placing it in the unsaved editor", async 
     responsePayload.draft.showNotesMarkdown
   );
   assert.equal(fixture.notesEditor.focused, true);
-  assert.equal(fixture.requests.length, 1);
+  assert.equal(fixture.requests.length, 2);
   assert.equal(fixture.statuses.at(-1).text, "showNotesApplied");
 });
 
@@ -105,7 +118,7 @@ test("does not replace existing notes without explicit confirmation", async () =
   const assistant = mountShowNotesAssistant(fixture.options);
 
   assistant.setEditable(true);
-  assistant.setEpisode("episode_fixture", "es");
+  await assistant.setEpisode("episode_fixture", "es");
   await fixture.controls.generate.dispatch("click");
   await fixture.controls.apply.dispatch("click");
 
@@ -113,9 +126,32 @@ test("does not replace existing notes without explicit confirmation", async () =
   assert.equal(fixture.notesEditor.existingMarkdown, "Producer notes");
 });
 
+test("loads a saved automatic draft without changing episode notes", async () => {
+  const automaticDraft = {
+    ...responsePayload,
+    id: "editorial_draft_fixture",
+    saved: true,
+    completedAt: "2026-07-30 10:05:00"
+  };
+  const fixture = showNotesFixture({ automaticDraft });
+  const assistant = mountShowNotesAssistant(fixture.options);
+
+  assistant.setEditable(true);
+  await assistant.setEpisode("episode_fixture", "es");
+
+  assert.equal(fixture.controls.review.hidden, false);
+  assert.equal(
+    fixture.controls.draft.textContent,
+    responsePayload.draft.showNotesMarkdown
+  );
+  assert.equal(fixture.notesEditor.value, "");
+  assert.equal(fixture.statuses.at(-1).text, "showNotesAutomaticReady");
+});
+
 function showNotesFixture({
   existingMarkdown = "",
-  confirmReplace = () => true
+  confirmReplace = () => true,
+  automaticDraft = null
 } = {}) {
   const root = new FakeControl();
   const controls = {
@@ -174,6 +210,12 @@ function showNotesFixture({
       client: {
         async request(path, options) {
           requests.push({ path, options });
+          if (path.endsWith("/show-notes/drafts")) {
+            return {
+              episodeId: "episode_fixture",
+              drafts: automaticDraft ? [structuredClone(automaticDraft)] : []
+            };
+          }
           return structuredClone(responsePayload);
         }
       },

@@ -13,7 +13,7 @@
     <main id="main-content" class="podcast-admin" tabindex="-1">
       {{ content | safe }}
     </main>
-    {% include "snippets/podcast-auth-footer.njk" %}
+    {% include "snippets/site-footer.njk" %}
     <script src="/js/dust-wave-admin-shell/vendor/qrcode-generator.js?v={{ assets.version | default('dev') }}" defer></script>
     <script src="/js/audio-player.js?v={{ assets.version | default('dev') }}" defer></script>
     <script type="module" src="/js/podcast-admin.js?v={{ assets.version | default('dev') }}"></script>

@@ -13,6 +13,8 @@ const [
   adminLayout,
   memberLayout,
   tracer,
+  traceContract,
+  navigationContract,
   stagingBuild,
   webpBuild,
   publicStyles,
@@ -33,6 +35,17 @@ const [
   ),
   readFile(
     new URL("scripts/trace-podcast-admin-performance.mjs", repositoryRoot),
+    "utf8"
+  ),
+  readFile(
+    new URL("scripts/lib/podcast-admin-trace-contract.mjs", repositoryRoot),
+    "utf8"
+  ),
+  readFile(
+    new URL(
+      "scripts/lib/podcast-admin-cdp-navigation.mjs",
+      repositoryRoot
+    ),
     "utf8"
   ),
   readFile(
@@ -90,13 +103,18 @@ assert.match(
 );
 assert.match(
   memberLayout,
-  /snippets\/podcast-auth-footer\.njk/,
-  "Podcast member auth must use the lightweight bilingual auth footer"
+  /snippets\/site-footer\.njk/,
+  "Podcast member auth must use the shared site footer"
 );
 assert.doesNotMatch(
   memberLayout,
   /snippets\/footer1\.njk/,
-  "Podcast member auth must not load the public footer's legacy scripts"
+  "Podcast member auth must not load unrelated public footer utilities"
+);
+assert.match(
+  adminLayout,
+  /snippets\/site-footer\.njk/,
+  "Podcast Admin must use the shared site footer"
 );
 assert.match(
   admin,
@@ -173,10 +191,14 @@ for (const [name, layout] of [
 }
 
 const scriptBudgets = new Map([
-  ["src/js/podcast-admin.js", 304_000],
+  ["src/js/podcast-admin.js", 304_200],
+  ["src/js/podcast-admin-episode-context.js", 5_000],
+  ["src/js/podcast-admin-episode-context-setup.js", 3_000],
+  ["src/js/podcast-admin-show-context.js", 2_000],
   ["src/js/podcast-admin-show-settings.js", 4_000],
   ["src/js/podcast-admin-show-prices.js", 8_000],
   ["src/js/podcast-admin-transcript-review.js", 12_000],
+  ["src/js/podcast-admin-transcript-label-review.js", 2_000],
   ["src/js/podcast-admin-transcript-diagnostic-navigation.js", 7_000],
   ["src/js/podcast-admin-transcript-speaker-range.js", 7_000],
   ["src/js/podcast-admin-transcript-import.js", 12_000],
@@ -187,23 +209,45 @@ const scriptBudgets = new Map([
   ["src/js/podcast-admin-dirty-controls-core.js", 1_000],
   ["src/js/podcast-admin-text.js", 1_000],
   ["src/js/podcast-admin-constants.js", 1_000],
-  ["src/js/podcast-admin-publish-workflow.js", 8_000],
+  ["src/js/podcast-admin-autopilot.js", 4_000],
+  ["src/js/podcast-admin-autopilot-core.js", 5_000],
+  ["src/js/podcast-admin-publish-workflow.js", 9_000],
   ["src/js/podcast-admin-publish-workflow-core.js", 5_000],
+  ["src/js/podcast-admin-publish-sections.js", 4_500],
+  ["src/js/podcast-admin-readiness-loader.js", 2_000],
+  ["src/js/podcast-admin-workflow-responsive.js", 1_500],
+  ["src/js/podcast-admin-workflow-option-label.js", 500],
+  ["src/js/podcast-admin-workflow-priority.js", 3_000],
   ["src/js/podcast-admin-progressive-sections.js", 5_000],
+  ["src/js/podcast-admin-workspaces.js", 2_500],
   ["src/js/podcast-admin-tool-disclosure.js", 3_000],
   ["src/js/podcast-admin-publication.js", 5_000],
+  ["src/js/podcast-admin-publication-security.js", 1_000],
+  ["src/js/podcast-admin-request-security.js", 1_000],
   ["src/js/podcast-admin-workflow-navigation.js", 3_000],
+  ["src/js/podcast-admin-workflow-controller.js", 1_000],
+  ["src/js/podcast-admin-deep-link.js", 3_500],
+  ["src/js/podcast-admin-workflow-target.js", 3_500],
   ["src/js/podcast-admin-clip-publications.js", 10_000],
   ["src/js/podcast-admin-distribution-certification.js", 5_000],
   ["src/js/podcast-admin-catalog.js", 8_000],
   ["src/js/podcast-admin-episode-editor.js", 8_000],
   ["src/js/podcast-admin-show-notes.js", 9_000],
+  ["src/js/podcast-admin-show-notes-contract.js", 5_000],
   ["src/js/podcast-admin-chapter-draft.js", 9_000],
-  ["src/js/podcast-admin-clip-draft.js", 13_000],
+  ["src/js/podcast-admin-chapter-draft-contract.js", 5_000],
+  ["src/js/podcast-admin-clip-draft.js", 12_000],
+  ["src/js/podcast-admin-clip-draft-contract.js", 6_000],
   ["src/js/podcast-admin-clip-preview.js", 5_000],
   ["src/js/podcast-admin-download-actions.js", 3_000],
   ["src/js/podcast-admin-episode-youtube.js", 10_000],
+  ["src/js/podcast-admin-episode-youtube-requests.js", 3_500],
+  ["src/js/podcast-admin-youtube-audio-renditions.js", 9_000],
+  ["src/js/podcast-admin-delivery-audio.js", 14_000],
+  ["src/js/podcast-admin-delivery-audio-approval.js", 2_000],
+  ["src/js/podcast-admin-retriable-operation.js", 2_000],
   ["src/js/podcast-admin-analytics.js", 20_000],
+  ["src/js/podcast-admin-launch-lab.js", 12_000],
   ["src/js/podcast-admin-rss-import.js", 35_000],
   ["src/js/podcast-admin-rss-reconciliation.js", 18_000],
   ["src/js/podcast-admin-rss-cutover.js", 9_000],
@@ -337,13 +381,38 @@ assert.match(
 );
 assert.match(
   tracer,
-  /Emulation\.setDeviceMetricsOverride[\s\S]+observed\?\.innerWidth !== viewport\.width[\s\S]+observed\?\.innerHeight !== viewport\.height[\s\S]+observed\?\.scrollWidth > viewport\.width/,
+  /Emulation\.setDeviceMetricsOverride/,
+  "performance traces must request the exact CSS viewport"
+);
+assert.match(
+  tracer,
+  /observed\?\.innerWidth !== viewport\.width[\s\S]+observed\?\.innerHeight !== viewport\.height[\s\S]+observed\?\.scrollWidth > viewport\.width/,
   "performance traces must verify the exact CSS viewport and horizontal fit"
 );
 assert.match(
   tracer,
-  /ADMIN_TABS[\s\S]+dustwave-podcast-admin-tab[\s\S]+observed\?\.activeTab !== adminTab/,
-  "performance traces must support and verify a bounded admin-tab fixture"
+  /ADMIN_TABS = new Set\(\[\.\.\.PODCAST_ADMIN_TRACE_TABS, "all"\]\)/,
+  "performance traces must support a bounded admin-tab fixture"
+);
+assert.match(
+  tracer,
+  /dustwave-podcast-admin-tab/,
+  "performance traces must seed their requested admin tab"
+);
+assert.match(
+  tracer,
+  /observed\?\.activeTab !== adminTab/,
+  "performance traces must verify their requested admin tab"
+);
+assert.match(
+  tracer,
+  /PODCAST_ADMIN_TRACE_TABS[\s\S]+adminTab === "all"[\s\S]+assertPodcastAdminTabMatrixContract\(tabMatrix\)/,
+  "performance traces must audit all six admin workspaces in one session"
+);
+assert.match(
+  tracer,
+  /ADMIN_GROUPS[\s\S]+data-podcast-workspace-group[\s\S]+activeGroups[\s\S]+adminGroup/,
+  "performance traces must open and verify contextual admin workspaces"
 );
 assert.match(
   tracer,
@@ -352,8 +421,8 @@ assert.match(
 );
 assert.match(
   tracer,
-  /Page\.addScriptToEvaluateOnNewDocument[\s\S]+source: CSP_VIOLATION_PROBE/,
-  "performance traces must install the CSP probe before navigation"
+  /Page\.addScriptToEvaluateOnNewDocument[\s\S]+source: RUNTIME_PROBE/,
+  "performance traces must install the CSP and CLS probes before navigation"
 );
 assert.match(
   tracer,
@@ -362,8 +431,53 @@ assert.match(
 );
 assert.match(
   tracer,
-  /Tracing\.start[\s\S]+Page\.navigate[\s\S]+Tracing\.end[\s\S]+IO\.read/,
+  /LAYOUT_PROBE[\s\S]+viewportOverflow[\s\S]+Clipped elements/,
+  "performance traces must reject clipped descendants outside intentional scrollers"
+);
+assert.match(
+  tracer,
+  /distribution:[\s\S]+guidancePresent[\s\S]+actionableDirectoryCount[\s\S]+openDirectoryCount[\s\S]+summaryCount/,
+  "Distribution traces must observe the progressive provider interaction contract"
+);
+assert.match(
+  tracer,
+  /assertLayoutObservation\(observed, \{ adminGroup, adminTab, viewport \}\)/,
+  "performance traces must enforce the selected admin interaction contract"
+);
+assert.match(
+  traceContract,
+  /EXPECTED_OPEN_GROUPS[\s\S]+episodes: \[\][\s\S]+audience: \["analytics"\][\s\S]+monetization: \["sponsors"\][\s\S]+settings: \[\]/,
+  "all-tab traces must preserve concise progressive-disclosure defaults"
+);
+assert.match(
+  traceContract,
+  /assertPodcastAdminTabMatrixContract[\s\S]+every workspace once in[\s\S]+requires an authenticated session[\s\S]+progressively disclose only their/,
+  "the admin matrix must fail closed on incomplete, signed-out, or overwhelming workspaces"
+);
+assert.match(
+  traceContract,
+  /guidanceOpen !== false[\s\S]+directoryCount < MINIMUM_LAUNCH_DIRECTORIES[\s\S]+actionableDirectoryCount > 0 \? 1 : 0[\s\S]+openDirectoryCount !== expectedOpenCount[\s\S]+summaryCount !== distribution\.directoryCount/,
+  "Distribution traces must fail closed on guidance, directory, and proof-summary regressions"
+);
+assert.match(
+  traceContract,
+  /Distribution trace requires an authenticated Podcast admin session/,
+  "selected Distribution traces must reject signed-out shells"
+);
+assert.match(
+  tracer,
+  /PerformanceObserver[\s\S]+layout-shift[\s\S]+MAX_AUTHENTICATED_CLS/,
+  "performance traces must enforce the good CLS threshold for authenticated admin sessions"
+);
+assert.match(
+  tracer,
+  /Tracing\.start[\s\S]+navigatePodcastAdminTrace[\s\S]+Tracing\.end[\s\S]+IO\.read/,
   "performance traces must capture navigation through a bounded CDP stream"
+);
+assert.match(
+  navigationContract,
+  /attemptTimeoutMs = 5_000[\s\S]+Page\.navigate[\s\S]+NAVIGATION_TIMEOUT_PATTERN[\s\S]+Page\.navigate/,
+  "performance navigation must be bounded and retry one transient CDP timeout"
 );
 assert.match(
   tracer,
