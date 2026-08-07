@@ -7,6 +7,13 @@
   and added an executable pin/package contract. Existing Admin Shell 0.10.2
   and Media Core 0.3.0 behavior is unchanged; site content, Podcast UI policy,
   Newsletter credentials, and deployment remain local.
+- Reconciled the README and Pool explainer with the active Dust Wave `v1.3.0`,
+  Pool `v1.2.19`, locked-install workflow, exact shared-package scope, and
+  consumer-owned deployment boundary.
+- Refreshed the lockfile-only `js-yaml` copies from 3.15.0/4.3.0 to
+  3.15.1/4.3.1 after the high-severity quadratic `!!omap` advisory appeared;
+  the root audit returns zero known vulnerabilities without changing declared
+  application dependencies.
 - Added an episode-centered bilingual Autopilot view that separates automatic
   processing, approval waits, platform delays, and terminal failures. Pending
   system work now reads as Processing, hides misleading Fix/Continue actions,
