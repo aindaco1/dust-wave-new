@@ -2,6 +2,10 @@
 
 Static website for [dustwave.xyz](https://dustwave.xyz), built with Eleventy and Bootstrap 5.
 
+Current release: `v1.3.0`. This site deliberately remains on its validated,
+independently reversible Dust Wave Platform `v0.15.0` pin until a future site
+release adopts a newer shared contract.
+
 ## Requirements
 
 Node.js 20.9+ is required for the site build. Check your version:
@@ -13,7 +17,7 @@ node --version
 
 ```bash
 git submodule update --init --recursive
-npm install
+npm ci
 ```
 
 Clone with `--recurse-submodules` when possible. Existing checkouts must initialize the recorded `shared/dust-wave-platform` commit before installing or testing; CI pins that gitlink and does not follow the shared repository's moving branch.
@@ -23,6 +27,11 @@ The current immutable pin is Dust Wave Platform `v0.15.0` at
 that gitlink plus the exact Admin Shell and Media Core versions used by this
 site. Dust Wave retains its content, templates, Podcast UI policy, Newsletter
 Worker credentials, Pages deployment, and independent one-commit rollback.
+
+The site consumes Admin Shell `0.10.2` directly for characterized Podcast admin
+browser assets and Media Core `0.3.0` as an exact package dependency for media
+contracts. It does not inherit Pool, Store, or Podcast routes, data, sessions,
+credentials, product policy, or deployments through Platform.
 
 ## Development
 
@@ -284,9 +293,11 @@ npm run ping:bridgy:all  # Send webmentions for all fediverse posts
 
 ### Open Graph Images
 
-Generate OG images (requires Puppeteer):
+Generate OG images (optional; requires Puppeteer added on a reviewed dependency
+update branch):
 ```bash
-npm install puppeteer
+# On that dependency-update branch, first run and commit:
+# npm install --save-dev puppeteer
 npm run build:og
 ```
 
@@ -412,7 +423,7 @@ Worker development and deployment require Node.js 22+ (Wrangler 4).
 
 ```bash
 cd workers/newsletter-subscribe
-npm install
+npm ci
 wrangler secret put RESEND_API_KEY  # Full Access key required
 wrangler deploy
 ```

@@ -80,7 +80,7 @@ When the deadline passed, settlement worked. Forty-four people had spent real mo
 ### What it does now
 </br>
 
-The current release is [version 1.1.2](https://github.com/aindaco1/pool). Since *The Worst Movie Ever*, we have run campaigns for [*Tecolote*](https://pool.dustwave.xyz/campaigns/tecolote/) and [*Sunder*](https://pool.dustwave.xyz/campaigns/sunder/). As of July 19, 2026, [*Their Love*](https://pool.dustwave.xyz/campaigns/their-love/) is still live and has already passed its $2,500 goal.
+At this August 6, 2026 update, the current release is [version 1.2.19](https://github.com/aindaco1/pool). Since *The Worst Movie Ever*, we have run campaigns for [*Tecolote*](https://pool.dustwave.xyz/campaigns/tecolote/) and [*Sunder*](https://pool.dustwave.xyz/campaigns/sunder/). As of July 19, 2026, [*Their Love*](https://pool.dustwave.xyz/campaigns/their-love/) is still live and has already passed its $2,500 goal.
 
 From the supporter side, The Pool is pretty simple. You can back more than one campaign in the same cart, but each pledge stays separate. You can choose rewards and add-ons, pay tax and shipping when those apply, and manage the pledge later through a private email link. **There are no supporter passwords to remember.**
 
