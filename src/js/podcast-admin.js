@@ -1388,7 +1388,7 @@ function startPodcastAdmin(root) {
     productionReviews = null;
     reviewRequestId += 1;
     publicationReadiness = null;
-    readinessRequestId += 1;
+    loadPublicationReadiness.invalidate();
     reviewTargetSelect?.replaceChildren();
     reviewList?.replaceChildren();
     reviewReadiness?.replaceChildren();

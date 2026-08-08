@@ -12,7 +12,7 @@ export function createPublicationReadinessLoader({
   let requestId = 0;
   let pending = null;
 
-  return async function loadPublicationReadiness(episodeId) {
+  async function loadPublicationReadiness(episodeId) {
     const requestedEpisodeId = episodeId === undefined
       ? selectedEpisodeId?.()
       : episodeId;
@@ -55,5 +55,13 @@ export function createPublicationReadinessLoader({
     } finally {
       if (pending?.promise === promise) pending = null;
     }
+  }
+
+  loadPublicationReadiness.invalidate = () => {
+    requestId += 1;
+    pending = null;
+    onReadiness(null);
   };
+
+  return loadPublicationReadiness;
 }

@@ -94,3 +94,21 @@ test("readiness failures stay bounded and return a failed snapshot", async () =>
     error: true
   });
 });
+
+test("signed-out invalidation cancels stale readiness and permits a fresh request", async () => {
+  const state = fixture();
+  const stale = state.load("episode-1");
+  state.load.invalidate();
+  assert.equal(state.readiness.at(-1), null);
+
+  state.requests[0].resolve({ candidateGate: { ready: true } });
+  assert.equal(await stale, null);
+  assert.equal(state.readiness.at(-1), null);
+
+  const fresh = state.load("episode-1");
+  assert.equal(state.requests.length, 2);
+  const payload = { candidateGate: { ready: false } };
+  state.requests[1].resolve(payload);
+  assert.equal(await fresh, payload);
+  assert.equal(state.readiness.at(-1), payload);
+});
