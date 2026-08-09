@@ -157,6 +157,7 @@
     "earlyAccessDays": "%{days} days of early access, with per-episode adjustments.",
     "premiumComingSoon": "Premium coming soon",
     "choosePlan": "Choose your plan",
+    "checkoutTestPostalCode": "Controlled staging purchase: use a test billing address in ZIP %{postalCode}.",
     "monthly": "Monthly",
     "annual": "Annual",
     "email": "Email",

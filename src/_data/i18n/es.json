@@ -157,6 +157,7 @@
     "earlyAccessDays": "%{days} días de acceso anticipado, con ajustes por episodio.",
     "premiumComingSoon": "Premium próximamente",
     "choosePlan": "Elige tu plan",
+    "checkoutTestPostalCode": "Compra controlada de staging: usa una dirección de prueba con el código postal %{postalCode}.",
     "monthly": "Mensual",
     "annual": "Anual",
     "email": "Correo electrónico",

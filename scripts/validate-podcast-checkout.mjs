@@ -31,6 +31,7 @@ assert.match(page, /name="country"/);
 assert.match(page, /name="postalCode"/);
 assert.match(page, /name="city"/);
 assert.match(page, /name="line1"/);
+assert.match(page, /podcastMember\.checkoutTestPostalCode/);
 assert.match(page, /data-podcast-checkout-quote/);
 assert.match(page, /aria-live="polite"/);
 assert.match(page, /src="\/js\/podcast-checkout\.js\?v=\{\{ assets\.version/);
@@ -69,5 +70,21 @@ assert.match(styles, /\.podcast-checkout__fields/);
 assert.match(styles, /@media \(max-width: 35\.99rem\)/);
 assert.match(styles, /:focus-visible/);
 assert.match(configuration, /PODCAST_CHECKOUT_TURNSTILE_SITE_KEY/);
+
+const checkoutFieldOrder = [
+  'name="email"',
+  'name="country"',
+  'name="line1"',
+  'name="line2"',
+  'name="city"',
+  'name="usState"',
+  'name="postalCode"'
+].map((field) => page.indexOf(field));
+assert(checkoutFieldOrder.every((index) => index >= 0));
+assert.deepEqual(
+  checkoutFieldOrder,
+  [...checkoutFieldOrder].sort((left, right) => left - right),
+  "Checkout fields must follow conventional billing-address order"
+);
 
 console.log("Podcast checkout validation passed.");

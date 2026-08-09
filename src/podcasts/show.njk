@@ -139,6 +139,12 @@ eleventyComputed:
                 </label>
               </fieldset>
 
+              {% if podcastMember.checkoutTestPostalCode %}
+              <p class="podcast-checkout__test-boundary">
+                {{ i18n | t(language, "podcast.checkoutTestPostalCode", { postalCode: podcastMember.checkoutTestPostalCode }) }}
+              </p>
+              {% endif %}
+
               <div class="podcast-checkout__fields">
                 <div class="podcast-checkout__field podcast-checkout__field--wide">
                   <label for="podcast-checkout-email">{{ i18n | t(language, "podcast.email") }}</label>
@@ -151,7 +157,7 @@ eleventyComputed:
                     maxlength="254"
                     required>
                 </div>
-                <div class="podcast-checkout__field">
+                <div class="podcast-checkout__field podcast-checkout__field--wide">
                   <label for="podcast-checkout-country">{{ i18n | t(language, "podcast.country") }}</label>
                   <select
                     id="podcast-checkout-country"
@@ -160,6 +166,39 @@ eleventyComputed:
                     required>
                     <option value="">{{ i18n | t(language, "podcast.select") }}</option>
                   </select>
+                </div>
+                <div class="podcast-checkout__field podcast-checkout__field--wide">
+                  <label for="podcast-checkout-line1">
+                    {{ i18n | t(language, "podcast.address") }}
+                  </label>
+                  <input
+                    id="podcast-checkout-line1"
+                    name="line1"
+                    type="text"
+                    autocomplete="address-line1"
+                    maxlength="192"
+                    required>
+                </div>
+                <div class="podcast-checkout__field podcast-checkout__field--wide">
+                  <label for="podcast-checkout-line2">
+                    {{ i18n | t(language, "podcast.address2") }}
+                  </label>
+                  <input
+                    id="podcast-checkout-line2"
+                    name="line2"
+                    type="text"
+                    autocomplete="address-line2"
+                    maxlength="192">
+                </div>
+                <div class="podcast-checkout__field podcast-checkout__field--wide">
+                  <label for="podcast-checkout-city">{{ i18n | t(language, "podcast.city") }}</label>
+                  <input
+                    id="podcast-checkout-city"
+                    name="city"
+                    type="text"
+                    autocomplete="address-level2"
+                    maxlength="96"
+                    required>
                 </div>
                 <div
                   class="podcast-checkout__field"
@@ -202,39 +241,6 @@ eleventyComputed:
                     autocomplete="postal-code"
                     maxlength="20"
                     required>
-                </div>
-                <div class="podcast-checkout__field">
-                  <label for="podcast-checkout-city">{{ i18n | t(language, "podcast.city") }}</label>
-                  <input
-                    id="podcast-checkout-city"
-                    name="city"
-                    type="text"
-                    autocomplete="address-level2"
-                    maxlength="96"
-                    required>
-                </div>
-                <div class="podcast-checkout__field podcast-checkout__field--wide">
-                  <label for="podcast-checkout-line1">
-                    {{ i18n | t(language, "podcast.address") }}
-                  </label>
-                  <input
-                    id="podcast-checkout-line1"
-                    name="line1"
-                    type="text"
-                    autocomplete="address-line1"
-                    maxlength="192"
-                    required>
-                </div>
-                <div class="podcast-checkout__field podcast-checkout__field--wide">
-                  <label for="podcast-checkout-line2">
-                    {{ i18n | t(language, "podcast.address2") }}
-                  </label>
-                  <input
-                    id="podcast-checkout-line2"
-                    name="line2"
-                    type="text"
-                    autocomplete="address-line2"
-                    maxlength="192">
                 </div>
               </div>
 
