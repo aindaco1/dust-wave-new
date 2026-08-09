@@ -39,7 +39,8 @@ assert.match(siteFooter, /class="site-footer"/);
 assert.match(siteFooter, /class="site-footer__item/g);
 assert.match(siteFooter, /snippets\/language-switcher\.njk/);
 assert.match(page, /disableFontAwesome: true/);
-assert.match(page, /disableTypekit: true/);
+assert.match(page, /customFont: true/);
+assert.doesNotMatch(page, /disableTypekit: true/);
 assert.match(script, sharedAdminShellImportPattern("api-client"));
 assert.match(
   script,

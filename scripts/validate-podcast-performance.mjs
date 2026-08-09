@@ -98,8 +98,13 @@ assert.match(
 );
 assert.match(
   member,
+  /customFont: true/,
+  "Podcast member auth must load the existing first-party Inter font bundle"
+);
+assert.doesNotMatch(
+  member,
   /disableTypekit: true/,
-  "Podcast member auth must not load its unused external brand font"
+  "Podcast member auth must retain the licensed Gambado display font used by its headings"
 );
 assert.match(
   memberLayout,
