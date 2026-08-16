@@ -175,7 +175,7 @@ assert.equal(
   englishProjects.length,
   "every project needs a Spanish locale sidecar"
 );
-assert.equal(memberCards.length, 34, "expected the 34 established About-page member cards");
+assert.equal(memberCards.length, 35, "expected the 35 established About-page member cards");
 assert.equal(
   memberDirectoryData.permalink,
   false,
@@ -329,7 +329,7 @@ assert.doesNotMatch(
 );
 
 console.log(
-  `i18n contract validation passed: ${englishLeaves.length} bilingual messages, scoped interactive catalogs, one active locale, 36 translated projects, 34 data-only member cards, authored-language News.`
+  `i18n contract validation passed: ${englishLeaves.length} bilingual messages, scoped interactive catalogs, one active locale, 36 translated projects, 35 data-only member cards, authored-language News.`
 );
 
 async function readJson(file) {

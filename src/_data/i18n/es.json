@@ -64,6 +64,7 @@
       "description": "Los valores y miembros del colectivo Dust Wave.",
       "members": "Miembros",
       "instagramAria": "%{name} en Instagram",
+      "websiteAria": "Sitio web de %{name}",
       "beliefs": [
         "Un entorno creativo positivo, empático, solidario, colaborativo, libre y abierto es el que mejor nos ayuda, tanto colectiva como individualmente, a alcanzar nuestras metas y ambiciones artísticas.",
         "Cada proyecto que realizamos aportará valor tanto colectivo como individual. Reconocemos a cada persona por su contribución, pero compartimos colectivamente el éxito de nuestros proyectos.",

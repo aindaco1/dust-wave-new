@@ -45,6 +45,11 @@ content:
         type: string
         description: "Instagram username (without @). Leave blank if none."
 
+      - name: website
+        label: Website
+        type: string
+        description: "Full website URL, including https://. Leave blank if none."
+
       - name: column
         label: Column
         type: select

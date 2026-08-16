@@ -40,6 +40,11 @@ eleventyComputed:
             &nbsp;
             <h3><a href="https://www.instagram.com/{{ member.data.instagram }}" class="link-fancy" target="_blank" rel="noopener noreferrer" aria-label="{{ i18n | t(language, 'pages.about.instagramAria', { name: member.data.name }) }}"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a></h3>
             {%- endif -%}
+            {%- if member.data.website -%}
+            &nbsp;
+            &nbsp;
+            <h3><a href="{{ member.data.website }}" class="link-fancy" target="_blank" rel="noopener noreferrer" aria-label="{{ i18n | t(language, 'pages.about.websiteAria', { name: member.data.name }) }}"><i class="fa-solid fa-globe" aria-hidden="true"></i></a></h3>
+            {%- endif -%}
           </div>
         </article>
         {%- endfor -%}
