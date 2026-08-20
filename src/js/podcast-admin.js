@@ -1,5 +1,5 @@
 import { AdminApiClient, AdminApiError } from "./dust-wave-admin-shell/api-client.js?v=0.10.2";
-import { AdminDownloadError, requestCredentialedBlob, triggerBlobDownload } from "./dust-wave-admin-shell/credentialed-download.js?v=0.10.2";
+import { requestCredentialedBlob, triggerBlobDownload } from "./dust-wave-admin-shell/credentialed-download.js?v=0.10.2";
 import {
   formatBytes,
   formatInteger
@@ -57,6 +57,7 @@ import { mountPodcastEpisodeContext } from "./podcast-admin-episode-context-setu
 import { mountPodcastShowContext } from "./podcast-admin-show-context.js";
 import { syncReviewDraftButton } from "./podcast-admin-dirty-controls.js";
 import { adminText, editorLabels } from "./podcast-admin-text.js";
+import { friendlyPodcastAdminError as friendlyError } from "./podcast-admin-errors.js";
 import { ALIGNMENT_WORKFLOW, AUDIO_QC_POLICY_FIELDS, MAXIMUM_ALIGNMENT_BENCHMARK_BYTES, TRANSCRIPTION_CHUNK_WORKFLOW, TRANSCRIPT_CUES_PER_PAGE } from "./podcast-admin-constants.js";
 import {
   mountShowSiteProjection,
@@ -64,6 +65,12 @@ import {
   populateShowSettingsForm,
   readShowSettingsPayload
 } from "./podcast-admin-show-settings.js";
+import {
+  mountPodcastShowCreator
+} from "./podcast-admin-show-create.js";
+import {
+  mountPodcastShowDeletion
+} from "./podcast-admin-show-delete.js";
 import { mountRssImportWorkbench } from "./podcast-admin-rss-import.js";
 import { buildEpisodeYouTubeControls, handleEpisodeYouTubeApproval, handleEpisodeYouTubeSubmit } from "./podcast-admin-episode-youtube.js";
 import { mountYouTubeAudioRenditions } from "./podcast-admin-youtube-audio-renditions.js";
@@ -108,6 +115,31 @@ function startPodcastAdmin(root) {
   const showStatus = root.querySelector("[data-podcast-show-status]");
   const showContext = mountPodcastShowContext(root);
   const showSelects = showContext.selects;
+  const showCreator = mountPodcastShowCreator({
+    root,
+    client,
+    text: adminText,
+    setStatus,
+    friendlyError,
+    async onCreated(show) {
+      selectedShowId = show.id;
+      await loadShows();
+    }
+  });
+  const showDeletion = mountPodcastShowDeletion({
+    root,
+    client,
+    text: adminText,
+    setStatus,
+    friendlyError,
+    async onDeleted(show) {
+      selectedShowId = "";
+      await loadShows();
+      setStatus(globalStatus, adminText("showDeleted", {
+        title: show.title
+      }));
+    }
+  });
   const episodeForm = root.querySelector("[data-podcast-episode-form]");
   const episodeStatus = root.querySelector("[data-podcast-episode-status]");
   const episodeList = root.querySelector("[data-podcast-episode-list]");
@@ -1291,6 +1323,8 @@ function startPodcastAdmin(root) {
     root.querySelector("[data-podcast-session-summary]").textContent =
       adminText("authenticated", { roles: roles ? ` — ${roles}` : "" });
     podcastLaunchLab.setAuthorized(isSuperAdmin());
+    showCreator.setIdentity(adminIdentity);
+    showDeletion.setIdentity(adminIdentity);
   }
 
   function showLoggedOut() {
@@ -1302,6 +1336,8 @@ function startPodcastAdmin(root) {
     episodeEditor.setEpisodes([]);
     episodeEditor.setShow("");
     adminIdentity = null;
+    showCreator.reset();
+    showDeletion.reset();
     campaigns = [];
     podcastAnalytics.reset();
     podcastLaunchLab.reset();
@@ -1501,6 +1537,7 @@ function startPodcastAdmin(root) {
   function fillShowForm() {
     const show = shows.find(({ id }) => id === selectedShowId);
     showForm.hidden = !show;
+    showDeletion.setShow(show);
     showSiteProjection.setShow(show);
     rssImport.setShow(Boolean(show));
     episodeEditor.setShow(selectedShowId);
@@ -8927,53 +8964,6 @@ function checkedHttpsUrl(value, label) {
     throw new Error(adminText("completeHttpsUrl", { label }));
   }
   return url.href;
-}
-
-function friendlyError(error) {
-  if (error instanceof AdminDownloadError) {
-    if (error.code === "download_too_large") {
-      return adminText(
-        "downloadTooLarge"
-      );
-    }
-    if (error.code === "download_content_type_invalid") {
-      return adminText(
-        "downloadTypeInvalid"
-      );
-    }
-    return adminText(
-      "downloadFailed"
-    );
-  }
-  if (!(error instanceof AdminApiError)) {
-    return adminText(
-      "serviceUnavailable"
-    );
-  }
-  const groupedCode = {
-    audio_qc_completion_conflict: "audio_qc_run_conflict",
-    publication_conflict: "publication_snapshot_stale",
-    review_comment_revision_conflict: "review_revision_conflict",
-    review_comment_id_conflict: "review_mutation_conflict"
-  }[error.code] || (
-    error.code.startsWith("publication_override_")
-      ? "publication_override_invalid"
-      : error.code.startsWith("transcription_")
-        ? "transcription_invalid"
-        : error.code
-  );
-  const translated = window.DustWaveI18n?.t(
-    `admin.error_${groupedCode}`,
-    {
-      details: (
-        error.code === "campaign_not_ready"
-          ? error.details?.blockers || []
-          : error.details?.missing || []
-      ).map(humanizeCode).join(", ")
-    }
-  );
-  if (translated && !translated.startsWith("[missing:")) return translated;
-  return adminText("unknownError");
 }
 
 function isoOrNull(value) {

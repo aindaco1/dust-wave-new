@@ -1713,9 +1713,140 @@ eleventyComputed:
                 <span class="podcast-admin__pill" data-podcast-show-name hidden></span>
                 <select name="showId" data-podcast-show-select aria-label="{{ workbench.common.show }}"></select>
               </div>
+              <button
+                id="podcast-show-create-toggle"
+                class="btn btn-danger"
+                type="button"
+                data-podcast-show-create-toggle
+                aria-controls="podcast-show-create-panel"
+                aria-expanded="false"
+                hidden>{{ workbench.overview.createShow }}</button>
               <button class="btn btn-outline-light" type="button" data-podcast-refresh>{{ workbench.common.refresh }}</button>
             </div>
           </div>
+          <section
+            id="podcast-show-create-panel"
+            class="podcast-admin__form podcast-admin__form--settings"
+            data-podcast-show-create-panel
+            aria-labelledby="podcast-show-create-heading"
+            hidden>
+            <div class="podcast-admin__panel-heading">
+              <div>
+                <h3 id="podcast-show-create-heading">{{ workbench.overview.createShowHeading }}</h3>
+                <p>{{ workbench.overview.createShowIntro }}</p>
+              </div>
+              <p class="podcast-admin__pill">{{ workbench.overview.superAdminOnly }}</p>
+            </div>
+            <div class="podcast-admin__callout">
+              <p>{{ workbench.overview.createShowSafety }}</p>
+            </div>
+            <form data-podcast-show-create-form>
+              <section
+                class="podcast-admin__field-group podcast-admin__field-group--compact"
+                aria-labelledby="podcast-show-create-identity-heading">
+                <h4 id="podcast-show-create-identity-heading">{{ workbench.overview.permanentIdentity }}</h4>
+                <div class="podcast-admin__field-grid">
+                  <label>{{ workbench.common.title }}
+                    <input name="title" maxlength="200" autocomplete="off" required>
+                  </label>
+                  <label>{{ workbench.overview.urlSlug }}
+                    <input
+                      name="slug"
+                      maxlength="120"
+                      pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
+                      autocomplete="off"
+                      spellcheck="false"
+                      aria-describedby="podcast-show-create-slug-help"
+                      required>
+                  </label>
+                </div>
+                <p id="podcast-show-create-slug-help" class="podcast-admin__help">{{ workbench.overview.urlSlugHelp }}</p>
+                <div class="podcast-admin__field-grid podcast-admin__field-grid--compact">
+                  <label>{{ workbench.overview.primaryLanguage }}
+                    <select name="language" required>
+                      <option value="es">{{ workbench.common.spanish }}</option>
+                      <option value="en">{{ workbench.common.english }}</option>
+                    </select>
+                  </label>
+                  <label>{{ workbench.overview.showStatus }}
+                    <input value="{{ workbench.overview.statusComingSoon }}" readonly aria-readonly="true">
+                  </label>
+                </div>
+                <div class="podcast-admin__callout">
+                  <p>{{ workbench.overview.permanentDestinationsHelp }}</p>
+                  <div class="podcast-admin__field-grid">
+                    <label>{{ workbench.overview.canonicalPage }}
+                      <input name="canonicalUrl" type="url" readonly aria-readonly="true">
+                    </label>
+                    <label>{{ workbench.overview.rssFeed }}
+                      <input name="feedUrl" type="url" readonly aria-readonly="true">
+                    </label>
+                  </div>
+                </div>
+              </section>
+              <section
+                class="podcast-admin__field-group"
+                aria-labelledby="podcast-show-create-presentation-heading">
+                <h4 id="podcast-show-create-presentation-heading">{{ workbench.overview.initialSettings }}</h4>
+                <div class="podcast-admin__field-grid">
+                  <label>{{ workbench.overview.authorName }}
+                    <input name="authorName" maxlength="200">
+                  </label>
+                  <label>{{ workbench.overview.category }}
+                    <input name="category" maxlength="200">
+                  </label>
+                </div>
+                <label>{{ workbench.overview.descriptionSpanish }}
+                  <textarea name="description" maxlength="10000" rows="4"></textarea>
+                </label>
+                <label>{{ workbench.overview.descriptionEnglish }}
+                  <textarea name="descriptionEn" maxlength="10000" rows="4"></textarea>
+                </label>
+                <div class="podcast-admin__field-grid">
+                  <label>{{ workbench.overview.artworkUrl }}
+                    <input name="artworkUrl" type="url" inputmode="url" autocomplete="url" pattern="https://.*" maxlength="2000">
+                  </label>
+                  <label>{{ workbench.overview.youtubeChannel }}
+                    <input
+                      name="youtubeChannelUrl"
+                      type="url"
+                      inputmode="url"
+                      autocomplete="url"
+                      pattern="https://(www\.|m\.)?youtube\.com/(?:@|channel/|c/|user/).+"
+                      maxlength="2000">
+                  </label>
+                  <label>{{ workbench.overview.earlyAccessDays }}
+                    <input name="earlyAccessDays" type="number" min="0" max="365">
+                  </label>
+                </div>
+                <label class="podcast-admin__checkbox">
+                  <input name="explicit" type="checkbox"> {{ workbench.overview.explicit }}
+                </label>
+              </section>
+              <section
+                class="podcast-admin__field-group podcast-admin__field-group--compact"
+                aria-labelledby="podcast-show-create-confirm-heading">
+                <h4 id="podcast-show-create-confirm-heading">{{ workbench.overview.confirmPermanentIdentity }}</h4>
+                <p>{{ workbench.overview.confirmPermanentIdentityHelp }}</p>
+                <label>{{ workbench.overview.typedConfirmation }}
+                  <input
+                    name="confirmation"
+                    autocomplete="off"
+                    spellcheck="false"
+                    aria-describedby="podcast-show-create-confirmation-value"
+                    required>
+                </label>
+                <p id="podcast-show-create-confirmation-value" class="podcast-admin__help">
+                  {{ workbench.overview.typeExactly }} <code data-podcast-show-create-confirmation>{{ workbench.overview.createShowConfirmationPrefix }}</code>
+                </p>
+              </section>
+              <div class="podcast-admin__clip-actions">
+                <button class="btn btn-danger" type="submit">{{ workbench.overview.createShowSubmit }}</button>
+                <button class="btn btn-outline-light" type="button" data-podcast-show-create-cancel>{{ workbench.overview.cancelCreateShow }}</button>
+              </div>
+              <p class="podcast-admin__status" data-podcast-show-create-status role="status" aria-live="polite"></p>
+            </form>
+          </section>
           <div class="podcast-admin__cards" data-podcast-show-cards></div>
           <form class="podcast-admin__form podcast-admin__form--settings" data-podcast-show-form hidden>
             <section
@@ -1813,6 +1944,43 @@ eleventyComputed:
             <button class="btn btn-danger" type="submit">{{ workbench.overview.save }}</button>
             <p class="podcast-admin__status" data-podcast-show-status role="status" aria-live="polite"></p>
           </form>
+          <section
+            class="podcast-admin__form podcast-admin__form--settings"
+            data-podcast-show-delete
+            hidden>
+            <h3>{{ workbench.overview.dangerZone }}</h3>
+            <p>{{ workbench.overview.deleteShowIntro }}</p>
+            <div class="podcast-admin__callout">
+              <p><strong>{{ workbench.overview.deleteShowSafetyHeading }}</strong></p>
+              <p>{{ workbench.overview.deleteShowSafety }}</p>
+            </div>
+            <button
+              class="btn btn-danger"
+              type="button"
+              data-podcast-show-delete-toggle
+              aria-expanded="false">
+              {{ workbench.overview.deleteShow }}
+            </button>
+            <form data-podcast-show-delete-form hidden>
+              <label>{{ workbench.overview.typedConfirmation }}
+                <input
+                  name="confirmation"
+                  type="text"
+                  autocomplete="off"
+                  spellcheck="false"
+                  aria-describedby="podcast-show-delete-confirmation-value"
+                  required>
+              </label>
+              <p id="podcast-show-delete-confirmation-value" class="podcast-admin__help">
+                {{ workbench.overview.typeExactly }} <code data-podcast-show-delete-confirmation></code>
+              </p>
+              <div class="podcast-admin__clip-actions">
+                <button class="btn btn-danger" type="submit">{{ workbench.overview.deleteShowSubmit }}</button>
+                <button class="btn btn-outline-light" type="button" data-podcast-show-delete-cancel>{{ workbench.overview.cancelDeleteShow }}</button>
+              </div>
+              <p class="podcast-admin__status" data-podcast-show-delete-status role="status" aria-live="polite"></p>
+            </form>
+          </section>
           <section
             class="podcast-admin__form podcast-admin__form--settings"
             data-podcast-show-prices
