@@ -37,14 +37,30 @@
   <section class="podcast-admin__app" data-podcast-app hidden>
     <p class="podcast-admin__session" data-podcast-session-summary></p>
 
+    <section
+      class="podcast-admin__show-workspace"
+      data-podcast-show-context
+      aria-labelledby="podcast-current-show-label"
+      hidden>
+      <div class="podcast-admin__show-workspace-copy">
+        <p id="podcast-current-show-label" class="podcast-admin__eyebrow">{{ workbench.common.currentShow }}</p>
+        <strong data-podcast-show-name></strong>
+        <p>{{ workbench.common.showScope }}</p>
+      </div>
+      <label class="podcast-admin__show-switcher" data-podcast-show-switcher>
+        <span>{{ workbench.common.switchShow }}</span>
+        <select name="showId" data-podcast-show-select></select>
+      </label>
+    </section>
+
     <div class="podcast-admin__tabs" data-podcast-tabs>
       <div class="podcast-admin__tab-list" role="tablist" aria-label="{{ i18n | t(language, 'podcast.admin.tabs.label') }}">
+        <button id="podcast-tab-settings" type="button" role="tab" data-tab="settings" aria-controls="podcast-panel-settings">{{ i18n | t(language, "podcast.admin.tabs.settings") }}</button>
         <button id="podcast-tab-episodes" type="button" role="tab" data-tab="episodes" aria-controls="podcast-panel-episodes">{{ i18n | t(language, "podcast.admin.tabs.episodes") }}</button>
         <button id="podcast-tab-distribution" type="button" role="tab" data-tab="distribution" aria-controls="podcast-panel-distribution">{{ i18n | t(language, "podcast.admin.tabs.distribution") }}</button>
         <button id="podcast-tab-marketing" type="button" role="tab" data-tab="marketing" aria-controls="podcast-panel-marketing">{{ i18n | t(language, "podcast.admin.tabs.marketing") }}</button>
         <button id="podcast-tab-audience" type="button" role="tab" data-tab="audience" aria-controls="podcast-panel-audience">{{ i18n | t(language, "podcast.admin.tabs.audience") }}</button>
         <button id="podcast-tab-monetization" type="button" role="tab" data-tab="monetization" aria-controls="podcast-panel-monetization">{{ i18n | t(language, "podcast.admin.tabs.monetization") }}</button>
-        <button id="podcast-tab-settings" type="button" role="tab" data-tab="settings" aria-controls="podcast-panel-settings">{{ i18n | t(language, "podcast.admin.tabs.settings") }}</button>
       </div>
 
       <div id="podcast-admin-content">

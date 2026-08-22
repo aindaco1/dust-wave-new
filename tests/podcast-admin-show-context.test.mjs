@@ -9,6 +9,8 @@ function fixture() {
     }
   };
   const name = { hidden: true, textContent: "" };
+  const scopedName = { textContent: "" };
+  const switcher = { hidden: false };
   const select = {
     hidden: false,
     options: [],
@@ -24,39 +26,50 @@ function fixture() {
   const container = {
     hidden: false,
     querySelector(selector) {
-      return selector === "[data-podcast-show-name]" ? name : select;
+      return {
+        "[data-podcast-show-name]": name,
+        "[data-podcast-show-select]": select,
+        "[data-podcast-show-switcher]": switcher
+      }[selector] || null;
     }
   };
   const root = {
-    querySelectorAll() {
-      return [container];
+    querySelectorAll(selector) {
+      return selector === "[data-podcast-show-context]"
+        ? [container]
+        : [scopedName];
     }
   };
-  return { container, name, root, select };
+  return { container, name, root, scopedName, select, switcher };
 }
 
 test("single-show launch replaces selector chrome with the show name", () => {
-  const { container, name, root, select } = fixture();
+  const { container, name, root, scopedName, select, switcher } = fixture();
   const context = mountPodcastShowContext(root);
   context.setShows([{ id: "show-one", title: "Show one" }], "show-one");
 
   assert.equal(container.hidden, false);
   assert.equal(name.hidden, false);
   assert.equal(name.textContent, "Show one");
+  assert.equal(scopedName.textContent, "Show one");
+  assert.equal(switcher.hidden, true);
   assert.equal(select.hidden, true);
   assert.equal(select.value, "show-one");
   assert.deepEqual(context.selects, [select]);
 });
 
-test("multi-show mode restores the synchronized accessible selector", () => {
-  const { name, root, select } = fixture();
+test("multi-show mode keeps the selected show prominent and adds a switcher", () => {
+  const { name, root, scopedName, select, switcher } = fixture();
   const context = mountPodcastShowContext(root);
   context.setShows([
     { id: "show-one", title: "Show one" },
     { id: "show-two", title: "Show two" }
   ], "show-two");
 
-  assert.equal(name.hidden, true);
+  assert.equal(name.hidden, false);
+  assert.equal(name.textContent, "Show two");
+  assert.equal(scopedName.textContent, "Show two");
+  assert.equal(switcher.hidden, false);
   assert.equal(select.hidden, false);
   assert.equal(select.value, "show-two");
   assert.deepEqual(
@@ -65,12 +78,13 @@ test("multi-show mode restores the synchronized accessible selector", () => {
   );
 });
 
-test("empty show state conceals both presentation modes", () => {
-  const { container, name, root, select } = fixture();
+test("empty show state conceals the workspace", () => {
+  const { container, name, root, scopedName, select } = fixture();
   mountPodcastShowContext(root).setShows([], "");
 
   assert.equal(container.hidden, true);
   assert.equal(name.hidden, true);
+  assert.equal(scopedName.textContent, "");
   assert.equal(select.hidden, false);
   assert.equal(select.value, "");
 });

@@ -231,8 +231,6 @@ export function mountEpisodePublishWorkflow({
       }
       if (!select.value && episodes[0]) select.value = episodes[0].id;
       refresh();
-      const episode = selectedEpisode();
-      if (episode) onNavigate?.(progress.getActive(), episode);
     },
     refresh,
     destroy() {

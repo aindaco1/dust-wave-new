@@ -1,12 +1,8 @@
-        <section id="podcast-panel-episodes" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-episodes">
+        <section id="podcast-panel-episodes" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-episodes" hidden>
           <div class="podcast-admin__panel-heading">
             <div>
               <h2>{{ workbench.episodes.heading }}</h2>
               <p>{{ workbench.episodes.intro }}</p>
-            </div>
-            <div class="podcast-admin__show-context" data-podcast-show-context hidden>
-              <span class="podcast-admin__pill" data-podcast-show-name hidden></span>
-              <select name="showId" data-podcast-show-select aria-label="{{ workbench.common.show }}"></select>
             </div>
           </div>
           <section
@@ -29,6 +25,9 @@
 
           <form id="podcast-episode-details" class="podcast-admin__form" data-podcast-episode-form>
             <h3 data-podcast-episode-form-heading>{{ workbench.episodes.new }}</h3>
+            <p class="podcast-admin__scope-note">
+              {{ workbench.episodes.belongsTo }} <strong data-podcast-current-show-name>{{ workbench.common.thisShow }}</strong>
+            </p>
             <section
               class="podcast-admin__field-group"
               aria-labelledby="podcast-episode-copy-heading">

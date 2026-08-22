@@ -61,6 +61,7 @@ import { mountTranscriptSearch } from "./podcast-admin-transcript-search.js";
 import { mountTranscriptLabelReview } from "./podcast-admin-transcript-label-review.js";
 import { mountPodcastEpisodeContext } from "./podcast-admin-episode-context-setup.js";
 import { mountPodcastShowContext } from "./podcast-admin-show-context.js";
+import { createPodcastShowSelection } from "./podcast-admin-show-selection.js";
 import { syncReviewDraftButton } from "./podcast-admin-dirty-controls.js";
 import { adminText, editorLabels } from "./podcast-admin-text.js";
 import { friendlyPodcastAdminError as friendlyError } from "./podcast-admin-errors.js";
@@ -95,6 +96,12 @@ import {
   distributionEvidenceSummary,
   distributionSetupLinkLabelKey
 } from "./podcast-admin-distribution-disclosure.js";
+import {
+  createDistributionProgress,
+  distributionDirectoryView,
+  distributionReleaseEpisodes,
+  orderDistributionDestinations
+} from "./podcast-admin-distribution-view.js";
 import { createDirectorySubmissionPacketActions, createDistributionFeedActions } from "./podcast-admin-directory-packet.js";
 import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js?v=0.10.2";
 import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js?v=0.10.2";
@@ -122,6 +129,9 @@ function startPodcastAdmin(root) {
   const showStatus = root.querySelector("[data-podcast-show-status]");
   const showContext = mountPodcastShowContext(root);
   const showSelects = showContext.selects;
+  const showSelection = createPodcastShowSelection(
+    () => root.ownerDocument.defaultView.localStorage
+  );
   const showCreator = mountPodcastShowCreator({
     root,
     client,
@@ -858,7 +868,7 @@ function startPodcastAdmin(root) {
       responsiveSelect: {
         id: "podcast-admin-mobile-tabs"
       },
-      storageKey: "dustwave-podcast-admin-tab",
+      storageKey: "dustwave-podcast-admin-tab-v2",
       onSelect(tab) {
         if (tab !== "episodes") pauseClipMediaPlayers(clipList);
         if (tab !== "marketing") pauseClipMediaPlayers(clipLibrary);
@@ -976,6 +986,7 @@ function startPodcastAdmin(root) {
   for (const showSelect of showSelects) {
     showSelect.addEventListener("change", async () => {
       selectedShowId = showSelect.value;
+      showSelection.remember(selectedShowId);
       fillShowSelect();
       if (distributionFilter) {
         distributionFilter.elements.episodeId.value = "";
@@ -1456,8 +1467,10 @@ function startPodcastAdmin(root) {
       shows = payload.shows || [];
       const previousShowId = selectedShowId;
       selectedShowId = navigateEpisodeWorkflow.selectLinkedShow(
-        shows, selectedShowId
+        shows,
+        selectedShowId || showSelection.read(shows)
       );
+      showSelection.remember(selectedShowId);
       if (selectedShowId !== previousShowId) {
         clearClipLibraryState();
         clipPublications.close();
@@ -2306,6 +2319,13 @@ function startPodcastAdmin(root) {
   function fillDistributionEpisodes() {
     if (!distributionFilter) return;
     const select = distributionFilter.elements.episodeId;
+    const pickers = distributionFilter.querySelectorAll(
+      "[data-podcast-distribution-release-picker]"
+    );
+    const empty = distributionFilter.querySelector(
+      "[data-podcast-distribution-no-releases]"
+    );
+    const eligibleEpisodes = distributionReleaseEpisodes(episodes);
     const previousValue = select.value;
     select.replaceChildren(
       new Option(
@@ -2314,7 +2334,7 @@ function startPodcastAdmin(root) {
         ),
         ""
       ),
-      ...episodes.map((episode) =>
+      ...eligibleEpisodes.map((episode) =>
         new Option(
         `${episode.title} — ${localizedCode("episodeStatus", episode.status)}`,
           episode.id,
@@ -2323,9 +2343,13 @@ function startPodcastAdmin(root) {
         )
       )
     );
-    if (!episodes.some(({ id }) => id === previousValue)) {
+    if (!eligibleEpisodes.some(({ id }) => id === previousValue)) {
       select.value = "";
     }
+    for (const picker of pickers) {
+      picker.hidden = eligibleEpisodes.length === 0;
+    }
+    if (empty) empty.hidden = eligibleEpisodes.length > 0;
   }
 
   function publicMarketingEpisodes() {
@@ -6822,33 +6846,13 @@ function startPodcastAdmin(root) {
         renderReleaseChannels(payload.release, payload.episodeId || "")
       );
     }
-    const overview = document.createElement("div");
-    overview.className =
-      "podcast-admin__metric-grid podcast-admin__distribution-summary";
-    for (const [value, label] of [
-      [summary.total, adminText("launchDirectories")],
-      [
-        summary.setupComplete,
-        adminText("ownerSetupComplete")
-      ],
-      [
-        summary.setupRequired,
-        adminText("ownerSetupRequired")
-      ],
-      [summary.observed, adminText("episodeObserved")],
-      [summary.certified, adminText("certifiedDirectories")]
-    ]) {
-      const card = document.createElement("article");
-      const strong = document.createElement("strong");
-      strong.textContent = Number.isFinite(Number(value))
-        ? String(Number(value))
-        : "—";
-      const span = document.createElement("span");
-      span.textContent = label;
-      card.append(strong, span);
-      overview.append(card);
-    }
-    fragment.append(overview);
+    fragment.append(createDistributionProgress({
+      document,
+      formatInteger,
+      release: Boolean(payload.release),
+      summary,
+      text: adminText
+    }));
     fragment.append(
       renderDistributionLaunchClaim({
         launchClaim: payload.launchClaim || {},
@@ -6876,11 +6880,15 @@ function startPodcastAdmin(root) {
 
     const list = document.createElement("div");
     list.className = "podcast-admin__directory-list";
+    const orderedDestinations = orderDistributionDestinations(
+      destinations,
+      payload.episodeId || ""
+    );
     const disclosure = distributionDisclosures.context(
       selectedShowId,
-      destinations
+      orderedDestinations
     );
-    for (const destination of destinations) {
+    for (const destination of orderedDestinations) {
       list.append(
         distributionDestinationCard(destination, {
           episodeId: payload.episodeId || "",
@@ -7090,6 +7098,7 @@ function startPodcastAdmin(root) {
   }) {
     const card = document.createElement("details");
     card.className = "podcast-admin__directory-card";
+    const directoryView = distributionDirectoryView(destination, episodeId);
     card.dataset.actionable = String(
       destination.enabled && !destination.certification?.certified
     );
@@ -7113,31 +7122,10 @@ function startPodcastAdmin(root) {
     badges.className = "podcast-admin__badges";
     badges.append(
       distributionBadge(
-        destination.enabled
-          ? adminText("enabled")
-          : adminText("disabled"),
-        destination.enabled ? "is-ready" : ""
-      ),
-      distributionBadge(
-        distributionStatusLabel(destination.ownerSetupStatus)
+        adminText(directoryView.key),
+        directoryView.tone
       )
     );
-    if (destination.publicationStatus) {
-      badges.append(
-        distributionBadge(
-          distributionStatusLabel(destination.publicationStatus),
-          destination.publicationStatus === "observed" ? "is-ready" : ""
-        )
-      );
-    }
-    if (destination.certification?.certified) {
-      badges.append(
-        distributionBadge(
-          adminText("certificationComplete"),
-          "is-ready"
-        )
-      );
-    }
     heading.append(titleGroup, badges);
     summary.append(heading);
     card.append(summary);
@@ -7251,7 +7239,7 @@ function startPodcastAdmin(root) {
       form.dataset.episodeId = episodeId;
 
       const statusLabel = document.createElement("label");
-      statusLabel.textContent = adminText("ownerSetup");
+      statusLabel.textContent = adminText("directorySetup");
       const status = document.createElement("select");
       status.name = "ownerSetupStatus";
       for (const [value, label] of [
@@ -7350,7 +7338,7 @@ function startPodcastAdmin(root) {
       enabled.checked = Boolean(destination.enabled);
       enabledLabel.append(
         enabled,
-        document.createTextNode(` ${adminText("enabled")}`)
+        document.createTextNode(` ${adminText("useDirectory")}`)
       );
 
       const save = document.createElement("button");

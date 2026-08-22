@@ -192,9 +192,7 @@ export function createPodcastDomContextualEditHandlers(root) {
   };
 
   function show({ id }) {
-    const control = query(
-      "#podcast-panel-settings [data-podcast-show-select]"
-    );
+    const control = query("[data-podcast-show-select]");
     if (!select(control, id) || !activateTab("settings")) return false;
     const form = query("[data-podcast-show-form]");
     revealContextualEditor(form, form?.elements?.title, {

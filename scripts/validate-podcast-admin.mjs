@@ -314,14 +314,14 @@ const topLevelAdminTabs = Array.from(
 assert.deepEqual(
   topLevelAdminTabs,
   [
+    'settings',
     'episodes',
     'distribution',
     'marketing',
     'audience',
-    'monetization',
-    'settings'
+    'monetization'
   ],
-  'Podcast Admin must expose six task-oriented top-level sections'
+  'Podcast Admin must lead with Shows and expose six task-oriented sections'
 );
 assert.doesNotMatch(
   adminTemplate,
@@ -350,13 +350,23 @@ assert.equal(
 );
 assert.equal(
   [...adminTemplate.matchAll(/data-podcast-show-context/g)].length,
-  2,
-  'Episode and Settings headings must reuse the same show-context contract'
+  1,
+  'Every workspace must share one canonical show-context contract'
 );
 assert.equal(
   [...adminTemplate.matchAll(/data-podcast-show-name/g)].length,
-  2,
-  'Each show context must support a non-interactive single-show label'
+  1,
+  'The canonical show context must keep the current show prominent'
+);
+assert.match(
+  adminTemplate,
+  /data-podcast-show-context[\s\S]+data-podcast-show-switcher[\s\S]+data-podcast-show-select/,
+  'The canonical show context must add a selector when multiple shows exist'
+);
+assert.match(
+  adminTemplate,
+  /data-podcast-episode-form-heading[\s\S]+data-podcast-current-show-name/,
+  'The episode form must state which show owns the episode'
 );
 assert.match(
   adminTemplate,
@@ -589,16 +599,16 @@ assert.match(
 );
 assert.equal(englishRuntime.siteProjectionTargetLabel, 'Target');
 assert.equal(spanishRuntime.siteProjectionTargetLabel, 'Destino');
-assert.equal(englishI18n.podcast.admin.tabs.settings, 'Settings');
-assert.equal(spanishI18n.podcast.admin.tabs.settings, 'Configuración');
+assert.equal(englishI18n.podcast.admin.tabs.settings, 'Shows');
+assert.equal(spanishI18n.podcast.admin.tabs.settings, 'Programas');
 assert.match(
   adminScript,
   /const showContext = mountPodcastShowContext\(root\);[\s\S]+const showSelects = showContext\.selects;[\s\S]+showContext\.setShows\(shows, selectedShowId\)/
 );
 assert.match(
   showContextScript,
-  /singleShow = normalized\.length === 1[\s\S]+select\.hidden = Boolean\(singleShow\)[\s\S]+name\.hidden = !singleShow/,
-  'single-show mode must remove selector chrome without removing its state'
+  /singleShow = normalized\.length === 1[\s\S]+select\.hidden = Boolean\(singleShow\)[\s\S]+switcher\.hidden = Boolean\(singleShow\)[\s\S]+name\.textContent = selectedShow/,
+  'The show workspace must keep the current show visible and add selector chrome only for multiple shows'
 );
 assert.doesNotMatch(
   showContextScript,
@@ -1176,11 +1186,11 @@ assert.match(adminTemplate, /data-podcast-subscribers-more/);
 assert.match(adminTemplate, /workbench\.distribution\.tagline/);
 assert.equal(
   englishWorkbench.distribution.tagline,
-  'With just one click, we send your episodes live to 10+ platforms like Spotify, Apple and other major platforms.'
+  'Set up directories once for the current show, then track each scheduled or published episode.'
 );
 assert.match(
   spanishWorkbench.distribution.tagline,
-  /más de 10 plataformas/
+  /Configura los directorios una vez/
 );
 assert.match(
   adminTemplate,
@@ -1189,19 +1199,19 @@ assert.match(
 );
 assert.match(
   englishWorkbench.distribution.guidanceIntro,
-  /one-time provider setup and evidence requirements/
+  /operational details/
 );
 assert.match(
   spanishWorkbench.distribution.guidanceIntro,
-  /configuración inicial y los requisitos de evidencia/
+  /detalles operativos/
 );
 assert.match(
   englishWorkbench.distribution.canonicalFlow,
-  /Most platforms require one-time owner setup/
+  /Podcast directories then read the RSS feed/
 );
 assert.match(
   spanishWorkbench.distribution.canonicalFlow,
-  /La mayoría de las plataformas requiere una configuración inicial/
+  /cada directorio consulta el feed RSS/
 );
 assert.equal(
   englishRuntime.openProviderInfo,
@@ -1216,7 +1226,11 @@ assert.doesNotMatch(adminTemplate, /Publicación simplificada/);
 assert.match(adminTemplate, /data-podcast-distribution-filter/);
 assert.match(
   englishWorkbench.distribution.filterHelp,
-  /exact RSS, News, YouTube, and per-directory states/
+  /scheduled or published episode/
+);
+assert.match(
+  englishWorkbench.distribution.noReleaseEpisodes,
+  /No scheduled or published episodes yet/
 );
 assert.match(adminTemplate, /data-podcast-workspace-group="production"/);
 assert.match(adminTemplate, /data-podcast-audio-qc/);
@@ -1484,7 +1498,7 @@ assert.match(
 );
 assert.match(
   adminTemplate,
-  /workbench\.episodes\.copyGroup[\s\S]+workbench\.episodes\.releaseGroup[\s\S]+workbench\.sponsors\.identityGroup[\s\S]+workbench\.sponsors\.commercialGroup[\s\S]+workbench\.overview\.identityGroup[\s\S]+workbench\.overview\.releaseDefaultsGroup/,
+  /workbench\.overview\.identityGroup[\s\S]+workbench\.overview\.releaseDefaultsGroup[\s\S]+workbench\.episodes\.copyGroup[\s\S]+workbench\.episodes\.releaseGroup[\s\S]+workbench\.sponsors\.identityGroup[\s\S]+workbench\.sponsors\.commercialGroup/,
   'Episode, sponsor, and show forms must expose clear semantic field groups'
 );
 assert.match(
@@ -1519,8 +1533,8 @@ assert.match(
 );
 assert.match(
   adminStyles,
-  /\.podcast-admin__show-context \{[\s\S]+min-width: 0;[\s\S]+\.podcast-admin__show-context select \{[\s\S]+width: 100%;[\s\S]+@media \(max-width: 760px\)[\s\S]+\.podcast-admin__panel-heading > \.podcast-admin__show-context[\s\S]+width: 100%;/,
-  'show context must remain bounded and fill the available mobile heading width'
+  /\.podcast-admin__show-workspace \{[\s\S]+justify-content: space-between;[\s\S]+\.podcast-admin__show-switcher select \{[\s\S]+width: 100%;[\s\S]+@media \(max-width: 760px\)[\s\S]+\.podcast-admin__show-switcher \{[\s\S]+width: 100%;/,
+  'The show workspace must remain prominent and fill the available mobile width'
 );
 assert.match(
   adminStyles,
@@ -1644,13 +1658,13 @@ assert.match(adminScript, /function directoryObservationForm/);
 assert.match(adminScript, /function updateDirectoryObservation/);
 assert.match(adminScript, /data-podcast-directory-observation-form/);
 assert.match(englishRuntimeText, /Save manual evidence/);
-assert.match(englishRuntimeText, /Automatic listing checks active/);
+assert.match(englishRuntimeText, /keep checking for the public listing/);
 assert.match(
   JSON.stringify(spanishRuntime),
-  /Verificaciones automáticas activas/
+  /Seguiremos buscando el listado público/
 );
 assert.match(adminScript, /function canManageSelectedShowDistribution/);
-assert.match(englishRuntimeText, /RSS-following directory/);
+assert.match(englishRuntimeText, /RSS feed directory/);
 assert.match(adminScript, /data-podcast-distribution-form/);
 assert.match(adminScript, /ownerSetupStatus/);
 assert.match(adminScript, /listingUrl/);
@@ -1796,9 +1810,17 @@ assert.match(
   adminScript,
   /editEpisode: episodeEditor\.edit/
 );
-assert.match(
-  publishWorkflowScript,
-  /const episode = selectedEpisode\(\);[\s\S]+onNavigate\?\.\(progress\.getActive\(\), episode\)/
+const setPublishWorkflowEpisodes = publishWorkflowScript.match(
+  /setEpisodes\(nextEpisodes\) \{([\s\S]*?)\n    \},\n    refresh,/
+);
+assert.ok(
+  setPublishWorkflowEpisodes,
+  'The publish workflow must expose its episode collection updater'
+);
+assert.doesNotMatch(
+  setPublishWorkflowEpisodes[1],
+  /onNavigate/,
+  'Loading another show must not force the top-level workspace to Episodes'
 );
 assert.match(publishSectionsScript, /is-workflow-hidden/);
 assert.match(publishSectionsScript, /Every production section needs a publish step/);

@@ -1,14 +1,10 @@
-        <section id="podcast-panel-settings" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-settings" hidden>
+        <section id="podcast-panel-settings" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-settings">
           <div class="podcast-admin__panel-heading">
             <div>
-              <h2>{{ workbench.overview.settings }}</h2>
-              <p>{{ workbench.overview.settingsIntro }}</p>
+              <h2>{{ workbench.overview.shows }}</h2>
+              <p>{{ workbench.overview.intro }}</p>
             </div>
             <div class="podcast-admin__heading-actions">
-              <div class="podcast-admin__show-context" data-podcast-show-context hidden>
-                <span class="podcast-admin__pill" data-podcast-show-name hidden></span>
-                <select name="showId" data-podcast-show-select aria-label="{{ workbench.common.show }}"></select>
-              </div>
               <button
                 id="podcast-show-create-toggle"
                 class="btn btn-danger"

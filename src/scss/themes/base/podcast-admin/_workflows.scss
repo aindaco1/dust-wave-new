@@ -443,8 +443,15 @@
   gap: var(--dw-admin-space-md);
 }
 
-.podcast-admin__distribution-summary {
+.podcast-admin__distribution-progress {
+  display: grid;
+  gap: var(--dw-admin-space-sm);
   margin: var(--dw-admin-space-xl) 0;
+}
+
+.podcast-admin__distribution-progress > :is(h3, p),
+.podcast-admin__distribution-summary {
+  margin: 0;
 }
 
 .podcast-admin__distribution-claim {

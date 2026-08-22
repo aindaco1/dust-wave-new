@@ -964,7 +964,7 @@ async function captureTrace({
   if (adminTab) {
     await cdp.send("Page.addScriptToEvaluateOnNewDocument", {
       source:
-        `sessionStorage.setItem("dustwave-podcast-admin-tab", ${
+        `sessionStorage.setItem("dustwave-podcast-admin-tab-v2", ${
           JSON.stringify(adminTab === "all" ? "episodes" : adminTab)
         });`
     });

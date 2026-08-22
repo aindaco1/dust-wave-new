@@ -19,6 +19,7 @@ const publicClipMode = ["ready", "empty", "missing"].includes(
 )
   ? process.env.PODCAST_ADMIN_MOCK_PUBLIC_CLIPS
   : "ready";
+const multiShow = process.env.PODCAST_ADMIN_MOCK_MULTI_SHOW === "true";
 const workflowTarget = new Set([
   "default",
   "attach_media",
@@ -62,6 +63,20 @@ const show = {
   canonicalUrl: "https://dustwave.xyz/podcasts/opera-en-la-selva/",
   feedUrl: "https://feeds.dustwave.xyz/opera-en-la-selva/rss.xml",
   podcastGuid: "d21642df-1816-55c8-b308-6209066e9ef6"
+};
+
+const secondShow = {
+  ...show,
+  id: "show_second_qa",
+  slug: "second-show-qa",
+  title: "Second Show — QA",
+  description: "Un segundo programa para verificar la administración.",
+  descriptionEn: "A second show for verifying the admin experience.",
+  status: "coming_soon",
+  episodeCount: 0,
+  canonicalUrl: "https://dustwave.xyz/podcasts/second-show-qa/",
+  feedUrl: "https://feeds.dustwave.xyz/second-show-qa/rss.xml",
+  podcastGuid: "08e74cb3-5567-5313-8d42-37a661011205"
 };
 
 const launchLabPassed = new Set([
@@ -875,7 +890,13 @@ function boundedInteger(value, {
 
 function responseFor(request) {
   const url = new URL(request.url, `http://${request.headers.host}`);
-  const path = url.pathname;
+  const requestedPath = url.pathname;
+  const path = multiShow
+    ? requestedPath.replace(
+        `/v1/admin/shows/${secondShow.id}`,
+        `/v1/admin/shows/${show.id}`
+      )
+    : requestedPath;
   const publicClipPath =
     `/v1/shows/${show.slug}/episodes/episodio-de-prueba/clips`;
   if (request.method === "GET" && path === publicClipPath) {
@@ -996,7 +1017,7 @@ function responseFor(request) {
     });
   }
   if (request.method === "GET" && path === "/v1/admin/shows") {
-    return json({ shows: [show] });
+    return json({ shows: multiShow ? [show, secondShow] : [show] });
   }
   if (
     request.method === "PATCH"
@@ -1136,12 +1157,14 @@ function responseFor(request) {
   if (
     request.method === "GET"
     && path === "/v1/admin/distribution"
-    && url.searchParams.get("showId") === show.id
+    && [show.id, secondShow.id].includes(url.searchParams.get("showId"))
   ) {
+    const requestedShow = url.searchParams.get("showId") === secondShow.id
+      ? secondShow
+      : show;
     return json({
-      showId: show.id,
-      feedUrl:
-        "https://feeds.dustwave.xyz/opera-en-la-selva/rss.xml",
+      showId: requestedShow.id,
+      feedUrl: requestedShow.feedUrl,
       semantics: "rss-follow-after-one-time-owner-setup",
       summary: {
         total: distributionDestinations.length,
@@ -1881,7 +1904,11 @@ function responseFor(request) {
     request.method === "GET"
     && path === `/v1/admin/shows/${show.id}/episodes`
   ) {
-    return json({ episodes: [episode] });
+    return json({
+      episodes: requestedPath === `/v1/admin/shows/${secondShow.id}/episodes`
+        ? []
+        : [episode]
+    });
   }
   if (
     request.method === "PATCH"
@@ -2803,6 +2830,7 @@ server.listen(port, host, () => {
   process.stdout.write(
     `Podcast admin mock API listening on http://${host}:${port}`
       + ` (${transcriptCueCount} transcript cues, `
-      + `${publicClipMode} public clips, ${workflowTarget} workflow target)\n`
+      + `${publicClipMode} public clips, ${workflowTarget} workflow target, `
+      + `${multiShow ? "two shows" : "one show"})\n`
   );
 });

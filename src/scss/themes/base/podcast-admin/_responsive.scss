@@ -57,6 +57,7 @@
 
 @media (max-width: 760px) {
   .podcast-admin__header,
+  .podcast-admin__show-workspace,
   .podcast-admin__panel-heading,
   .podcast-admin__episode,
   .podcast-admin__campaign {
@@ -74,7 +75,6 @@
 
   .podcast-admin__header > .btn,
   .podcast-admin__panel-heading > :is(.btn, select),
-  .podcast-admin__panel-heading > .podcast-admin__show-context,
   .podcast-admin__panel-heading > .podcast-admin__billing-actions,
   .podcast-admin__panel-heading > .podcast-admin__heading-actions {
     max-width: none;
@@ -86,8 +86,9 @@
     display: grid;
   }
 
-  .podcast-admin__show-context .podcast-admin__pill {
-    text-align: left;
+  .podcast-admin__show-switcher {
+    max-width: none;
+    width: 100%;
   }
 
   .podcast-admin__transcript-actions .btn,
