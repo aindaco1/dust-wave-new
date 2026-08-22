@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import { readNunjucksSource } from "../scripts/lib/read-nunjucks-source.mjs";
 
 const localePaths = {
   en: new URL("../src/_data/i18n/en.json", import.meta.url),
@@ -51,9 +52,8 @@ test("processor status copy describes automatic work in both locales", async () 
 });
 
 test("alignment recovery stays secondary to automatic processing", async () => {
-  const template = await readFile(
-    new URL("../src/admin/podcasts/index.njk", import.meta.url),
-    "utf8"
+  const template = await readNunjucksSource(
+    new URL("../src/admin/podcasts/index.njk", import.meta.url)
   );
   const alignment = template.match(
     /<section class="podcast-admin__alignment"[\s\S]*?<section class="podcast-admin__benchmark"/

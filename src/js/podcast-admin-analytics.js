@@ -2,6 +2,9 @@ import {
   requestCredentialedBlob,
   triggerBlobDownload
 } from "./dust-wave-admin-shell/credentialed-download.js?v=0.10.2";
+import {
+  renderContextualAnalyticsEpisodes
+} from "./podcast-admin-contextual-editing.js";
 
 let datatypeChartModule;
 
@@ -12,7 +15,8 @@ export function mountPodcastAnalytics({
   getShow,
   text,
   setStatus,
-  friendlyError
+  friendlyError,
+  canEditEpisodes = () => false
 }) {
   const range = root.querySelector("[data-podcast-analytics-range]");
   const refresh = root.querySelector("[data-podcast-analytics-refresh]");
@@ -234,24 +238,10 @@ export function mountPodcastAnalytics({
   }
 
   function renderEpisodes(rows) {
-    if (!episodes) return;
-    if (!rows.length) {
-      episodes.replaceChildren(empty(text("analyticsNoEpisodes")));
-      return;
-    }
-    episodes.replaceChildren(table(
-      [
-        text("analyticsEpisode"),
-        text("analyticsQualifiedShort"),
-        text("analyticsEngagedShort")
-      ],
-      rows.map((row) => [
-        row.title,
-        formatInteger(row.qualifiedDownloads),
-        formatInteger(row.engagedPlays)
-      ]),
-      text("analyticsTopEpisodes")
-    ));
+    renderContextualAnalyticsEpisodes({
+      target: episodes, rows, text, formatInteger,
+      canEdit: canEditEpisodes, table, empty
+    });
   }
 
   function renderCompletion(summary, rows) {
@@ -540,7 +530,8 @@ function table(headings, rows, captionText) {
     values.forEach((value, index) => {
       const cell = document.createElement(index === 0 ? "th" : "td");
       if (index === 0) cell.scope = "row";
-      cell.textContent = String(value);
+      if (value?.nodeType) cell.append(value);
+      else cell.textContent = String(value);
       row.append(cell);
     });
     body.append(row);

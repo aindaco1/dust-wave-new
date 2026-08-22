@@ -3,6 +3,10 @@ import {
   normalizeChapterDraftCollection,
   normalizeChapterDraftResponse
 } from "./podcast-admin-chapter-draft-contract.js";
+import {
+  createEditorialDraftLifecycle,
+  preferredEditorialDraft
+} from "./podcast-admin-editorial-draft-lifecycle.js";
 
 export {
   normalizeChapterDraftCollection,
@@ -51,11 +55,12 @@ export function mountChapterDraftAssistant({
 
   let episodeId = "";
   let editable = false;
-  let generating = false;
-  let loading = false;
-  let generationRevision = 0;
   let result = null;
   let applied = false;
+  const requests = createEditorialDraftLifecycle({
+    getContextKey: () => episodeId,
+    onBusyChange: refresh
+  });
 
   generate.addEventListener("click", generateDraft);
   apply.addEventListener("click", applyDraft);
@@ -65,6 +70,8 @@ export function mountChapterDraftAssistant({
 
   function refresh() {
     root.hidden = !episodeId || !editable;
+    const generating = requests.isBusy("generating");
+    const loading = requests.isBusy("loading");
     generate.disabled = generating || loading || !episodeId || !editable;
     sourceLanguage.disabled = generating || loading || !editable;
     outputLanguage.disabled = generating || loading || !editable;
@@ -83,15 +90,13 @@ export function mountChapterDraftAssistant({
   }
 
   async function generateDraft() {
-    if (generating || !episodeId || !editable) return;
-    generating = true;
-    const requestRevision = ++generationRevision;
-    const requestedEpisodeId = episodeId;
-    resetReview();
-    setStatus(status, text("chapterDraftGenerating"));
-    refresh();
-    try {
-      const payload = await client.request(
+    if (requests.isBusy("generating") || !episodeId || !editable) return;
+    await requests.run("generating", {
+      before() {
+        resetReview();
+        setStatus(status, text("chapterDraftGenerating"));
+      },
+      request: (requestedEpisodeId) => client.request(
         `/v1/admin/episodes/${encodeURIComponent(
           requestedEpisodeId
         )}/chapters/draft`,
@@ -102,66 +107,46 @@ export function mountChapterDraftAssistant({
             outputLanguage: outputLanguage.value
           }
         }
-      );
-      if (
-        requestRevision !== generationRevision
-        || requestedEpisodeId !== episodeId
-      ) return;
-      renderResult(normalizeChapterDraftResponse(payload));
-    } catch (error) {
-      if (
-        requestRevision === generationRevision
-        && requestedEpisodeId === episodeId
-      ) {
+      ),
+      onSuccess(payload) {
+        renderResult(normalizeChapterDraftResponse(payload));
+      },
+      onError(error) {
         setStatus(status, friendlyError(error), true);
       }
-    } finally {
-      if (requestRevision === generationRevision) generating = false;
-      refresh();
-    }
+    });
   }
 
   async function loadSavedDraft() {
     if (!episodeId) return;
-    const requestRevision = ++generationRevision;
-    const requestedEpisodeId = episodeId;
-    loading = true;
-    resetReview();
-    setStatus(status, text("chapterDraftLoadingAutomatic"));
-    refresh();
-    try {
-      const payload = await client.request(
+    await requests.run("loading", {
+      before() {
+        resetReview();
+        setStatus(status, text("chapterDraftLoadingAutomatic"));
+      },
+      request: (requestedEpisodeId) => client.request(
         `/v1/admin/episodes/${encodeURIComponent(
           requestedEpisodeId
         )}/chapters/drafts`
-      );
-      if (
-        requestRevision !== generationRevision
-        || requestedEpisodeId !== episodeId
-      ) return;
-      const drafts = normalizeChapterDraftCollection(payload);
-      const preferred = drafts.find((candidate) =>
-        candidate.source.language === sourceLanguage.value
-        && candidate.outputLanguage === outputLanguage.value
-      ) || drafts.find((candidate) =>
-        candidate.outputLanguage === outputLanguage.value
-      ) || drafts[0];
-      if (preferred) {
-        sourceLanguage.value = preferred.source.language;
-        outputLanguage.value = preferred.outputLanguage;
-        renderResult(preferred);
-      } else {
-        setStatus(status, text("chapterDraftAutomaticPending"));
+      ),
+      onSuccess(payload) {
+        const preferred = preferredEditorialDraft(
+          normalizeChapterDraftCollection(payload),
+          sourceLanguage.value,
+          outputLanguage.value
+        );
+        if (preferred) {
+          sourceLanguage.value = preferred.source.language;
+          outputLanguage.value = preferred.outputLanguage;
+          renderResult(preferred);
+        } else {
+          setStatus(status, text("chapterDraftAutomaticPending"));
+        }
+      },
+      onError(error) {
+        setStatus(status, friendlyError(error), true);
       }
-    } catch (error) {
-      if (
-        requestRevision === generationRevision
-        && requestedEpisodeId === episodeId
-      ) setStatus(status, friendlyError(error), true);
-    } finally {
-      if (requestRevision === generationRevision) loading = false;
-      refresh();
-    }
+    });
   }
 
   function renderResult(nextResult) {
@@ -209,9 +194,7 @@ export function mountChapterDraftAssistant({
       const normalizedEpisodeId = String(nextEpisodeId || "");
       if (normalizedEpisodeId !== episodeId) {
         episodeId = normalizedEpisodeId;
-        generationRevision += 1;
-        generating = false;
-        loading = false;
+        requests.invalidate();
         resetReview();
       }
       const language = CHAPTER_DRAFT_LANGUAGES.has(nextSourceLanguage)

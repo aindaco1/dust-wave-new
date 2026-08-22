@@ -1,0 +1,295 @@
+        <section id="podcast-panel-marketing" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-marketing" hidden>
+          <div class="podcast-admin__panel-heading">
+            <div>
+              <h2>{{ workbench.marketing.clipLibraryHeading }}</h2>
+              <p>{{ workbench.marketing.clipLibraryIntro }}</p>
+            </div>
+            <p class="podcast-admin__pill">{{ workbench.marketing.privateMedia }}</p>
+          </div>
+          <form class="podcast-admin__form" data-podcast-clip-library-filters>
+            <div class="podcast-admin__field-grid">
+              <label>{{ workbench.common.episode }}
+                <select name="episodeId">
+                  <option value="">{{ workbench.marketing.allEpisodes }}</option>
+                </select>
+              </label>
+              <label>{{ workbench.marketing.format }}
+                <select name="aspectRatio">
+                  <option value="">{{ workbench.marketing.allFormats }}</option>
+                  <option value="9:16">{{ workbench.marketing.vertical }}</option>
+                  <option value="1:1">{{ workbench.marketing.square }}</option>
+                  <option value="16:9">{{ workbench.marketing.landscape }}</option>
+                </select>
+              </label>
+              <label>{{ workbench.marketing.renderState }}
+                <select name="renderStatus">
+                  <option value="ready">{{ workbench.marketing.ready }}</option>
+                  <option value="queued">{{ workbench.marketing.queued }}</option>
+                  <option value="rendering">{{ workbench.marketing.rendering }}</option>
+                  <option value="failed">{{ workbench.marketing.failed }}</option>
+                  <option value="all">{{ workbench.marketing.allStates }}</option>
+                </select>
+              </label>
+            </div>
+            <button class="btn btn-outline-light" type="submit">{{ workbench.marketing.refreshLibrary }}</button>
+            <p class="podcast-admin__status" data-podcast-clip-library-status role="status" aria-live="polite"></p>
+          </form>
+          <div class="podcast-admin__clip-list" data-podcast-clip-library></div>
+          <form class="podcast-admin__form" data-podcast-clip-publication-form hidden>
+            <div class="podcast-admin__panel-heading">
+              <div>
+                <h3>{{ workbench.marketing.publicClipHeading }}</h3>
+                <p data-podcast-clip-publication-meta></p>
+              </div>
+              <p class="podcast-admin__pill">{{ workbench.marketing.stagingPreview }}</p>
+            </div>
+            <div class="podcast-admin__callout">
+              <p>{{ workbench.marketing.publicClipCallout }}</p>
+            </div>
+            <div class="podcast-admin__field-grid">
+              <label>{{ workbench.marketing.publicSlug }}
+                <input
+                  name="publicSlug"
+                  maxlength="100"
+                  pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
+                  autocomplete="off"
+                  spellcheck="false"
+                  required>
+              </label>
+              <label>{{ workbench.marketing.clipPublicTitle }}
+                <input name="title" maxlength="160" autocomplete="off" required>
+              </label>
+              <label class="podcast-admin__field-wide">{{ workbench.marketing.publicDescription }}
+                <textarea name="description" maxlength="1000" rows="4"></textarea>
+              </label>
+            </div>
+            <div class="podcast-admin__clip-actions">
+              <button class="btn btn-outline-light" type="submit" data-podcast-clip-publication-save>{{ workbench.marketing.preparePublicClip }}</button>
+              <button class="btn btn-danger" type="button" data-podcast-clip-publication-approve hidden>{{ workbench.marketing.approvePublicClip }}</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-clip-publication-withdraw hidden>{{ workbench.marketing.withdrawPublicClip }}</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-clip-publication-close>{{ workbench.marketing.close }}</button>
+            </div>
+            <p class="podcast-admin__status" data-podcast-clip-publication-status role="status" aria-live="polite"></p>
+          </form>
+          <form class="podcast-admin__form" data-podcast-clip-youtube-form hidden>
+            <div class="podcast-admin__panel-heading">
+              <div>
+                <h3>{{ workbench.marketing.youtubeHeading }}</h3>
+                <p data-podcast-clip-youtube-meta></p>
+              </div>
+              <p class="podcast-admin__pill">{{ workbench.marketing.neverPublic }}</p>
+            </div>
+            <div class="podcast-admin__callout">
+              <p>{{ workbench.marketing.youtubeCallout }}</p>
+            </div>
+            <div class="podcast-admin__field-grid">
+              <label>{{ workbench.marketing.videoTitle }}
+                <input name="title" maxlength="100" autocomplete="off" required>
+              </label>
+              <label>{{ workbench.marketing.visibility }}
+                <select name="privacyStatus">
+                  <option value="unlisted">{{ workbench.marketing.unlisted }}</option>
+                  <option value="private">{{ workbench.marketing.private }}</option>
+                </select>
+              </label>
+              <label class="podcast-admin__field-wide">{{ workbench.marketing.description }}
+                <textarea name="description" maxlength="5000" rows="5"></textarea>
+              </label>
+              <label class="podcast-admin__field-wide">{{ workbench.marketing.confirmChannel }}
+                <input name="confirmChannelUrl" type="url" inputmode="url" required>
+              </label>
+            </div>
+            <div class="podcast-admin__clip-actions">
+              <button class="btn btn-outline-light" type="submit" data-podcast-clip-youtube-save>{{ workbench.marketing.prepareDraft }}</button>
+              <button class="btn btn-danger" type="button" data-podcast-clip-youtube-approve hidden>{{ workbench.marketing.approveTest }}</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-clip-youtube-close>{{ workbench.marketing.close }}</button>
+            </div>
+            <p class="podcast-admin__status" data-podcast-clip-youtube-status role="status" aria-live="polite"></p>
+          </form>
+          <form class="podcast-admin__form" data-podcast-marketing-link-form>
+            <div class="podcast-admin__panel-heading">
+              <div>
+                <h3>{{ workbench.marketing.shareKitHeading }}</h3>
+                <p>{{ workbench.marketing.shareKitIntro }}</p>
+              </div>
+              <p class="podcast-admin__pill">{{ workbench.marketing.savedPerShow }}</p>
+            </div>
+            <div class="podcast-admin__field-grid podcast-admin__field-grid--three">
+              <label>{{ workbench.marketing.linkLabel }}
+                <input name="label" maxlength="120" required placeholder="{{ workbench.marketing.linkLabelPlaceholder }}">
+              </label>
+              <label>{{ workbench.marketing.source }}
+                <input name="source" maxlength="160" value="podcast">
+              </label>
+              <label>{{ workbench.marketing.medium }}
+                <input name="medium" maxlength="160" value="owned">
+              </label>
+              <label>{{ workbench.marketing.campaign }}
+                <input name="campaign" maxlength="160">
+              </label>
+              <label>{{ workbench.marketing.content }}
+                <input name="content" maxlength="160" placeholder="launch-card">
+              </label>
+              <label>{{ workbench.marketing.referral }}
+                <input name="ref" maxlength="64" placeholder="partner-name">
+              </label>
+              <label class="podcast-admin__field-wide">{{ workbench.marketing.taggedUrl }}
+                <input name="taggedUrl" type="url" readonly>
+              </label>
+            </div>
+            <div class="podcast-admin__marketing-preview">
+              <div data-podcast-marketing-qr aria-live="polite"></div>
+              <div>
+                <p class="podcast-admin__pill">{{ workbench.marketing.sharePreview }}</p>
+                <h4 data-podcast-marketing-preview-title></h4>
+                <p data-podcast-marketing-preview-url></p>
+              </div>
+            </div>
+            <div class="podcast-admin__clip-actions">
+              <button class="btn btn-danger" type="submit" data-podcast-marketing-save>{{ workbench.marketing.saveLink }}</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-marketing-cancel hidden>{{ workbench.marketing.cancelEdit }}</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-marketing-copy>{{ workbench.marketing.copyLink }}</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-marketing-share>{{ workbench.marketing.share }}</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-marketing-qr-png>{{ workbench.marketing.downloadQrPng }}</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-marketing-qr-svg>{{ workbench.marketing.downloadQrSvg }}</button>
+            </div>
+            <p class="podcast-admin__status" data-podcast-marketing-link-status role="status" aria-live="polite"></p>
+            <section class="podcast-admin__marketing-saved" aria-labelledby="podcast-marketing-saved-heading">
+              <div class="podcast-admin__panel-heading">
+                <div>
+                  <h4 id="podcast-marketing-saved-heading">{{ workbench.marketing.savedLinksHeading }}</h4>
+                  <p>{{ workbench.marketing.savedLinksIntro }}</p>
+                </div>
+                <button class="btn btn-outline-light" type="button" data-podcast-marketing-links-refresh>{{ workbench.marketing.refreshSavedLinks }}</button>
+              </div>
+              <p class="podcast-admin__status" data-podcast-marketing-links-status role="status" aria-live="polite"></p>
+              <div class="podcast-admin__card-grid" data-podcast-marketing-links></div>
+              <button class="btn btn-outline-light podcast-admin__load-more" type="button" data-podcast-marketing-links-more hidden>{{ workbench.common.loadMore }}</button>
+            </section>
+          </form>
+
+          <form class="podcast-admin__form" data-podcast-embed-form>
+            <div class="podcast-admin__panel-heading">
+              <div>
+                <h3>{{ workbench.marketing.playerHeading }}</h3>
+                <p>{{ workbench.marketing.playerIntro }}</p>
+              </div>
+              <p class="podcast-admin__pill">{{ workbench.marketing.noServerWrites }}</p>
+            </div>
+            <div class="podcast-admin__callout">
+              <p>{{ workbench.marketing.playerCallout }}</p>
+            </div>
+            <div class="podcast-admin__field-grid">
+              <label>{{ workbench.common.episode }}
+                <select name="episodeId" data-podcast-embed-episode>
+                  <option value="">{{ workbench.marketing.noPublicEpisodes }}</option>
+                </select>
+              </label>
+              <label class="podcast-admin__field-wide">{{ workbench.marketing.embedUrl }}
+                <input name="embedUrl" type="url" readonly aria-readonly="true">
+              </label>
+              <label class="podcast-admin__field-wide">{{ workbench.marketing.embedCode }}
+                <textarea
+                  name="embedCode"
+                  rows="6"
+                  readonly
+                  spellcheck="false"
+                  aria-readonly="true"
+                  aria-describedby="podcast-embed-help podcast-embed-status"></textarea>
+              </label>
+            </div>
+            <p id="podcast-embed-help" class="podcast-admin__help">{{ workbench.marketing.embedHelp }}</p>
+            <div class="podcast-admin__clip-actions">
+              <button class="btn btn-outline-light" type="button" data-podcast-embed-copy disabled>{{ workbench.marketing.copyEmbed }}</button>
+              <a class="btn btn-outline-light" href="#" target="_blank" rel="noopener noreferrer" data-podcast-embed-open hidden>{{ workbench.marketing.openPlayer }}</a>
+            </div>
+            <div class="podcast-admin__embed-preview" data-podcast-embed-preview hidden>
+              <p class="podcast-admin__field-label">{{ workbench.marketing.livePreview }}</p>
+            </div>
+            <p id="podcast-embed-status" class="podcast-admin__status" data-podcast-embed-status role="status" aria-live="polite"></p>
+          </form>
+
+          <form class="podcast-admin__form" data-podcast-share-card-form>
+            <div class="podcast-admin__panel-heading">
+              <div>
+                <h3>{{ workbench.marketing.cardHeading }}</h3>
+                <p>{{ workbench.marketing.cardIntro }}</p>
+              </div>
+              <p class="podcast-admin__pill">{{ workbench.marketing.buildTimeAsset }}</p>
+            </div>
+            <div class="podcast-admin__callout">
+              <p>{{ workbench.marketing.cardCallout }}</p>
+            </div>
+            <div class="podcast-admin__field-grid">
+              <label>{{ workbench.common.episode }}
+                <select name="episodeId" data-podcast-share-card-episode>
+                  <option value="">{{ workbench.marketing.noPublicEpisodes }}</option>
+                </select>
+              </label>
+              <label class="podcast-admin__field-wide">{{ workbench.marketing.socialCardUrl }}
+                <input name="shareCardUrl" type="url" readonly aria-readonly="true">
+              </label>
+            </div>
+            <div class="podcast-admin__share-card-preview" data-podcast-share-card-preview hidden></div>
+            <div class="podcast-admin__clip-actions">
+              <button class="btn btn-outline-light" type="button" data-podcast-share-card-copy disabled>{{ workbench.marketing.copyImageUrl }}</button>
+              <a class="btn btn-outline-light" href="#" download data-podcast-share-card-download hidden>{{ workbench.marketing.downloadPng }}</a>
+              <a class="btn btn-outline-light" href="#" target="_blank" rel="noopener noreferrer" data-podcast-share-card-open hidden>{{ workbench.marketing.openImage }}</a>
+            </div>
+            <p class="podcast-admin__status" data-podcast-share-card-status role="status" aria-live="polite"></p>
+          </form>
+
+          <form class="podcast-admin__form" data-podcast-announcement-form>
+            <div class="podcast-admin__panel-heading">
+              <div>
+                <h3>{{ workbench.marketing.announcementHeading }}</h3>
+                <p>{{ workbench.marketing.announcementIntro }}</p>
+              </div>
+              <p class="podcast-admin__pill">{{ workbench.marketing.reviewAndApprove }}</p>
+            </div>
+            <div class="podcast-admin__callout">
+              <p>{{ workbench.marketing.announcementCallout }}</p>
+            </div>
+            <div class="podcast-admin__field-grid">
+              <label>{{ workbench.marketing.language }}
+                <select name="language">
+                  <option value="es">{{ workbench.common.spanish }}</option>
+                  <option value="en">{{ workbench.common.english }}</option>
+                </select>
+              </label>
+              <label>{{ workbench.marketing.subject }}
+                <input name="subject" maxlength="160" required>
+              </label>
+              <label class="podcast-admin__field-wide">{{ workbench.marketing.heading }}
+                <input name="heading" maxlength="160">
+              </label>
+              <div class="podcast-admin__field podcast-admin__field-wide">
+                <span class="podcast-admin__field-label">{{ workbench.marketing.announcementContent }}</span>
+                <div data-podcast-announcement-editor></div>
+              </div>
+              <label>{{ workbench.marketing.ctaLabel }}
+                <input name="ctaLabel" maxlength="80">
+              </label>
+              <label>{{ workbench.marketing.ctaUrl }}
+                <input name="ctaUrl" type="url" maxlength="2048">
+              </label>
+            </div>
+            <div class="podcast-admin__clip-actions">
+              <button class="btn btn-outline-light" type="submit">{{ workbench.marketing.audienceDryRun }}</button>
+              <button class="btn btn-danger" type="button" data-podcast-announcement-approve hidden>{{ workbench.marketing.approveAndQueue }}</button>
+            </div>
+            <p class="podcast-admin__status" data-podcast-announcement-status role="status" aria-live="polite"></p>
+            <div class="podcast-admin__announcement-review" data-podcast-announcement-review aria-live="polite"></div>
+          </form>
+          <section class="podcast-admin__announcement-history" aria-labelledby="podcast-announcement-history-heading">
+            <div class="podcast-admin__panel-heading">
+              <div>
+                <h3 id="podcast-announcement-history-heading">{{ workbench.marketing.historyHeading }}</h3>
+                <p>{{ workbench.marketing.historyIntro }}</p>
+              </div>
+              <button class="btn btn-outline-light" type="button" data-podcast-announcement-history-refresh>{{ workbench.marketing.refreshHistory }}</button>
+            </div>
+            <p class="podcast-admin__status" data-podcast-announcement-history-status role="status" aria-live="polite"></p>
+            <div class="podcast-admin__card-grid" data-podcast-announcement-history></div>
+          </section>
+        </section>

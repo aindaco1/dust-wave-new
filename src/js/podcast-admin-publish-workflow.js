@@ -5,6 +5,9 @@ import {
   workflowTargetForNode
 } from "./podcast-admin-publish-workflow-core.js";
 import {
+  episodeWorkflowSummary
+} from "./podcast-admin-publish-workflow-summary.js";
+import {
   mountWorkflowPriority
 } from "./podcast-admin-workflow-priority.js?v=0.2.0";
 import { mountEpisodeAutopilot } from "./podcast-admin-autopilot.js";
@@ -163,20 +166,8 @@ export function mountEpisodePublishWorkflow({
     publishButton.hidden = nextStep !== "publish";
     actions.hidden = publishButton.hidden;
     publishButton.disabled = !readiness;
-    if (!readiness) {
-      summary.textContent = text("workflowLoading");
-    } else if (readiness.candidateGate?.ready) {
-      summary.textContent = text("workflowReadySummary");
-    } else if (
-      derived.waitingForAutomation
-      && derived.actionableBlockers.length === 0
-    ) {
-      summary.textContent = text("workflowProcessingSummary");
-    } else {
-      summary.textContent = text("workflowNeedsActionSummary", {
-        count: derived.actionableBlockers.length
-      });
-    }
+    const summaryCopy = episodeWorkflowSummary(derived, readiness);
+    summary.textContent = text(summaryCopy.key, summaryCopy.values);
     workflowPriority.render({
       nodes: derived.actionableBlockers
     });

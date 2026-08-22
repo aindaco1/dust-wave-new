@@ -1,0 +1,129 @@
+        <section id="podcast-panel-audience" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-audience" hidden>
+          <div class="podcast-admin__panel-heading">
+            <div>
+              <h2>{{ workbench.navigation.audience }}</h2>
+              <p>{{ workbench.navigation.audienceIntro }}</p>
+            </div>
+          </div>
+          <details
+            class="podcast-admin__progressive-section podcast-admin__workspace-group"
+            data-podcast-workspace-group="analytics"
+            open>
+            <summary>
+              <h3 id="podcast-analytics-heading">{{ i18n | t(language, "podcast.admin.tabs.analytics") }}</h3>
+              <span class="podcast-admin__progressive-state" data-podcast-workspace-state aria-hidden="true">−</span>
+            </summary>
+            <div class="podcast-admin__progressive-body">
+        <section id="podcast-panel-analytics" class="podcast-admin__workspace-content" aria-labelledby="podcast-analytics-heading">
+          <div class="podcast-admin__panel-heading">
+            <div>
+              <p>{{ workbench.analytics.introBefore }} <strong data-podcast-reconciliation-show>{{ workbench.analytics.thisShow }}</strong>.</p>
+            </div>
+            <div class="podcast-admin__analytics-actions">
+              <label>{{ workbench.analytics.range }}
+                <select name="analyticsRange" data-podcast-analytics-range>
+                  <option value="7">{{ workbench.analytics.sevenDays }}</option>
+                  <option value="30" selected>{{ workbench.analytics.thirtyDays }}</option>
+                  <option value="90">{{ workbench.analytics.ninetyDays }}</option>
+                </select>
+              </label>
+              <button class="btn btn-outline-light" type="button" data-podcast-analytics-refresh>{{ workbench.common.refresh }}</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-analytics-export>{{ workbench.analytics.export }}</button>
+            </div>
+          </div>
+          <div class="podcast-admin__metric-grid">
+            <article><strong data-podcast-qualified-downloads>—</strong><span>{{ workbench.analytics.qualifiedDownloads }}</span></article>
+            <article><strong data-podcast-engaged-plays>—</strong><span>{{ workbench.analytics.engagedPlays }}</span></article>
+            <article><strong data-podcast-premium-listeners>—</strong><span>{{ workbench.analytics.premiumListeners }}</span></article>
+            <article><strong data-podcast-qualified-sponsor-deliveries>—</strong><span>{{ workbench.analytics.qualifiedSponsorDeliveries }}</span></article>
+            <article><strong data-podcast-reconciliation-differences>—</strong><span>{{ workbench.analytics.counterDiscrepancies }}</span></article>
+            <article><strong data-podcast-campaigns-at-cap>—</strong><span>{{ workbench.analytics.campaignsAtCap }}</span></article>
+          </div>
+          <div class="podcast-admin__callout">
+            <p data-podcast-analytics-methodology>{{ workbench.analytics.methodology }}</p>
+            <p>{{ workbench.analytics.privacy }}</p>
+            <p>{{ workbench.analytics.sponsorMethodology }}</p>
+          </div>
+          <p class="podcast-admin__status" data-podcast-analytics-status role="status" aria-live="polite"></p>
+          <section class="podcast-admin__analytics-section" aria-labelledby="podcast-analytics-trend-heading">
+            <h3 id="podcast-analytics-trend-heading">{{ workbench.analytics.dailyTrend }}</h3>
+            <div class="podcast-admin__analytics-trend-region" data-podcast-analytics-trend></div>
+          </section>
+          <section class="podcast-admin__analytics-section" aria-labelledby="podcast-analytics-episodes-heading">
+            <h3 id="podcast-analytics-episodes-heading">{{ workbench.analytics.topEpisodes }}</h3>
+            <div data-podcast-analytics-episodes></div>
+          </section>
+          <section class="podcast-admin__analytics-section" aria-labelledby="podcast-analytics-completion-heading">
+            <h3 id="podcast-analytics-completion-heading">{{ workbench.analytics.webPlayerCompletion }}</h3>
+            <p>{{ workbench.analytics.webPlayerCompletionIntro }}</p>
+            <div data-podcast-web-player-completion></div>
+          </section>
+          <section class="podcast-admin__analytics-section" aria-labelledby="podcast-analytics-breakdowns-heading">
+            <h3 id="podcast-analytics-breakdowns-heading">{{ workbench.analytics.breakdowns }}</h3>
+            <div class="podcast-admin__analytics-breakdowns">
+              <div data-podcast-analytics-apps></div>
+              <div data-podcast-analytics-devices></div>
+              <div data-podcast-analytics-countries></div>
+            </div>
+          </section>
+          <section class="podcast-admin__analytics-section" aria-labelledby="podcast-analytics-sponsors-heading">
+            <div class="podcast-admin__analytics-section-heading">
+              <h3 id="podcast-analytics-sponsors-heading">{{ workbench.analytics.sponsorReconciliation }}</h3>
+              <button class="btn btn-outline-light" type="button" data-podcast-reconciliation-refresh>{{ workbench.analytics.refreshSponsors }}</button>
+            </div>
+          </section>
+          <p class="podcast-admin__status" data-podcast-reconciliation-status role="status" aria-live="polite"></p>
+          <div data-podcast-reconciliation></div>
+        </section>
+            </div>
+          </details>
+
+          <details
+            class="podcast-admin__progressive-section podcast-admin__workspace-group"
+            data-podcast-workspace-group="subscribers">
+            <summary>
+              <h3 id="podcast-subscribers-heading">{{ i18n | t(language, "podcast.admin.tabs.subscribers") }}</h3>
+              <span class="podcast-admin__progressive-state" data-podcast-workspace-state aria-hidden="true">+</span>
+            </summary>
+            <div class="podcast-admin__progressive-body">
+        <section id="podcast-panel-subscribers" class="podcast-admin__workspace-content" aria-labelledby="podcast-subscribers-heading">
+          <div class="podcast-admin__panel-heading">
+            <div>
+              <p>{{ i18n | t(language, "podcast.admin.subscribers.intro") }}</p>
+            </div>
+            <div class="podcast-admin__billing-actions">
+              <button class="btn btn-outline-light" type="button" data-podcast-subscribers-refresh>{{ i18n | t(language, "podcast.admin.subscribers.refresh") }}</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-subscribers-export>{{ i18n | t(language, "podcast.admin.subscribers.export") }}</button>
+            </div>
+          </div>
+          <form class="podcast-admin__distribution-filter" data-podcast-subscribers-filters>
+            <label>{{ i18n | t(language, "podcast.admin.subscribers.status") }}
+              <select name="status">
+                <option value="all">{{ i18n | t(language, "podcast.admin.subscribers.allStatuses") }}</option>
+                <option value="active">{{ i18n | t(language, "podcast.admin.subscribers.active") }}</option>
+                <option value="past_due">{{ i18n | t(language, "podcast.admin.subscribers.pastDue") }}</option>
+                <option value="paused">{{ i18n | t(language, "podcast.admin.subscribers.paused") }}</option>
+                <option value="pending">{{ i18n | t(language, "podcast.admin.subscribers.pending") }}</option>
+                <option value="canceled">{{ i18n | t(language, "podcast.admin.subscribers.canceled") }}</option>
+                <option value="expired">{{ i18n | t(language, "podcast.admin.subscribers.expired") }}</option>
+              </select>
+            </label>
+            <label>{{ i18n | t(language, "podcast.admin.subscribers.source") }}
+              <select name="provider">
+                <option value="all">{{ i18n | t(language, "podcast.admin.subscribers.allSources") }}</option>
+                <option value="stripe">Stripe</option>
+                <option value="pool">Pool</option>
+                <option value="manual">{{ i18n | t(language, "podcast.admin.subscribers.manual") }}</option>
+              </select>
+            </label>
+          </form>
+          <div class="podcast-admin__callout">
+            <p>{{ i18n | t(language, "podcast.admin.subscribers.privacy") }}</p>
+          </div>
+          <p class="podcast-admin__status" data-podcast-subscribers-status role="status" aria-live="polite"></p>
+          <div data-podcast-subscribers></div>
+          <button class="btn btn-outline-light podcast-admin__load-more" type="button" data-podcast-subscribers-more hidden>{{ i18n | t(language, "podcast.admin.subscribers.more") }}</button>
+        </section>
+            </div>
+          </details>
+        </section>

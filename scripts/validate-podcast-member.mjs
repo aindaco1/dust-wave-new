@@ -4,7 +4,14 @@ import {
   sharedAdminShellImportPattern
 } from "./lib/shared-admin-shell-version.mjs";
 
-const [page, layout, siteFooter, script, buildPipeline] = await Promise.all([
+const [
+  page,
+  layout,
+  siteFooter,
+  script,
+  memberStyles,
+  buildPipeline
+] = await Promise.all([
   readFile(new URL("../src/podcasts/account.njk", import.meta.url), "utf8"),
   readFile(
     new URL("../src/_includes/layouts/podcast-member.njk", import.meta.url),
@@ -18,6 +25,10 @@ const [page, layout, siteFooter, script, buildPipeline] = await Promise.all([
     "utf8"
   ),
   readFile(new URL("../src/js/podcast-member.js", import.meta.url), "utf8"),
+  readFile(
+    new URL("../src/scss/themes/base/_podcast-member.scss", import.meta.url),
+    "utf8"
+  ),
   readFile(new URL("../gulpfile.js", import.meta.url), "utf8")
 ]);
 
@@ -61,7 +72,12 @@ assert.match(script, /\/v1\/member\/shows\/\$\{slug\}\/notifications/);
 assert.match(script, /announcementNotificationsEnabled/);
 assert.match(script, /translate\("member\.notificationsEnabled"\)/);
 assert.match(script, /email\.autocomplete = "email"/);
+assert.match(script, /emailLabel\.hidden = !checkbox\.checked/);
 assert.match(script, /email\.required = checkbox\.checked/);
+assert.match(
+  memberStyles,
+  /\.podcast-member__notification-email\[hidden\]\s*\{[^}]*display: none !important;/s
+);
 assert.match(
   script,
   /email: checkbox\.checked \? email\.value : undefined/

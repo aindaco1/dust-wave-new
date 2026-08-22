@@ -1372,7 +1372,7 @@ a:has(button) { text-decoration: none; }
 
 .skip-link {
   background: #fff;
-  color: #000;
+  color: #000 !important;
   left: 1rem;
   padding: .75rem 1rem;
   position: fixed;

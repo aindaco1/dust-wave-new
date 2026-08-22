@@ -1,0 +1,50 @@
+<div
+  class="podcast-admin__container"
+  data-podcast-admin
+  data-api-origin="{{ podcastAdmin.apiOrigin }}"
+  data-turnstile-site-key="{{ podcastAdmin.turnstileSiteKey }}">
+  <a class="visually-hidden-focusable" href="#podcast-admin-content">{{ i18n | t(language, "podcast.admin.skip") }}</a>
+
+  <header class="podcast-admin__header">
+    <div>
+      <p class="podcast-admin__eyebrow">{{ i18n | t(language, "podcast.admin.eyebrow") }}</p>
+      <h1>{{ i18n | t(language, "podcast.admin.heading") }}</h1>
+      <p>{{ i18n | t(language, "podcast.admin.intro") }}</p>
+    </div>
+    <button class="btn btn-outline-light" type="button" data-podcast-logout hidden>{{ i18n | t(language, "podcast.admin.logOut") }}</button>
+  </header>
+
+  <p class="podcast-admin__status" data-podcast-global-status role="status" aria-live="polite"></p>
+
+  <section class="podcast-admin__auth" data-podcast-auth aria-labelledby="podcast-login-title" hidden>
+    <h2 id="podcast-login-title">{{ i18n | t(language, "podcast.admin.signIn") }}</h2>
+    <p>{{ i18n | t(language, "podcast.admin.signInBody") }}</p>
+    <form data-podcast-login-form>
+      <label for="podcast-admin-email">{{ i18n | t(language, "podcast.admin.email") }}</label>
+      <div class="podcast-admin__inline-form">
+        <input id="podcast-admin-email" name="email" type="email" autocomplete="email" required>
+        <button class="btn btn-danger" type="submit">{{ i18n | t(language, "podcast.admin.sendLink") }}</button>
+      </div>
+      {% if podcastAdmin.turnstileSiteKey %}
+      <div
+        id="podcast-turnstile"
+        class="podcast-auth-turnstile podcast-admin__turnstile"></div>
+      {% endif %}
+    </form>
+    <p class="podcast-admin__status" data-podcast-auth-status role="status" aria-live="polite"></p>
+  </section>
+
+  <section class="podcast-admin__app" data-podcast-app hidden>
+    <p class="podcast-admin__session" data-podcast-session-summary></p>
+
+    <div class="podcast-admin__tabs" data-podcast-tabs>
+      <div class="podcast-admin__tab-list" role="tablist" aria-label="{{ i18n | t(language, 'podcast.admin.tabs.label') }}">
+        <button id="podcast-tab-episodes" type="button" role="tab" data-tab="episodes" aria-controls="podcast-panel-episodes">{{ i18n | t(language, "podcast.admin.tabs.episodes") }}</button>
+        <button id="podcast-tab-distribution" type="button" role="tab" data-tab="distribution" aria-controls="podcast-panel-distribution">{{ i18n | t(language, "podcast.admin.tabs.distribution") }}</button>
+        <button id="podcast-tab-marketing" type="button" role="tab" data-tab="marketing" aria-controls="podcast-panel-marketing">{{ i18n | t(language, "podcast.admin.tabs.marketing") }}</button>
+        <button id="podcast-tab-audience" type="button" role="tab" data-tab="audience" aria-controls="podcast-panel-audience">{{ i18n | t(language, "podcast.admin.tabs.audience") }}</button>
+        <button id="podcast-tab-monetization" type="button" role="tab" data-tab="monetization" aria-controls="podcast-panel-monetization">{{ i18n | t(language, "podcast.admin.tabs.monetization") }}</button>
+        <button id="podcast-tab-settings" type="button" role="tab" data-tab="settings" aria-controls="podcast-panel-settings">{{ i18n | t(language, "podcast.admin.tabs.settings") }}</button>
+      </div>
+
+      <div id="podcast-admin-content">

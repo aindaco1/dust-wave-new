@@ -1,3 +1,7 @@
+import {
+  revealContextualEditor
+} from "./podcast-admin-contextual-editing.js";
+
 const EPISODE_ACCESS_VALUES = new Set([
   "public",
   "early_access",
@@ -47,10 +51,7 @@ export function revealEpisodeEditor(form, title, {
   focus = true,
   scroll = true
 } = {}) {
-  if (scroll) form?.scrollIntoView?.({ block: "start" });
-  if (focus) {
-    title?.focus?.(scroll ? undefined : { preventScroll: true });
-  }
+  revealContextualEditor(form, title, { focus, scroll });
 }
 
 export function mountEpisodeEditor({

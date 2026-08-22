@@ -195,6 +195,10 @@
   gap: .5rem;
 }
 
+.podcast-member__notification-email[hidden] {
+  display: none !important;
+}
+
 .podcast-member__notification-consent {
   display: grid !important;
   grid-template-columns: auto minmax(0, 1fr);

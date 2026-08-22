@@ -1,0 +1,238 @@
+@media (min-width: 48rem) {
+  .podcast-admin__field-grid,
+  .podcast-admin__field-grid--three {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64rem) {
+  .podcast-admin__field-grid--three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 56.25rem) {
+  .podcast-admin__tab-list {
+    display: none;
+  }
+
+  .dw-admin-mobile-tabs {
+    display: grid;
+  }
+
+  .podcast-admin__workflow-menu .dw-admin-workflow__list {
+    display: none;
+  }
+
+  .podcast-admin__distribution-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 47.9375rem) {
+  .podcast-admin__episode-context {
+    grid-template-columns: minmax(0, 1fr);
+    position: static;
+  }
+
+  .podcast-admin__autopilot-heading {
+    display: grid;
+  }
+
+  .podcast-admin__autopilot-state {
+    max-inline-size: none;
+    width: 100%;
+  }
+
+  .podcast-admin__autopilot-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 40rem) {
+  .podcast-admin__autopilot-metrics {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .podcast-admin__header,
+  .podcast-admin__panel-heading,
+  .podcast-admin__episode,
+  .podcast-admin__campaign {
+    display: grid;
+  }
+
+  .dw-admin-dialog__actions {
+    align-items: stretch;
+    display: grid;
+  }
+
+  .dw-admin-dialog__actions .btn {
+    width: 100%;
+  }
+
+  .podcast-admin__header > .btn,
+  .podcast-admin__panel-heading > :is(.btn, select),
+  .podcast-admin__panel-heading > .podcast-admin__show-context,
+  .podcast-admin__panel-heading > .podcast-admin__billing-actions,
+  .podcast-admin__panel-heading > .podcast-admin__heading-actions {
+    max-width: none;
+    width: 100%;
+  }
+
+  .podcast-admin__heading-actions {
+    align-items: stretch;
+    display: grid;
+  }
+
+  .podcast-admin__show-context .podcast-admin__pill {
+    text-align: left;
+  }
+
+  .podcast-admin__transcript-actions .btn,
+  .podcast-admin__transcript-pages .btn,
+  .podcast-admin__chapter-row .btn,
+  .podcast-admin__form > .btn,
+  .podcast-admin__form-actions,
+  .podcast-admin__form-actions .btn,
+  .podcast-admin__clip-actions,
+  .podcast-admin__clip-actions .btn,
+  .podcast-admin__rss-import-execution > .btn,
+  .podcast-admin__rss-import-reconciliation > .btn {
+    width: 100%;
+  }
+
+  .podcast-admin__rss-import-checks li {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .podcast-admin__rss-import-checks strong {
+    text-align: left;
+  }
+
+  .podcast-admin__review-controls {
+    align-items: stretch;
+    grid-template-columns: 1fr;
+  }
+
+  .podcast-admin__review-card > .podcast-admin__transcript-cue-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  [data-podcast-review-form] > .btn {
+    width: 100%;
+  }
+
+  .podcast-admin__readiness-evidence {
+    grid-template-columns: 1fr;
+  }
+
+  .podcast-admin__readiness-evidence dd {
+    margin-bottom: 0.35rem;
+  }
+
+  .podcast-admin__transcript-pages {
+    justify-content: center;
+  }
+
+  .podcast-admin__inline-form,
+  .podcast-admin__billing-readiness,
+  .podcast-admin__distribution-filter,
+  .podcast-admin__distribution-feed,
+  .podcast-admin__distribution-form,
+  .podcast-admin__field-grid,
+  .podcast-admin__field-grid--three,
+  .podcast-admin__decision {
+    grid-template-columns: 1fr;
+  }
+
+  .podcast-admin__distribution-form .btn {
+    width: 100%;
+  }
+
+  .podcast-admin__distribution-form-link {
+    grid-column: 1 / -1;
+  }
+
+  .podcast-admin__certification-list li {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .podcast-admin__certification-list strong {
+    text-align: left;
+  }
+
+  .podcast-admin__release-channel-actions .btn {
+    justify-self: stretch;
+    width: 100%;
+  }
+
+  .podcast-admin__marketing-preview {
+    grid-template-columns: 1fr;
+  }
+
+  .podcast-admin__clip-preview-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .podcast-admin__marketing-preview canvas {
+    justify-self: center;
+  }
+
+  .podcast-admin__billing-actions,
+  .podcast-admin__billing-actions .btn {
+    width: 100%;
+  }
+
+  .podcast-admin__analytics-actions,
+  .podcast-admin__analytics-actions > *,
+  .podcast-admin__analytics-section-heading .btn {
+    width: 100%;
+  }
+
+  .podcast-admin__panel-heading > .podcast-admin__analytics-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .podcast-admin__analytics-breakdowns {
+    grid-template-columns: 1fr;
+  }
+
+  .podcast-admin__analytics-trend li {
+    align-items: stretch;
+    gap: var(--dw-admin-space-xs);
+    grid-template-columns: 1fr;
+  }
+
+  .podcast-admin__billing-readiness dl > div,
+  .podcast-admin__billing-evidence-card dl > div,
+  .podcast-admin__subscriber-card dl > div {
+    grid-template-columns: 1fr;
+  }
+
+  .podcast-admin__load-more {
+    width: 100%;
+  }
+}
+
+@media (max-width: 30rem) {
+  .podcast-admin {
+    padding-inline: var(--dw-admin-space-sm);
+  }
+
+  .podcast-admin__progressive-body {
+    padding:
+      0
+      var(--dw-admin-space-xs)
+      var(--dw-admin-space-xs);
+  }
+
+  .podcast-admin__progressive-body .podcast-admin__form {
+    padding: var(--dw-admin-space-sm);
+  }
+}

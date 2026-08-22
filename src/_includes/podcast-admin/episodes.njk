@@ -1,0 +1,890 @@
+        <section id="podcast-panel-episodes" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-episodes">
+          <div class="podcast-admin__panel-heading">
+            <div>
+              <h2>{{ workbench.episodes.heading }}</h2>
+              <p>{{ workbench.episodes.intro }}</p>
+            </div>
+            <div class="podcast-admin__show-context" data-podcast-show-context hidden>
+              <span class="podcast-admin__pill" data-podcast-show-name hidden></span>
+              <select name="showId" data-podcast-show-select aria-label="{{ workbench.common.show }}"></select>
+            </div>
+          </div>
+          <section
+            class="podcast-admin__episode-context"
+            data-podcast-episode-context
+            aria-labelledby="podcast-current-episode-heading"
+            hidden>
+            <div>
+              <h3 id="podcast-current-episode-heading">{{ workbench.episodes.currentEpisode }}</h3>
+              <p>{{ workbench.episodes.currentEpisodeHelp }}</p>
+            </div>
+            <label>{{ workbench.common.episode }}
+              <select name="currentEpisodeId" data-podcast-current-episode required></select>
+            </label>
+          </section>
+          <section
+            class="podcast-admin__form podcast-admin__publish-workflow"
+            data-podcast-publish-workflow
+            hidden></section>
+
+          <form id="podcast-episode-details" class="podcast-admin__form" data-podcast-episode-form>
+            <h3 data-podcast-episode-form-heading>{{ workbench.episodes.new }}</h3>
+            <section
+              class="podcast-admin__field-group"
+              aria-labelledby="podcast-episode-copy-heading">
+              <h4 id="podcast-episode-copy-heading">{{ workbench.episodes.copyGroup }}</h4>
+              <div class="podcast-admin__field-grid">
+                <label>{{ workbench.common.title }}
+                  <input name="title" autocomplete="off" required>
+                </label>
+                <label>{{ workbench.episodes.slug }}
+                  <input
+                    name="slug"
+                    pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
+                    aria-describedby="podcast-episode-slug-help"
+                    required>
+                  <span
+                    id="podcast-episode-slug-help"
+                    class="podcast-admin__help"
+                    data-podcast-episode-slug-help
+                    hidden>{{ workbench.episodes.slugLocked }}</span>
+                </label>
+              </div>
+              <label>{{ workbench.episodes.summary }}
+                <textarea name="summary" rows="3" required></textarea>
+              </label>
+              <div class="podcast-admin__field">
+                <span class="podcast-admin__field-label">{{ workbench.episodes.notes }}</span>
+                <div class="podcast-admin__editor" data-podcast-notes-editor></div>
+              </div>
+            </section>
+            <section
+              class="podcast-admin__callout podcast-admin__show-notes"
+              data-podcast-show-notes
+              hidden>
+              <h4>{{ workbench.episodes.showNotesHeading }}</h4>
+              <p>{{ workbench.episodes.showNotesIntro }}</p>
+              <p class="podcast-admin__help">{{ workbench.episodes.showNotesReviewNotice }}</p>
+              <p
+                class="podcast-admin__status"
+                data-podcast-show-notes-status
+                role="status"
+                aria-live="polite"></p>
+              <section
+                class="podcast-admin__show-notes-review"
+                data-podcast-show-notes-review
+                aria-labelledby="podcast-show-notes-review-heading"
+                hidden>
+                <h4 id="podcast-show-notes-review-heading">{{ workbench.episodes.showNotesReviewHeading }}</h4>
+                <p
+                  class="podcast-admin__review-evidence"
+                  data-podcast-show-notes-evidence></p>
+                <h5>{{ workbench.episodes.showNotesSuggestedSummary }}</h5>
+                <p
+                  class="podcast-admin__show-notes-copy"
+                  data-podcast-show-notes-summary></p>
+                <h5>{{ workbench.episodes.showNotesDraftLabel }}</h5>
+                <div
+                  class="podcast-admin__show-notes-copy"
+                  data-podcast-show-notes-draft></div>
+                <h5>{{ workbench.episodes.showNotesKeywords }}</h5>
+                <p
+                  class="podcast-admin__show-notes-copy"
+                  data-podcast-show-notes-keywords></p>
+                <div class="podcast-admin__form-actions">
+                  <button
+                    class="btn btn-danger"
+                    type="button"
+                    data-podcast-show-notes-apply>{{ workbench.episodes.showNotesUseDraft }}</button>
+                  <button
+                    class="btn btn-outline-light"
+                    type="button"
+                  data-podcast-show-notes-dismiss>{{ workbench.episodes.showNotesDismiss }}</button>
+                </div>
+              </section>
+              <details class="podcast-admin__advanced-tools podcast-admin__distribution-guidance">
+                <summary>{{ workbench.episodes.showNotesManualHeading }}</summary>
+                <div class="podcast-admin__field-grid">
+                  <label>{{ workbench.episodes.showNotesSourceLanguage }}
+                    <select name="showNotesSourceLanguage" data-podcast-show-notes-source-language>
+                      <option value="es">{{ workbench.common.spanish }}</option>
+                      <option value="en">{{ workbench.common.english }}</option>
+                    </select>
+                  </label>
+                  <label>{{ workbench.episodes.showNotesOutputLanguage }}
+                    <select name="showNotesOutputLanguage" data-podcast-show-notes-output-language>
+                      <option value="es">{{ workbench.common.spanish }}</option>
+                      <option value="en">{{ workbench.common.english }}</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="podcast-admin__form-actions">
+                  <button
+                    class="btn btn-outline-light"
+                    type="button"
+                    data-podcast-show-notes-generate>{{ workbench.episodes.showNotesGenerate }}</button>
+                </div>
+              </details>
+            </section>
+            <section
+              class="podcast-admin__field-group podcast-admin__field-group--divided"
+              aria-labelledby="podcast-episode-release-heading">
+              <h4 id="podcast-episode-release-heading">{{ workbench.episodes.releaseGroup }}</h4>
+              <div class="podcast-admin__field-grid podcast-admin__field-grid--compact">
+                <label>{{ workbench.episodes.access }}
+                  <select name="access">
+                    <option value="public">{{ workbench.episodes.public }}</option>
+                    <option value="early_access">{{ workbench.episodes.earlyAccess }}</option>
+                    <option value="premium_bonus">{{ workbench.episodes.premiumBonus }}</option>
+                    <option value="free_mini">{{ workbench.episodes.freeMini }}</option>
+                  </select>
+                </label>
+                <label>{{ workbench.episodes.sourceLanguage }}
+                  <select name="sourceLanguage" required>
+                    <option value="es">{{ workbench.common.spanish }}</option>
+                    <option value="en">{{ workbench.common.english }}</option>
+                  </select>
+                </label>
+              </div>
+              <div class="podcast-admin__field-grid podcast-admin__field-grid--compact">
+                <label>{{ workbench.episodes.premiumRelease }}
+                  <input name="premiumAt" type="datetime-local">
+                </label>
+                <label>{{ workbench.episodes.publicRelease }}
+                  <input name="publicAt" type="datetime-local">
+                </label>
+              </div>
+            </section>
+            <div class="podcast-admin__form-actions">
+              <button class="btn btn-danger" type="submit">{{ workbench.episodes.createDraft }}</button>
+              <button
+                class="btn btn-outline-light"
+                type="button"
+                data-podcast-episode-edit-cancel
+                hidden>{{ workbench.episodes.cancelEdit }}</button>
+            </div>
+            <p class="podcast-admin__status" data-podcast-episode-status role="status" aria-live="polite"></p>
+          </form>
+
+          <form class="podcast-admin__form" data-podcast-upload-form>
+            <h3>{{ workbench.episodes.attachMedia }}</h3>
+            <div class="podcast-admin__field-grid">
+              <label>{{ workbench.common.episode }}
+                <select name="episodeId" required></select>
+              </label>
+              <label>{{ workbench.episodes.mediaRole }}
+                <select name="kind">
+                  <option value="delivery_audio">{{ workbench.episodes.deliveryAudio }}</option>
+                  <option value="source_audio">{{ workbench.episodes.sourceAudio }}</option>
+                  <option value="video_source">{{ workbench.episodes.videoSource }}</option>
+                </select>
+              </label>
+            </div>
+            <label>{{ workbench.episodes.file }}
+              <input name="media" type="file" accept="audio/*,video/mp4,video/quicktime,video/webm" required>
+            </label>
+            <progress data-podcast-upload-progress max="100" value="0" hidden></progress>
+            <button class="btn btn-outline-light" type="submit">{{ workbench.episodes.uploadMedia }}</button>
+            <p class="podcast-admin__status" data-podcast-upload-status role="status" aria-live="polite"></p>
+          </form>
+
+          <form class="podcast-admin__form" data-podcast-ad-plan-form hidden>
+            <h3>{{ workbench.episodes.adPlanHeading }}</h3>
+            <p>{{ workbench.episodes.adPlanIntro }}</p>
+            <div class="podcast-admin__field-grid">
+              <label>{{ workbench.common.episode }}
+                <select name="episodeId" required></select>
+              </label>
+              <label class="podcast-admin__checkbox">
+                <input name="preRoll" type="checkbox"> {{ workbench.common.preRoll }}
+              </label>
+              <label class="podcast-admin__checkbox">
+                <input name="midRoll" type="checkbox"> {{ workbench.common.midRoll }}
+              </label>
+              <label>{{ workbench.episodes.midRollTime }}
+                <input name="midRollSeconds" type="number" min="1" step="1" disabled>
+              </label>
+              <label class="podcast-admin__checkbox">
+                <input name="postRoll" type="checkbox"> {{ workbench.common.postRoll }}
+              </label>
+            </div>
+            <button class="btn btn-outline-light" type="submit">{{ workbench.episodes.submitAdPlan }}</button>
+            <p class="podcast-admin__status" data-podcast-ad-plan-status role="status" aria-live="polite"></p>
+          </form>
+          <div data-podcast-ad-plan-result aria-live="polite"></div>
+
+          <div class="podcast-admin__episode-list" data-podcast-episode-list></div>
+
+          <details
+            class="podcast-admin__progressive-section podcast-admin__workspace-group"
+            data-podcast-workspace-group="production">
+            <summary>
+              <h2>{{ workbench.navigation.production }}</h2>
+              <span class="podcast-admin__progressive-state" data-podcast-workspace-state aria-hidden="true">+</span>
+            </summary>
+            <div class="podcast-admin__progressive-body">
+        <section
+          id="podcast-panel-production"
+          class="podcast-admin__workspace-content"
+          aria-label="{{ workbench.navigation.production }}">
+          <div class="podcast-admin__panel-heading">
+            <div>
+              <h2>{{ workbench.production.audioQcHeading }}</h2>
+              <p>{{ workbench.production.audioQcIntro }}</p>
+            </div>
+            <p class="podcast-admin__pill">{{ workbench.production.measuredPill }}</p>
+          </div>
+          <div class="podcast-admin__callout">
+            <p>{{ workbench.production.audioQcCallout }}</p>
+            <p data-podcast-audio-qc-policy-summary aria-live="polite">{{ workbench.production.policyLoading }}</p>
+          </div>
+          <form class="podcast-admin__form podcast-admin__audio-qc-policy" data-podcast-audio-qc-policy-form hidden>
+            <h3>{{ workbench.production.policyHeading }}</h3>
+            <p>{{ workbench.production.policyIntro }}</p>
+            <div class="podcast-admin__field-grid">
+              <label>{{ workbench.production.monoTarget }}
+                <input name="monoIntegratedLufs" type="number" min="-40" max="-5" step="0.1" required>
+              </label>
+              <label>{{ workbench.production.stereoTarget }}
+                <input name="stereoIntegratedLufs" type="number" min="-40" max="-5" step="0.1" required>
+              </label>
+              <label>{{ workbench.production.loudnessTolerance }}
+                <input name="integratedLufsTolerance" type="number" min="0.1" max="10" step="0.1" required>
+              </label>
+              <label>{{ workbench.production.maximumTruePeak }}
+                <input name="maximumTruePeakDbtp" type="number" min="-12" max="0" step="0.1" required>
+              </label>
+              <label>{{ workbench.production.maximumDcOffset }}
+                <input name="maximumDcOffset" type="number" min="0" max="0.25" step="0.001" required>
+              </label>
+              <label>{{ workbench.production.maximumChannelImbalance }}
+                <input name="maximumChannelImbalanceLu" type="number" min="0" max="24" step="0.1" required>
+              </label>
+              <label>{{ workbench.production.maximumLeadingSilence }}
+                <input name="maximumLeadingSilenceMs" type="number" min="0" max="60000" step="1" required>
+              </label>
+              <label>{{ workbench.production.maximumTrailingSilence }}
+                <input name="maximumTrailingSilenceMs" type="number" min="0" max="60000" step="1" required>
+              </label>
+              <label>{{ workbench.production.maximumInternalSilence }}
+                <input name="maximumInternalSilenceMs" type="number" min="0" max="120000" step="1" required>
+              </label>
+              <label>{{ workbench.production.silenceThreshold }}
+                <input name="silenceThresholdDb" type="number" min="-100" max="-10" step="0.1" required>
+              </label>
+            </div>
+            <button class="btn btn-outline-light" type="submit">{{ workbench.production.savePolicy }}</button>
+            <p class="podcast-admin__status" data-podcast-audio-qc-policy-status role="status" aria-live="polite"></p>
+          </form>
+          <section class="podcast-admin__audio-qc" data-podcast-audio-qc aria-label="{{ workbench.production.audioQcHeading }}">
+            <div class="podcast-admin__field-grid">
+              <label>{{ workbench.common.episode }}
+                <select name="audioQcEpisodeId" data-podcast-audio-qc-episode required></select>
+              </label>
+            </div>
+            <div class="podcast-admin__transcript-actions">
+              <button class="btn btn-danger" type="button" data-podcast-audio-qc-queue>{{ workbench.production.queueQc }}</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-audio-qc-refresh>{{ workbench.production.refreshReport }}</button>
+            </div>
+            <p class="podcast-admin__transcript-meta" data-podcast-audio-qc-summary aria-live="polite">{{ workbench.production.chooseSourceAudio }}</p>
+            <div class="podcast-admin__audio-qc-results" data-podcast-audio-qc-results></div>
+            <p class="podcast-admin__status" data-podcast-audio-qc-status role="status" aria-live="polite"></p>
+          </section>
+          <div class="podcast-admin__panel-heading podcast-admin__section-heading">
+            <div>
+              <h2>{{ workbench.production.workingMasterHeading }}</h2>
+              <p>{{ workbench.production.workingMasterIntro }}</p>
+            </div>
+            <p class="podcast-admin__pill">{{ workbench.production.explicitPill }}</p>
+          </div>
+          <div class="podcast-admin__callout">
+            <p>{{ workbench.production.masterCallout }}</p>
+          </div>
+          <section class="podcast-admin__audio-master" data-podcast-audio-master aria-label="{{ workbench.production.workingMasterLabel }}">
+            <div class="podcast-admin__field-grid">
+              <label>{{ workbench.common.episode }}
+                <select name="audioMasterEpisodeId" data-podcast-audio-master-episode required></select>
+              </label>
+            </div>
+            <div class="podcast-admin__transcript-actions">
+              <button class="btn btn-outline-light" type="button" data-podcast-audio-master-refresh>{{ workbench.production.refreshMaster }}</button>
+            </div>
+            <p class="podcast-admin__transcript-meta" data-podcast-audio-master-summary aria-live="polite">{{ workbench.production.chooseQc }}</p>
+            <div class="podcast-admin__audio-master-current" data-podcast-audio-master-current></div>
+
+            <form class="podcast-admin__form podcast-admin__audio-master-approval" data-podcast-audio-master-approval hidden>
+              <h3>{{ workbench.production.approveSourceHeading }}</h3>
+              <p>{{ workbench.production.approveSourceIntro }}</p>
+              <label>{{ workbench.production.approvalReason }}
+                <textarea name="approvalReason" rows="3" maxlength="500" required></textarea>
+              </label>
+              <label class="podcast-admin__checkbox">
+                <input name="acknowledgeExactSource" type="checkbox" required>
+                {{ workbench.production.exactSourceAck }}
+              </label>
+              <button class="btn btn-danger" type="submit">{{ workbench.production.approveMaster }}</button>
+              <p class="podcast-admin__status" data-podcast-audio-master-approval-status role="status" aria-live="polite"></p>
+            </form>
+
+            <form class="podcast-admin__form podcast-admin__audio-enhancement-form" data-podcast-audio-enhancement-form hidden>
+              <h3>{{ workbench.production.enhancementHeading }}</h3>
+              <p>{{ workbench.production.enhancementIntro }}</p>
+              <div class="podcast-admin__field-grid podcast-admin__field-grid--three">
+                <label>{{ workbench.production.preset }}
+                  <select name="presetId" required></select>
+                </label>
+                <label>{{ workbench.production.startSeconds }}
+                  <input name="previewStartSeconds" type="number" min="0" step="0.1" value="0" required>
+                </label>
+                <label>{{ workbench.production.lengthSeconds }}
+                  <input name="previewDurationSeconds" type="number" min="5" max="90" step="1" value="45" required>
+                </label>
+              </div>
+              <button class="btn btn-outline-light" type="submit">{{ workbench.production.queuePreview }}</button>
+              <p class="podcast-admin__status" data-podcast-audio-enhancement-status role="status" aria-live="polite"></p>
+            </form>
+
+            <div class="podcast-admin__audio-enhancement-results" data-podcast-audio-enhancement-results></div>
+
+            <section class="podcast-admin__form podcast-admin__audio-derivative-workbench" data-podcast-audio-derivatives>
+              <div class="podcast-admin__panel-heading podcast-admin__section-heading">
+                <div>
+                  <h3>{{ workbench.production.derivativeHeading }}</h3>
+                  <p>{{ workbench.production.derivativeIntro }}</p>
+                </div>
+                <p class="podcast-admin__pill">{{ workbench.production.fullQcPill }}</p>
+              </div>
+              <div class="podcast-admin__callout">
+                <p>{{ workbench.production.derivativeCallout }}</p>
+              </div>
+              <p class="podcast-admin__status" data-podcast-audio-derivative-status role="status" aria-live="polite"></p>
+              <div class="podcast-admin__audio-enhancement-results" data-podcast-audio-derivative-results></div>
+            </section>
+          </section>
+          <div class="podcast-admin__panel-heading podcast-admin__section-heading">
+            <div>
+              <h2>{{ workbench.production.deliveryAudioHeading }}</h2>
+              <p>{{ workbench.production.deliveryAudioIntro }}</p>
+            </div>
+            <p class="podcast-admin__pill">{{ workbench.production.deliveryAudioPill }}</p>
+          </div>
+          <div class="podcast-admin__callout">
+            <p>{{ workbench.production.deliveryAudioCallout }}</p>
+          </div>
+          <section class="podcast-admin__form podcast-admin__delivery-audio" data-podcast-delivery-audio aria-label="{{ workbench.production.deliveryAudioLabel }}">
+            <div class="podcast-admin__field-grid">
+              <label>{{ workbench.common.episode }}
+                <select name="deliveryAudioEpisodeId" data-podcast-delivery-audio-episode required></select>
+              </label>
+            </div>
+            <div class="podcast-admin__transcript-actions">
+              <button class="btn btn-outline-light" type="button" data-podcast-delivery-audio-refresh>{{ workbench.production.deliveryAudioRefresh }}</button>
+              <button class="btn btn-danger" type="button" data-podcast-delivery-audio-queue disabled>{{ workbench.production.deliveryAudioQueue }}</button>
+            </div>
+            <p class="podcast-admin__transcript-meta" data-podcast-delivery-audio-summary aria-live="polite">{{ workbench.production.deliveryAudioChoose }}</p>
+            <p class="podcast-admin__status" data-podcast-delivery-audio-status role="status" aria-live="polite"></p>
+            <div class="podcast-admin__audio-enhancement-results" data-podcast-delivery-audio-results></div>
+          </section>
+          <div class="podcast-admin__panel-heading podcast-admin__section-heading">
+            <div>
+              <h2>{{ workbench.production.youtubeAudioHeading }}</h2>
+              <p>{{ workbench.production.youtubeAudioIntro }}</p>
+            </div>
+            <p class="podcast-admin__pill">{{ workbench.production.stagingOnlyPill }}</p>
+          </div>
+          <div class="podcast-admin__callout">
+            <p>{{ workbench.production.youtubeAudioCallout }}</p>
+          </div>
+          <section class="podcast-admin__form podcast-admin__youtube-audio" aria-label="{{ workbench.production.youtubeAudioLabel }}">
+            <div class="podcast-admin__field-grid">
+              <label>{{ workbench.common.episode }}
+                <select name="youtubeAudioEpisodeId" data-podcast-youtube-audio-episode required></select>
+              </label>
+            </div>
+            <div class="podcast-admin__transcript-actions">
+              <button class="btn btn-outline-light" type="button" data-podcast-youtube-audio-refresh>{{ workbench.production.youtubeAudioRefresh }}</button>
+              <button class="btn btn-danger" type="button" data-podcast-youtube-audio-queue disabled>{{ workbench.production.youtubeAudioQueue }}</button>
+            </div>
+            <p class="podcast-admin__transcript-meta" data-podcast-youtube-audio-summary aria-live="polite">{{ workbench.production.youtubeAudioChoose }}</p>
+            <p class="podcast-admin__status" data-podcast-youtube-audio-status role="status" aria-live="polite"></p>
+            <div class="podcast-admin__audio-enhancement-results" data-podcast-youtube-audio-results></div>
+          </section>
+          <div class="podcast-admin__panel-heading podcast-admin__section-heading">
+            <div>
+              <h2>{{ workbench.production.transcriptHeading }}</h2>
+              <p>{{ workbench.production.transcriptIntro }}</p>
+            </div>
+            <p class="podcast-admin__pill">{{ workbench.production.wordTimingPill }}</p>
+          </div>
+          <div class="podcast-admin__callout">
+            <p>{{ workbench.production.transcriptCallout }}</p>
+          </div>
+          <div class="podcast-admin__form" data-podcast-transcription-workbench>
+            <div class="podcast-admin__panel-heading podcast-admin__section-heading">
+              <div>
+                <h3>{{ workbench.production.transcriptionHeading }}</h3>
+                <p>{{ workbench.production.transcriptionIntro }}</p>
+              </div>
+              <div class="podcast-admin__transcript-actions">
+                <button class="btn btn-outline-light" type="button" data-podcast-transcription-refresh>{{ workbench.production.refreshJobs }}</button>
+                <button class="btn btn-danger" type="button" data-podcast-transcription-queue>{{ workbench.production.queueTranscript }}</button>
+              </div>
+            </div>
+            <p class="podcast-admin__transcript-meta" data-podcast-transcription-summary aria-live="polite">{{ workbench.production.chooseMaster }}</p>
+            <p class="podcast-admin__status" data-podcast-transcription-status role="status" aria-live="polite"></p>
+            <div class="podcast-admin__audio-enhancement-results" data-podcast-transcription-jobs></div>
+          </div>
+          <div class="podcast-admin__form" data-podcast-transcript-workbench>
+            <div class="podcast-admin__field-grid">
+              <label>{{ workbench.common.episode }}
+                <select name="transcriptEpisodeId" data-podcast-transcript-episode required></select>
+              </label>
+              <label>{{ workbench.production.transcriptLanguage }}
+                <select name="transcriptLanguage" data-podcast-transcript-language>
+                  <option value="es">{{ workbench.common.spanish }}</option>
+                  <option value="en">{{ workbench.common.english }}</option>
+                </select>
+              </label>
+            </div>
+            <div class="podcast-admin__transcript-meta" data-podcast-transcript-meta aria-live="polite"></div>
+            <section
+              class="podcast-admin__transcript-import"
+              data-podcast-transcript-import
+              aria-labelledby="podcast-transcript-import-heading"
+              hidden>
+              <div class="podcast-admin__panel-heading podcast-admin__section-heading">
+                <div>
+                  <h3 id="podcast-transcript-import-heading">{{ workbench.production.importCaptionsHeading }}</h3>
+                  <p>{{ workbench.production.importCaptionsIntro }}</p>
+                </div>
+                <p class="podcast-admin__pill">{{ workbench.production.localDraftPill }}</p>
+              </div>
+              <form class="podcast-admin__transcript-import-form" data-podcast-transcript-import-form>
+                <label>{{ workbench.production.importCaptionsFile }}
+                  <input
+                    name="transcriptImportFile"
+                    data-podcast-transcript-import-file
+                    type="file"
+                    accept=".vtt,.srt,text/vtt,application/x-subrip,application/srt,text/srt"
+                    required>
+                </label>
+                <div class="podcast-admin__transcript-actions">
+                  <button class="btn btn-outline-light" type="submit" data-podcast-transcript-import-submit>{{ workbench.production.importCaptionsSubmit }}</button>
+                </div>
+                <p class="podcast-admin__status" data-podcast-transcript-import-status role="status" aria-live="polite"></p>
+              </form>
+            </section>
+            <section
+              class="podcast-admin__transcript-diagnostics"
+              data-podcast-transcript-diagnostics
+              aria-labelledby="podcast-transcript-diagnostics-heading"
+              hidden>
+              <div class="podcast-admin__panel-heading podcast-admin__section-heading">
+                <div>
+                  <h3 id="podcast-transcript-diagnostics-heading">{{ workbench.production.transcriptDiagnosticsHeading }}</h3>
+                  <p>{{ workbench.production.transcriptDiagnosticsIntro }}</p>
+                </div>
+                <p class="podcast-admin__pill">{{ workbench.production.reviewOnlyPill }}</p>
+              </div>
+              <p
+                class="podcast-admin__transcript-meta"
+                data-podcast-transcript-diagnostics-summary
+                aria-live="polite"></p>
+              <ul
+                class="podcast-admin__transcript-diagnostic-list"
+                data-podcast-transcript-diagnostics-list></ul>
+            </section>
+            <section
+              class="podcast-admin__transcript-search"
+              data-podcast-transcript-search
+              aria-labelledby="podcast-transcript-search-heading"
+              hidden>
+              <div class="podcast-admin__panel-heading podcast-admin__section-heading">
+                <div>
+                  <h3 id="podcast-transcript-search-heading">{{ workbench.production.transcriptSearchHeading }}</h3>
+                  <p>{{ workbench.production.transcriptSearchIntro }}</p>
+                </div>
+                <p class="podcast-admin__pill">{{ workbench.production.localDraftPill }}</p>
+              </div>
+              <form
+                class="podcast-admin__transcript-search-form"
+                data-podcast-transcript-search-form
+                role="search">
+                <label>{{ workbench.production.transcriptSearchLabel }}
+                  <input
+                    name="transcriptSearch"
+                    data-podcast-transcript-search-input
+                    type="search"
+                    maxlength="160"
+                    aria-controls="podcast-transcript-cues"
+                    aria-describedby="podcast-transcript-search-status"
+                    autocomplete="off">
+                </label>
+                <div class="podcast-admin__transcript-actions">
+                  <button class="btn btn-outline-light" type="submit">{{ workbench.production.transcriptSearchSubmit }}</button>
+                  <button class="btn btn-outline-light" type="button" data-podcast-transcript-search-previous aria-controls="podcast-transcript-cues" disabled>{{ workbench.production.transcriptSearchPrevious }}</button>
+                  <button class="btn btn-outline-light" type="button" data-podcast-transcript-search-next aria-controls="podcast-transcript-cues" disabled>{{ workbench.production.transcriptSearchNext }}</button>
+                </div>
+                <p
+                  id="podcast-transcript-search-status"
+                  class="podcast-admin__status"
+                  data-podcast-transcript-search-status
+                  role="status"
+                  aria-live="polite"></p>
+              </form>
+            </section>
+            <form
+              class="podcast-admin__transcript-speaker-range"
+              data-podcast-transcript-speaker-range
+              aria-labelledby="podcast-transcript-speaker-range-heading"
+              hidden>
+              <div class="podcast-admin__panel-heading podcast-admin__section-heading">
+                <div>
+                  <h3 id="podcast-transcript-speaker-range-heading">{{ workbench.production.speakerRangeHeading }}</h3>
+                  <p>{{ workbench.production.speakerRangeIntro }}</p>
+                </div>
+                <p class="podcast-admin__pill">{{ workbench.production.localDraftPill }}</p>
+              </div>
+              <div class="podcast-admin__field-grid">
+                <label>{{ workbench.production.speakerRangeStart }}
+                  <input name="speakerRangeStart" data-podcast-transcript-speaker-range-start type="number" min="1" step="1" required>
+                </label>
+                <label>{{ workbench.production.speakerRangeEnd }}
+                  <input name="speakerRangeEnd" data-podcast-transcript-speaker-range-end type="number" min="1" step="1" required>
+                </label>
+                <label>{{ workbench.production.speakerRangeLabel }}
+                  <input name="speakerRangeLabel" data-podcast-transcript-speaker-range-label maxlength="80" autocomplete="off" required>
+                </label>
+                <label class="podcast-admin__checkbox">
+                  <input name="speakerRangeConfirmed" data-podcast-transcript-speaker-range-confirmed type="checkbox">
+                  {{ workbench.production.speakerRangeConfirmed }}
+                </label>
+              </div>
+              <div class="podcast-admin__transcript-actions">
+                <button class="btn btn-outline-light" type="submit" data-podcast-transcript-speaker-range-apply>{{ workbench.production.applySpeakerRange }}</button>
+              </div>
+            </form>
+            <div id="podcast-transcript-cues" class="podcast-admin__transcript-cues" data-podcast-transcript-cues></div>
+            <nav class="podcast-admin__transcript-pages" data-podcast-transcript-pages aria-label="{{ workbench.production.cuePages }}" hidden>
+              <button class="btn btn-outline-light" type="button" data-podcast-transcript-previous>{{ workbench.production.previousCues }}</button>
+              <span data-podcast-transcript-page aria-live="polite"></span>
+              <button class="btn btn-outline-light" type="button" data-podcast-transcript-next>{{ workbench.production.nextCues }}</button>
+            </nav>
+            <label class="podcast-admin__checkbox podcast-admin__transcript-label-review">
+              <input data-podcast-transcript-label-review type="checkbox">
+              <span>
+                <strong>{{ workbench.production.speakerLabelsReviewed }}</strong>
+                <small>{{ workbench.production.speakerLabelsReviewedHelp }}</small>
+              </span>
+            </label>
+            <div class="podcast-admin__transcript-actions">
+              <button class="btn btn-outline-light" type="button" data-podcast-transcript-add>{{ workbench.production.addCue }}</button>
+              <button class="btn btn-danger" type="button" data-podcast-transcript-save disabled>{{ workbench.production.saveReviewDraft }}</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-transcript-approve>{{ workbench.production.approveRevision }}</button>
+              <span class="podcast-admin__transcript-actions" data-podcast-transcript-downloads hidden></span>
+            </div>
+            <p class="podcast-admin__status" data-podcast-transcript-status role="status" aria-live="polite"></p>
+            <section class="podcast-admin__alignment" data-podcast-alignment aria-label="{{ workbench.production.alignmentAria }}">
+              <div class="podcast-admin__panel-heading podcast-admin__section-heading">
+                <div>
+                  <h3>{{ workbench.production.alignmentHeading }}</h3>
+                  <p>{{ workbench.production.alignmentIntro }}</p>
+                </div>
+                <p class="podcast-admin__pill">{{ workbench.production.h1Pill }}</p>
+              </div>
+              <div class="podcast-admin__transcript-actions">
+                <button class="btn btn-outline-light" type="button" data-podcast-alignment-refresh>{{ workbench.production.refreshAlignments }}</button>
+              </div>
+              <details class="podcast-admin__advanced-tools podcast-admin__distribution-guidance">
+                <summary>
+                  <strong>{{ workbench.production.alignmentRecoverySummary }}</strong>
+                  <span>{{ workbench.production.alignmentRecoveryIntro }}</span>
+                </summary>
+                <div class="podcast-admin__field-grid">
+                  <label>{{ workbench.production.alignmentAdapter }}
+                    <select name="alignmentAdapter" data-podcast-alignment-adapter>
+                      <option value="whisperx">WhisperX 3.8.6</option>
+                      <option value="stable-ts">{{ workbench.production.stableFallback }}</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="podcast-admin__transcript-actions">
+                  <button class="btn btn-outline-light" type="button" data-podcast-alignment-queue>{{ workbench.production.queueAlignment }}</button>
+                </div>
+              </details>
+              <p class="podcast-admin__transcript-meta" data-podcast-alignment-summary aria-live="polite">{{ workbench.production.alignmentPrerequisite }}</p>
+              <p class="podcast-admin__status" data-podcast-alignment-status role="status" aria-live="polite"></p>
+              <div class="podcast-admin__audio-enhancement-results" data-podcast-alignment-jobs></div>
+              <section class="podcast-admin__benchmark" aria-labelledby="podcast-alignment-benchmark-title">
+                <div class="podcast-admin__panel-heading podcast-admin__section-heading">
+                  <div>
+                    <h4 id="podcast-alignment-benchmark-title">{{ workbench.production.benchmarkHeading }}</h4>
+                    <p>{{ workbench.production.benchmarkIntro }}</p>
+                  </div>
+                  <button class="btn btn-outline-light" type="button" data-podcast-benchmark-refresh>{{ workbench.production.refreshBenchmark }}</button>
+                </div>
+                <form class="podcast-admin__inline-form podcast-admin__benchmark-form" data-podcast-benchmark-form>
+                  <label>{{ workbench.production.reviewedBenchmarkJson }}
+                    <input name="evidence" type="file" accept=".json,application/json" required>
+                  </label>
+                  <button class="btn btn-danger" type="submit">{{ workbench.production.importEvidence }}</button>
+                </form>
+                <p class="podcast-admin__transcript-meta" data-podcast-benchmark-summary aria-live="polite">{{ workbench.production.noBenchmark }}</p>
+                <p class="podcast-admin__status" data-podcast-benchmark-status role="status" aria-live="polite"></p>
+                <div class="podcast-admin__benchmark-list" data-podcast-benchmark-list></div>
+              </section>
+            </section>
+          </div>
+          <div class="podcast-admin__panel-heading podcast-admin__section-heading">
+            <div>
+              <h2>{{ workbench.production.chapterHeading }}</h2>
+              <p>{{ workbench.production.chapterIntro }}</p>
+            </div>
+            <p class="podcast-admin__pill">{{ workbench.production.versionedPill }}</p>
+          </div>
+          <div class="podcast-admin__callout">
+            <p>{{ workbench.production.chapterCallout }}</p>
+          </div>
+          <div class="podcast-admin__form" data-podcast-chapter-workbench>
+            <div class="podcast-admin__field-grid">
+              <label>{{ workbench.common.episode }}
+                <select name="chapterEpisodeId" data-podcast-chapter-episode required></select>
+              </label>
+            </div>
+            <div class="podcast-admin__transcript-meta" data-podcast-chapter-meta aria-live="polite"></div>
+            <section
+              class="podcast-admin__callout podcast-admin__chapter-draft"
+              data-podcast-chapter-draft
+              hidden>
+              <h3>{{ workbench.production.chapterDraftHeading }}</h3>
+              <p>{{ workbench.production.chapterDraftIntro }}</p>
+              <p class="podcast-admin__help">{{ workbench.production.chapterDraftReviewNotice }}</p>
+              <p
+                class="podcast-admin__status"
+                data-podcast-chapter-draft-status
+                role="status"
+                aria-live="polite"></p>
+              <section
+                class="podcast-admin__show-notes-review"
+                data-podcast-chapter-draft-review
+                aria-labelledby="podcast-chapter-draft-review-heading"
+                hidden>
+                <h4 id="podcast-chapter-draft-review-heading">{{ workbench.production.chapterDraftReviewHeading }}</h4>
+                <p
+                  class="podcast-admin__review-evidence"
+                  data-podcast-chapter-draft-evidence></p>
+                <ol
+                  class="podcast-admin__chapter-draft-list"
+                  data-podcast-chapter-draft-list></ol>
+                <div class="podcast-admin__form-actions">
+                  <button
+                    class="btn btn-danger"
+                    type="button"
+                    data-podcast-chapter-draft-apply>{{ workbench.production.chapterDraftUse }}</button>
+                  <button
+                    class="btn btn-outline-light"
+                    type="button"
+                  data-podcast-chapter-draft-dismiss>{{ workbench.production.chapterDraftDismiss }}</button>
+                </div>
+              </section>
+              <details class="podcast-admin__advanced-tools podcast-admin__distribution-guidance">
+                <summary>{{ workbench.production.chapterDraftManualHeading }}</summary>
+                <div class="podcast-admin__field-grid">
+                  <label>{{ workbench.production.chapterDraftSourceLanguage }}
+                    <select name="chapterDraftSourceLanguage" data-podcast-chapter-draft-source-language>
+                      <option value="es">{{ workbench.common.spanish }}</option>
+                      <option value="en">{{ workbench.common.english }}</option>
+                    </select>
+                  </label>
+                  <label>{{ workbench.production.chapterDraftOutputLanguage }}
+                    <select name="chapterDraftOutputLanguage" data-podcast-chapter-draft-output-language>
+                      <option value="es">{{ workbench.common.spanish }}</option>
+                      <option value="en">{{ workbench.common.english }}</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="podcast-admin__form-actions">
+                  <button
+                    class="btn btn-outline-light"
+                    type="button"
+                    data-podcast-chapter-draft-generate>{{ workbench.production.chapterDraftGenerate }}</button>
+                </div>
+              </details>
+            </section>
+            <div class="podcast-admin__chapter-rows" data-podcast-chapter-rows></div>
+            <div class="podcast-admin__transcript-actions">
+              <button class="btn btn-outline-light" type="button" data-podcast-chapter-add>{{ workbench.production.addChapter }}</button>
+              <button class="btn btn-danger" type="button" data-podcast-chapter-save disabled>{{ workbench.production.saveReviewDraft }}</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-chapter-approve>{{ workbench.production.approveRevision }}</button>
+            </div>
+            <p class="podcast-admin__status" data-podcast-chapter-status role="status" aria-live="polite"></p>
+          </div>
+          <div class="podcast-admin__panel-heading podcast-admin__section-heading">
+            <div>
+              <h2>{{ workbench.production.reviewHeading }}</h2>
+              <p>{{ workbench.production.reviewIntro }}</p>
+            </div>
+            <p class="podcast-admin__pill">{{ workbench.production.exactRevisionPill }}</p>
+          </div>
+          <div class="podcast-admin__callout">
+            <p>{{ workbench.production.reviewCallout }}</p>
+          </div>
+          <form class="podcast-admin__form" data-podcast-review-form>
+            <div class="podcast-admin__field-grid">
+              <label>{{ workbench.common.episode }}
+                <select name="episodeId" data-podcast-review-episode required></select>
+              </label>
+              <label>{{ workbench.production.exactTarget }}
+                <select name="target" data-podcast-review-target required></select>
+              </label>
+              <label>{{ workbench.production.startOptional }}
+                <input name="startsAtSeconds" type="number" min="0" step="0.001">
+              </label>
+              <label>{{ workbench.production.endOptional }}
+                <input name="endsAtSeconds" type="number" min="0" step="0.001">
+              </label>
+            </div>
+            <label>{{ workbench.production.reviewNote }}
+              <textarea name="bodyText" rows="4" maxlength="4000" required></textarea>
+            </label>
+            <div class="podcast-admin__field-grid">
+              <label class="podcast-admin__checkbox">
+                <input name="blocker" type="checkbox">
+                {{ workbench.production.markBlocker }}
+              </label>
+              <label class="podcast-admin__checkbox">
+                <input name="assignToSelf" type="checkbox">
+                {{ workbench.production.assignToMe }}
+              </label>
+            </div>
+            <button class="btn btn-danger" type="submit">{{ workbench.production.addReview }}</button>
+            <p class="podcast-admin__status" data-podcast-review-status role="status" aria-live="polite"></p>
+          </form>
+          <div class="podcast-admin__transcript-meta" data-podcast-review-readiness aria-live="polite"></div>
+          <div class="podcast-admin__review-list" data-podcast-review-list></div>
+          <div class="podcast-admin__panel-heading podcast-admin__section-heading">
+            <div>
+              <h2>{{ workbench.production.readinessHeading }}</h2>
+              <p>{{ workbench.production.readinessIntro }}</p>
+            </div>
+          </div>
+          <div class="podcast-admin__callout">
+            <p>{{ workbench.production.readinessCallout }}</p>
+          </div>
+          <section class="podcast-admin__readiness" data-podcast-publication-readiness aria-label="{{ workbench.production.readinessAria }}">
+            <p class="podcast-admin__transcript-meta" data-podcast-readiness-summary aria-live="polite">{{ workbench.production.chooseReviewEpisode }}</p>
+            <div class="podcast-admin__readiness-groups" data-podcast-readiness-groups></div>
+            <p class="podcast-admin__status" data-podcast-readiness-status role="status" aria-live="polite"></p>
+          </section>
+          <div class="podcast-admin__panel-heading podcast-admin__section-heading">
+            <div>
+              <h2>{{ workbench.production.clipsHeading }}</h2>
+              <p>{{ workbench.production.clipsIntro }}</p>
+            </div>
+            <p class="podcast-admin__pill">{{ workbench.production.privatePill }}</p>
+          </div>
+          <div class="podcast-admin__callout">
+            <p>{{ workbench.production.clipsCallout }}</p>
+          </div>
+          <section
+            class="podcast-admin__callout podcast-admin__clip-draft"
+            data-podcast-clip-draft
+            hidden>
+            <h3>{{ workbench.production.clipDraftHeading }}</h3>
+            <p>{{ workbench.production.clipDraftIntro }}</p>
+            <p class="podcast-admin__help">{{ workbench.production.clipDraftReviewNotice }}</p>
+            <p
+              class="podcast-admin__status"
+              data-podcast-clip-draft-status
+              role="status"
+              aria-live="polite"></p>
+            <section
+              class="podcast-admin__show-notes-review"
+              data-podcast-clip-draft-review
+              aria-labelledby="podcast-clip-draft-review-heading"
+              hidden>
+              <h4 id="podcast-clip-draft-review-heading">{{ workbench.production.clipDraftReviewHeading }}</h4>
+              <p
+                class="podcast-admin__review-evidence"
+                data-podcast-clip-draft-evidence></p>
+              <ol
+                class="podcast-admin__clip-draft-list"
+                data-podcast-clip-draft-list></ol>
+              <div class="podcast-admin__form-actions">
+                <button
+                  class="btn btn-outline-light"
+                  type="button"
+                  data-podcast-clip-draft-dismiss>{{ workbench.production.clipDraftDismiss }}</button>
+              </div>
+            </section>
+            <details class="podcast-admin__advanced-tools podcast-admin__distribution-guidance">
+              <summary>{{ workbench.production.clipDraftManualHeading }}</summary>
+              <div class="podcast-admin__field-grid">
+                <label>{{ workbench.production.clipDraftSourceLanguage }}
+                  <select name="clipDraftSourceLanguage" data-podcast-clip-draft-source-language disabled>
+                    <option value="es">{{ workbench.common.spanish }}</option>
+                    <option value="en">{{ workbench.common.english }}</option>
+                  </select>
+                </label>
+                <label>{{ workbench.production.clipDraftOutputLanguage }}
+                  <select name="clipDraftOutputLanguage" data-podcast-clip-draft-output-language>
+                    <option value="es">{{ workbench.common.spanish }}</option>
+                    <option value="en">{{ workbench.common.english }}</option>
+                  </select>
+                </label>
+              </div>
+              <div class="podcast-admin__form-actions">
+                <button
+                  class="btn btn-outline-light"
+                  type="button"
+                  data-podcast-clip-draft-generate>{{ workbench.production.clipDraftGenerate }}</button>
+              </div>
+            </details>
+          </section>
+          <form class="podcast-admin__form" data-podcast-clip-form>
+            <div class="podcast-admin__field-grid">
+              <label>{{ workbench.production.clipTitle }}
+                <input name="title" maxlength="160" autocomplete="off" required>
+              </label>
+              <label>{{ workbench.production.format }}
+                <select name="aspectRatio">
+                  <option value="9:16">{{ workbench.production.vertical }}</option>
+                  <option value="1:1">{{ workbench.production.square }}</option>
+                  <option value="16:9">{{ workbench.production.landscape }}</option>
+                </select>
+              </label>
+              <label>{{ workbench.production.startCue }}
+                <select name="startCueId" required></select>
+              </label>
+              <label>{{ workbench.production.endCue }}
+                <select name="endCueId" required></select>
+              </label>
+              <label>{{ workbench.production.boundaryPrecision }}
+                <select name="boundaryMode" disabled>
+                  <option value="segment">{{ workbench.production.approvedCueBoundaries }}</option>
+                  <option value="word">{{ workbench.production.wordBoundariesLocked }}</option>
+                </select>
+              </label>
+              <label>{{ workbench.production.template }}
+                <select name="templateId" disabled>
+                  <option value="captioned-waveform-v1">{{ workbench.production.captionedWaveform }}</option>
+                </select>
+              </label>
+            </div>
+            <div
+              class="podcast-admin__clip-preview"
+              data-podcast-clip-preview
+              aria-live="polite"
+              aria-atomic="true"></div>
+            <div class="podcast-admin__transcript-actions">
+              <button class="btn btn-outline-light" type="button" data-podcast-clip-new>{{ workbench.production.newRecipe }}</button>
+              <button class="btn btn-danger" type="submit">{{ workbench.production.saveClipRecipe }}</button>
+              <button class="btn btn-outline-light" type="button" data-podcast-clip-render>{{ workbench.production.prepareManifest }}</button>
+            </div>
+            <p class="podcast-admin__status" data-podcast-clip-status role="status" aria-live="polite"></p>
+          </form>
+          <div class="podcast-admin__clip-list" data-podcast-clip-list></div>
+        </section>
+            </div>
+          </details>
+        </section>

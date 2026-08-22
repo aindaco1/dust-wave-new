@@ -3,6 +3,10 @@ import {
   normalizeShowNotesDraftResponse,
   SHOW_NOTES_LANGUAGES
 } from "./podcast-admin-show-notes-contract.js";
+import {
+  createEditorialDraftLifecycle,
+  preferredEditorialDraft
+} from "./podcast-admin-editorial-draft-lifecycle.js";
 
 export {
   normalizeShowNotesDraftCollection,
@@ -54,10 +58,11 @@ export function mountShowNotesAssistant({
 
   let episodeId = "";
   let editable = false;
-  let generating = false;
-  let loading = false;
-  let generationRevision = 0;
   let result = null;
+  const requests = createEditorialDraftLifecycle({
+    getContextKey: () => episodeId,
+    onBusyChange: refresh
+  });
 
   generate.addEventListener("click", generateDraft);
   apply.addEventListener("click", applyDraft);
@@ -67,6 +72,8 @@ export function mountShowNotesAssistant({
 
   function refresh() {
     root.hidden = !episodeId || !editable;
+    const generating = requests.isBusy("generating");
+    const loading = requests.isBusy("loading");
     generate.disabled = generating || loading || !episodeId || !editable;
     sourceLanguage.disabled = generating || loading || !editable;
     outputLanguage.disabled = generating || loading || !editable;
@@ -86,15 +93,13 @@ export function mountShowNotesAssistant({
   }
 
   async function generateDraft() {
-    if (generating || !episodeId || !editable) return;
-    generating = true;
-    const requestRevision = ++generationRevision;
-    const requestedEpisodeId = episodeId;
-    resetReview();
-    setStatus(status, text("showNotesGenerating"));
-    refresh();
-    try {
-      const payload = await client.request(
+    if (requests.isBusy("generating") || !episodeId || !editable) return;
+    await requests.run("generating", {
+      before() {
+        resetReview();
+        setStatus(status, text("showNotesGenerating"));
+      },
+      request: (requestedEpisodeId) => client.request(
         `/v1/admin/episodes/${encodeURIComponent(
           requestedEpisodeId
         )}/show-notes/draft`,
@@ -105,68 +110,46 @@ export function mountShowNotesAssistant({
             outputLanguage: outputLanguage.value
           }
         }
-      );
-      if (
-        requestRevision !== generationRevision
-        || requestedEpisodeId !== episodeId
-      ) return;
-      renderResult(normalizeShowNotesDraftResponse(payload));
-    } catch (error) {
-      if (
-        requestRevision === generationRevision
-        && requestedEpisodeId === episodeId
-      ) {
+      ),
+      onSuccess(payload) {
+        renderResult(normalizeShowNotesDraftResponse(payload));
+      },
+      onError(error) {
         setStatus(status, friendlyError(error), true);
       }
-    } finally {
-      if (requestRevision === generationRevision) generating = false;
-      refresh();
-    }
+    });
   }
 
   async function loadSavedDraft() {
     if (!episodeId) return;
-    const requestRevision = ++generationRevision;
-    const requestedEpisodeId = episodeId;
-    loading = true;
-    resetReview();
-    setStatus(status, text("showNotesLoadingAutomatic"));
-    refresh();
-    try {
-      const payload = await client.request(
+    await requests.run("loading", {
+      before() {
+        resetReview();
+        setStatus(status, text("showNotesLoadingAutomatic"));
+      },
+      request: (requestedEpisodeId) => client.request(
         `/v1/admin/episodes/${encodeURIComponent(
           requestedEpisodeId
         )}/show-notes/drafts`
-      );
-      if (
-        requestRevision !== generationRevision
-        || requestedEpisodeId !== episodeId
-      ) return;
-      const drafts = normalizeShowNotesDraftCollection(payload);
-      const preferred = drafts.find((candidate) =>
-        candidate.source.language === sourceLanguage.value
-        && candidate.outputLanguage === outputLanguage.value
-      ) || drafts.find((candidate) =>
-        candidate.outputLanguage === outputLanguage.value
-      ) || drafts[0];
-      if (preferred) {
-        sourceLanguage.value = preferred.source.language;
-        outputLanguage.value = preferred.outputLanguage;
-        renderResult(preferred);
-      } else {
-        setStatus(status, text("showNotesAutomaticPending"));
-      }
-    } catch (error) {
-      if (
-        requestRevision === generationRevision
-        && requestedEpisodeId === episodeId
-      ) {
+      ),
+      onSuccess(payload) {
+        const preferred = preferredEditorialDraft(
+          normalizeShowNotesDraftCollection(payload),
+          sourceLanguage.value,
+          outputLanguage.value
+        );
+        if (preferred) {
+          sourceLanguage.value = preferred.source.language;
+          outputLanguage.value = preferred.outputLanguage;
+          renderResult(preferred);
+        } else {
+          setStatus(status, text("showNotesAutomaticPending"));
+        }
+      },
+      onError(error) {
         setStatus(status, friendlyError(error), true);
       }
-    } finally {
-      if (requestRevision === generationRevision) loading = false;
-      refresh();
-    }
+    });
   }
 
   function renderResult(nextResult) {
@@ -220,9 +203,7 @@ export function mountShowNotesAssistant({
       const normalizedEpisodeId = String(nextEpisodeId || "");
       if (normalizedEpisodeId !== episodeId) {
         episodeId = normalizedEpisodeId;
-        generationRevision += 1;
-        generating = false;
-        loading = false;
+        requests.invalidate();
         resetReview();
       }
       const language = SHOW_NOTES_LANGUAGES.has(nextSourceLanguage)

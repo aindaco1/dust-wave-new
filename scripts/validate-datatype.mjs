@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { readSassSource } from "./lib/read-sass-source.mjs";
 
 const repositoryRoot = path.resolve(import.meta.dirname, "..");
 const fontPath = path.join(
@@ -24,12 +25,8 @@ const notices = await readFile(
   path.join(repositoryRoot, "THIRD_PARTY_NOTICES.md"),
   "utf8"
 );
-const styles = await readFile(
-  path.join(
-    repositoryRoot,
-    "src/scss/themes/base/_podcast-admin.scss"
-  ),
-  "utf8"
+const styles = await readSassSource(
+  new URL("../src/scss/themes/base/_podcast-admin.scss", import.meta.url)
 );
 const analytics = await readFile(
   path.join(repositoryRoot, "src/js/podcast-admin-analytics.js"),

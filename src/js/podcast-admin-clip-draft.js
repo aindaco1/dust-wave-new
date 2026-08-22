@@ -3,6 +3,10 @@ import {
   normalizeClipDraftCollection,
   normalizeClipDraftResponse
 } from "./podcast-admin-clip-draft-contract.js";
+import {
+  createEditorialDraftLifecycle,
+  preferredEditorialDraft
+} from "./podcast-admin-editorial-draft-lifecycle.js";
 
 export {
   normalizeClipDraftCollection,
@@ -62,11 +66,12 @@ export function mountClipDraftAssistant({
 
   let context = emptyContext();
   let editable = false;
-  let generating = false;
-  let loading = false;
-  let generationRevision = 0;
   let result = null;
   let appliedCandidateId = "";
+  const requests = createEditorialDraftLifecycle({
+    getContextKey: () => context.key,
+    onBusyChange: refresh
+  });
 
   generate.addEventListener("click", generateDraft);
   dismiss.addEventListener("click", dismissDraft);
@@ -85,6 +90,8 @@ export function mountClipDraftAssistant({
 
   function refresh() {
     root.hidden = !editable || !context.episodeId;
+    const generating = requests.isBusy("generating");
+    const loading = requests.isBusy("loading");
     generate.disabled = generating || loading || !eligible();
     sourceLanguage.disabled = true;
     outputLanguage.disabled = generating || loading || !editable;
@@ -102,15 +109,14 @@ export function mountClipDraftAssistant({
   }
 
   async function generateDraft() {
-    if (generating || !eligible()) return;
-    generating = true;
-    const requestRevision = ++generationRevision;
+    if (requests.isBusy("generating") || !eligible()) return;
     const requestedContext = { ...context };
-    resetReview();
-    setStatus(status, text("clipDraftGenerating"));
-    refresh();
-    try {
-      const payload = await client.request(
+    await requests.run("generating", {
+      before() {
+        resetReview();
+        setStatus(status, text("clipDraftGenerating"));
+      },
+      request: () => client.request(
         `/v1/admin/episodes/${encodeURIComponent(
           requestedContext.episodeId
         )}/clips/draft`,
@@ -121,25 +127,18 @@ export function mountClipDraftAssistant({
             outputLanguage: outputLanguage.value
           }
         }
-      );
-      if (
-        requestRevision !== generationRevision
-        || requestedContext.key !== context.key
-      ) return;
-      const normalized = normalizeClipDraftResponse(payload);
-      if (!matchesContext(normalized.source, context)) {
-        throw new TypeError("Clip-draft source evidence changed");
+      ),
+      onSuccess(payload) {
+        const normalized = normalizeClipDraftResponse(payload);
+        if (!matchesContext(normalized.source, context)) {
+          throw new TypeError("Clip-draft source evidence changed");
+        }
+        renderResult(normalized);
+      },
+      onError(error) {
+        setStatus(status, friendlyError(error), true);
       }
-      renderResult(normalized);
-    } catch (error) {
-      if (
-        requestRevision === generationRevision
-        && requestedContext.key === context.key
-      ) setStatus(status, friendlyError(error), true);
-    } finally {
-      if (requestRevision === generationRevision) generating = false;
-      refresh();
-    }
+    });
   }
 
   async function loadSavedDraft() {
@@ -147,45 +146,35 @@ export function mountClipDraftAssistant({
       setStatus(status, text("clipDraftAutomaticPending"));
       return;
     }
-    const requestRevision = ++generationRevision;
     const requestedContext = { ...context };
-    loading = true;
-    resetReview();
-    setStatus(status, text("clipDraftLoadingAutomatic"));
-    refresh();
-    try {
-      const payload = await client.request(
+    await requests.run("loading", {
+      before() {
+        resetReview();
+        setStatus(status, text("clipDraftLoadingAutomatic"));
+      },
+      request: () => client.request(
         `/v1/admin/episodes/${encodeURIComponent(
           requestedContext.episodeId
         )}/clips/drafts`
-      );
-      if (
-        requestRevision !== generationRevision
-        || requestedContext.key !== context.key
-      ) return;
-      const drafts = normalizeClipDraftCollection(payload);
-      const preferred = drafts.find((candidate) =>
-        candidate.source.language === context.language
-        && candidate.outputLanguage === outputLanguage.value
-      ) || drafts.find((candidate) =>
-        candidate.outputLanguage === outputLanguage.value
-      ) || drafts[0];
-      if (preferred) {
-        sourceLanguage.value = preferred.source.language;
-        outputLanguage.value = preferred.outputLanguage;
-        renderResult(preferred);
-      } else {
-        setStatus(status, text("clipDraftAutomaticPending"));
+      ),
+      onSuccess(payload) {
+        const preferred = preferredEditorialDraft(
+          normalizeClipDraftCollection(payload),
+          context.language,
+          outputLanguage.value
+        );
+        if (preferred) {
+          sourceLanguage.value = preferred.source.language;
+          outputLanguage.value = preferred.outputLanguage;
+          renderResult(preferred);
+        } else {
+          setStatus(status, text("clipDraftAutomaticPending"));
+        }
+      },
+      onError(error) {
+        setStatus(status, friendlyError(error), true);
       }
-    } catch (error) {
-      if (
-        requestRevision === generationRevision
-        && requestedContext.key === context.key
-      ) setStatus(status, friendlyError(error), true);
-    } finally {
-      if (requestRevision === generationRevision) loading = false;
-      refresh();
-    }
+    });
   }
 
   function renderResult(nextResult) {
@@ -267,15 +256,13 @@ export function mountClipDraftAssistant({
       const changed = next.key !== context.key;
       if (changed) {
         context = next;
-        generationRevision += 1;
-        generating = false;
-        loading = false;
+        requests.invalidate();
         resetReview();
       } else {
         context = next;
       }
       sourceLanguage.value = context.language || "es";
-    if (!CLIP_DRAFT_LANGUAGES.has(outputLanguage.value)) {
+      if (!CLIP_DRAFT_LANGUAGES.has(outputLanguage.value)) {
         outputLanguage.value = context.language || "es";
       }
       refresh();

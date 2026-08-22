@@ -5,11 +5,12 @@ import {
   sharedAdminShellPackage,
   sharedAdminShellVersion
 } from './lib/shared-admin-shell-version.mjs';
+import { readNunjucksSource } from './lib/read-nunjucks-source.mjs';
+import { readSassSource } from './lib/read-sass-source.mjs';
 
 const repositoryRoot = path.resolve(import.meta.dirname, '..');
-const adminTemplate = await readFile(
-  path.join(repositoryRoot, 'src/admin/podcasts/index.njk'),
-  'utf8'
+const adminTemplate = await readNunjucksSource(
+  new URL('../src/admin/podcasts/index.njk', import.meta.url)
 );
 const adminLayout = await readFile(
   path.join(repositoryRoot, 'src/_includes/layouts/podcast-admin.njk'),
@@ -250,6 +251,10 @@ const analyticsScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-analytics.js'),
   'utf8'
 );
+const audienceBillingScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-admin-audience-billing.js'),
+  'utf8'
+);
 const distributionCertificationScript = await readFile(
   path.join(
     repositoryRoot,
@@ -287,9 +292,8 @@ const podcastApiConfig = await readFile(
   path.join(repositoryRoot, 'src/_data/podcastApi.js'),
   'utf8'
 );
-const adminStyles = await readFile(
-  path.join(repositoryRoot, 'src/scss/themes/base/_podcast-admin.scss'),
-  'utf8'
+const adminStyles = await readSassSource(
+  new URL('../src/scss/themes/base/_podcast-admin.scss', import.meta.url)
 );
 const englishI18n = JSON.parse(
   await readFile(path.join(repositoryRoot, 'src/_data/i18n/en.json'), 'utf8')
@@ -1396,9 +1400,10 @@ assert.match(adminScript, /\/v1\/admin\/ads\/creatives/);
 assert.match(adminScript, /validated\.validationStatus !== "ready"/);
 assert.match(adminScript, /payload\.previewOnly/);
 assert.match(analyticsScript, /\/v1\/admin\/ads\/reconciliation/);
-assert.match(adminScript, /\/v1\/admin\/billing\/readiness/);
-assert.match(adminScript, /\/v1\/admin\/billing\/tax-evidence/);
-assert.match(adminScript, /\/v1\/admin\/subscribers/);
+assert.match(adminScript, /mountPodcastAudienceBilling/);
+assert.match(audienceBillingScript, /\/v1\/admin\/billing\/readiness/);
+assert.match(audienceBillingScript, /\/v1\/admin\/billing\/tax-evidence/);
+assert.match(audienceBillingScript, /\/v1\/admin\/subscribers/);
 assert.match(
   marketingLinksScript,
   /\/v1\/admin\/shows\/\$\{encodeURIComponent\(show\.id\)\}\/marketing\/links/
@@ -1410,13 +1415,13 @@ assert.doesNotMatch(
   /listRoot\.innerHTML/,
   'Saved marketing links must render provider-backed fields through DOM text nodes'
 );
-assert.match(adminScript, /function loadSubscribers/);
-assert.match(adminScript, /function renderSubscriberRecord/);
-assert.match(adminScript, /function exportSubscribers/);
-assert.match(adminScript, /requestCredentialedBlob/);
-assert.match(adminScript, /maximumBytes: 4 \* 1024 \* 1024/);
-assert.match(adminScript, /allowedContentTypes: \["text\/csv"\]/);
-assert.match(adminScript, /exportUrl\.origin !== baseUrl\.origin/);
+assert.match(audienceBillingScript, /async function loadSubscribers/);
+assert.match(audienceBillingScript, /function renderSubscriberRecord/);
+assert.match(audienceBillingScript, /async function exportSubscribers/);
+assert.match(audienceBillingScript, /requestCredentialedBlob/);
+assert.match(audienceBillingScript, /maximumBytes: 4 \* 1024 \* 1024/);
+assert.match(audienceBillingScript, /allowedContentTypes: \["text\/csv"\]/);
+assert.match(audienceBillingScript, /exportUrl\.origin !== baseUrl\.origin/);
 assert.match(adminScript, /function isSuperAdmin/);
 assert.match(adminScript, /adminText\("checkingSession"/);
 assert.match(adminScript, /adminText\("sendingLink"/);

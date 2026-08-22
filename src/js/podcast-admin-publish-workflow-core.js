@@ -118,15 +118,19 @@ export function deriveEpisodeWorkflow(episode, readiness) {
     id,
     status: stepStatus(id, episode, nodes, readiness)
   }));
-  const firstIncomplete = steps.find(({ id, status }) =>
-    id !== "publish" && ["needs_action", "processing"].includes(status)
+  const incompleteSteps = steps.filter(({ id, status }) =>
+    id !== "publish" && status !== "complete" && status !== "optional"
   );
+  const first = incompleteSteps.find(
+    ({ status }) => status !== "not_started"
+  ) || incompleteSteps[0];
   const blockers = nodes.filter(unresolvedBlocker);
   const actionableBlockers = blockers.filter(
     episodeWorkflowNodeRequiresAction
   );
-  const nextStep = firstIncomplete?.id
-    || (readiness?.candidateGate?.ready ? "publish" : "review");
+  const nextStep = readiness?.candidateGate?.ready
+    ? "publish"
+    : first?.id || "review";
   const currentStepBlockers = blockers.filter((node) =>
     workflowStepForNode(node) === nextStep
   );
@@ -145,6 +149,7 @@ export function deriveEpisodeWorkflow(episode, readiness) {
   return {
     blockers,
     actionableBlockers,
+    incompleteSteps,
     nextBlocker,
     nextStep,
     nextTarget: nextBlocker ? workflowTargetForNode(nextBlocker) : "",

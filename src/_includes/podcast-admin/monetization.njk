@@ -1,0 +1,284 @@
+        <section id="podcast-panel-monetization" class="podcast-admin__panel" role="tabpanel" aria-labelledby="podcast-tab-monetization" hidden>
+          <div class="podcast-admin__panel-heading">
+            <div>
+              <h2>{{ workbench.navigation.monetization }}</h2>
+              <p>{{ workbench.navigation.monetizationIntro }}</p>
+            </div>
+          </div>
+          <details
+            class="podcast-admin__progressive-section podcast-admin__workspace-group"
+            data-podcast-workspace-group="sponsors"
+            open>
+            <summary>
+              <h3 id="podcast-sponsors-heading">{{ i18n | t(language, "podcast.admin.tabs.sponsors") }}</h3>
+              <span class="podcast-admin__progressive-state" data-podcast-workspace-state aria-hidden="true">−</span>
+            </summary>
+            <div class="podcast-admin__progressive-body">
+        <section id="podcast-panel-sponsors" class="podcast-admin__workspace-content" aria-labelledby="podcast-sponsors-heading">
+          <div class="podcast-admin__panel-heading">
+            <div>
+              <p>{{ workbench.sponsors.intro }}</p>
+            </div>
+            <p class="podcast-admin__pill">{{ workbench.sponsors.previewOnly }}</p>
+          </div>
+          <div class="podcast-admin__callout">
+            <p>{{ workbench.sponsors.callout }}</p>
+          </div>
+          <form class="podcast-admin__form" data-podcast-campaign-form>
+            <h3>{{ workbench.sponsors.newCampaign }}</h3>
+            <p>{{ workbench.sponsors.campaignIntro }}</p>
+            <section
+              class="podcast-admin__field-group"
+              aria-labelledby="podcast-campaign-identity-heading">
+              <h4 id="podcast-campaign-identity-heading">{{ workbench.sponsors.identityGroup }}</h4>
+              <div class="podcast-admin__field-grid">
+                <label>{{ workbench.sponsors.campaignName }}
+                  <input name="name" autocomplete="off" required>
+                </label>
+                <label>{{ workbench.sponsors.type }}
+                  <select name="campaignType">
+                    <option value="house">{{ workbench.sponsors.house }}</option>
+                    <option value="direct">{{ workbench.sponsors.direct }}</option>
+                  </select>
+                </label>
+                <label data-direct-sponsor-field hidden>{{ workbench.sponsors.sponsorName }}
+                  <input name="sponsorName">
+                </label>
+                <label data-direct-sponsor-field hidden>{{ workbench.sponsors.sponsorWebsite }}
+                  <input name="sponsorWebsiteUrl" type="url" inputmode="url">
+                </label>
+              </div>
+            </section>
+            <section
+              class="podcast-admin__field-group"
+              aria-labelledby="podcast-campaign-schedule-heading">
+              <h4 id="podcast-campaign-schedule-heading">{{ workbench.sponsors.scheduleGroup }}</h4>
+              <div class="podcast-admin__field-grid">
+                <label>{{ workbench.sponsors.starts }}
+                  <input name="startsAt" type="datetime-local" required>
+                </label>
+                <label>{{ workbench.sponsors.ends }}
+                  <input name="endsAt" type="datetime-local">
+                </label>
+                <label>{{ workbench.sponsors.episodeTarget }}
+                  <select name="episodeId">
+                    <option value="">{{ workbench.sponsors.allEpisodes }}</option>
+                  </select>
+                </label>
+                <label>{{ workbench.sponsors.position }}
+                  <select name="position">
+                    <option value="">{{ workbench.sponsors.allPositions }}</option>
+                    <option value="pre">{{ workbench.common.preRoll }}</option>
+                    <option value="mid">{{ workbench.common.midRoll }}</option>
+                    <option value="post">{{ workbench.common.postRoll }}</option>
+                  </select>
+                </label>
+              </div>
+            </section>
+            <section
+              class="podcast-admin__field-group"
+              aria-labelledby="podcast-campaign-delivery-heading">
+              <h4 id="podcast-campaign-delivery-heading">{{ workbench.sponsors.deliveryGroup }}</h4>
+              <div class="podcast-admin__field-grid">
+                <label>{{ workbench.sponsors.podcastApp }}
+                  <select name="appName">
+                    <option value="">{{ workbench.sponsors.allApps }}</option>
+                    <option value="apple_podcasts">Apple Podcasts</option>
+                    <option value="spotify">Spotify</option>
+                    <option value="pocket_casts">Pocket Casts</option>
+                    <option value="overcast">Overcast</option>
+                    <option value="podcast_addict">Podcast Addict</option>
+                    <option value="browser">{{ workbench.sponsors.webPlayer }}</option>
+                  </select>
+                </label>
+                <label>{{ workbench.sponsors.device }}
+                  <select name="deviceType">
+                    <option value="">{{ workbench.sponsors.allDevices }}</option>
+                    <option value="mobile">{{ workbench.sponsors.mobile }}</option>
+                    <option value="tablet">{{ workbench.sponsors.tablet }}</option>
+                    <option value="desktop">{{ workbench.sponsors.desktop }}</option>
+                    <option value="smart_speaker">{{ workbench.sponsors.smartSpeaker }}</option>
+                    <option value="unknown">{{ workbench.sponsors.unknown }}</option>
+                  </select>
+                </label>
+                <label>{{ workbench.sponsors.priority }}
+                  <input name="priority" type="number" min="-1000" max="1000" value="0">
+                </label>
+                <label>{{ workbench.sponsors.pacing }}
+                  <select name="pacingStrategy">
+                    <option value="even">{{ workbench.sponsors.even }}</option>
+                    <option value="asap">{{ workbench.sponsors.asap }}</option>
+                    <option value="manual">{{ workbench.sponsors.manual }}</option>
+                  </select>
+                </label>
+                <label>{{ workbench.sponsors.hardCap }}
+                  <input name="impressionCap" type="number" min="1">
+                </label>
+                <label>{{ workbench.sponsors.qualifiedGoal }}
+                  <input name="qualifiedImpressionGoal" type="number" min="1">
+                </label>
+              </div>
+            </section>
+            <section
+              class="podcast-admin__field-group"
+              data-direct-sponsor-field
+              aria-labelledby="podcast-campaign-commercial-heading"
+              hidden>
+              <h4 id="podcast-campaign-commercial-heading">{{ workbench.sponsors.commercialGroup }}</h4>
+              <div class="podcast-admin__field-grid podcast-admin__field-grid--three">
+                <label>{{ workbench.sponsors.billingModel }}
+                  <select name="billingModel">
+                    <option value="flat_fee">{{ workbench.sponsors.flatFee }}</option>
+                    <option value="cpm">CPM</option>
+                  </select>
+                </label>
+                <label>{{ workbench.sponsors.contractAmount }}
+                  <input name="contractAmount" type="number" min="0" step="0.01">
+                </label>
+                <label>{{ workbench.sponsors.cpm }}
+                  <input name="cpm" type="number" min="0" step="0.01">
+                </label>
+              </div>
+            </section>
+            <button class="btn btn-outline-light" type="submit">{{ workbench.sponsors.createCampaign }}</button>
+            <p class="podcast-admin__status" data-podcast-campaign-status role="status" aria-live="polite"></p>
+          </form>
+          <div class="podcast-admin__campaign-list" data-podcast-campaign-list></div>
+
+          <form class="podcast-admin__form" data-podcast-creative-form hidden>
+            <h3>{{ workbench.sponsors.creativeHeading }}</h3>
+            <p>{{ workbench.sponsors.creativeIntro }}</p>
+            <div class="podcast-admin__field-grid">
+              <label>{{ workbench.sponsors.campaign }}
+                <select name="campaignId" required></select>
+              </label>
+              <label>{{ workbench.sponsors.creativeName }}
+                <input name="name" autocomplete="off" required>
+              </label>
+              <label>{{ workbench.sponsors.declaredDuration }}
+                <input name="durationSeconds" type="number" min="1" max="600" required>
+              </label>
+              <label>{{ workbench.sponsors.selectionWeight }}
+                <input name="weight" type="number" min="1" max="1000000" value="1" required>
+              </label>
+            </div>
+            <label>{{ workbench.sponsors.mp3File }}
+              <input name="audio" type="file" accept=".mp3,audio/mpeg" required>
+            </label>
+            <progress data-podcast-creative-progress max="3" value="0" hidden></progress>
+            <button class="btn btn-outline-light" type="submit">{{ workbench.sponsors.uploadCreative }}</button>
+            <p class="podcast-admin__status" data-podcast-creative-status role="status" aria-live="polite"></p>
+          </form>
+
+          <form class="podcast-admin__form" data-podcast-sponsor-preview-form>
+            <div class="podcast-admin__field-grid">
+              <label>{{ workbench.common.episode }}
+                <select name="episodeId" required></select>
+              </label>
+              <label>{{ workbench.sponsors.position }}
+                <select name="position">
+                  <option value="pre">{{ workbench.common.preRoll }}</option>
+                  <option value="mid" selected>{{ workbench.common.midRoll }}</option>
+                  <option value="post">{{ workbench.common.postRoll }}</option>
+                </select>
+              </label>
+              <label>{{ workbench.sponsors.podcastApp }}
+                <select name="appName">
+                  <option value="apple_podcasts">Apple Podcasts</option>
+                  <option value="spotify">Spotify</option>
+                  <option value="pocket_casts">Pocket Casts</option>
+                  <option value="overcast">Overcast</option>
+                  <option value="podcast_addict">Podcast Addict</option>
+                  <option value="browser">{{ workbench.sponsors.webPlayer }}</option>
+                  <option value="unknown">{{ workbench.sponsors.unknown }}</option>
+                </select>
+              </label>
+              <label>{{ workbench.sponsors.device }}
+                <select name="deviceType">
+                  <option value="mobile">{{ workbench.sponsors.mobile }}</option>
+                  <option value="tablet">{{ workbench.sponsors.tablet }}</option>
+                  <option value="desktop">{{ workbench.sponsors.desktop }}</option>
+                  <option value="smart_speaker">{{ workbench.sponsors.smartSpeaker }}</option>
+                  <option value="unknown">{{ workbench.sponsors.unknown }}</option>
+                </select>
+              </label>
+              <label>{{ workbench.sponsors.streamProfile }}
+                <input name="streamProfile" value="mp3-44100-stereo-cbr128-frame-v1" required>
+              </label>
+              <label>{{ workbench.sponsors.decisionTime }}
+                <input name="at" type="datetime-local">
+              </label>
+            </div>
+            <button class="btn btn-danger" type="submit">{{ workbench.sponsors.previewDecision }}</button>
+            <p class="podcast-admin__status" data-podcast-sponsor-status role="status" aria-live="polite"></p>
+          </form>
+          <div data-podcast-sponsor-preview-result aria-live="polite"></div>
+        </section>
+            </div>
+          </details>
+
+          <details
+            class="podcast-admin__progressive-section podcast-admin__workspace-group"
+            data-podcast-workspace-group="billing">
+            <summary>
+              <h3 id="podcast-billing-heading">{{ i18n | t(language, "podcast.admin.tabs.premium") }}</h3>
+              <span class="podcast-admin__progressive-state" data-podcast-workspace-state aria-hidden="true">+</span>
+            </summary>
+            <div class="podcast-admin__progressive-body">
+              <section id="podcast-panel-billing" class="podcast-admin__workspace-content" aria-labelledby="podcast-billing-heading">
+                <div class="podcast-admin__panel-heading">
+                  <div>
+                    <p>{{ i18n | t(language, "podcast.admin.billing.intro") }}</p>
+                  </div>
+                  <div class="podcast-admin__billing-actions">
+                    <button class="btn btn-outline-light" type="button" data-podcast-billing-refresh>{{ i18n | t(language, "podcast.admin.billing.refresh") }}</button>
+                    <button class="btn btn-outline-light" type="button" data-podcast-billing-export>{{ i18n | t(language, "podcast.admin.billing.export") }}</button>
+                  </div>
+                </div>
+                <p class="podcast-admin__status" data-podcast-billing-status role="status" aria-live="polite"></p>
+                <section
+                  class="podcast-admin__form podcast-admin__form--settings"
+                  data-podcast-tax-policy
+                  hidden>
+                  <h3>{{ i18n | t(language, "podcast.admin.billing.taxPolicyHeading") }}</h3>
+                  <p>{{ i18n | t(language, "podcast.admin.billing.taxPolicyIntro") }}</p>
+                  <dl
+                    class="podcast-admin__readiness-evidence"
+                    data-podcast-tax-policy-current></dl>
+                  <div class="podcast-admin__callout">
+                    <h4>{{ i18n | t(language, "podcast.admin.billing.taxPolicyCandidate") }}</h4>
+                    <dl
+                      class="podcast-admin__readiness-evidence"
+                      data-podcast-tax-policy-candidate></dl>
+                  </div>
+                  <form
+                    class="podcast-admin__callout"
+                    data-podcast-tax-policy-form
+                    hidden>
+                    <p>{{ i18n | t(language, "podcast.admin.billing.taxPolicySafety") }}</p>
+                    <p data-podcast-tax-policy-confirmation-hint></p>
+                    <label>{{ i18n | t(language, "podcast.admin.billing.taxPolicyConfirmation") }}
+                      <input
+                        name="confirmation"
+                        type="text"
+                        autocomplete="off"
+                        maxlength="240"
+                        required>
+                    </label>
+                    <div class="podcast-admin__billing-actions">
+                      <button class="btn btn-danger" type="submit">
+                        {{ i18n | t(language, "podcast.admin.billing.taxPolicyApprove") }}
+                      </button>
+                    </div>
+                  </form>
+                  <p
+                    class="podcast-admin__status"
+                    data-podcast-tax-policy-status
+                    role="status"
+                    aria-live="polite"></p>
+                </section>
+                <div data-podcast-billing></div>
+              </section>
+            </div>
+          </details>
+        </section>

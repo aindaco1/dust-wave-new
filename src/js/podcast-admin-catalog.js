@@ -1,10 +1,15 @@
+import {
+  createContextualEditButton
+} from "./podcast-admin-contextual-editing.js";
+
 export function renderShowCatalog({
   target,
   shows,
   text,
   localizedCode,
   escapeHtml,
-  escapeAttribute
+  escapeAttribute,
+  canEdit = false
 }) {
   target.replaceChildren(...shows.map((show) => {
     const card = document.createElement("article");
@@ -20,7 +25,20 @@ export function renderShowCatalog({
           ? text("configured")
           : text("off"))}</dd></div>
       </dl>
-      <p><a class="btn btn-outline-light" href="${escapeAttribute(show.canonicalUrl)}">${escapeHtml(text("canonicalShowPage"))}</a></p>`;
+      <div class="podcast-admin__clip-actions" data-podcast-show-actions>
+        <a class="btn btn-outline-light" href="${escapeAttribute(show.canonicalUrl)}">${escapeHtml(text("canonicalShowPage"))}</a>
+      </div>`;
+    if (canEdit) {
+      card.querySelector("[data-podcast-show-actions]")?.prepend(
+        createContextualEditButton({
+          document: target.ownerDocument || document,
+          type: "show",
+          id: show.id,
+          label: text("editShow"),
+          accessibleLabel: text("editShowLabel", { title: show.title })
+        })
+      );
+    }
     return card;
   }));
 }

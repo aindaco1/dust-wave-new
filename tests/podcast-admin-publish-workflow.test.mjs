@@ -5,6 +5,9 @@ import {
   workflowStepForNode,
   workflowTargetForNode
 } from "../src/js/podcast-admin-publish-workflow-core.js";
+import {
+  episodeWorkflowSummary
+} from "../src/js/podcast-admin-publish-workflow-summary.js";
 
 test("episode workflow derives steps from immutable readiness evidence", () => {
   const derived = deriveEpisodeWorkflow({
@@ -76,8 +79,18 @@ test("episode evidence completes details and media without duplicate nodes", () 
     derived.steps.find(({ id }) => id === "media").status,
     "complete"
   );
-  assert.equal(derived.nextStep, "review");
+  assert.equal(derived.nextStep, "transcript");
+  assert.deepEqual(
+    derived.incompleteSteps.map(({ id }) => id),
+    ["transcript", "review"]
+  );
   assert.equal(derived.nextBlocker, null);
+  assert.deepEqual(episodeWorkflowSummary(derived, {
+    candidateGate: { ready: false }
+  }), {
+    key: "workflowIncompleteSummary",
+    values: { count: 2 }
+  });
 });
 
 test("episode workflow prioritizes one exact blocker in step order", () => {
@@ -137,6 +150,10 @@ test("episode workflow waits while automatic media work is pending", () => {
   assert.equal(derived.waitingForAutomation, true);
   assert.deepEqual(derived.actionableBlockers, []);
   assert.equal(
+    episodeWorkflowSummary(derived, { candidateGate: { ready: false } }).key,
+    "workflowProcessingSummary"
+  );
+  assert.equal(
     derived.steps.find(({ id }) => id === "media").status,
     "processing"
   );
@@ -167,6 +184,12 @@ test("episode workflow still routes an explicit approval wait", () => {
   assert.equal(derived.nextBlocker.id, "editorial.production_review");
   assert.equal(derived.waitingForAutomation, false);
   assert.equal(derived.actionableBlockers.length, 1);
+  assert.deepEqual(episodeWorkflowSummary(derived, {
+    candidateGate: { ready: false }
+  }), {
+    key: "workflowNeedsActionSummary",
+    values: { count: 1 }
+  });
 });
 
 test("transcript and alignment warnings remain visible but optional at launch", () => {
@@ -201,4 +224,8 @@ test("transcript and alignment warnings remain visible but optional at launch", 
   assert.equal(derived.steps.find(({ id }) => id === "publish").status, "ready");
   assert.equal(derived.nextStep, "publish");
   assert.equal(derived.blockers.length, 0);
+  assert.equal(
+    episodeWorkflowSummary(derived, { candidateGate: { ready: true } }).key,
+    "workflowReadySummary"
+  );
 });

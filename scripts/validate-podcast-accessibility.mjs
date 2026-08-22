@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import { readNunjucksSource } from "./lib/read-nunjucks-source.mjs";
+import { readSassSource } from "./lib/read-sass-source.mjs";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
+const readTemplate = (path) => readNunjucksSource(
+  new URL(`../${path}`, import.meta.url)
+);
 
 const [
   admin,
@@ -19,7 +24,7 @@ const [
   socialIcon,
   workflow
 ] = await Promise.all([
-  read("src/admin/podcasts/index.njk"),
+  readTemplate("src/admin/podcasts/index.njk"),
   read("src/_includes/layouts/podcast-admin.njk"),
   read("src/js/podcast-admin-analytics.js"),
   read("src/_includes/layouts/default.njk"),
@@ -28,7 +33,9 @@ const [
   read("src/_includes/layouts/new.njk"),
   read("src/_includes/snippets/audio-player.njk"),
   read("src/scss/themes/base/_podcast-member.scss"),
-  read("src/scss/themes/base/_podcast-admin.scss"),
+  readSassSource(
+    new URL("../src/scss/themes/base/_podcast-admin.scss", import.meta.url)
+  ),
   read("src/scss/themes/base/_style-theme.scss"),
   read("src/podcasts/show.njk"),
   read("src/_includes/snippets/social-icon.njk"),
@@ -102,6 +109,10 @@ assert.match(
 assert.match(
   styleTheme,
   /\.podcast-show__eyebrow,[\s\S]+?color: #ff8b7e;/
+);
+assert.match(
+  styleTheme,
+  /\.skip-link\s*\{[^}]*background: #fff;[^}]*color: #000 !important;/s
 );
 assert.match(
   memberStyles,

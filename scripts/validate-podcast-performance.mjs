@@ -3,6 +3,7 @@ import { readFile, stat } from "node:fs/promises";
 import {
   versionModuleImports
 } from "./version-module-imports.mjs";
+import { readNunjucksSource } from "./lib/read-nunjucks-source.mjs";
 
 const repositoryRoot = new URL("../", import.meta.url);
 const [
@@ -23,7 +24,7 @@ const [
 ] = await Promise.all([
   readFile(new URL("src/_includes/snippets/head.njk", repositoryRoot), "utf8"),
   readFile(new URL("src/podcasts/show.njk", repositoryRoot), "utf8"),
-  readFile(new URL("src/admin/podcasts/index.njk", repositoryRoot), "utf8"),
+  readNunjucksSource(new URL("src/admin/podcasts/index.njk", repositoryRoot)),
   readFile(new URL("src/podcasts/account.njk", repositoryRoot), "utf8"),
   readFile(
     new URL("src/_includes/layouts/podcast-admin.njk", repositoryRoot),
@@ -196,7 +197,7 @@ for (const [name, layout] of [
 }
 
 const scriptBudgets = new Map([
-  ["src/js/podcast-admin.js", 304_200],
+  ["src/js/podcast-admin.js", 282_500],
   ["src/js/podcast-admin-episode-context.js", 5_000],
   ["src/js/podcast-admin-episode-context-setup.js", 3_000],
   ["src/js/podcast-admin-show-context.js", 2_000],
@@ -217,7 +218,8 @@ const scriptBudgets = new Map([
   ["src/js/podcast-admin-autopilot.js", 4_000],
   ["src/js/podcast-admin-autopilot-core.js", 5_000],
   ["src/js/podcast-admin-publish-workflow.js", 9_000],
-  ["src/js/podcast-admin-publish-workflow-core.js", 5_000],
+  ["src/js/podcast-admin-publish-workflow-core.js", 5_500],
+  ["src/js/podcast-admin-publish-workflow-summary.js", 1_500],
   ["src/js/podcast-admin-publish-sections.js", 4_500],
   ["src/js/podcast-admin-readiness-loader.js", 2_000],
   ["src/js/podcast-admin-workflow-responsive.js", 1_500],
@@ -236,6 +238,7 @@ const scriptBudgets = new Map([
   ["src/js/podcast-admin-clip-publications.js", 10_000],
   ["src/js/podcast-admin-distribution-certification.js", 5_000],
   ["src/js/podcast-admin-catalog.js", 8_000],
+  ["src/js/podcast-admin-contextual-editing.js", 12_000],
   ["src/js/podcast-admin-episode-editor.js", 8_000],
   ["src/js/podcast-admin-show-notes.js", 9_000],
   ["src/js/podcast-admin-show-notes-contract.js", 5_000],
@@ -243,6 +246,7 @@ const scriptBudgets = new Map([
   ["src/js/podcast-admin-chapter-draft-contract.js", 5_000],
   ["src/js/podcast-admin-clip-draft.js", 12_000],
   ["src/js/podcast-admin-clip-draft-contract.js", 6_000],
+  ["src/js/podcast-admin-editorial-draft-lifecycle.js", 3_000],
   ["src/js/podcast-admin-clip-preview.js", 5_000],
   ["src/js/podcast-admin-download-actions.js", 3_000],
   ["src/js/podcast-admin-episode-youtube.js", 10_000],
@@ -252,6 +256,7 @@ const scriptBudgets = new Map([
   ["src/js/podcast-admin-delivery-audio-approval.js", 2_000],
   ["src/js/podcast-admin-retriable-operation.js", 2_000],
   ["src/js/podcast-admin-analytics.js", 20_000],
+  ["src/js/podcast-admin-audience-billing.js", 22_500],
   ["src/js/podcast-admin-launch-lab.js", 12_000],
   ["src/js/podcast-admin-rss-import.js", 35_000],
   ["src/js/podcast-admin-rss-reconciliation.js", 18_000],
