@@ -2,7 +2,7 @@
 
 Static website for [dustwave.xyz](https://dustwave.xyz), built with Eleventy and Bootstrap 5.
 
-Current release: `v1.3.0`. This site deliberately remains on its validated,
+Current release: `v1.4.0`. This site deliberately remains on its validated,
 independently reversible Dust Wave Platform `v0.15.0` pin until a future site
 release adopts a newer shared contract.
 
@@ -49,6 +49,32 @@ empty and will be populated again by the next local or production build.
 Push to `main` branch → GitHub Actions builds and deploys via GitHub Pages artifacts automatically. No manual build needed.
 
 You can also trigger a manual deploy from the Actions tab → "Build and Deploy" → "Run workflow".
+
+Deployment and semantic release are separate. Every accepted push to `main`
+updates production, while version tags mark stable user-facing milestones.
+
+### Releases
+
+Use semantic versions for the website and Podcast Admin:
+
+- Patch releases cover backward-compatible fixes, accessibility corrections,
+  and performance improvements.
+- Minor releases add backward-compatible user-facing capabilities.
+- Major releases are reserved for intentionally incompatible contracts or
+  workflows.
+
+Release checklist:
+
+1. Move the completed entries from `Unreleased` in `CHANGELOG.md` to a dated
+   version heading.
+2. Update `package.json` and `package-lock.json` to the same version.
+3. Run `npm run check:podcasts`, `npm run build`, and `git diff --check`.
+4. Commit the release metadata, create an annotated `vX.Y.Z` tag, and push
+   `main` plus the tag.
+5. Confirm the Build and Deploy workflow, Cloudflare cache purge and header
+   checks, then verify the live homepage, mobile navigation, and authenticated
+   Podcast shell. A deployment is not complete merely because Pages accepted
+   the artifact.
 
 The build runs `npm run check:podcasts`, which scans tracked text through the
 shared Dust Wave credential-leak gate, fails on high-severity dependency
@@ -303,7 +329,7 @@ npm run build:og
 
 Create a default fallback image at `src/img/og/default.png` (1200×630).
 
-### Podcast Admin performance traces
+### Frontend performance architecture
 
 The public shell intentionally has no Font Awesome request and no Bootstrap
 JavaScript runtime. Font Awesome Free vectors are inlined at build time, the
@@ -321,6 +347,14 @@ back to H.264 MP4, then to the existing small GIF when native video is
 unavailable. Preserve the source GIF as the visual master; any future encode
 must retain the 960×636 framing, 8 fps cadence, 6.75-second loop, and current
 crop at the supported viewport matrix.
+
+`scripts/validate-site-performance.mjs` keeps the optimized shell from
+silently regressing. It enforces the native media sources and their byte
+budgets, the small shared navigation controller, build-time icons, deferred
+Quicklink loading, and the absence of global Font Awesome and Bootstrap
+runtime requests.
+
+### Podcast Admin performance traces
 
 Capture a Chrome DevTools-compatible JSON trace against the isolated staging
 admin with the repository's dependency-free tracer:

@@ -1,7 +1,27 @@
 # Changelog
 
-## Unreleased
+## v1.4.0 - 2026-08-25
 
+- Added guarded Super-admin show creation and deletion workflows with stable
+  show identities, typed confirmation, bilingual feedback, and fail-closed
+  role and API checks.
+- Simplified the Podcast Admin into six task-oriented sections with route-owned
+  templates and styles, contextual editing paths, a shared current-episode
+  context, and show-scoped Audience and billing state.
+- Clarified single-show and multi-show operation: one accessible show switcher
+  appears only when needed, remembers only an authorized selection, and keeps
+  Distribution and episode workflows within the selected-show boundary.
+- Fixed stale readiness after sign-out, restored the Podcast member font
+  contract, and corrected the staging Checkout address flow without weakening
+  its Turnstile or API-origin guards.
+- Added Dusty Deen to the bilingual member roster and Pages CMS configuration.
+- Reconciled the README and Pool explainer with the active Dust Wave `v1.3.0`,
+  Pool `v1.2.19`, locked-install workflow, exact shared-package scope, and
+  consumer-owned deployment boundary.
+- Refreshed the lockfile-only `js-yaml` copies from 3.15.0/4.3.0 to
+  3.15.1/4.3.1 after the high-severity quadratic `!!omap` advisory appeared;
+  the root audit returns zero known vulnerabilities without changing declared
+  application dependencies.
 - Removed the sitewide Font Awesome request and Bootstrap JavaScript runtime
   while preserving Bootstrap SCSS. Exact Font Awesome Free vectors are now
   inlined at build time, the shared navigation uses a 758-byte controller, and
@@ -25,13 +45,6 @@
   and added an executable pin/package contract. Existing Admin Shell 0.10.2
   and Media Core 0.3.0 behavior is unchanged; site content, Podcast UI policy,
   Newsletter credentials, and deployment remain local.
-- Reconciled the README and Pool explainer with the active Dust Wave `v1.3.0`,
-  Pool `v1.2.19`, locked-install workflow, exact shared-package scope, and
-  consumer-owned deployment boundary.
-- Refreshed the lockfile-only `js-yaml` copies from 3.15.0/4.3.0 to
-  3.15.1/4.3.1 after the high-severity quadratic `!!omap` advisory appeared;
-  the root audit returns zero known vulnerabilities without changing declared
-  application dependencies.
 - Added an episode-centered bilingual Autopilot view that separates automatic
   processing, approval waits, platform delays, and terminal failures. Pending
   system work now reads as Processing, hides misleading Fix/Continue actions,
