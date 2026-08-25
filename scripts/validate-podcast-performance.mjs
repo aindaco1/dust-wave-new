@@ -67,10 +67,10 @@ assert.match(
   /{% if not disableLegacyMediaPreconnects %}[\s\S]+stitcher\.simplecastaudio\.com[\s\S]+{% endif %}/,
   "legacy media preconnects must remain suppressible on Podcast surfaces"
 );
-assert.match(
+assert.doesNotMatch(
   head,
-  /{% if not disableFontAwesome %}[\s\S]+cdnjs\.cloudflare\.com\/ajax\/libs\/font-awesome\/6\.5\.2\/css\/all\.min\.css[\s\S]+{% endif %}/,
-  "Font Awesome must remain suppressible on icon-free performance surfaces"
+  /font-awesome|cdnjs\.cloudflare\.com\/ajax\/libs\/font-awesome/i,
+  "Font Awesome must not block any site surface"
 );
 assert.match(
   head,
@@ -79,8 +79,8 @@ assert.match(
 );
 assert.match(
   admin,
-  /disableFontAwesome: true/,
-  "Podcast Admin must not block first paint on its unused icon font"
+  /cssBundle: podcast-admin/,
+  "Podcast Admin must load only its route-specific style bundle"
 );
 assert.match(
   admin,
@@ -94,8 +94,8 @@ assert.doesNotMatch(
 );
 assert.match(
   member,
-  /disableFontAwesome: true/,
-  "Podcast member auth must not load its unused external icon font"
+  /cssBundle: podcast-member/,
+  "Podcast member auth must load only its route-specific style bundle"
 );
 assert.match(
   member,

@@ -1,5 +1,23 @@
 # Changelog
 
+## Unreleased
+
+- Removed the sitewide Font Awesome request and Bootstrap JavaScript runtime
+  while preserving Bootstrap SCSS. Exact Font Awesome Free vectors are now
+  inlined at build time, the shared navigation uses a 758-byte controller, and
+  the Mastodon share prompt uses native `<dialog>` behavior.
+- Fixed the Podcast Admin mobile menu, which previously depended on Bootstrap
+  JavaScript that its private layout did not load.
+- Split Podcast episode, member, and Admin styles from the public theme bundle;
+  the production public stylesheet fell from 167.5 KB to 78.2 KB in the local
+  production build. Large digest, gallery, and YouTube footer behaviors are
+  now emitted only on routes that use them.
+- Replaced the 7.44 MB animated home/projects background request with a
+  perceptually equivalent 2.0 MB VP9 source, a 4.3 MB H.264 fallback, a 38 KB
+  poster, and the existing small GIF as the final fallback.
+- Removed the unused AOS dependency and deleted AOS/Bootstrap JavaScript
+  artifacts. Adobe Fonts and their display behavior are unchanged.
+
 ## v1.3.0 - 2026-08-06
 
 - Advanced the independently reversible Dust Wave Platform gitlink to

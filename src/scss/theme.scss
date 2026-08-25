@@ -11,11 +11,6 @@
 //Additional components or component overwrites
 @import "themes/base/components/buttons";
 @import "themes/base/components/carousel";
-@import "themes/base/podcast-admin";
-@import "themes/base/podcast-chapters";
-@import "themes/base/podcast-clips";
-@import "themes/base/podcast-member";
-@import "themes/base/podcast-transcript";
 
 //Additional utlities or utility overwrites
 @import "themes/base/utilities/bg-colors";
@@ -25,6 +20,3 @@
 @import "themes/base/utilities/m-vw";
 @import "themes/base/utilities/vh";
 @import "themes/base/utilities/border-responsive-remove";
-
-// More 3rd party stuff
-@import "assets/aos/aos";

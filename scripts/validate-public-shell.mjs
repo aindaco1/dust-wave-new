@@ -94,10 +94,10 @@ assert.match(
   styles,
   /\.footer-social a\s*\{[\s\S]*min-height:\s*1\.5rem;[\s\S]*min-width:\s*1\.5rem;/
 );
-assert.match(notFound, /^disableFontAwesome:\s*true$/m);
-
 assert.match(navbar, /site-navbar__inner/);
 assert.match(navbar, /site-navbar__brand/);
+assert.match(navbar, /data-site-nav-toggle/);
+assert.doesNotMatch(navbar, /data-bs-toggle/);
 assert.match(navbarContent, /site-navbar__content/);
 assert.match(navbarContent, /site-navbar__links/);
 assert.match(

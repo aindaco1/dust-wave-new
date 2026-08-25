@@ -30,9 +30,8 @@
 	</div>
 	{% endif %}
 
-	<!-- External deps (unchanged) -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.3.0/quicklink.umd.js"></script>
-	<script src="{{ '/js/bootstrap.bundle.min.js' | url }}"></script>
+	<!-- Small cross-browser in-view prefetch helper. -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.3.0/quicklink.umd.js" defer></script>
 
 	<!-- App footer bundle -->
 	<script>
@@ -99,6 +98,7 @@
 	2) Home-page glitch loop
 	- Runs only when <body class="test"> is present and #glitch-target exists
 	========================================================================= */
+	{% if isHomepage or translationKey == "projects" %}
 	(() => {
 	if (!document.body.classList.contains('test')) return;
 
@@ -143,6 +143,7 @@
 		? document.addEventListener('DOMContentLoaded', go, { once:true })
 		: go();
 	})();
+	{% endif %}
 
 	/* =========================================================================
 	3) quicklink prefetch (safe guard)
@@ -168,6 +169,7 @@
 	/* =========================================================================
 	4) Lite YouTube — upgrade iframes to click-to-load
 	========================================================================= */
+	{% if content and ('youtube.com/embed/' in content or 'youtube-nocookie.com/embed/' in content) %}
 	(() => {
 	'use strict';
 
@@ -218,10 +220,12 @@
 		? document.addEventListener('DOMContentLoaded', upgradeAll, { once:true })
 		: upgradeAll();
 	})();
+	{% endif %}
 
 	/* =========================================================================
 	5) Fast column balancer (moves .card.pending into two columns)
 	========================================================================= */
+	{% if content and 'digest-toc-body' in content %}
 	(() => {
 	'use strict';
 
@@ -396,10 +400,12 @@
 		? document.addEventListener('DOMContentLoaded', onReady, { once:true })
 		: onReady();
 		})();
+	{% endif %}
 
 		/* =========================================================================
 		8) Story galleries: lightweight masonry balancer
 		========================================================================= */
+		{% if layout == 'layouts/new.njk' or layout == 'layouts/post.njk' or translationKey == 'microcinema' %}
 		(() => {
 		const gallerySelector = '.masonry-gallery, .story-content > .row.g-2:not([id])';
 		const itemSelector = [
@@ -685,11 +691,13 @@
 			openLightbox(img);
 		});
 		})();
+		{% endif %}
 
 		/* =========================================================================
 		10) Equalize grid row heights (desktop only)
 		- Keeps row pairs the same height after content settles
 		========================================================================= */
+		{% if content and 'digest-toc-body' in content %}
 		(() => {
 	const DESKTOP_BP = 992;
 	const qsa = (sel, root=document) => Array.from(root.querySelectorAll(sel));
@@ -750,6 +758,7 @@
 		? document.addEventListener('DOMContentLoaded', onReady, { once:true })
 		: onReady();
 	})();
+	{% endif %}
 
 
 	</script>

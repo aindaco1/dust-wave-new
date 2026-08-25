@@ -58,7 +58,6 @@
     "@11ty/eleventy": "^3.1.6",
     "@dustwave/media-core": "file:shared/dust-wave-platform/packages/media-core",
     "@sindresorhus/slugify": "1.1.2",
-    "aos": "^2.3.4",
     "bootstrap": "^5.3.1",
     "bootstrap-icons": "^1.10.5",
     "clean-css": "^5.3.1",

@@ -10,7 +10,7 @@ const transcriptStyles = await readFile(
   'utf8'
 );
 const themeStyles = await readFile(
-  new URL('../src/scss/theme.scss', import.meta.url),
+  new URL('../src/scss/podcast-public.scss', import.meta.url),
   'utf8'
 );
 const gulpfile = await readFile(

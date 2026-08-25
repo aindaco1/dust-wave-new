@@ -305,6 +305,23 @@ Create a default fallback image at `src/img/og/default.png` (1200×630).
 
 ### Podcast Admin performance traces
 
+The public shell intentionally has no Font Awesome request and no Bootstrap
+JavaScript runtime. Font Awesome Free vectors are inlined at build time, the
+shared mobile navigation uses `src/js/site-navigation.js`, and the Mastodon
+share prompt uses native `<dialog>` semantics. Bootstrap SCSS remains the
+validated layout foundation.
+
+Production CSS is split into the public `theme` bundle and additive
+`podcast-public`, `podcast-member`, and `podcast-admin` route bundles. Keep new
+Podcast-only selectors in the appropriate additive entrypoint so ordinary
+pages do not pay for authenticated or episode tooling.
+
+The home/projects animated background prefers `src/img/home/intro.webm`, falls
+back to H.264 MP4, then to the existing small GIF when native video is
+unavailable. Preserve the source GIF as the visual master; any future encode
+must retain the 960×636 framing, 8 fps cadence, 6.75-second loop, and current
+crop at the supported viewport matrix.
+
 Capture a Chrome DevTools-compatible JSON trace against the isolated staging
 admin with the repository's dependency-free tracer:
 

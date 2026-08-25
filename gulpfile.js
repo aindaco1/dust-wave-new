@@ -135,7 +135,12 @@ gulp.task('inject-min-css', function injectCss(done) {
 
 // Purge unused CSS in production bundle
 gulp.task('purgecss', function purgeCssTask() {
-  return src(`${DIR.dist}/css/theme.min.css`)
+  return src([
+    `${DIR.dist}/css/theme.min.css`,
+    `${DIR.dist}/css/podcast-public.min.css`,
+    `${DIR.dist}/css/podcast-member.min.css`,
+    `${DIR.dist}/css/podcast-admin.min.css`
+  ])
     .pipe(
       purgecss({
         // Account/admin cards and states are created by the checked-in modules
@@ -162,7 +167,7 @@ gulp.task('purgecss', function purgeCssTask() {
 // NOTE: Image optimization is handled by webp.mjs (Sharp)
 // The old gulp-smushit task was removed as it used a deprecated Yahoo API
 
-// ============ Vendor assets (Bootstrap/AOS) ============
+// ============ Vendor assets ============
 gulp.task('copy-assets', function vendorAssets(done) {
   // JS (Bootstrap dist)
   src(`${DIR.node}/bootstrap/dist/js/**/*.*`).pipe(dest(`${DIR.dev}/js`));
@@ -170,9 +175,6 @@ gulp.task('copy-assets', function vendorAssets(done) {
   // Bootstrap SCSS sources for local customization
   src(`${DIR.node}/bootstrap/scss/**/*.scss`).pipe(dest(`${DIR.dev}/scss/assets/bootstrap`));
 
-  // AOS CSS & JS
-  src(`${DIR.node}/aos/dist/**/*.css`).pipe(dest(`${DIR.dev}/scss/assets/aos`));
-  src(`${DIR.node}/aos/dist/**/*.js`).pipe(dest(`${DIR.dev}/js`));
   copyAudioPlayerVendor();
 
   done();

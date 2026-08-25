@@ -1,5 +1,13 @@
 # Third-party notices
 
+## Font Awesome Free 6.5.2 icons
+
+The inline SVG icon paths in `lib/inline-icon.cjs` come from Font Awesome Free
+6.5.2. Font Awesome Free icons are licensed under CC BY 4.0.
+
+Copyright Fonticons, Inc. https://fontawesome.com
+License: https://creativecommons.org/licenses/by/4.0/
+
 ## Datatype 1.2.2
 
 SIL Open Font License 1.1

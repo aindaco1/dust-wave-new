@@ -15,68 +15,69 @@
               data-share-url="{{ shareUrl }}" 
               data-share-title="{{ shareTitle }}"
               data-share-text="{{ shareTitle }}">
-        <i class="fas fa-share-alt me-1" aria-hidden="true"></i> {{ i18n | t(language, "share.share") }}
+        {% icon "share", "me-1" %} {{ i18n | t(language, "share.share") }}
       </button>
       
       {# Mastodon - requires instance selection #}
       <button type="button" class="share-mastodon" 
               data-share-text="{{ shareText }}"
               aria-label="{{ i18n | t(language, 'share.shareOn', { network: 'Mastodon' }) }}">
-        <i class="fab fa-mastodon" aria-hidden="true"></i>
+        {% icon "mastodon" %}
       </button>
 
       {# Bluesky #}
       <a href="https://bsky.app/intent/compose?text={{ shareText | urlencode }}" 
          target="_blank" rel="noopener noreferrer" class="share-link"
          aria-label="{{ i18n | t(language, 'share.shareOn', { network: 'Bluesky' }) }}">
-        <i class="fab fa-bluesky" aria-hidden="true"></i>
+        {% icon "bluesky" %}
       </a>
 
       {# X (Twitter) #}
       <a href="https://twitter.com/intent/tweet?text={{ shareTitle | urlencode }}&url={{ shareUrl | urlencode }}" 
          target="_blank" rel="noopener noreferrer" class="share-link"
          aria-label="{{ i18n | t(language, 'share.shareOn', { network: 'X' }) }}">
-        <i class="fab fa-x-twitter" aria-hidden="true"></i>
+        {% icon "x" %}
       </a>
 
       {# Threads #}
       <a href="https://www.threads.net/intent/post?text={{ shareText | urlencode }}" 
          target="_blank" rel="noopener noreferrer" class="share-link"
          aria-label="{{ i18n | t(language, 'share.shareOn', { network: 'Threads' }) }}">
-        <i class="fab fa-threads" aria-hidden="true"></i>
+        {% icon "threads" %}
       </a>
 
       {# LinkedIn #}
       <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ shareUrl | urlencode }}" 
          target="_blank" rel="noopener noreferrer" class="share-link"
          aria-label="{{ i18n | t(language, 'share.shareOn', { network: 'LinkedIn' }) }}">
-        <i class="fab fa-linkedin-in" aria-hidden="true"></i>
+        {% icon "linkedin" %}
       </a>
 
       {# Facebook #}
       <a href="https://www.facebook.com/sharer/sharer.php?u={{ shareUrl | urlencode }}" 
          target="_blank" rel="noopener noreferrer" class="share-link"
          aria-label="{{ i18n | t(language, 'share.shareOn', { network: 'Facebook' }) }}">
-        <i class="fab fa-facebook-f" aria-hidden="true"></i>
+        {% icon "facebook" %}
       </a>
 
       {# Reddit #}
       <a href="https://www.reddit.com/submit?url={{ shareUrl | urlencode }}&title={{ shareTitle | urlencode }}" 
          target="_blank" rel="noopener noreferrer" class="share-link"
          aria-label="{{ i18n | t(language, 'share.shareOn', { network: 'Reddit' }) }}">
-        <i class="fab fa-reddit-alien" aria-hidden="true"></i>
+        {% icon "reddit" %}
       </a>
 
       {# Email #}
       <a href="mailto:?subject={{ shareTitle | urlencode }}&body={{ shareText | urlencode }}" 
          class="share-link" aria-label="{{ i18n | t(language, 'share.shareByEmail') }}">
-        <i class="fas fa-envelope" aria-hidden="true"></i>
+        {% icon "envelope" %}
       </a>
 
       {# Copy link #}
       <button type="button" class="copy-link" 
               data-copy-url="{{ shareUrl }}" aria-label="{{ i18n | t(language, 'share.copyLink') }}">
-        <i class="fas fa-link" aria-hidden="true"></i>
+        <span data-copy-icon="link">{% icon "link" %}</span>
+        <span data-copy-icon="check" hidden>{% icon "check" %}</span>
       </button>
 
     </div>
@@ -84,14 +85,14 @@
 </div>
 
 {# Mastodon instance modal #}
-<div class="modal fade" id="mastodonModal" tabindex="-1" aria-labelledby="mastodonModalLabel" aria-hidden="true">
+<dialog class="modal" id="mastodonModal" aria-labelledby="mastodonModalLabel">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content bg-dark text-white">
       <div class="modal-header border-secondary">
         <h5 class="modal-title" id="mastodonModalLabel">
-          <i class="fab fa-mastodon me-2" aria-hidden="true"></i>{{ i18n | t(language, "share.mastodonTitle") }}
+          {% icon "mastodon", "me-2" %}{{ i18n | t(language, "share.mastodonTitle") }}
         </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="{{ i18n | t(language, 'share.close') }}"></button>
+        <button type="button" class="btn-close btn-close-white" data-dialog-close aria-label="{{ i18n | t(language, 'share.close') }}"></button>
       </div>
       <div class="modal-body">
         <label for="mastodonInstance" class="form-label">{{ i18n | t(language, "share.instanceLabel") }}</label>
@@ -105,12 +106,12 @@
         <small class="text-muted">{{ i18n | t(language, "share.instanceHelp") }}</small>
       </div>
       <div class="modal-footer border-secondary">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ i18n | t(language, "share.cancel") }}</button>
+        <button type="button" class="btn btn-secondary" data-dialog-close>{{ i18n | t(language, "share.cancel") }}</button>
         <button type="button" class="btn btn-primary" id="mastodonShareConfirm">{{ i18n | t(language, "share.share") }}</button>
       </div>
     </div>
   </div>
-</div>
+</dialog>
 
 <script>
 (function() {
@@ -145,9 +146,14 @@
       const url = this.dataset.copyUrl;
       try {
         await navigator.clipboard.writeText(url);
-        const icon = this.querySelector('i');
-        icon.className = 'fas fa-check';
-        setTimeout(() => { icon.className = 'fas fa-link'; }, 2000);
+        const linkIcon = this.querySelector('[data-copy-icon="link"]');
+        const checkIcon = this.querySelector('[data-copy-icon="check"]');
+        linkIcon.hidden = true;
+        checkIcon.hidden = false;
+        setTimeout(() => {
+          linkIcon.hidden = false;
+          checkIcon.hidden = true;
+        }, 2000);
       } catch (err) {
         console.log('Copy failed:', err);
       }
@@ -157,6 +163,7 @@
   // Mastodon share with instance selection
   const MASTODON_INSTANCE_KEY = 'dustwave_mastodon_instance';
   const invalidMastodonInstance = {{ i18n | t(language, "share.invalidInstance") | safeJsonLd | safe }};
+  const mastodonDialog = document.getElementById('mastodonModal');
   let pendingMastodonText = '';
 
   function normalizeMastodonInstance(value) {
@@ -180,7 +187,7 @@
       pendingMastodonText = this.dataset.shareText;
       const savedInstance = localStorage.getItem(MASTODON_INSTANCE_KEY) || '';
       document.getElementById('mastodonInstance').value = savedInstance;
-      new bootstrap.Modal(document.getElementById('mastodonModal')).show();
+      mastodonDialog.showModal();
     });
   });
 
@@ -192,7 +199,7 @@
       localStorage.setItem(MASTODON_INSTANCE_KEY, instance);
       const shareUrl = `https://${instance}/share?text=${encodeURIComponent(pendingMastodonText)}`;
       window.open(shareUrl, '_blank', 'noopener');
-      bootstrap.Modal.getInstance(document.getElementById('mastodonModal')).hide();
+      mastodonDialog.close();
     } else {
       instanceInput.reportValidity();
     }
@@ -203,6 +210,10 @@
     if (e.key === 'Enter') {
       document.getElementById('mastodonShareConfirm').click();
     }
+  });
+
+  mastodonDialog?.querySelectorAll('[data-dialog-close]').forEach((button) => {
+    button.addEventListener('click', () => mastodonDialog.close());
   });
 })();
 </script>

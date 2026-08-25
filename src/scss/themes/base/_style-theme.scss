@@ -13,11 +13,21 @@ body {
   cursor: url("/img/favicon/dust-wave-square-cursor.svg"), auto !important;
 }
 
+.dw-icon {
+  display: inline-block;
+  width: auto;
+  height: 1em;
+  overflow: visible;
+  vertical-align: -.125em;
+  fill: currentColor;
+}
+
 body.fixednav { margin-top: 108px; }
 
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  body#glitch-target.glitching::before { animation: none !important; }
+  body#glitch-target.glitching::before,
+  body#glitch-target.glitching .home-background-video { animation: none !important; }
 }
 
 /* Utility spacing */
@@ -47,7 +57,7 @@ body#glitch-target::before {
   pointer-events: none;
   background-image:
     linear-gradient(0deg, rgba(255,255,255,.015), rgba(0,0,0,.015)), /* faint grain */
-    var(--glitch-bg, url("../img/home/intro.gif"));                        /* default */
+    var(--glitch-bg, none);
   background-repeat: no-repeat, no-repeat;
   background-size: 100% 100%, cover;
   background-position: 0 0, center;
@@ -56,8 +66,25 @@ body#glitch-target::before {
   opacity: .96;
 }
 
+.home-background-video {
+  position: fixed;
+  inset: -24px;
+  z-index: -2;
+  width: calc(100% + 48px);
+  height: calc(100% + 48px);
+  border: 0;
+  pointer-events: none;
+  object-fit: cover;
+  object-position: center;
+  will-change: transform, filter;
+  transform: translateZ(0);
+  opacity: .96;
+  transition: opacity .2s ease;
+}
+
 /* Stronger, very visible motion; tune custom properties to taste */
-body#glitch-target.glitching::before {
+body#glitch-target.glitching::before,
+body#glitch-target.glitching .home-background-video {
   --g-amp: 14px;   /* shake amplitude */
   --g-pan: 60px;   /* x pan across the image by end of cycle */
   animation: glitch-anim-strong .22s steps(2, end) infinite alternate-reverse;
@@ -507,8 +534,7 @@ li p { margin-bottom: 0; }
   background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='white' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
 }
 .navbar-collapse { background-color: transparent !important; padding: 0; border: none; }
-.navbar-collapse.collapsing,
-.navbar-collapse.collapse.show { background-color: $white; padding: 10px; }
+.navbar-collapse.show { background-color: $white; padding: 10px; }
 
 /* Mobile navbar behavior */
 @media (max-width: 991.98px) {
@@ -1731,6 +1757,32 @@ article h2 { width: 60%; }
 /* Mastodon modal styling */
 #mastodonModal .modal-content {
   border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#mastodonModal {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+
+#mastodonModal[open] {
+  display: grid;
+  place-items: center;
+}
+
+#mastodonModal::backdrop {
+  background: rgba(0, 0, 0, .5);
+}
+
+#mastodonModal .modal-dialog {
+  width: min(100% - 2rem, 500px);
+  margin: 1rem;
 }
 
 #mastodonModal .form-control:focus {

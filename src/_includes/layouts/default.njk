@@ -6,11 +6,15 @@
   </head>
   <body
     class="{% if bodyModifier %}{{ bodyModifier }} {% endif %}{% if translationKey == 'home' or translationKey == 'projects' %}test{% elif translationKey == 'news' %}news{% elif translationKey == 'partners' %}partners{% endif %}"
-    {% if translationKey == "home" or translationKey == "projects" %}id="glitch-target"{% endif %}
-    data-bs-spy="scroll"
-    data-bs-target="#navScroll">
+    {% if translationKey == "home" or translationKey == "projects" %}id="glitch-target"{% endif %}>
     <a class="skip-link" href="#main-content">{{ i18n | t(language, "nav.skipToContent") }}</a>
     {% if translationKey == "home" or translationKey == "projects" %}
+    <video class="home-background-video" autoplay muted loop playsinline preload="auto"
+      poster="/img/home/intro-poster.jpg" tabindex="-1" aria-hidden="true">
+      <source src="/img/home/intro.webm" type="video/webm">
+      <source src="/img/home/intro.mp4" type="video/mp4">
+      <img src="/img/home/intro-small.gif" alt="">
+    </video>
     <div class="test-background"></div>
     {% elif translationKey == "news" %}
     <div class="news-background"></div>

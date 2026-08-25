@@ -7,6 +7,10 @@ const pluginRss = require("@11ty/eleventy-plugin-rss");
 const { SitemapStream, streamToPromise } = require("sitemap");
 const legacySlugify = require("@sindresorhus/slugify");
 const crypto = require("crypto");
+const {
+  renderIcon,
+  replaceLegacyFontAwesomeIcons
+} = require("./lib/inline-icon.cjs");
 
 // WebP URLs are emitted only for the GitHub Pages build. Local builds keep
 // source image URLs so development never depends on generated assets.
@@ -145,6 +149,17 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addShortcode("bgImg", function(imgName, extension = "jpg") {
     const imagePath = resolveImagePath(`/img/${imgName}.${extension}`);
     return `  style="background-image: url('${imagePath}');"`;
+  });
+
+  // Inline the exact Font Awesome Free vector paths at build time. Legacy
+  // content is transformed too, so no icon font or runtime icon script is
+  // required by the public site.
+  eleventyConfig.addShortcode("icon", renderIcon);
+  eleventyConfig.addTransform("inline-font-awesome-icons", function(content) {
+    if (typeof this.page.outputPath !== "string" || !this.page.outputPath.endsWith(".html")) {
+      return content;
+    }
+    return replaceLegacyFontAwesomeIcons(content);
   });
 
   // YouTube embed shortcode - responsive video player

@@ -6,6 +6,7 @@
   <script id="dust-wave-runtime-i18n" type="application/json">{{ runtimeMessages | safeJsonLd | safe }}</script>
   {% endif %}
   <script src="/js/site-i18n.js?v={{ assets.version | default('dev') }}" defer></script>
+  <script src="/js/site-navigation.js?v={{ assets.version | default('dev') }}" defer></script>
   {% if summary or description %}
     <meta name="description" content="{{ description or summary }}">
   {% else %}
@@ -44,14 +45,13 @@
   <!-- build:css -->
   <link rel="stylesheet" href="/css/theme.css?v={{ assets.version | default('dev') }}">
   <!-- endbuild -->
+  {% if cssBundle %}
+  <link rel="stylesheet" href="/css/{{ cssBundle }}{% if environment == 'production' %}.min{% endif %}.css?v={{ assets.version | default('dev') }}">
+  {% endif %}
   {% include 'snippets/gif-hover-styles.njk' %}
   {% if not disableTypekit %}
   <link rel="stylesheet" href="https://use.typekit.net/hoj2yet.css">
   {% endif %}
-  {% if not disableFontAwesome %}
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-  {% endif %}
-
 {% if customFont %}
    <style>
 

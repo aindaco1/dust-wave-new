@@ -7,6 +7,10 @@
   html:has(.project-{{ project.data.title | slugify }}:focus-within) body#glitch-target {
     --glitch-bg: url("{{ project.data.gif }}");
   }
+  html:has(.project-{{ project.data.title | slugify }}:hover) .home-background-video,
+  html:has(.project-{{ project.data.title | slugify }}:focus-within) .home-background-video {
+    opacity: 0;
+  }
     {% endif %}
   {% endfor %}
 </style>
