@@ -25,6 +25,21 @@ tags:
 Escrito por Alonso Indacochea<br/>
 Animación 3D por Jay Renteria</p>
 <p><br/></p>
+<h3>Premios</h3>
+<p><a href="https://silvercityfilmfest.org/">Silver City Community Film Festival 2026</a></p>
+<ul>
+<li><strong>Premio del Público</strong></li>
+<li>Selección Oficial</li>
+</ul>
+<div class="row g-2">
+<div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
+<img alt="Laurel del Premio del Público del Silver City Community Film Festival 2026" class="w-100 shadow-1-strong rounded mb-2" decoding="async" loading="lazy" src="/img/dead_ballerina/silver-city-audience-choice-2026.png"/>
+</div>
+<div class="col-lg-6 mb-6 mb-lg-0">
+<img alt="Laurel de Selección Oficial del Silver City Community Film Festival 2026" class="w-100 shadow-1-strong rounded mb-2" decoding="async" loading="lazy" src="/img/dead_ballerina/silver-city-official-selection-2026.png"/>
+</div>
+</div>
+<p><br/></p>
 <h3>Stills</h3>
 <div class="row g-2">
 <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">

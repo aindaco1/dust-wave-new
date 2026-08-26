@@ -24,6 +24,23 @@ Written by Alonso Indacochea<br>
 
 <br>
 
+### Awards
+
+[2026 Silver City Community Film Festival](https://silvercityfilmfest.org/)
+* **Audience Choice Award**
+* Official Selection
+
+<div class="row g-2">
+  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
+    <img src="/img/dead_ballerina/silver-city-audience-choice-2026.png" class="w-100 shadow-1-strong rounded mb-2" alt="Silver City Community Film Festival 2026 Audience Choice Award laurel" loading="lazy" decoding="async">
+  </div>
+  <div class="col-lg-6 mb-6 mb-lg-0">
+    <img src="/img/dead_ballerina/silver-city-official-selection-2026.png" class="w-100 shadow-1-strong rounded mb-2" alt="Silver City Community Film Festival 2026 Official Selection laurel" loading="lazy" decoding="async">
+  </div>
+</div>
+
+<br>
+
 ### Stills
 
 <div class="row g-2">
