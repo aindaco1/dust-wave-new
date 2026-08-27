@@ -3,6 +3,8 @@ title: The Green Chile Bagel
 date: 2022-05-10
 img: /img/stills/greenchilestill.png
 summary: Bagel comedy short
+directors:
+  - Alonso Indacochea
 tags:
   - comedy
   - bagel

@@ -51,5 +51,5 @@
 
 {% if movieComingSoon %}
 <h2>{{ movieHeading or "Movie" }}</h2>
-<p><strong>{{ movieComingSoonText or "Coming soon ..." }}</strong></p>
+<p><strong>{{ i18n | t(language, 'pages.projects.movieComingSoon') }}</strong></p>
 {% endif %}

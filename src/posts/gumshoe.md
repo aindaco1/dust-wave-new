@@ -3,6 +3,9 @@ title: Gumshoe
 date: 2023-08-14
 img: /img/stills/gumshoestill.jpg
 summary: Sci-fi noir short
+directors:
+  - Austin Madrid
+  - Harrison Sim
 tags:
   - sci-fi
   - noir

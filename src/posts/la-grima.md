@@ -3,6 +3,9 @@ title: La Grima
 date: 2022-07-31
 img: /img/stills/lagrimastill.jpg
 summary: Climate short film
+directors:
+  - Austin Madrid
+  - Jay Renteria
 tags:
   - sci-fi
   - climate

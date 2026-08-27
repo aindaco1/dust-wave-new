@@ -3,6 +3,8 @@ title: They Came From Planet X
 date: 2023-08-01
 img: /img/stills/planetxstill.jpg
 summary: Silent sci-fi short
+directors:
+  - Brandon Carter
 tags:
   - silent
   - sci-fi

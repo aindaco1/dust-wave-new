@@ -4,6 +4,8 @@ date: 2026-08-23
 img: /img/gifs/reserved.gif
 imgAlt: A montage from Reserved shifts between a red-lit audience, nighttime fantasy action, and alarmed performers
 summary: Fantasy short created for the 2026 Albuquerque 48 Hour Film Project
+directors:
+  - Matthew Atkins
 hoverVideoWebm: /img/project-videos/reserved.webm
 hoverVideoMp4: /img/project-videos/reserved.mp4
 hoverVideoPoster: /img/stills/reservedstill.jpg
@@ -34,7 +36,6 @@ galleryImages:
     alt: Members of the Reserved cast and crew gather outside the Guild Cinema
 movieComingSoon: true
 movieHeading: Movie
-movieComingSoonText: Coming soon ...
 ---
 
 _Reserved_ is a fantasy short created for the [2026 Albuquerque 48 Hour Film Project](https://www.48hourfilm.com/en/albuquerque-nm). Shot at the [Harwood Art Center](https://www.harwoodartcenter.org/) in Albuquerque, New Mexico.

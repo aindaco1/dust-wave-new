@@ -3,6 +3,8 @@ title: Accessory to Murder
 date: 2023-10-31
 img: /img/stills/accessorystill.jpg
 summary: Dark horror comedy
+directors:
+  - Austin Madrid
 tags:
   - horror
   - comedy

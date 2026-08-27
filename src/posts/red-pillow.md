@@ -3,6 +3,9 @@ title: Red Pillow
 date: 2022-10-29
 img: /img/stills/redpillowstill.png
 summary: Horror commercial parody
+directors:
+  - Alonso Indacochea
+  - Jay Renteria
 tags:
   - horror
   - satire

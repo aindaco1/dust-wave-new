@@ -65,7 +65,8 @@
       "metadataLabel": "Project type and tags",
       "type": "Type",
       "tags": "Tags",
-      "tagFilter": "Tag"
+      "tagFilter": "Tag",
+      "movieComingSoon": "Coming soon ..."
     },
     "news": {
       "title": "News",

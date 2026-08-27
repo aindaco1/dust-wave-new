@@ -19,10 +19,7 @@ const taxonomy = JSON.parse(await readFile(
   path.join(sourceRoot, "_data", "projectTaxonomy.json"),
   "utf8"
 ));
-const projectDirectors = JSON.parse(await readFile(
-  path.join(sourceRoot, "_data", "projectDirectors.json"),
-  "utf8"
-));
+const pagesCms = await readFile(path.join(root, ".pages.yml"), "utf8");
 
 async function loadProjects(directory) {
   const files = (await readdir(directory))
@@ -111,16 +108,31 @@ test("every film project has structured director credits", () => {
     .map(([slug]) => slug)
     .sort();
 
-  assert.deepEqual(Object.keys(projectDirectors).sort(), filmSlugs);
+  const localizedSlugs = taxonomy.localizedSlugs?.en || {};
+  const filmProjects = englishProjects.filter((project) => {
+    const fileSlug = project.file.replace(/\.md$/u, "");
+    const canonicalSlug = Object.entries(localizedSlugs)
+      .find(([, localizedSlug]) => localizedSlug === fileSlug)?.[0] || fileSlug;
+    return taxonomy.projects[canonicalSlug] === "film";
+  });
 
-  for (const slug of filmSlugs) {
-    const directors = projectDirectors[slug];
-    assert(Array.isArray(directors) && directors.length > 0, `${slug} needs at least one director`);
-    assert.equal(new Set(directors).size, directors.length, `${slug} has duplicate director credits`);
+  assert.deepEqual(
+    filmProjects.map((project) => {
+      const fileSlug = project.file.replace(/\.md$/u, "");
+      return Object.entries(localizedSlugs)
+        .find(([, localizedSlug]) => localizedSlug === fileSlug)?.[0] || fileSlug;
+    }).sort(),
+    filmSlugs
+  );
+
+  for (const project of filmProjects) {
+    const directors = project.data.directors;
+    assert(Array.isArray(directors) && directors.length > 0, `${label(project)} needs at least one director`);
+    assert.equal(new Set(directors).size, directors.length, `${label(project)} has duplicate director credits`);
     for (const director of directors) {
-      assert.equal(typeof director, "string", `${slug} director names must be strings`);
-      assert(director.trim(), `${slug} director names must not be empty`);
-      assert.equal(director, director.trim(), `${slug} director names must not have outer whitespace`);
+      assert.equal(typeof director, "string", `${label(project)} director names must be strings`);
+      assert(director.trim(), `${label(project)} director names must not be empty`);
+      assert.equal(director, director.trim(), `${label(project)} director names must not have outer whitespace`);
     }
 
     assert.deepEqual(
@@ -128,13 +140,23 @@ test("every film project has structured director credits", () => {
       directors.map((name) => ({ "@type": "Person", name }))
     );
   }
+
+  assert.match(
+    pagesCms,
+    /- name: directors\s+label: Director\(s\)\s+type: string\s+list: true/u,
+    "Pages CMS must expose the directors frontmatter list"
+  );
 });
 
 test("localized film pages resolve to the canonical director credits", () => {
   const spanishSlugs = new Set(spanishProjects.map((project) => project.file.replace(/\.md$/u, "")));
   const localizedSlugs = taxonomy.localizedSlugs?.es || {};
 
-  for (const slug of Object.keys(projectDirectors)) {
+  const filmSlugs = Object.entries(taxonomy.projects)
+    .filter(([, type]) => type === "film")
+    .map(([slug]) => slug);
+
+  for (const slug of filmSlugs) {
     assert(
       spanishSlugs.has(localizedSlugs[slug] || slug),
       `${slug} needs a localized page for its director credits`
@@ -234,9 +256,10 @@ test("project video and coming-soon frontmatter is complete", () => {
 
     if (project.data.movieComingSoon) {
       assert(project.data.movieHeading?.trim(), `${label(project)}: movieHeading is required for coming-soon projects`);
-      assert(
-        project.data.movieComingSoonText?.trim(),
-        `${label(project)}: movieComingSoonText is required for coming-soon projects`
+      assert.equal(
+        project.data.movieComingSoonText,
+        undefined,
+        `${label(project)}: movieComingSoonText duplicates the localized site default`
       );
     }
   }

@@ -36,7 +36,6 @@ posterHeading: "Cartel"
 posterAlt: "póster"
 movieComingSoon: true
 movieHeading: "Película"
-movieComingSoonText: "Muy pronto ..."
 ---
 
 <div class="project-translation project-translation--es">

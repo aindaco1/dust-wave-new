@@ -65,7 +65,8 @@
       "metadataLabel": "Tipo y etiquetas del proyecto",
       "type": "Tipo",
       "tags": "Etiquetas",
-      "tagFilter": "Etiqueta"
+      "tagFilter": "Etiqueta",
+      "movieComingSoon": "Muy pronto ..."
     },
     "news": {
       "title": "Noticias",

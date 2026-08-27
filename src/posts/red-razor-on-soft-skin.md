@@ -3,6 +3,8 @@ title: Red Razor on Soft Skin
 date: 2026-10-15
 img: /img/digest/header/digest-header-2.jpg
 summary: Giallo short shot on 16mm
+directors:
+  - Luca Silver
 tags:
   - horror
   - giallo
@@ -34,7 +36,6 @@ projectVideos:
     type: youtube
 movieComingSoon: true
 movieHeading: "Movie"
-movieComingSoonText: "Coming Soon ..."
 ---
 
 _Red Razor on Soft Skin_ is a giallo short film shot on 16mm at McCall's Barbershop in Albuquerque, New Mexico.

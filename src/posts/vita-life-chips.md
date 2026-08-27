@@ -3,6 +3,8 @@ title: VitaLife© Chips
 date: 2023-04-17
 img: /img/stills/vitalifestill.jpg
 summary: Satirical spec ad
+directors:
+  - Kaidin Jarjusey
 tags:
   - comedy
   - satire

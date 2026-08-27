@@ -3,6 +3,9 @@ title: Softening
 date: 2024-11-06
 img: /img/stills/softeningstill.jpg
 summary: Heartfelt musical drama
+directors:
+  - Ginny Leise
+  - Jade Stokes
 tags:
   - drama
   - musical
@@ -26,7 +29,6 @@ galleryImages:
     alt: "behind the scenes"
 movieComingSoon: true
 movieHeading: "Movie"
-movieComingSoonText: "Coming Soon ..."
 ---
 
 _Softening_ is a musical drama short shot at Flamenco Works in Albuquerque, New Mexico.

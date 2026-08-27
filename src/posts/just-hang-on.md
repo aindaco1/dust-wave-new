@@ -2,6 +2,8 @@
 title: Just Hang On
 date: 2026-05-02
 summary: Drama short about resilience, chosen family, and finding your voice
+directors:
+  - Chelsea Ambrose
 img: /img/stills/justhangonstill.jpg
 imgAlt: Bria looks downward pensively in a warmly lit room
 tags:

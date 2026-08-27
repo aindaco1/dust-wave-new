@@ -3,6 +3,10 @@ title: Stall'd
 date: 2025-09-02
 img: /img/stills/stalldstill.jpg
 summary: Romance drama short
+directors:
+  - James Rodriguez
+  - Matthew Atkins
+  - Taryn Bernicke
 tags:
   - drama
   - romance
@@ -31,7 +35,6 @@ posterHeading: "Poster"
 posterAlt: "poster"
 movieComingSoon: true
 movieHeading: "Movie"
-movieComingSoonText: "Coming Soon ..."
 ---
 
 _Stall'd_ is a romance drama short created for the [2025 Albuquerque 48 Hour Film Project](https://www.48hourfilm.com/albuquerque/). Shot at the University of New Mexico in Albuquerque, New Mexico.

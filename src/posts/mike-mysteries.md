@@ -3,6 +3,8 @@ title: Mike Mysteries
 date: 2021-09-13
 img: /img/stills/mikemysteriesstill.jpg
 summary: Mockumentary comedy short
+directors:
+  - Jay Renteria
 tags:
   - mockumentary
   - comedy

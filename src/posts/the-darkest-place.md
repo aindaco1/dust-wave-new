@@ -3,6 +3,10 @@ title: The Darkest Place
 date: 2023-06-23
 img: /img/stills/darkestplacestill.jpg
 summary: Dark skies documentary short
+directors:
+  - Jay Renteria
+  - Ryan Lewis
+  - Alonso Indacochea
 tags:
   - documentary
   - released

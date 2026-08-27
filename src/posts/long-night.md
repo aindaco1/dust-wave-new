@@ -3,6 +3,8 @@ title: Long Night
 date: 2025-07-16
 img: /img/stills/longnightstill.jpg
 summary: Horror romance short film
+directors:
+  - Bailey Grady
 tags:
   - horror
   - romance
@@ -31,7 +33,6 @@ posterHeading: "Poster"
 posterAlt: "poster"
 movieComingSoon: true
 movieHeading: "Movie"
-movieComingSoonText: "Coming Soon ..."
 ---
 
 _Long Night_ is a horror romance short written and directed by the incomparable [Bailey Grady](https://www.instagram.com/londone_fog). Shot at several locations in Albuquerque, New Mexico.

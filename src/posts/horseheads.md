@@ -3,6 +3,8 @@ title: Horseheads
 date: 2025-05-03
 img: /img/stills/horseheadsstill.jpg
 summary: Crime comedy short
+directors:
+  - Noah Tucker
 tags:
   - crime
   - comedy
@@ -37,7 +39,6 @@ projectVideos:
     type: youtube
 movieComingSoon: true
 movieHeading: "Movie"
-movieComingSoonText: "Coming Soon ..."
 ---
 
 _Horseheads_ is a crime comedy short shot in February 2025 in Albuquerque, New Mexico.

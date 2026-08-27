@@ -26,7 +26,6 @@ galleryImages:
     alt: El equipo de cámara prepara una toma con la agente dentro del Zema Vinyl Lounge
 movieComingSoon: true
 movieHeading: Película
-movieComingSoonText: Estreno el 1 de septiembre de 2026.
 ---
 
 _From Zema With Love_ es un cortometraje de espionaje de marca creado para el [Zema Vinyl Lounge](https://zemabar.com) en [Hotel Zazz](https://hotelzazz.com), en Albuquerque, Nuevo México. Una producción de Dust Wave / Phantasmagoria, la película se estrena el 1 de septiembre de 2026.

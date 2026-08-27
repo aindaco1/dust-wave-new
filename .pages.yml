@@ -104,6 +104,12 @@ content:
         type: string
         description: "One-line tagline (e.g., 'Romance drama short', 'Dark horror comedy')."
 
+      - name: directors
+        label: Director(s)
+        type: string
+        list: true
+        description: "Film directors, one person per entry. Used for Movie structured data."
+
       - name: gif
         label: Hover GIF
         type: image

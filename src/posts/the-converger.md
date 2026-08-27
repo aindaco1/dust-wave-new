@@ -3,6 +3,8 @@ title: The Converger
 date: 2023-10-28
 img: /img/stills/theconvergerstill.jpg
 summary: Parallel universe sci-fi short
+directors:
+  - Phillip Torres
 tags:
   - sci-fi
   - noir

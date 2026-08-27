@@ -40,7 +40,6 @@ projectVideos:
     type: youtube
 movieComingSoon: true
 movieHeading: "Película"
-movieComingSoonText: "Muy pronto ..."
 ---
 
 <div class="project-translation project-translation--es">

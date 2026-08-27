@@ -3,6 +3,8 @@ title: Pandora's Greenhouse
 date: 2025-04-07
 img: /img/stills/pandorastill.jpg
 summary: Cosmic horror short film
+directors:
+  - Adrian Pijoan
 tags:
   - horror
   - cosmic
@@ -55,7 +57,6 @@ projectVideos:
     type: youtube
 movieComingSoon: true
 movieHeading: "Movie"
-movieComingSoonText: "Coming Soon ..."
 ---
 
 _Pandora's Greenhouse_ is a cosmic horror short written and directed by [Adrian Pijoan](https://www.adrianpijoan.net). Shot at several locations in Albuquerque, New Mexico.

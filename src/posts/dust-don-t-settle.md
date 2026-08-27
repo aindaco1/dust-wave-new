@@ -3,6 +3,8 @@ title: Dust Don't Settle
 date: 2025-04-15
 img: /img/stills/dustdontsettlestill.jpg
 summary: New Mexico DIY film documentary short
+directors:
+  - David Jennings
 tags:
   - documentary
   - experimental

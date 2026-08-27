@@ -3,6 +3,8 @@ title: Shellfish Knish
 date: 2024-11-06
 img: /img/stills/shellfishstill.jpg
 summary: Food comedy short
+directors:
+  - Camille Carlson
 tags:
   - food
   - comedy
@@ -34,7 +36,6 @@ projectVideos:
     type: youtube
 movieComingSoon: true
 movieHeading: "Movie"
-movieComingSoonText: "Coming Soon ..."
 ---
 
 _Shellfish Knish_ is a food comedy short created in partnership with [Space Age Daydream](https://www.instagram.com/spaceagedaydreamfilms). Shot in Albuquerque, New Mexico.

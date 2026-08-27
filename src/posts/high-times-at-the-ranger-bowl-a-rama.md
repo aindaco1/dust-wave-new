@@ -3,6 +3,8 @@ title: High Times at the Ranger Bowl-a-Rama
 date: 2023-03-02
 img: /img/stills/hightimesstill.png
 summary: Stop-motion short
+directors:
+  - James Rodriguez
 tags:
   - animation
   - stop-motion

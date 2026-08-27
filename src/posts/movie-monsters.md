@@ -3,6 +3,8 @@ title: Movie Monsters
 date: 2024-08-30
 img: /img/stills/moviemonstersstill.jpg
 summary: Kaiju comedy short
+directors:
+  - Brandon Carter
 tags:
   - kaiju
   - comedy

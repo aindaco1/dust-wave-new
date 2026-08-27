@@ -37,7 +37,6 @@ galleryImages:
     alt: Miembros del reparto y el equipo de Reserved se reúnen afuera del Guild Cinema
 movieComingSoon: true
 movieHeading: Película
-movieComingSoonText: Muy pronto ...
 hoverVideoWebm: /img/project-videos/reserved.webm
 hoverVideoMp4: /img/project-videos/reserved.mp4
 hoverVideoPoster: /img/stills/reservedstill.jpg

@@ -5,7 +5,8 @@
 {% set pageDescription = description or summary or metadata.description %}
 {% set pageUrl = metadata.url + page.url %}
 {% set canonicalProject = projectTaxonomy | canonicalProjectSlug(page.fileSlug, language or metadata.language) %}
-{% set movieDirectors = projectDirectors[canonicalProject] %}
+{% set canonicalMovie = collections.posts | projectBySlug(canonicalProject) %}
+{% set movieDirectors = canonicalMovie.data.directors if canonicalMovie else directors %}
 
 {# A project hero GIF is its canonical preview; otherwise use og_image → img → default. #}
 {% set isProjectPage = isProject or (tags and 'posts' in tags) %}
