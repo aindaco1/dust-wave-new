@@ -22,7 +22,7 @@ galleryImages:
     alt: A woman in a bright pink dress poses beside the Film Fatale display outside the Guild Cinema
 ---
 
-_Film Fatale_ was a screening of 9 short films by women filmmakers from New Mexico, presented at the [Guild Cinema](https://www.guildcinema.com/) on August 22, 2026.
+_Film Fatale_ was a screening of 10 short films by women filmmakers from New Mexico, presented at the [Guild Cinema](https://www.guildcinema.com/) on August 22, 2026.
 
 Featuring the works of:
 
@@ -39,6 +39,8 @@ Featuring the works of:
 [Kate Bergeron](https://www.instagram.com/iamkatebergeron/)
 
 [Lex Lotito](https://www.instagram.com/lex_lotito/)
+
+[Cherrita Thao](https://www.instagram.com/cherrita.thao/)
 
 and [Julia Storch](https://www.instagram.com/julia_storchie/)
 
