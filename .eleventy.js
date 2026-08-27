@@ -1,5 +1,5 @@
 const { DateTime } = require("luxon");
-const { safeJsonLd } = require("./lib/safe-json-ld.cjs");
+const { peopleJsonLd, safeJsonLd } = require("./lib/safe-json-ld.cjs");
 const { socialPreviewImage } = require("./lib/social-preview-image.cjs");
 const navigationPlugin = require('@11ty/eleventy-navigation');
 const rssPlugin = require('@11ty/eleventy-plugin-rss');
@@ -421,6 +421,7 @@ ${content}
     const locale = language === "es" ? "es-US" : "en-US";
     return DateTime.fromJSDate(dateObj, { zone: "utc" }).setLocale(locale).toFormat(format);
   });
+  eleventyConfig.addFilter("peopleJsonLd", peopleJsonLd);
   eleventyConfig.addFilter("safeJsonLd", safeJsonLd);
 
   // Substack excerpt filter - splits content at <!-- more:substack --> marker

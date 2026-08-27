@@ -3,8 +3,10 @@ import { access, readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
 import matter from "gray-matter";
+import safeJsonLdModule from "../lib/safe-json-ld.cjs";
 import socialPreviewImageModule from "../lib/social-preview-image.cjs";
 
+const { peopleJsonLd } = safeJsonLdModule;
 const { socialPreviewImage } = socialPreviewImageModule;
 
 const root = path.resolve(import.meta.dirname, "..");
@@ -15,6 +17,10 @@ const projectDirectories = [
 ];
 const taxonomy = JSON.parse(await readFile(
   path.join(sourceRoot, "_data", "projectTaxonomy.json"),
+  "utf8"
+));
+const projectDirectors = JSON.parse(await readFile(
+  path.join(sourceRoot, "_data", "projectDirectors.json"),
   "utf8"
 ));
 
@@ -97,6 +103,43 @@ test("explicit preview overrides remain authoritative without a project GIF hero
     socialPreviewImage("/img/og/custom.jpg", "/img/news/animated.gif", false),
     "/img/og/custom.jpg"
   );
+});
+
+test("every film project has structured director credits", () => {
+  const filmSlugs = Object.entries(taxonomy.projects)
+    .filter(([, type]) => type === "film")
+    .map(([slug]) => slug)
+    .sort();
+
+  assert.deepEqual(Object.keys(projectDirectors).sort(), filmSlugs);
+
+  for (const slug of filmSlugs) {
+    const directors = projectDirectors[slug];
+    assert(Array.isArray(directors) && directors.length > 0, `${slug} needs at least one director`);
+    assert.equal(new Set(directors).size, directors.length, `${slug} has duplicate director credits`);
+    for (const director of directors) {
+      assert.equal(typeof director, "string", `${slug} director names must be strings`);
+      assert(director.trim(), `${slug} director names must not be empty`);
+      assert.equal(director, director.trim(), `${slug} director names must not have outer whitespace`);
+    }
+
+    assert.deepEqual(
+      JSON.parse(peopleJsonLd(directors)),
+      directors.map((name) => ({ "@type": "Person", name }))
+    );
+  }
+});
+
+test("localized film pages resolve to the canonical director credits", () => {
+  const spanishSlugs = new Set(spanishProjects.map((project) => project.file.replace(/\.md$/u, "")));
+  const localizedSlugs = taxonomy.localizedSlugs?.es || {};
+
+  for (const slug of Object.keys(projectDirectors)) {
+    assert(
+      spanishSlugs.has(localizedSlugs[slug] || slug),
+      `${slug} needs a localized page for its director credits`
+    );
+  }
 });
 
 test("hover video definitions are complete and point to real assets", async () => {

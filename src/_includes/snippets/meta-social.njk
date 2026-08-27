@@ -4,6 +4,8 @@
 {% set pageTitle = title or metadata.title %}
 {% set pageDescription = description or summary or metadata.description %}
 {% set pageUrl = metadata.url + page.url %}
+{% set canonicalProject = projectTaxonomy | canonicalProjectSlug(page.fileSlug, language or metadata.language) %}
+{% set movieDirectors = projectDirectors[canonicalProject] %}
 
 {# A project hero GIF is its canonical preview; otherwise use og_image → img → default. #}
 {% set isProjectPage = isProject or (tags and 'posts' in tags) %}
@@ -161,6 +163,7 @@
   "image": "{{ ogImage }}",
   "url": "{{ pageUrl }}",
   "datePublished": "{{ date | dateToRfc3339MT }}",
+  {% if movieDirectors %}"director": {{ movieDirectors | peopleJsonLd | safe }},{% endif %}
   {% if modified or updated %}"dateModified": "{{ (modified or updated) | dateToRfc3339MT }}",{% endif %}
   "author": {
     "@type": "{% if author %}Person{% else %}Organization{% endif %}",

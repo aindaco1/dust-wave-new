@@ -275,6 +275,11 @@ JSON-LD structured data for SEO. On project pages whose featured `img` is a
 GIF, that hero GIF is the canonical preview image across all three outputs;
 otherwise `og_image` remains the explicit override.
 
+Film-project Movie JSON-LD reads its director list from
+`src/_data/projectDirectors.json`. Keep each canonical slug aligned with the
+director credit shown in the project body; localized project pages reuse the
+same structured `Person` entries.
+
 ### RSS Feeds
 
 | Feed | URL | Content |
