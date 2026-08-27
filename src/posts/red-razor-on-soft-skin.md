@@ -1,13 +1,40 @@
 ---
 title: Red Razor on Soft Skin
-date: 2026-01-30
+date: 2026-10-15
 img: /img/digest/header/digest-header-2.jpg
 summary: Giallo short shot on 16mm
-gif: /img/gifs/redrazor.gif
 tags:
   - horror
   - giallo
+  - 16mm
   - coming-soon
+hoverVideoWebm: /img/project-videos/redrazor.webm
+hoverVideoMp4: /img/project-videos/redrazor.mp4
+hoverVideoPoster: /img/digest/header/digest-header-2.jpg
+galleryHeading: "Behind the Scenes"
+galleryImages:
+  - src: /img/red_razor_on_soft_skin/behind-the-scenes-1.png
+    alt: "description"
+  - src: /img/red_razor_on_soft_skin/behind-the-scenes-5.jpg
+    alt: "description"
+  - src: /img/red_razor_on_soft_skin/behind-the-scenes-3.jpg
+    alt: "description"
+  - src: /img/red_razor_on_soft_skin/behind-the-scenes-4.jpg
+    alt: "description"
+  - src: /img/red_razor_on_soft_skin/behind-the-scenes-2.jpg
+    alt: "description"
+  - src: /img/red_razor_on_soft_skin/behind-the-scenes-6.jpg
+    alt: "description"
+poster: /img/red_razor_on_soft_skin/poster.jpg
+posterHeading: "Poster"
+posterAlt: "poster"
+projectVideos:
+  - heading: "Trailer"
+    id: vmiSH7eNYng
+    type: youtube
+movieComingSoon: true
+movieHeading: "Movie"
+movieComingSoonText: "Coming Soon ..."
 ---
 
 _Red Razor on Soft Skin_ is a giallo short film shot on 16mm at McCall's Barbershop in Albuquerque, New Mexico.
@@ -65,37 +92,3 @@ Moira Lazar -- Shelley Holt<br>
 Walt McComb -- John Dewar  
 
 <br>
-
-### Behind the Scenes
-
-<div class="row g-2">
-  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-    <img src="/img/red_razor_on_soft_skin/behind-the-scenes-1.png" class="w-100 shadow-1-strong rounded mb-2" alt="description">
-    <img src="/img/red_razor_on_soft_skin/behind-the-scenes-5.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
-    <img src="/img/red_razor_on_soft_skin/behind-the-scenes-3.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
-  </div>
-  <div class="col-lg-6 mb-6 mb-lg-0">
-    <img src="/img/red_razor_on_soft_skin/behind-the-scenes-4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
-    <img src="/img/red_razor_on_soft_skin/behind-the-scenes-2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
-    <img src="/img/red_razor_on_soft_skin/behind-the-scenes-6.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="description">
-  </div>
-</div>
-
-<br>
-
-### Poster
-<br>
-<img src="/img/red_razor_on_soft_skin/poster.jpg" class="w-75 shadow-1-strong rounded mb-2" alt="poster">
-
-<br><br>
-
-## Trailer
-
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/vmiSH7eNYng" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
-<br><br>
-
-## Movie
-
-**Coming Soon ...**
-
-<br><br>

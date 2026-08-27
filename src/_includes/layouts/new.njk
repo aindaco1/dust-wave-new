@@ -6,10 +6,10 @@ permalink: "subdir/{{ title | slugify }}/index.html"
   <head>
     {% include 'snippets/head.njk' %}
   </head>
-  <body {% if (bodyModifier) %} class="{{ bodyModifier }}" {% endif %}>
+  <body class="site-shell{% if bodyModifier %} {{ bodyModifier }}{% endif %}">
     <a class="skip-link" href="#main-content">{{ i18n | t(language, "nav.skipToContent") }}</a>
     {% include "snippets/navbar1.njk" %}
-    <main id="main-content" class="container py-vh-3" tabindex="-1">
+    <main id="main-content" class="site-main site-main--entry container" tabindex="-1">
       {# h-entry microformats wrapper for Fediverse/IndieWeb compatibility #}
       <article class="h-entry">
         <div class="row d-flex justify-content-center text-center">

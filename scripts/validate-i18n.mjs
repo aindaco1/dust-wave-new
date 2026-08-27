@@ -5,10 +5,11 @@ import path from "node:path";
 const repositoryRoot = path.resolve(import.meta.dirname, "..");
 const sourceRoot = path.join(repositoryRoot, "src");
 const i18nRoot = path.join(sourceRoot, "_data", "i18n");
-const [config, english, spanish] = await Promise.all([
+const [config, english, spanish, projectTaxonomy] = await Promise.all([
   readJson(path.join(i18nRoot, "config.json")),
   readJson(path.join(i18nRoot, "en.json")),
-  readJson(path.join(i18nRoot, "es.json"))
+  readJson(path.join(i18nRoot, "es.json")),
+  readJson(path.join(sourceRoot, "_data", "projectTaxonomy.json"))
 ]);
 const { default: staticLocalePages } = await import(
   new URL("../src/_data/staticLocalePages.js", import.meta.url)
@@ -169,7 +170,11 @@ const memberCards = (await readdir(path.join(sourceRoot, "members")))
 const memberDirectoryData = await readJson(
   path.join(sourceRoot, "members", "members.json")
 );
-assert.equal(englishProjects.length, 36, "expected the 36 established project pages");
+assert.equal(
+  englishProjects.length,
+  Object.keys(projectTaxonomy.projects).length,
+  "the English project collection must match the configured taxonomy"
+);
 assert.equal(
   spanishProjects.length,
   englishProjects.length,
@@ -329,7 +334,7 @@ assert.doesNotMatch(
 );
 
 console.log(
-  `i18n contract validation passed: ${englishLeaves.length} bilingual messages, scoped interactive catalogs, one active locale, 36 translated projects, 35 data-only member cards, authored-language News.`
+  `i18n contract validation passed: ${englishLeaves.length} bilingual messages, scoped interactive catalogs, one active locale, ${englishProjects.length} translated projects, 35 data-only member cards, authored-language News.`
 );
 
 async function readJson(file) {

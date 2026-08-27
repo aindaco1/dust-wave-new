@@ -3,11 +3,36 @@ title: Fronteras Micro-film Festival
 date: 2023-02-18
 img: /img/stills/fronterasstill.jpg
 summary: Border-themed film festival and immersive exhibition
-gif: /img/gifs/fronteras.gif
 tags:
   - festival
+  - immersive
+  - interactive
+  - multimedia
   - event
   - released
+hoverVideoWebm: /img/project-videos/fronteras.webm
+hoverVideoMp4: /img/project-videos/fronteras.mp4
+hoverVideoPoster: /img/stills/fronterasstill.jpg
+galleryHeading: "Behind the Scenes"
+galleryImages:
+  - src: /img/fronteras/the-space-between-home.jpg
+    alt: "the space between home"
+  - src: /img/fronteras/the-hands-that-hold-us.jpg
+    alt: "the hands that hold us"
+  - src: /img/fronteras/untitled-undocumented.jpg
+    alt: "untitled undocumented"
+  - src: /img/fronteras/by-boat.jpg
+    alt: "by boat"
+  - src: /img/fronteras/a-ghost-truck.jpg
+    alt: "a ghost truck"
+  - src: /img/fronteras/tower-of-cower.jpg
+    alt: "tower of cower"
+  - src: /img/fronteras/volumen-de-voz.jpg
+    alt: "volumen de voz"
+projectVideos:
+  - heading: "Movie"
+    id: zSydQMCbsQw
+    type: youtube
 ---
 
 Since 2020, Dust Wave has produced award-winning, no-budget short films. Throughout our creative journey, we've observed that short films are often neglected by film festivals. Shorts are typically screened in two-hour blocks, trapping viewers and forcing a “reset” every few minutes. This format limits audience engagement and reduces festival value for filmmakers.
@@ -34,24 +59,3 @@ Our festival serves two audiences: (1) emergent short filmmakers not supported o
 
 **March 1, 2024** -- [MOOD](https://allthingsmood.com), Albuquerque, New Mexico
 </br>
-
-## Behind the Scenes
-
-<div class="row g-2">
-  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-    <img src="/img/fronteras/the-space-between-home.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="the space between home">
-    <img src="/img/fronteras/the-hands-that-hold-us.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="the hands that hold us">
-    <img src="/img/fronteras/untitled-undocumented.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="untitled undocumented">
-    <img src="/img/fronteras/by-boat.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="by boat">
-  </div>
-  <div class="col-lg-6 mb-6 mb-lg-0">
-    <img src="/img/fronteras/a-ghost-truck.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="a ghost truck">
-    <img src="/img/fronteras/tower-of-cower.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="tower of cower">
-    <img src="/img/fronteras/volumen-de-voz.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="volumen de voz">
-  </div>
-</div>
-<br><br>
-
-## Movie
-
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/zSydQMCbsQw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>

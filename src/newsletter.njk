@@ -17,34 +17,98 @@ eleventyComputed:
   #popup { display: none !important; }
 </style>
 
-<div class="container">
-  <div class="row d-flex justify-content-center">
-    <div class="col-12 text-center py-vh-3">
-      <h1>{{title}}</h1>
-    </div>
-    <div class="col-11 col-lg-10 col-xl-6 border-bottom border-top py-vh-3">
-      <div class="contact-form">
+<div class="container newsletter-page">
+  <div class="row justify-content-center">
+    <header class="site-page-heading newsletter-page__heading col-11 col-lg-10 col-xl-9 text-center">
+      <p class="newsletter-page__eyebrow">{{ i18n | t(language, "pages.newsletter.eyebrow") }}</p>
+      <h1>{{ title }}</h1>
+      <p class="lead">{{ i18n | t(language, "pages.newsletter.intro") }}</p>
+    </header>
+
+    {% set meetupPhotos = [
+      { src: "/img/newsletter/meetup-01.jpg", width: 1440, height: 962, alt: i18n | t(language, "pages.newsletter.meetupPhoto1Alt") },
+      { src: "/img/newsletter/meetup-02.jpg", width: 805, height: 538, alt: i18n | t(language, "pages.newsletter.meetupPhoto2Alt") },
+      { src: "/img/newsletter/meetup-03.jpg", width: 801, height: 535, alt: i18n | t(language, "pages.newsletter.meetupPhoto3Alt") },
+      { src: "/img/newsletter/meetup-04.jpg", width: 1440, height: 962, alt: i18n | t(language, "pages.newsletter.meetupPhoto4Alt") },
+      { src: "/img/newsletter/meetup-05.jpg", width: 1440, height: 962, alt: i18n | t(language, "pages.newsletter.meetupPhoto5Alt") },
+      { src: "/img/newsletter/meetup-06.jpg", width: 806, height: 538, alt: i18n | t(language, "pages.newsletter.meetupPhoto6Alt") },
+      { src: "/img/newsletter/meetup-07.jpg", width: 805, height: 538, alt: i18n | t(language, "pages.newsletter.meetupPhoto7Alt") }
+    ] %}
+    <figure class="newsletter-page__meetup col-11 col-lg-10 col-xl-9" aria-label="{{ i18n | t(language, 'pages.newsletter.meetupGalleryLabel') }}">
+      <div class="newsletter-page__meetup-grid">
+        {% for photo in meetupPhotos %}
+          <img
+            class="newsletter-page__meetup-photo newsletter-page__meetup-photo--{{ loop.index }}"
+            src="{{ photo.src }}"
+            width="{{ photo.width }}"
+            height="{{ photo.height }}"
+            alt="{{ photo.alt }}"
+            loading="lazy"
+            decoding="async">
+        {% endfor %}
+      </div>
+      <figcaption class="newsletter-page__meetup-caption">{{ i18n | t(language, "pages.newsletter.meetupCaption") }}</figcaption>
+    </figure>
+
+    <section class="newsletter-page__panel col-11 col-lg-10 col-xl-9" aria-labelledby="newsletter-form-heading">
+      <div class="newsletter-page__pitch">
+        <p class="newsletter-page__eyebrow">{{ i18n | t(language, "pages.newsletter.highlightsEyebrow") }}</p>
+        <h2>{{ i18n | t(language, "pages.newsletter.highlightsHeading") }}</h2>
+        <ol class="newsletter-page__highlights list-unstyled">
+          <li>
+            <span class="newsletter-page__number" aria-hidden="true">01</span>
+            <div>
+              <h3>{{ i18n | t(language, "pages.newsletter.highlightWorkTitle") }}</h3>
+              <p>
+                {{ i18n | t(language, "pages.newsletter.highlightWorkBody") }}
+                <a href="/diy-filmmaker-digest-10-week-of-january-31-2026.html">{{ i18n | t(language, "pages.newsletter.highlightWorkLink") }}</a>
+              </p>
+            </div>
+          </li>
+          <li>
+            <span class="newsletter-page__number" aria-hidden="true">02</span>
+            <div>
+              <h3>{{ i18n | t(language, "pages.newsletter.highlightEventsTitle") }}</h3>
+              <p>{{ i18n | t(language, "pages.newsletter.highlightEventsBody") }}</p>
+            </div>
+          </li>
+          <li>
+            <span class="newsletter-page__number" aria-hidden="true">03</span>
+            <div>
+              <h3>{{ i18n | t(language, "pages.newsletter.highlightNotesTitle") }}</h3>
+              <p>
+                {{ i18n | t(language, "pages.newsletter.highlightNotesBody") }}
+                <a href="/why-do-we-crowdfund-why-do-we-do-events.html">{{ i18n | t(language, "pages.newsletter.highlightNotesLink") }}</a>
+              </p>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <div class="newsletter-page__signup">
+        <p class="newsletter-page__eyebrow">{{ i18n | t(language, "pages.newsletter.formEyebrow") }}</p>
+        <h2 id="newsletter-form-heading">{{ i18n | t(language, "pages.newsletter.heading") }}</h2>
+        <p class="newsletter-page__form-intro" id="newsletter-frequency">{{ i18n | t(language, "pages.newsletter.formIntro") }}</p>
         <form id="newsletter-subscribe-form" class="validate newsletter-form" novalidate>
           <div id="newsletter_signup_scroll">
-            <h5 class="gambado">{{ i18n | t(language, "pages.newsletter.heading") }}</h5>
             <div class="mc-field-group">
-              <label for="newsletter-email">{{ i18n | t(language, "pages.newsletter.email") }} <span class="asterisk">*</span></label>
-              <input type="email" value="" name="email" class="required email" id="newsletter-email" autocomplete="email" inputmode="email" required>
+              <label for="newsletter-email">{{ i18n | t(language, "pages.newsletter.email") }} <span class="asterisk" aria-hidden="true">*</span></label>
+              <input type="email" value="" name="email" class="required email" id="newsletter-email" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" aria-required="true" aria-describedby="newsletter-frequency newsletter-promise" required>
             </div>
-            <div id="newsletter-responses" class="clear foot">
-              <div class="response" id="newsletter-error-response" style="display:none"></div>
-              <div class="response" id="newsletter-success-response" style="display:none"></div>
+            <div id="newsletter-responses" class="clear foot" aria-live="polite">
+              <div class="response" id="newsletter-error-response" role="alert" style="display:none"></div>
+              <div class="response" id="newsletter-success-response" role="status" style="display:none"></div>
             </div>
             <div class="optionalParent">
               <div class="clear foot">
-                <input type="submit" value="{{ i18n | t(language, 'pages.newsletter.subscribe') }}" class="button button--large border-color-white" style="margin-left: 0;">
+                <input type="submit" value="{{ i18n | t(language, 'pages.newsletter.subscribe') }}" class="button button--large newsletter-page__button">
               </div>
             </div>
           </div>
         </form>
-        <p style="font-size:small; margin-bottom:0;">{{ i18n | t(language, "pages.newsletter.promise") }}</p>
+        <p class="newsletter-page__promise" id="newsletter-promise">{{ i18n | t(language, "pages.newsletter.promise") }}</p>
       </div>
-    </div>
+    </section>
   </div>
 </div>
 
@@ -55,6 +119,8 @@ eleventyComputed:
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (!form.reportValidity()) return;
+
     const email = form.querySelector('input[type="email"]').value;
     const errorEl = document.getElementById('newsletter-error-response');
     const successEl = document.getElementById('newsletter-success-response');

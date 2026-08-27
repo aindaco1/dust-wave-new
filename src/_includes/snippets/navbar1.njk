@@ -4,7 +4,7 @@
     {# Show "DUST WAVE" link on mobile, but hide it on homepage #}
     {% if not isHomepage %}
     <div class="d-lg-none w-100 text-center mb-2">
-      <h1 class="display-huge mt-3 mb-3">
+      <h1 class="display-huge site-mobile-wordmark mt-3 mb-3">
         <a href="{{ i18n | localizedUrl(language, 'home', '/') }}" class="text-white text-decoration-none" aria-label="{{ i18n | t(language, 'nav.homeAria') }}">DUST WAVE</a>
       </h1>
     </div>

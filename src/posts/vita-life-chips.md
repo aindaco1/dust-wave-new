@@ -3,11 +3,36 @@ title: VitaLife© Chips
 date: 2023-04-17
 img: /img/stills/vitalifestill.jpg
 summary: Satirical spec ad
-gif: /img/gifs/vitalife.gif
 tags:
   - comedy
   - satire
+  - commercial-satire
+  - challenge
   - released
+hoverVideoWebm: /img/project-videos/vitalife.webm
+hoverVideoMp4: /img/project-videos/vitalife.mp4
+hoverVideoPoster: /img/stills/vitalifestill.jpg
+galleryHeading: "Behind the scenes"
+galleryImages:
+  - src: /img/vita_life/behind_1.jpg
+    alt: "Behind the Scenes"
+  - src: /img/vita_life/behind_2.jpg
+    alt: "Behind the Scenes"
+  - src: /img/vita_life/behind_3.jpg
+    alt: "Behind the Scenes"
+  - src: /img/vita_life/behind_4.jpg
+    alt: "Behind the Scenes"
+  - src: /img/vita_life/behind_5.jpg
+    alt: "Behind the Scenes"
+  - src: /img/vita_life/behind_6.jpg
+    alt: "Behind the Scenes"
+projectVideos:
+  - heading: "Movie"
+    id: rAeSdcI_L3A
+    type: youtube
+  - heading: "Alternate Ending"
+    id: 1KoyUJ0QEso
+    type: youtube
 ---
 
 _VitaLife© Chips_ is a satirical spec ad created for submission to the [2023 Musicbed Challenge](https://www.youtube.com/watch?v=o87H-Lnoy4U). Shot over two days and nights at MOOD Studio in Albuquerque, New Mexico.
@@ -42,28 +67,3 @@ VitaLife© Guy, Pitch Man - Adrian Lopez</br>
 Board Member #2 - Jacklyn Le</br>
 Board Member #3 - James Rodriguez</br>
 </br>
-
-### Behind the scenes
-
-<div class="row g-2">
-  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-    <img src="/img/vita_life/behind_1.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/vita_life/behind_2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/vita_life/behind_3.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-  </div>
-  <div class="col-lg-6 mb-6 mb-lg-0">
-    <img src="/img/vita_life/behind_4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/vita_life/behind_5.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/vita_life/behind_6.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-  </div>
-</div>
-<br><br>
-
-## Movie
-
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/rAeSdcI_L3A" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
-</br></br>
-
-## Alternate Ending
-
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/1KoyUJ0QEso" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>

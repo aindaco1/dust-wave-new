@@ -3,14 +3,34 @@ title: La Grima
 date: 2022-07-31
 img: /img/stills/lagrimastill.jpg
 summary: Climate short film
-gif: /img/gifs/lagrima.gif
 tags:
   - sci-fi
   - climate
+  - challenge
+  - 48-hour-film-project
   - released
+hoverVideoWebm: /img/project-videos/lagrima.webm
+hoverVideoMp4: /img/project-videos/lagrima.mp4
+hoverVideoPoster: /img/stills/lagrimastill.jpg
+galleryHeading: "Behind the scenes"
+galleryImages:
+  - src: /img/la_grima/behind_3.jpg
+    alt: "Behind the Scenes"
+  - src: /img/la_grima/behind_1.jpg
+    alt: "Behind the Scenes"
+  - src: /img/la_grima/still_1_square.jpg
+    alt: "Poster"
+  - src: /img/la_grima/behind_2.jpg
+    alt: "Behind the Scenes"
+  - src: /img/la_grima/behind_4.jpg
+    alt: "Behind the Scenes"
+projectVideos:
+  - heading: "Movie"
+    id: 5JyyQVF0cAI
+    type: youtube
 ---
 
-_La Grima_ is a climate short created for submission to the [2022 Albuquerque 48 Hour Film Project](https://www.48hourfilm.com/en/albuquerque-nm) contest. Shot at the Harwood Art Center in Albuquerque, New Mexico.
+_La Grima_ is a climate short created for the [2022 Albuquerque 48 Hour Film Project](https://www.48hourfilm.com/en/albuquerque-nm). Shot at the Harwood Art Center in Albuquerque, New Mexico.
 </br>
 </br>
 
@@ -92,22 +112,3 @@ Brawler in Line #2 — James Rodriguez
 * Selected for Screening
 </br>
 </br>
-
-### Behind the scenes
-
-<div class="row g-2">
-  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-    <img src="/img/la_grima/behind_3.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/la_grima/behind_1.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/la_grima/still_1_square.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Poster">
-  </div>
-  <div class="col-lg-6 mb-6 mb-lg-0">
-    <img src="/img/la_grima/behind_2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/la_grima/behind_4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-  </div>
-</div>
-<br><br>
-
-## Movie
-
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/5JyyQVF0cAI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>

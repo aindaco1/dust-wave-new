@@ -11,21 +11,105 @@ pagination:
 permalink: "{{ i18n.config.pages.ddsDonate[language] }}"
 eleventyComputed:
   title: "{{ i18n[language].pages.ddsDonate.title }}"
-  description: "{{ i18n[language].pages.ddsDonate.title }}"
+  description: "{{ i18n[language].pages.ddsDonate.description }}"
 ---
+{% from "snippets/social-icon.njk" import socialIcon %}
 <style>
   #popup {
   	display: none !important;
   }
 </style>
 
-<div class="container">
+<div class="container dds-support-page">
   <div class="row d-flex justify-content-center">
-    <div class="col-12 text-center py-vh-3">
+    <div class="site-page-heading dds-support-heading col-11 col-lg-10 col-xl-8 text-center">
+      <p class="dds-support-eyebrow">{{ i18n | t(language, 'pages.ddsDonate.eyebrow') }}</p>
       <h1>{{title}}</h1>
+      <p class="lead mb-0">{{ i18n | t(language, 'pages.ddsDonate.intro') }}</p>
+      <figure class="dds-support-hero mb-0">
+        <img src="/img/gifs/dustdontsettle.gif" class="img-fluid" width="800" height="450" alt="{{ i18n | t(language, 'pages.ddsDonate.heroAlt') }}">
+      </figure>
     </div>
-    <div class="col-11 col-lg-10 col-xl-6 border-bottom border-top py-vh-3">
+
+    <section class="dds-support-section col-11 col-lg-10 col-xl-8" aria-labelledby="dds-why-title">
+      <div class="row g-4">
+        <div class="col-12 col-md-5">
+          <p class="dds-support-eyebrow">{{ i18n | t(language, 'pages.ddsDonate.whyEyebrow') }}</p>
+          <h2 id="dds-why-title">{{ i18n | t(language, 'pages.ddsDonate.whyTitle') }}</h2>
+        </div>
+        <div class="col-12 col-md-7">
+          <p><a class="link-fancy" href="{{ projectTaxonomy | localizedProjectUrl('dust-don-t-settle', language) }}">{{ i18n | t(language, 'pages.ddsDonate.projectTitle') }}</a> {{ i18n | t(language, 'pages.ddsDonate.whyBody1') }}</p>
+          <p class="mb-0">{{ i18n | t(language, 'pages.ddsDonate.whyBody2') }}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="dds-support-section col-11 col-lg-10 col-xl-8" aria-labelledby="dds-funds-title">
+      <p class="dds-support-eyebrow">{{ i18n | t(language, 'pages.ddsDonate.fundsEyebrow') }}</p>
+      <h2 id="dds-funds-title">{{ i18n | t(language, 'pages.ddsDonate.fundsTitle') }}</h2>
+      <div class="row g-0 dds-support-funds">
+        <div class="dds-support-fund col-12 col-md-6">
+          <h3>{{ i18n | t(language, 'pages.ddsDonate.fundsFinishTitle') }}</h3>
+          <p>{{ i18n | t(language, 'pages.ddsDonate.fundsFinishBody') }}</p>
+        </div>
+        <div class="dds-support-fund col-12 col-md-6">
+          <h3>{{ i18n | t(language, 'pages.ddsDonate.fundsRightsTitle') }}</h3>
+          <p>{{ i18n | t(language, 'pages.ddsDonate.fundsRightsBody') }}</p>
+        </div>
+        <div class="dds-support-fund col-12 col-md-6">
+          <h3>{{ i18n | t(language, 'pages.ddsDonate.fundsAccessTitle') }}</h3>
+          <p>{{ i18n | t(language, 'pages.ddsDonate.fundsAccessBody') }}</p>
+        </div>
+        <div class="dds-support-fund col-12 col-md-6">
+          <h3>{{ i18n | t(language, 'pages.ddsDonate.fundsReachTitle') }}</h3>
+          <p>{{ i18n | t(language, 'pages.ddsDonate.fundsReachBody') }}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="dds-support-section col-11 col-lg-10 col-xl-8" aria-labelledby="dds-how-title">
+      <p class="dds-support-eyebrow">{{ i18n | t(language, 'pages.ddsDonate.howEyebrow') }}</p>
+      <h2 id="dds-how-title">{{ i18n | t(language, 'pages.ddsDonate.howTitle') }}</h2>
+      <p class="dds-support-how-intro">{{ i18n | t(language, 'pages.ddsDonate.howBody') }}</p>
+      <ol class="dds-support-steps list-unstyled">
+        <li>
+          <span class="dds-support-step-number" aria-hidden="true">01</span>
+          <h3>{{ i18n | t(language, 'pages.ddsDonate.stepChooseTitle') }}</h3>
+          <p>{{ i18n | t(language, 'pages.ddsDonate.stepChooseBody') }}</p>
+        </li>
+        <li>
+          <span class="dds-support-step-number" aria-hidden="true">02</span>
+          <h3>{{ i18n | t(language, 'pages.ddsDonate.stepSubmitTitle') }}</h3>
+          <p>{{ i18n | t(language, 'pages.ddsDonate.stepSubmitBody') }}</p>
+        </li>
+        <li>
+          <span class="dds-support-step-number" aria-hidden="true">03</span>
+          <h3>{{ i18n | t(language, 'pages.ddsDonate.stepFinishTitle') }}</h3>
+          <p>{{ i18n | t(language, 'pages.ddsDonate.stepFinishBody') }}</p>
+        </li>
+      </ol>
+    </section>
+
+    <div class="dds-support-form col-11 col-lg-10 col-xl-8 border-bottom border-top">
       <iframe id="qgiv-embed" class="qgiv-embed-form qgiv-embed" frameborder="0" allowtransparency="true" style="display: block; float: none; width: 100%; border: 0; overflow: hidden; height: 663px;" scrolling="no" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" data-embed-position="278.9609375" title="{{ i18n | t(language, 'pages.ddsDonate.embedTitle') }}" src="https://secure.qgiv.com/for/dustdontsettle-nmfffiscalproject/embed"></iframe>
+      <p class="dds-support-provider-note text-center">
+        {{ i18n | t(language, 'pages.ddsDonate.providerNote') }}
+        <a href="https://secure.qgiv.com/for/dustdontsettle-nmfffiscalproject/" target="_blank" rel="noopener noreferrer">{{ i18n | t(language, 'pages.ddsDonate.secureFallback') }}</a>
+      </p>
     </div>
+
+    <section class="dds-support-section dds-support-other col-11 col-lg-10 col-xl-8 text-center" aria-labelledby="dds-other-title">
+      <p class="dds-support-eyebrow">{{ i18n | t(language, 'pages.ddsDonate.otherEyebrow') }}</p>
+      <h2 id="dds-other-title">{{ i18n | t(language, 'pages.ddsDonate.otherTitle') }}</h2>
+      <p>{{ i18n | t(language, 'pages.ddsDonate.otherBody') }}</p><br>
+      <p class="dds-support-project-link mb-0">
+        <a class="link-fancy fw-bold" href="{{ projectTaxonomy | localizedProjectUrl('dust-don-t-settle', language) }}">{{ i18n | t(language, 'pages.ddsDonate.projectLink') }}</a>
+      </p>
+      <p class="dds-support-social-links mb-0">
+        <a class="link-fancy" href="https://www.instagram.com/dustdontsettledocumentary" target="_blank" rel="noopener noreferrer" aria-label="{{ i18n | t(language, 'pages.ddsDonate.instagramLink') }}"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a>
+        <a class="link-fancy" href="https://youtube.com/@dustdontsettledocumentary" target="_blank" rel="noopener noreferrer" aria-label="{{ i18n | t(language, 'pages.ddsDonate.youtubeLink') }}">{{ socialIcon("youtube") }}</a>
+        <a class="link-fancy" href="https://bsky.app/profile/dustdontsettle.bsky.social" target="_blank" rel="noopener noreferrer" aria-label="{{ i18n | t(language, 'pages.ddsDonate.blueskyLink') }}"><i class="fa-brands fa-bluesky" aria-hidden="true"></i></a>
+      </p>
+    </section>
   </div>
 </div>

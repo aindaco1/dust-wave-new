@@ -3,14 +3,38 @@ title: Gumshoe
 date: 2023-08-14
 img: /img/stills/gumshoestill.jpg
 summary: Sci-fi noir short
-gif: /img/gifs/gumshoe.gif
 tags:
   - sci-fi
   - noir
+  - challenge
+  - 48-hour-film-project
   - released
+hoverVideoWebm: /img/project-videos/gumshoe.webm
+hoverVideoMp4: /img/project-videos/gumshoe.mp4
+hoverVideoPoster: /img/stills/gumshoestill.jpg
+galleryHeading: "Behind the scenes"
+galleryImages:
+  - src: /img/gumshoe/behind_the_scenes_7.jpg
+    alt: "Behind the Scenes"
+  - src: /img/gumshoe/behind_the_scenes_1.jpg
+    alt: "Behind the Scenes"
+  - src: /img/gumshoe/behind_the_scenes_5.jpg
+    alt: "Behind the Scenes"
+  - src: /img/gumshoe/behind_the_scenes_3.jpg
+    alt: "Behind the Scenes"
+  - src: /img/gumshoe/behind_the_scenes_2.jpg
+    alt: "Behind the Scenes"
+  - src: /img/gumshoe/behind_the_scenes_4.jpg
+    alt: "Behind the Scenes"
+  - src: /img/gumshoe/behind_the_scenes_6.jpg
+    alt: "Behind the Scenes"
+projectVideos:
+  - heading: "Movie"
+    id: xjZNDMDGW_I
+    type: youtube
 ---
 
-_Gumshoe_ is a sci-fi noir short created for submission to the [2023 Albuquerque 48 Hour Film Project](https://www.48hourfilm.com/en/albuquerque-nm) contest. Shot at various locations in Albuquerque, New Mexico.
+_Gumshoe_ is a sci-fi noir short created for the [2023 Albuquerque 48 Hour Film Project](https://www.48hourfilm.com/en/albuquerque-nm). Shot at various locations in Albuquerque, New Mexico.
 </br>
 </br>
 
@@ -68,24 +92,3 @@ Extras -- Ryuichiro Morgan, Jordyn Bernicke, Kasha Sanderson & Isaac Guereque
 * Best Acting Ensemble
 </br>
 </br>
-
-### Behind the scenes
-
-<div class="row g-2">
-  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-    <img src="/img/gumshoe/behind_the_scenes_7.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/gumshoe/behind_the_scenes_1.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/gumshoe/behind_the_scenes_5.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/gumshoe/behind_the_scenes_3.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-  </div>
-  <div class="col-lg-6 mb-6 mb-lg-0">
-    <img src="/img/gumshoe/behind_the_scenes_2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/gumshoe/behind_the_scenes_4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/gumshoe/behind_the_scenes_6.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-  </div>
-</div>
-<br><br>
-
-## Movie
-
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/xjZNDMDGW_I" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>

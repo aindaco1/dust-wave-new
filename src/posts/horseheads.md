@@ -3,11 +3,41 @@ title: Horseheads
 date: 2025-05-03
 img: /img/stills/horseheadsstill.jpg
 summary: Crime comedy short
-gif: /img/gifs/horseheads.gif
 tags:
   - crime
   - comedy
+  - animation
   - released
+hoverVideoWebm: /img/project-videos/horseheads.webm
+hoverVideoMp4: /img/project-videos/horseheads.mp4
+hoverVideoPoster: /img/stills/horseheadsstill.jpg
+galleryHeading: "Behind the scenes"
+galleryImages:
+  - src: /img/horseheads/behind_the_scenes4.jpg
+    alt: "behind the scenes"
+  - src: /img/horseheads/behind_the_scenes6.jpg
+    alt: "behind the scenes"
+  - src: /img/horseheads/behind_the_scenes5.jpg
+    alt: "behind the scenes"
+  - src: /img/horseheads/behind_the_scenes2.jpg
+    alt: "behind the scenes"
+  - src: /img/horseheads/behind_the_scenes3.jpg
+    alt: "behind the scenes"
+  - src: /img/horseheads/behind_the_scenes1.jpg
+    alt: "behind the scenes"
+poster: /img/horseheads/poster.jpg
+posterHeading: "Poster"
+posterAlt: "poster"
+projectVideos:
+  - heading: "Trailer"
+    id: Z-O3S2eo31s
+    type: youtube
+  - heading: "BTS Mini-Doc"
+    id: F5R6rnngJEw
+    type: youtube
+movieComingSoon: true
+movieHeading: "Movie"
+movieComingSoonText: "Coming Soon ..."
 ---
 
 _Horseheads_ is a crime comedy short shot in February 2025 in Albuquerque, New Mexico.
@@ -76,39 +106,3 @@ Extras -- Alan De Lira-Richards, Alexis Padilla-Perez, Brian Tucker, Collin Luth
 
 </br>
 </br>
-
-### Behind the scenes
-
-<div class="row g-2">
-  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-	<img src="/img/horseheads/behind_the_scenes4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  	<img src="/img/horseheads/behind_the_scenes6.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  	<img src="/img/horseheads/behind_the_scenes5.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  </div>
-  <div class="col-lg-6 mb-6 mb-lg-0">
-	<img src="/img/horseheads/behind_the_scenes2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  	<img src="/img/horseheads/behind_the_scenes3.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-	<img src="/img/horseheads/behind_the_scenes1.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  </div>
-</div>
-<br><br>
-
-### Poster
-<br>
-<img src="/img/horseheads/poster.jpg" class="w-75 shadow-1-strong rounded mb-2" alt="poster">
-
-<br><br>
-
-## Trailer
-
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/Z-O3S2eo31s" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
-<br><br>
-
-## BTS Mini-Doc
-
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/F5R6rnngJEw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
-<br><br>
-
-## Movie
-
-**Coming Soon ...**

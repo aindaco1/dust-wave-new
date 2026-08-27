@@ -1,4 +1,4 @@
-{# Generate project hover backgrounds directly from each project's gif frontmatter. #}
+{# Generate project hover backgrounds directly from each project's media frontmatter. #}
 {% if isHomepage or title == "Projects" %}
 <style id="project-hover-gif-styles">
   {% for project in collections.posts %}
@@ -10,6 +10,18 @@
   html:has(.project-{{ project.data.title | slugify }}:hover) .home-background-video,
   html:has(.project-{{ project.data.title | slugify }}:focus-within) .home-background-video {
     opacity: 0;
+  }
+    {% endif %}
+    {% if project.data.hoverVideoWebm or project.data.hoverVideoMp4 %}
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    html:has(.project-{{ project.data.title | slugify }}:hover) .home-background-video,
+    html:has(.project-{{ project.data.title | slugify }}:focus-within) .home-background-video {
+      opacity: 0;
+    }
+    html:has(.project-{{ project.data.title | slugify }}:hover) .project-hover-video-{{ project.data.title | slugify }},
+    html:has(.project-{{ project.data.title | slugify }}:focus-within) .project-hover-video-{{ project.data.title | slugify }} {
+      opacity: .96;
+    }
   }
     {% endif %}
   {% endfor %}

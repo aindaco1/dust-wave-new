@@ -3,7 +3,6 @@ title: An Evening of Frights and Delights
 date: 2024-11-07
 img: /img/stills/eveningstill.jpg
 summary: Una noche de estrenos con entradas agotadas en el Guild Cinema
-gif: /img/gifs/evening.gif
 layout: layouts/post.njk
 navbar: navbar1
 footer: footer1
@@ -15,7 +14,25 @@ localizedPaths:
 permalink: /es/project/an-evening-of-frights-and-delights.html
 tags:
 - localized-project
+hoverVideoWebm: /img/project-videos/evening.webm
+hoverVideoMp4: /img/project-videos/evening.mp4
+hoverVideoPoster: /img/stills/eveningstill.jpg
+galleryHeading: "Detrás de cámaras"
+galleryImages:
+  - src: /img/evening/behind_the_scenes1.jpg
+    alt: "el espacio entre el hogar"
+  - src: /img/evening/behind_the_scenes2.jpg
+    alt: "las manos que nos sostienen"
+  - src: /img/evening/behind_the_scenes3.jpg
+    alt: "sin título indocumentado"
+  - src: /img/evening/behind_the_scenes6.jpg
+    alt: "un camión fantasma"
+  - src: /img/evening/behind_the_scenes5.jpg
+    alt: "torre de miedo"
+  - src: /img/evening/behind_the_scenes4.jpg
+    alt: "volumen de voz"
 ---
+
 <div class="project-translation project-translation--es">
 <p>el 6 de noviembre, Dust Wave ¡Celebró una noche de estrenos de películas con entradas agotadas! Presentando:  </p>
 <p><a href="/project/shellfish-knish.html">Shellfish Knish</a> por Camille Carlson  </p>
@@ -27,18 +44,5 @@ tags:
 <p>y ...  </p>
 <p>El estreno mundial de <a href="https://www.instagram.com/hundred_voices_movie">The Hundred Voices of Harry Hoffman</a>, escrito y dirigido por el inimitable Brandon Carter!</p>
 <p><br/></p>
-<h2>Detrás de cámaras</h2>
-<div class="row g-2">
-<div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-<img alt="el espacio entre el hogar" class="w-100 shadow-1-strong rounded mb-2" src="/img/evening/behind_the_scenes1.jpg"/>
-<img alt="las manos que nos sostienen" class="w-100 shadow-1-strong rounded mb-2" src="/img/evening/behind_the_scenes2.jpg"/>
-<img alt="sin título indocumentado" class="w-100 shadow-1-strong rounded mb-2" src="/img/evening/behind_the_scenes3.jpg"/>
-</div>
-<div class="col-lg-6 mb-6 mb-lg-0">
-<img alt="un camión fantasma" class="w-100 shadow-1-strong rounded mb-2" src="/img/evening/behind_the_scenes6.jpg"/>
-<img alt="torre de miedo" class="w-100 shadow-1-strong rounded mb-2" src="/img/evening/behind_the_scenes5.jpg"/>
-<img alt="volumen de voz" class="w-100 shadow-1-strong rounded mb-2" src="/img/evening/behind_the_scenes4.jpg"/>
-</div>
-</div>
-<p><br/><br/></p>
+
 </div>

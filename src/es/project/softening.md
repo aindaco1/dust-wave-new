@@ -3,7 +3,6 @@ title: Softening
 date: 2024-11-06
 img: /img/stills/softeningstill.jpg
 summary: Conmovedor drama musical
-gif: /img/gifs/softening.gif
 layout: layouts/post.njk
 navbar: navbar1
 footer: footer1
@@ -15,7 +14,28 @@ localizedPaths:
 permalink: /es/project/softening.html
 tags:
 - localized-project
+hoverVideoWebm: /img/project-videos/softening.webm
+hoverVideoMp4: /img/project-videos/softening.mp4
+hoverVideoPoster: /img/stills/softeningstill.jpg
+galleryHeading: "Detrás de cámaras"
+galleryImages:
+  - src: /img/softening/behind_the_scenes4.jpg
+    alt: "entre bastidores"
+  - src: /img/softening/behind_the_scenes1.jpg
+    alt: "entre bastidores"
+  - src: /img/softening/behind_the_scenes5.jpg
+    alt: "entre bastidores"
+  - src: /img/softening/behind_the_scenes2.jpg
+    alt: "entre bastidores"
+  - src: /img/softening/behind_the_scenes3.jpg
+    alt: "entre bastidores"
+  - src: /img/softening/behind_the_scenes6.jpg
+    alt: "entre bastidores"
+movieComingSoon: true
+movieHeading: "Película"
+movieComingSoonText: "Muy pronto ..."
 ---
+
 <div class="project-translation project-translation--es">
 <p><em>Softening</em> es un cortometraje de drama musical filmado en Flamenco Works en Albuquerque, Nuevo México.
 
@@ -42,20 +62,5 @@ BTS — Alonso Indacochea
 Editor — Kaidin Jarjusey
 
 </p>
-<h3>Detrás de cámaras</h3>
-<div class="row g-2">
-<div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/softening/behind_the_scenes4.jpg"/>
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/softening/behind_the_scenes1.jpg"/>
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/softening/behind_the_scenes5.jpg"/>
-</div>
-<div class="col-lg-6 mb-6 mb-lg-0">
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/softening/behind_the_scenes2.jpg"/>
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/softening/behind_the_scenes3.jpg"/>
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/softening/behind_the_scenes6.jpg"/>
-</div>
-</div>
-<p><br/><br/></p>
-<h2>Película</h2>
-<p><strong>Muy pronto ...</strong></p>
+
 </div>

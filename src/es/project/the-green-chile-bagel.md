@@ -3,7 +3,6 @@ title: The Green Chile Bagel
 date: 2022-05-10
 img: /img/stills/greenchilestill.png
 summary: Cortometraje de comedia sobre bagels
-gif: /img/gifs/greenchilebagel.gif
 layout: layouts/post.njk
 navbar: navbar1
 footer: footer1
@@ -15,7 +14,30 @@ localizedPaths:
 permalink: /es/project/the-green-chile-bagel.html
 tags:
 - localized-project
+hoverVideoWebm: /img/project-videos/greenchilebagel.webm
+hoverVideoMp4: /img/project-videos/greenchilebagel.mp4
+hoverVideoPoster: /img/stills/greenchilestill.png
+galleryHeading: "Detrás de cámaras"
+galleryImages:
+  - src: /img/green_chile_bagel/behind_1.png
+    alt: "Entre bastidores"
+  - src: /img/green_chile_bagel/behind_2.png
+    alt: "Entre bastidores"
+  - src: /img/green_chile_bagel/behind_4.jpg
+    alt: "Entre bastidores"
+  - src: /img/green_chile_bagel/behind_3.jpg
+    alt: "Entre bastidores"
+  - src: /img/green_chile_bagel/behind_5.jpg
+    alt: "Póster"
+projectVideos:
+  - heading: "Película"
+    id: dRiuvkiifl8
+    type: youtube
+  - heading: "Blooper Reel"
+    id: gKnrEQ5MUzs
+    type: youtube
 ---
+
 <div class="project-translation project-translation--es">
 <p><em>The Green Chile Bagel</em> es un cortometraje creado originalmente para su presentación al <a href="https://challenge.musicbed.com">2022 Musicbed Challenge</a> concurso. La película se rodó en el transcurso de 1 día en el centro de Albuquerque, Nuevo México.</p>
 <p></p>
@@ -42,25 +64,5 @@ Mesero -- Taryn Bernicke
 * Selección Oficial. Proyectado el 13 de agosto de 2022 en el Centro Cultural South Broadway en Albuquerque, Nuevo México.
 
 </p>
-<h3>Detrás de cámaras</h3>
-<div class="row g-2">
-<div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/green_chile_bagel/behind_1.png"/>
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/green_chile_bagel/behind_2.png"/>
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/green_chile_bagel/behind_4.jpg"/>
-</div>
-<div class="col-lg-6 mb-6 mb-lg-0">
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/green_chile_bagel/behind_3.jpg"/>
-<img alt="Póster" class="w-100 shadow-1-strong rounded mb-2" src="/img/green_chile_bagel/behind_5.jpg"/>
-</div>
-</div>
-<p><br/><br/></p>
-<h2>Película</h2>
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style>
-<div class="embed-container"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" frameborder="0" height="400vh" src="https://www.youtube.com/embed/dRiuvkiifl8" title="reproductor de vídeos de youtube" width="100%"></iframe></div>
-<p>
-</p>
-<h2>Blooper Reel</h2>
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style>
-<div class="embed-container"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" frameborder="0" height="400vh" src="https://www.youtube.com/embed/gKnrEQ5MUzs" title="reproductor de vídeos de youtube" width="100%"></iframe></div>
+
 </div>

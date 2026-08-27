@@ -1,0 +1,27 @@
+{% set canonicalSlug = projectTaxonomy | canonicalProjectSlug(page.fileSlug, language) %}
+{% set canonicalProject = collections.posts | projectBySlug(canonicalSlug) %}
+{% set canonicalTags = canonicalProject.data.tags if canonicalProject else tags %}
+{% set projectTypeSlug = projectTaxonomy | projectTypeSlug(canonicalSlug) %}
+{% set projectTypeLabel = projectTaxonomy | projectTypeLabel(canonicalSlug, language) %}
+{% set projectTags = canonicalTags | projectDisplayTags(projectTypeSlug) %}
+{% set projectsUrl = i18n | localizedUrl(language, 'projects', '/projects.html') %}
+
+{% if projectTypeSlug %}
+<div class="project-taxonomy" aria-label="{{ i18n | t(language, 'pages.projects.metadataLabel') }}">
+  <p class="mb-0">
+    <span class="project-taxonomy-line project-taxonomy-type-line">
+      <span class="project-taxonomy-label">{{ i18n | t(language, 'pages.projects.type') }}:</span>
+      <a href="{{ projectsUrl }}?type={{ projectTypeSlug }}" rel="category">{{ projectTypeLabel }}</a>
+    </span>
+    {% if projectTags.length %}
+      <span class="project-taxonomy-separator" aria-hidden="true">·</span>
+      <span class="project-taxonomy-line project-taxonomy-tags-line">
+        <span class="project-taxonomy-label">{{ i18n | t(language, 'pages.projects.tags') }}:</span>
+        {% for tag in projectTags %}
+          <a href="{{ projectsUrl }}?tag={{ tag | urlencode }}" rel="tag">{{ projectTaxonomy | projectTagLabel(tag, language) }}</a>{% if not loop.last %}<span class="project-taxonomy-tag-separator" aria-hidden="true">,</span>{% endif %}
+        {% endfor %}
+      </span>
+    {% endif %}
+  </p>
+</div>
+{% endif %}

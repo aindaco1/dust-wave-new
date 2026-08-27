@@ -4,10 +4,32 @@ date: 2026-04-16
 img: /img/gifs/life-after-dead-air.gif
 imgAlt: Animated preview artwork for Life After Dead Air
 summary: Gallery exhibition at the Taos Center for the Arts
-gif: /img/gifs/life-after-dead-air.gif
 tags:
+  - animation
+  - stop-motion
+  - interactive
+  - multimedia
   - event
   - exhibition
+hoverVideoWebm: /img/project-videos/life-after-dead-air.webm
+hoverVideoMp4: /img/project-videos/life-after-dead-air.mp4
+hoverVideoPoster: /img/gifs/life-after-dead-air.gif
+galleryHeading: "Behind the scenes"
+galleryImages:
+  - src: /img/life_after_dead_air/bts-3.jpg
+    alt: "Behind the Scenes"
+  - src: /img/life_after_dead_air/bts-1.jpg
+    alt: "Behind the Scenes"
+  - src: /img/life_after_dead_air/bts-2.jpg
+    alt: "Behind the Scenes"
+  - src: /img/life_after_dead_air/bts-6.jpg
+    alt: "Behind the Scenes"
+  - src: /img/life_after_dead_air/bts-5.jpg
+    alt: "Behind the Scenes"
+  - src: /img/life_after_dead_air/bts-4.jpg
+    alt: "Behind the Scenes"
+  - src: /img/life_after_dead_air/bts-7.jpg
+    alt: "Behind the Scenes"
 ---
 
 _Life After Dead Air_ brings together artists working with moving images to explore corporeal reality in a digital age. Though their practices differ, each artist centers the tensions of living in an age of uncertainty. With common themes of nostalgia and novelty, the works in the show approach these tensions with curiosity and joy. Together, they show how culture continues in the ruins of media infrastructure.
@@ -134,20 +156,3 @@ Hosted with the support of the [PASEO Project](https://paseoproject.org), and in
 **Medium, materials, and final measurements:** Handmade ceramic mosaic, digital illustration printed on KODAK Photo Tex Repositionable Fabric, disassembled computer speakers and fairy lights, audio artwork; 31 in x 18 in each
 
 **Description:** _Hum Devotional_ is a multidisciplinary installation that draws connections between the divine and the mundane. The digital illustrations and mosaics reference the aesthetics of awe in Christendom, but center domestic and secular ritual. Embedded in the triptych is an audio and lightscape artwork that samples sound from the artists' respective social media algorithms. The sound is transformed and distorted to evoke meditative and sacred spaces. The ambient light is a direct translation of the sound waves. The installation both questions and exalts ceremonial and everyday ritual.
-
-### Behind the scenes
-
-<div class="row g-2">
-  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-    <img src="/img/life_after_dead_air/bts-3.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/life_after_dead_air/bts-1.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/life_after_dead_air/bts-2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/life_after_dead_air/bts-6.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-  </div>
-  <div class="col-lg-6 mb-6 mb-lg-0">
-    <img src="/img/life_after_dead_air/bts-5.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/life_after_dead_air/bts-4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/life_after_dead_air/bts-7.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-  </div>
-</div>
-<br><br>

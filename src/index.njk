@@ -26,17 +26,17 @@ eleventyComputed:
     alt="Dust Wave logo">
 </div>
 
-<div class="w-100 overflow-hidden position-relative" id="top">
+<div class="home-hero-section w-100 overflow-hidden position-relative" id="top">
   {% include "snippets/hero2.njk" %}
 </div>
-<div class="container">
+<div class="container home-projects">
   {% set posts = collections.posts | reverse | head(6) %}
   <div class="row d-flex justify-content-center">
     <div class="col-11 col-lg-10 col-xl-6">
       <div class="row border-bottom">
         {% include "snippets/loop.njk" %}
       </div>
-      <div class="row py-vh-3">
+      <div class="home-projects-more row">
         <a class="link-fancy" style="text-align:center;" href="{{ i18n | localizedUrl(language, 'projects', '/projects.html') }}">{{ i18n | t(language, "pages.home.more") }}</a>
       </div>
     </div>

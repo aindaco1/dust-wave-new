@@ -3,11 +3,23 @@ title: The Haunters
 date: 2024-04-26
 img: /img/stills/thehauntersstill.jpg
 summary: Ghost sci-fi comedy short
-gif: /img/gifs/haunters.gif
 tags:
   - sci-fi
   - comedy
   - released
+hoverVideoWebm: /img/project-videos/haunters.webm
+hoverVideoMp4: /img/project-videos/haunters.mp4
+hoverVideoPoster: /img/stills/thehauntersstill.jpg
+poster: /img/the_haunters/poster.jpg
+posterHeading: "Poster"
+posterAlt: "poster"
+projectVideos:
+  - heading: "Behind the scenes"
+    id: lvc0oG-P19w
+    type: youtube
+  - heading: "Film"
+    id: p7rSKSSQx6w
+    type: youtube
 ---
 
 _The Haunters_ is a sci-fi comedy short shot in October 2023 at MOOD in Albuquerque and at the Corrales Community Library in Corrales, New Mexico.
@@ -71,19 +83,3 @@ Lady Ghost -- Jade Stokes</br>
 * **[Best Short Film, Platinum Award](https://mindfieldff.com/winnerslive2024.html)**
 </br>
 </br>
-
-### Behind the scenes
-
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/lvc0oG-P19w?si=OAOw-RvRrYE0v-W8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
-
-<br><br>
-
-### Poster
-<br>
-<img src="/img/the_haunters/poster.jpg" class="w-75 shadow-1-strong rounded mb-2" alt="poster">
-
-<br><br>
-
-## Film
-
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe src='https://www.youtube.com/embed/p7rSKSSQx6w' frameborder='0' allowfullscreen></iframe></div>

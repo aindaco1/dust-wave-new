@@ -3,7 +3,6 @@ title: Stall'd
 date: 2025-09-02
 img: /img/stills/stalldstill.jpg
 summary: Cortometraje de drama romántico
-gif: /img/gifs/stalld.gif
 layout: layouts/post.njk
 navbar: navbar1
 footer: footer1
@@ -15,7 +14,31 @@ localizedPaths:
 permalink: /es/project/stall-d.html
 tags:
 - localized-project
+hoverVideoWebm: /img/project-videos/stalld.webm
+hoverVideoMp4: /img/project-videos/stalld.mp4
+hoverVideoPoster: /img/stills/stalldstill.jpg
+galleryHeading: "Detrás de cámaras"
+galleryImages:
+  - src: /img/stalld/behind_the_scenes4.jpg
+    alt: "entre bastidores"
+  - src: /img/stalld/behind_the_scenes6.jpg
+    alt: "entre bastidores"
+  - src: /img/stalld/behind_the_scenes5.jpg
+    alt: "entre bastidores"
+  - src: /img/stalld/behind_the_scenes2.jpg
+    alt: "entre bastidores"
+  - src: /img/stalld/behind_the_scenes3.jpg
+    alt: "entre bastidores"
+  - src: /img/stalld/behind_the_scenes1.jpg
+    alt: "entre bastidores"
+poster: /img/stalld/poster.jpg
+posterHeading: "Cartel"
+posterAlt: "póster"
+movieComingSoon: true
+movieHeading: "Película"
+movieComingSoonText: "Muy pronto ..."
 ---
+
 <div class="project-translation project-translation--es">
 <p><em>Stall'd</em> es un corto de drama romántico creado para su presentación al <a href="https://www.48hourfilm.com/albuquerque/">2025 Albuquerque 48 Hour Film Project</a> concurso. Filmada en la Universidad de Nuevo México en Albuquerque, Nuevo México.
 
@@ -51,23 +74,5 @@ Extras -- James Rodriguez, Jacklyn Le, Taryn Bernicke, Josh Omandam, Matthew Atk
 * <strong>Mejor Película</strong>
 
 </p>
-<h3>Detrás de cámaras</h3>
-<div class="row g-2">
-<div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/stalld/behind_the_scenes4.jpg"/>
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/stalld/behind_the_scenes6.jpg"/>
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/stalld/behind_the_scenes5.jpg"/>
-</div>
-<div class="col-lg-6 mb-6 mb-lg-0">
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/stalld/behind_the_scenes2.jpg"/>
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/stalld/behind_the_scenes3.jpg"/>
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/stalld/behind_the_scenes1.jpg"/>
-</div>
-</div>
-<p><br/><br/></p>
-<h3>Cartel</h3>
-<p><img alt="póster" class="w-75 shadow-1-strong rounded mb-2" src="/img/stalld/poster.jpg"/></p>
-<p><br/><br/></p>
-<h2>Película</h2>
-<p><strong>Muy pronto ...</strong></p>
+
 </div>

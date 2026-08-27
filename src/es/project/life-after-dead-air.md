@@ -4,7 +4,6 @@ date: 2026-04-16
 img: /img/gifs/life-after-dead-air.gif
 imgAlt: Ilustración de vista previa animada para Life After Dead Air
 summary: Exposición en el Taos Center for the Arts
-gif: /img/gifs/life-after-dead-air.gif
 layout: layouts/post.njk
 navbar: navbar1
 footer: footer1
@@ -16,7 +15,27 @@ localizedPaths:
 permalink: /es/project/life-after-dead-air.html
 tags:
 - localized-project
+hoverVideoWebm: /img/project-videos/life-after-dead-air.webm
+hoverVideoMp4: /img/project-videos/life-after-dead-air.mp4
+hoverVideoPoster: /img/gifs/life-after-dead-air.gif
+galleryHeading: "Detrás de cámaras"
+galleryImages:
+  - src: /img/life_after_dead_air/bts-3.jpg
+    alt: "Entre bastidores"
+  - src: /img/life_after_dead_air/bts-1.jpg
+    alt: "Entre bastidores"
+  - src: /img/life_after_dead_air/bts-2.jpg
+    alt: "Entre bastidores"
+  - src: /img/life_after_dead_air/bts-6.jpg
+    alt: "Entre bastidores"
+  - src: /img/life_after_dead_air/bts-5.jpg
+    alt: "Entre bastidores"
+  - src: /img/life_after_dead_air/bts-4.jpg
+    alt: "Entre bastidores"
+  - src: /img/life_after_dead_air/bts-7.jpg
+    alt: "Entre bastidores"
 ---
+
 <div class="project-translation project-translation--es">
 <p><em>Life After Dead Air</em> reúne a artistas que trabajan con imágenes en movimiento para explorar la realidad corporal en la era digital. Aunque sus prácticas difieren, cada artista centra las tensiones de vivir en una época de incertidumbre. Con temas comunes de nostalgia y novedad, las obras de la muestra abordan estas tensiones con curiosidad y alegría. Juntos, muestran cómo la cultura continúa entre las ruinas de la infraestructura mediática.</p>
 <p>Organizado con el apoyo de la <a href="https://paseoproject.org">PASEO Project</a>, y en colaboración con el <a href="https://taosff.org">Taos Film Festival</a>, la exposición se desarrolla en el <a href="https://tcataos.org">Taos Center for the Arts</a> en Taos, Nuevo México desde <strong>23-26 de abril de 2026</strong>. La recepción de apertura es <strong>23 de abril a las 16:00</strong>.
@@ -93,19 +112,5 @@ tags:
 <p><strong>Artistas:</strong> <a href="https://www.helenatkins.com">Helen Atkins</a> y <a href="https://www.instagram.com/willinandchillinarts">Will Geusz</a></p>
 <p><strong>Medios, materiales y medidas finales:</strong> Mosaico de cerámica hecho a mano, ilustración digital impresa en tela reposicionable KODAK Photo Tex, parlantes de computadora desmontados y luces de hadas, ilustraciones de audio; 31 x 18 cada uno</p>
 <p><strong>Descripción:</strong> <em>Hum Devotional</em> es una instalación multidisciplinaria que establece conexiones entre lo divino y lo mundano. Las ilustraciones digitales y los mosaicos hacen referencia a la estética del asombro en la cristiandad, pero se centran en el ritual doméstico y secular. Incrustado en el tríptico hay una obra de arte de audio y paisaje de luces que muestra el sonido de los respectivos algoritmos de redes sociales de los artistas. El sonido se transforma y distorsiona para evocar espacios meditativos y sagrados. La luz ambiental es una traducción directa de las ondas sonoras. La instalación cuestiona y exalta el ritual ceremonial y cotidiano.</p>
-<h3>Detrás de cámaras</h3>
-<div class="row g-2">
-<div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/life_after_dead_air/bts-3.jpg"/>
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/life_after_dead_air/bts-1.jpg"/>
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/life_after_dead_air/bts-2.jpg"/>
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/life_after_dead_air/bts-6.jpg"/>
-</div>
-<div class="col-lg-6 mb-6 mb-lg-0">
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/life_after_dead_air/bts-5.jpg"/>
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/life_after_dead_air/bts-4.jpg"/>
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/life_after_dead_air/bts-7.jpg"/>
-</div>
-</div>
-<p><br/><br/></p>
+
 </div>

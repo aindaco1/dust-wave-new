@@ -3,13 +3,35 @@ title: Long Night
 date: 2025-07-16
 img: /img/stills/longnightstill.jpg
 summary: Horror romance short film
-gif: /img/gifs/longnight.gif
 tags:
   - horror
   - romance
   - lgbtqia+
   - werewolf
   - released
+hoverVideoWebm: /img/project-videos/longnight.webm
+hoverVideoMp4: /img/project-videos/longnight.mp4
+hoverVideoPoster: /img/stills/longnightstill.jpg
+galleryHeading: "Behind the scenes"
+galleryImages:
+  - src: /img/long_night/behind_3.jpg
+    alt: "Behind the Scenes"
+  - src: /img/long_night/behind_1.jpg
+    alt: "Behind the Scenes"
+  - src: /img/long_night/behind_5.jpg
+    alt: "Behind the Scenes"
+  - src: /img/long_night/behind_2.jpg
+    alt: "Behind the Scenes"
+  - src: /img/long_night/behind_4.jpg
+    alt: "Behind the Scenes"
+  - src: /img/long_night/behind_6.jpg
+    alt: "Behind the Scenes"
+poster: /img/long_night/poster.jpg
+posterHeading: "Poster"
+posterAlt: "poster"
+movieComingSoon: true
+movieHeading: "Movie"
+movieComingSoonText: "Coming Soon ..."
 ---
 
 _Long Night_ is a horror romance short written and directed by the incomparable [Bailey Grady](https://www.instagram.com/londone_fog). Shot at several locations in Albuquerque, New Mexico.
@@ -80,29 +102,3 @@ Cheryl - Kim S. Monti
 </div>
 
 </br></br>
-
-### Behind the scenes
-
-<div class="row g-2">
-  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-    <img src="/img/long_night/behind_3.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/long_night/behind_1.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/long_night/behind_5.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-  </div>
-  <div class="col-lg-6 mb-6 mb-lg-0">
-    <img src="/img/long_night/behind_2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/long_night/behind_4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/long_night/behind_6.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-  </div>
-</div>
-<br><br>
-
-### Poster
-<br>
-<img src="/img/long_night/poster.jpg" class="w-75 shadow-1-strong rounded mb-2" alt="poster">
-
-<br><br>
-
-## Movie
-
-**Coming Soon ...**

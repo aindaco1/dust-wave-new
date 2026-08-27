@@ -3,12 +3,59 @@ title: Pandora's Greenhouse
 date: 2025-04-07
 img: /img/stills/pandorastill.jpg
 summary: Cosmic horror short film
-gif: /img/gifs/pandora.gif
 tags:
   - horror
   - cosmic
   - mockumentary
   - released
+hoverVideoWebm: /img/project-videos/pandora.webm
+hoverVideoMp4: /img/project-videos/pandora.mp4
+hoverVideoPoster: /img/stills/pandorastill.jpg
+galleryHeading: "Behind the scenes"
+galleryImages:
+  - src: /img/pandoras_greenhouse/behind_3.jpg
+    alt: "Behind the Scenes"
+  - src: /img/pandoras_greenhouse/behind_1.jpg
+    alt: "Behind the Scenes"
+  - src: /img/pandoras_greenhouse/behind_5.jpg
+    alt: "Behind the Scenes"
+  - src: /img/pandoras_greenhouse/behind_2.jpg
+    alt: "Behind the Scenes"
+  - src: /img/pandoras_greenhouse/behind_4.jpg
+    alt: "Behind the Scenes"
+  - src: /img/pandoras_greenhouse/behind_6.jpg
+    alt: "Behind the Scenes"
+additionalGalleries:
+  - heading: "Stills"
+    images:
+      - src: /img/pandoras_greenhouse/still_3.jpg
+        alt: "Still from Pandora's Greenhouse"
+      - src: /img/pandoras_greenhouse/still_1.jpg
+        alt: "Still from Pandora's Greenhouse"
+      - src: /img/pandoras_greenhouse/still_5.jpg
+        alt: "Still from Pandora's Greenhouse"
+      - src: /img/pandoras_greenhouse/still_7.jpg
+        alt: "Still from Pandora's Greenhouse"
+      - src: /img/pandoras_greenhouse/still_9.jpg
+        alt: "Still from Pandora's Greenhouse"
+      - src: /img/pandoras_greenhouse/still_2.jpg
+        alt: "Still from Pandora's Greenhouse"
+      - src: /img/pandoras_greenhouse/still_4.jpg
+        alt: "Still from Pandora's Greenhouse"
+      - src: /img/pandoras_greenhouse/still_6.jpg
+        alt: "Still from Pandora's Greenhouse"
+      - src: /img/pandoras_greenhouse/still_8.jpg
+        alt: "Still from Pandora's Greenhouse"
+poster: /img/pandoras_greenhouse/poster.jpg
+posterHeading: "Poster"
+posterAlt: "poster"
+projectVideos:
+  - heading: "Trailer"
+    id: t6gWcsX-XvI
+    type: youtube
+movieComingSoon: true
+movieHeading: "Movie"
+movieComingSoonText: "Coming Soon ..."
 ---
 
 _Pandora's Greenhouse_ is a cosmic horror short written and directed by [Adrian Pijoan](https://www.adrianpijoan.net). Shot at several locations in Albuquerque, New Mexico.
@@ -64,53 +111,3 @@ John Dewar as The Narrator
 * Official Selection
 </br>
 </br>
-
-### Behind the scenes
-
-<div class="row g-2">
-  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-    <img src="/img/pandoras_greenhouse/behind_3.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/pandoras_greenhouse/behind_1.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/pandoras_greenhouse/behind_5.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-  </div>
-  <div class="col-lg-6 mb-6 mb-lg-0">
-    <img src="/img/pandoras_greenhouse/behind_2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/pandoras_greenhouse/behind_4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/pandoras_greenhouse/behind_6.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-  </div>
-</div>
-<br><br>
-
-### Stills
-
-<div class="row g-2">
-  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-    <img src="/img/pandoras_greenhouse/still_3.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Stills">
-    <img src="/img/pandoras_greenhouse/still_1.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Stills">
-    <img src="/img/pandoras_greenhouse/still_5.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Stills">
-    <img src="/img/pandoras_greenhouse/still_7.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Stills">
-    <img src="/img/pandoras_greenhouse/still_9.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Stills">
-  </div>
-  <div class="col-lg-6 mb-6 mb-lg-0">
-    <img src="/img/pandoras_greenhouse/still_2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Stills">
-    <img src="/img/pandoras_greenhouse/still_4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Stills">
-    <img src="/img/pandoras_greenhouse/still_6.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Stills">
-    <img src="/img/pandoras_greenhouse/still_8.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Stills">
-  </div>
-</div>
-<br><br>
-
-### Poster
-<br>
-<img src="/img/pandoras_greenhouse/poster.jpg" class="w-75 shadow-1-strong rounded mb-2" alt="poster">
-
-<br><br>
-
-## Trailer
-
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/t6gWcsX-XvI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
-<br><br>
-
-## Movie
-
-**Coming Soon ...**

@@ -3,7 +3,6 @@ title: Long Night
 date: 2025-07-16
 img: /img/stills/longnightstill.jpg
 summary: Cortometraje romántico de terror
-gif: /img/gifs/longnight.gif
 layout: layouts/post.njk
 navbar: navbar1
 footer: footer1
@@ -15,7 +14,31 @@ localizedPaths:
 permalink: /es/project/long-night.html
 tags:
 - localized-project
+hoverVideoWebm: /img/project-videos/longnight.webm
+hoverVideoMp4: /img/project-videos/longnight.mp4
+hoverVideoPoster: /img/stills/longnightstill.jpg
+galleryHeading: "Detrás de cámaras"
+galleryImages:
+  - src: /img/long_night/behind_3.jpg
+    alt: "Entre bastidores"
+  - src: /img/long_night/behind_1.jpg
+    alt: "Entre bastidores"
+  - src: /img/long_night/behind_5.jpg
+    alt: "Entre bastidores"
+  - src: /img/long_night/behind_2.jpg
+    alt: "Entre bastidores"
+  - src: /img/long_night/behind_4.jpg
+    alt: "Entre bastidores"
+  - src: /img/long_night/behind_6.jpg
+    alt: "Entre bastidores"
+poster: /img/long_night/poster.jpg
+posterHeading: "Cartel"
+posterAlt: "póster"
+movieComingSoon: true
+movieHeading: "Película"
+movieComingSoonText: "Muy pronto ..."
 ---
+
 <div class="project-translation project-translation--es">
 <p><em>Long Night</em> es un cortometraje romántico de terror escrito y dirigido por el incomparable <a href="https://www.instagram.com/londone_fog">Bailey Grady</a>. Filmado en varios lugares de Albuquerque, Nuevo México.
 
@@ -75,24 +98,5 @@ Cheryl - Kim S. Monti
 </div>
 </div>
 <p></p>
-<h3>Detrás de cámaras</h3>
-<div class="row g-2">
-<div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/long_night/behind_3.jpg"/>
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/long_night/behind_1.jpg"/>
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/long_night/behind_5.jpg"/>
-</div>
-<div class="col-lg-6 mb-6 mb-lg-0">
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/long_night/behind_2.jpg"/>
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/long_night/behind_4.jpg"/>
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/long_night/behind_6.jpg"/>
-</div>
-</div>
-<p><br/><br/></p>
-<h3>Cartel</h3>
-<p><br/>
-<img alt="póster" class="w-75 shadow-1-strong rounded mb-2" src="/img/long_night/poster.jpg"/></p>
-<p><br/><br/></p>
-<h2>Película</h2>
-<p><strong>Muy pronto ...</strong></p>
+
 </div>

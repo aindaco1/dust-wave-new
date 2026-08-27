@@ -30,19 +30,10 @@ assert.match(siteFooter, /from "snippets\/social-icon\.njk" import socialIcon/);
 assert.doesNotMatch(siteFooter, /fa-brands|font-awesome/i);
 assert.equal(
   (siteFooter.match(/class="site-footer__item/g) || []).length,
-  4,
-  "The shared footer must keep four top-level items."
+  3,
+  "The shared footer must keep three top-level items."
 );
-assert.match(
-  siteFooter,
-  /class="site-footer__item site-footer__updates"/,
-  "The Newsletter link must use the neutral shared-footer hook."
-);
-assert.doesNotMatch(
-  siteFooter,
-  /class="[^"]*newsletter[^"]*"/i,
-  "The Newsletter link class must not trigger cosmetic content-blocker rules."
-);
+assert.doesNotMatch(siteFooter, /site-footer__updates|footer\.newsletter/);
 
 for (const [name, layout] of [
   ["Podcast Admin", adminLayout],
@@ -60,34 +51,41 @@ for (const name of ["instagram", "youtube", "tiktok", "bluesky", "mastodon"]) {
   assert.match(icons, new RegExp(`name == "${name}"`));
 }
 
-assert.match(styles, /grid-template-columns:\s*repeat\(4,\s*minmax\(0,\s*1fr\)\)/);
+assert.match(styles, /grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\)/);
 assert.match(
   styles,
-  /@media only screen and \(max-width:\s*640px\)[\s\S]*grid-template-areas:\s*"social social social"\s*"copyright language newsletter";[\s\S]*grid-template-columns:\s*max-content\s+minmax\(0,\s*1fr\)\s+max-content;[\s\S]*margin-inline:\s*auto;[\s\S]*max-width:\s*30\.9375rem;[\s\S]*width:\s*82\.5% !important;/
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+max-content\s+minmax\(0,\s*1fr\);[\s\S]*margin-inline:\s*auto;[\s\S]*padding-inline:\s*clamp\(1rem,\s*4vw,\s*2rem\);[\s\S]*width:\s*100% !important;/
 );
-assert.match(styles, /\.footer-social\s*\{[\s\S]*grid-area:\s*social;[\s\S]*justify-self:\s*center;/);
+assert.match(
+  styles,
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*\.footer-social\s*\{[\s\S]*flex-wrap:\s*nowrap;[\s\S]*justify-self:\s*center;[\s\S]*max-width:\s*none;/
+);
 assert.match(styles, /\.footer-sep\s*\{[\s\S]*display:\s*none;/);
 assert.match(
   styles,
-  /\.footer-social a\s*\{[\s\S]*min-height:\s*2\.75rem;[\s\S]*min-width:\s*2\.75rem;/
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*\.footer-social a\s*\{[\s\S]*min-height:\s*1\.5rem;[\s\S]*min-width:\s*1\.5rem;/
 );
 assert.match(
   styles,
-  /\.site-footer__social-icon\s*\{[\s\S]*height:\s*1\.25rem;[\s\S]*width:\s*1\.25rem;/
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*\.site-footer__social-icon\s*\{[\s\S]*height:\s*1rem;[\s\S]*width:\s*1rem;/
 );
-assert.match(styles, /\.site-footer__copyright\s*\{[\s\S]*grid-area:\s*copyright;[\s\S]*white-space:\s*nowrap;/);
-assert.match(styles, /\.site-footer__language\s*\{[\s\S]*grid-area:\s*language;[\s\S]*width:\s*100%;/);
+assert.match(styles, /\.site-footer__copyright\s*\{[\s\S]*white-space:\s*nowrap;/);
+assert.match(styles, /\.site-footer__language\s*\{[\s\S]*justify-content:\s*flex-end;[\s\S]*width:\s*100%;/);
 assert.match(
   styles,
-  /\.site-footer__lang-switcher\s*\{[\s\S]*display:\s*grid;[\s\S]*gap:\s*\.5rem;[\s\S]*grid-template-columns:\s*repeat\(2,\s*max-content\);[\s\S]*justify-content:\s*center;[\s\S]*width:\s*100%;/
-);
-assert.match(
-  styles,
-  /@media only screen and \(max-width:\s*400px\)[\s\S]*#footer-items-column\s*\{[\s\S]*font-size:\s*\.675rem;/
+  /@media only screen and \(max-width:\s*640px\)[\s\S]*\.site-footer__lang-switcher\s*\{[\s\S]*justify-content:\s*flex-end;[\s\S]*width:\s*100%;/
 );
 assert.match(
   styles,
-  /@media only screen and \(max-width:\s*330px\)[\s\S]*#footer-items-column\s*\{[\s\S]*font-size:\s*\.625rem;/
+  /@media only screen and \(max-width:\s*400px\)[\s\S]*#footer-items-column\s*\{[\s\S]*font-size:\s*\.8rem;[\s\S]*grid-template-columns:\s*1fr;[\s\S]*row-gap:\s*\.75rem;/
+);
+assert.match(
+  styles,
+  /@media only screen and \(max-width:\s*400px\)[\s\S]*\.site-footer__copyright,[\s\S]*\.site-footer__language\s*\{[\s\S]*justify-content:\s*center;[\s\S]*text-align:\s*center;/
+);
+assert.match(
+  styles,
+  /@media only screen and \(max-width:\s*400px\)[\s\S]*\.site-footer__lang-switcher\s*\{[\s\S]*justify-content:\s*center;/
 );
 assert.match(styles, /\.site-footer__language\s*\{[\s\S]*justify-content:\s*flex-end/);
 assert.match(
@@ -100,6 +98,11 @@ assert.match(navbar, /data-site-nav-toggle/);
 assert.doesNotMatch(navbar, /data-bs-toggle/);
 assert.match(navbarContent, /site-navbar__content/);
 assert.match(navbarContent, /site-navbar__links/);
+assert.match(navbarContent, /data-site-subnav/);
+assert.match(navbarContent, /data-site-subnav-toggle/);
+assert.match(navbarContent, /localizedUrl\(language, 'newsletter', '\/newsletter\.html'\)/);
+assert.match(styles, /\.site-nav-group__menu/);
+assert.match(styles, /\.site-nav-group\.is-open \.site-nav-group__menu/);
 assert.match(
   styles,
   /@media \(min-width:\s*992px\)[\s\S]*\.site-navbar__inner\s*\{[\s\S]*justify-content:\s*center !important;/

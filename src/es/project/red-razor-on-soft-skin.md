@@ -3,7 +3,6 @@ title: Red Razor on Soft Skin
 date: 2026-01-30
 img: /img/digest/header/digest-header-2.jpg
 summary: Cortometraje giallo filmado en 16 mm
-gif: /img/gifs/redrazor.gif
 layout: layouts/post.njk
 navbar: navbar1
 footer: footer1
@@ -15,7 +14,35 @@ localizedPaths:
 permalink: /es/project/red-razor-on-soft-skin.html
 tags:
 - localized-project
+hoverVideoWebm: /img/project-videos/redrazor.webm
+hoverVideoMp4: /img/project-videos/redrazor.mp4
+hoverVideoPoster: /img/digest/header/digest-header-2.jpg
+galleryHeading: "Detrás de cámaras"
+galleryImages:
+  - src: /img/red_razor_on_soft_skin/behind-the-scenes-1.png
+    alt: "descripción"
+  - src: /img/red_razor_on_soft_skin/behind-the-scenes-5.jpg
+    alt: "descripción"
+  - src: /img/red_razor_on_soft_skin/behind-the-scenes-3.jpg
+    alt: "descripción"
+  - src: /img/red_razor_on_soft_skin/behind-the-scenes-4.jpg
+    alt: "descripción"
+  - src: /img/red_razor_on_soft_skin/behind-the-scenes-2.jpg
+    alt: "descripción"
+  - src: /img/red_razor_on_soft_skin/behind-the-scenes-6.jpg
+    alt: "descripción"
+poster: /img/red_razor_on_soft_skin/poster.jpg
+posterHeading: "Cartel"
+posterAlt: "póster"
+projectVideos:
+  - heading: "Tráiler"
+    id: vmiSH7eNYng
+    type: youtube
+movieComingSoon: true
+movieHeading: "Película"
+movieComingSoonText: "Muy pronto ..."
 ---
+
 <div class="project-translation project-translation--es">
 <p><em>Red Razor on Soft Skin</em> es un cortometraje en giallo filmado en 16 mm en McCall's Barbershop en Albuquerque, Nuevo México.</p>
 <p><br/></p>
@@ -66,29 +93,5 @@ Agradecimiento especial: Gerri, Michael y Austin Tumblin, Gung-Gung y Por-Por, S
 Moira Lazar -- Shelley Holt<br/>
 Walt McComb -- John Dewar  </p>
 <p><br/></p>
-<h3>Detrás de cámaras</h3>
-<div class="row g-2">
-<div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-<img alt="descripción" class="w-100 shadow-1-strong rounded mb-2" src="/img/red_razor_on_soft_skin/behind-the-scenes-1.png"/>
-<img alt="descripción" class="w-100 shadow-1-strong rounded mb-2" src="/img/red_razor_on_soft_skin/behind-the-scenes-5.jpg"/>
-<img alt="descripción" class="w-100 shadow-1-strong rounded mb-2" src="/img/red_razor_on_soft_skin/behind-the-scenes-3.jpg"/>
-</div>
-<div class="col-lg-6 mb-6 mb-lg-0">
-<img alt="descripción" class="w-100 shadow-1-strong rounded mb-2" src="/img/red_razor_on_soft_skin/behind-the-scenes-4.jpg"/>
-<img alt="descripción" class="w-100 shadow-1-strong rounded mb-2" src="/img/red_razor_on_soft_skin/behind-the-scenes-2.jpg"/>
-<img alt="descripción" class="w-100 shadow-1-strong rounded mb-2" src="/img/red_razor_on_soft_skin/behind-the-scenes-6.jpg"/>
-</div>
-</div>
-<p><br/></p>
-<h3>Cartel</h3>
-<p><br/>
-<img alt="póster" class="w-75 shadow-1-strong rounded mb-2" src="/img/red_razor_on_soft_skin/poster.jpg"/></p>
-<p><br/><br/></p>
-<h2>Tráiler</h2>
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style>
-<div class="embed-container"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" frameborder="0" height="400vh" src="https://www.youtube.com/embed/vmiSH7eNYng" title="reproductor de vídeos de youtube" width="100%"></iframe></div>
-<p><br/><br/></p>
-<h2>Película</h2>
-<p><strong>Muy pronto ...</strong></p>
-<p><br/><br/></p>
+
 </div>

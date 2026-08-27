@@ -1,7 +1,19 @@
 {%- for post in posts -%}
-    {% set postUrl = "/es" + post.url if language == "es" else post.url %}
-    <article class="col-12 border-top px-0 py-4 d-flex justify-content-between align-items-center project-{{ post.data.title | slugify }}">
-      <h2 class="h4 lh-1 mb-0"><a href="{{ postUrl }}" class="white-text text-decoration-none">{{ post.data.title }}</a></h2>
-      <time datetime="{{ post.date | htmlDateString }}">{{ post.date | localizedDate(language) }}</time>
+    {% set projectTypeSlug = projectTaxonomy | projectTypeSlug(post.fileSlug) %}
+    {% set projectTypeLabel = projectTaxonomy | projectTypeLabel(post.fileSlug, language) %}
+    {% set projectTags = post.data.tags | projectDisplayTags(projectTypeSlug) %}
+    <article
+      class="project-list-item col-12 border-top px-0 py-4 d-flex justify-content-between align-items-center project-{{ post.data.title | slugify }}"
+      data-project-row
+      data-project-type="{{ projectTypeSlug }}"
+      data-project-tags="{{ projectTags | join(' ') }}">
+      <div class="project-list-main">
+        <a
+          href="{{ i18n | localizedUrl(language, 'projects', '/projects.html') }}?type={{ projectTypeSlug }}"
+          class="project-list-type"
+          aria-label="{{ i18n | t(language, 'pages.projects.viewType', { type: projectTypeLabel }) }}">{{ projectTypeLabel }}</a>
+        <h2 class="project-list-title h4 mb-0"><a href="{{ projectTaxonomy | localizedProjectUrl(post.fileSlug, language) }}" class="white-text text-decoration-none">{{ post.data.title }}</a></h2>
+      </div>
+      <time class="project-list-date" datetime="{{ post.date | htmlDateString }}">{{ post.date | localizedDate(language) }}</time>
     </article>
   {% endfor %}

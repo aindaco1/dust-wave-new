@@ -3,7 +3,6 @@ title: Fronteras Micro-film Festival
 date: 2023-02-18
 img: /img/stills/fronterasstill.jpg
 summary: Festival de cine sobre la frontera y exposición inmersiva
-gif: /img/gifs/fronteras.gif
 layout: layouts/post.njk
 navbar: navbar1
 footer: footer1
@@ -15,7 +14,31 @@ localizedPaths:
 permalink: /es/project/fronteras-micro-film-festival.html
 tags:
 - localized-project
+hoverVideoWebm: /img/project-videos/fronteras.webm
+hoverVideoMp4: /img/project-videos/fronteras.mp4
+hoverVideoPoster: /img/stills/fronterasstill.jpg
+galleryHeading: "Detrás de cámaras"
+galleryImages:
+  - src: /img/fronteras/the-space-between-home.jpg
+    alt: "el espacio entre el hogar"
+  - src: /img/fronteras/the-hands-that-hold-us.jpg
+    alt: "las manos que nos sostienen"
+  - src: /img/fronteras/untitled-undocumented.jpg
+    alt: "sin título indocumentado"
+  - src: /img/fronteras/by-boat.jpg
+    alt: "en barco"
+  - src: /img/fronteras/a-ghost-truck.jpg
+    alt: "un camión fantasma"
+  - src: /img/fronteras/tower-of-cower.jpg
+    alt: "torre de miedo"
+  - src: /img/fronteras/volumen-de-voz.jpg
+    alt: "volumen de voz"
+projectVideos:
+  - heading: "Película"
+    id: zSydQMCbsQw
+    type: youtube
 ---
+
 <div class="project-translation project-translation--es">
 <p>Desde 2020, Dust Wave ha producido cortometrajes premiados y sin presupuesto. A lo largo de nuestro viaje creativo, hemos observado que los festivales de cine a menudo descuidan los cortometrajes. Los cortos suelen proyectarse en bloques de dos horas, lo que atrapa a los espectadores y obliga a un “reinicio” cada pocos minutos. Este formato limita la participación de la audiencia y reduce el valor del festival para los cineastas.</p>
 <p><strong>El primer objetivo del <a href="https://fronterasmicrofilm.com">Fronteras Micro-Film Festival</a> es reimaginar el festival de cortometrajes.</strong> Nuestro objetivo es brindar a los cineastas y al público una experiencia que surja y apoye el cortometraje. Para hacerlo, estamos creando (1) un contexto unificado para las películas con un tema fuerte y (2) estamos apoyando una experiencia de visualización inmersiva, descentralizada y dirigida por el espectador.</p>
@@ -30,22 +53,5 @@ tags:
 <p><strong>16-18 de junio de 2023</strong> -- <a href="https://currentsnewmedia.org/festivals/currents-new-media-2023">Currents New Media</a>, Santa Fe, Nuevo México</p>
 <p><strong>1 de marzo de 2024</strong> -- <a href="https://allthingsmood.com">MOOD</a>, Albuquerque, Nuevo México
 </p>
-<h2>Detrás de cámaras</h2>
-<div class="row g-2">
-<div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-<img alt="el espacio entre el hogar" class="w-100 shadow-1-strong rounded mb-2" src="/img/fronteras/the-space-between-home.jpg"/>
-<img alt="las manos que nos sostienen" class="w-100 shadow-1-strong rounded mb-2" src="/img/fronteras/the-hands-that-hold-us.jpg"/>
-<img alt="sin título indocumentado" class="w-100 shadow-1-strong rounded mb-2" src="/img/fronteras/untitled-undocumented.jpg"/>
-<img alt="en barco" class="w-100 shadow-1-strong rounded mb-2" src="/img/fronteras/by-boat.jpg"/>
-</div>
-<div class="col-lg-6 mb-6 mb-lg-0">
-<img alt="un camión fantasma" class="w-100 shadow-1-strong rounded mb-2" src="/img/fronteras/a-ghost-truck.jpg"/>
-<img alt="torre de miedo" class="w-100 shadow-1-strong rounded mb-2" src="/img/fronteras/tower-of-cower.jpg"/>
-<img alt="volumen de voz" class="w-100 shadow-1-strong rounded mb-2" src="/img/fronteras/volumen-de-voz.jpg"/>
-</div>
-</div>
-<p><br/><br/></p>
-<h2>Película</h2>
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style>
-<div class="embed-container"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" frameborder="0" height="400vh" src="https://www.youtube.com/embed/zSydQMCbsQw" title="reproductor de vídeos de youtube" width="100%"></iframe></div>
+
 </div>

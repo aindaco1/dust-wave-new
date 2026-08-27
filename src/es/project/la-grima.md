@@ -3,7 +3,6 @@ title: La Grima
 date: 2022-07-31
 img: /img/stills/lagrimastill.jpg
 summary: Cortometraje sobre el clima
-gif: /img/gifs/lagrima.gif
 layout: layouts/post.njk
 navbar: navbar1
 footer: footer1
@@ -15,7 +14,27 @@ localizedPaths:
 permalink: /es/project/la-grima.html
 tags:
 - localized-project
+hoverVideoWebm: /img/project-videos/lagrima.webm
+hoverVideoMp4: /img/project-videos/lagrima.mp4
+hoverVideoPoster: /img/stills/lagrimastill.jpg
+galleryHeading: "Detrás de cámaras"
+galleryImages:
+  - src: /img/la_grima/behind_3.jpg
+    alt: "Entre bastidores"
+  - src: /img/la_grima/behind_1.jpg
+    alt: "Entre bastidores"
+  - src: /img/la_grima/still_1_square.jpg
+    alt: "Póster"
+  - src: /img/la_grima/behind_2.jpg
+    alt: "Entre bastidores"
+  - src: /img/la_grima/behind_4.jpg
+    alt: "Entre bastidores"
+projectVideos:
+  - heading: "Película"
+    id: 5JyyQVF0cAI
+    type: youtube
 ---
+
 <div class="project-translation project-translation--es">
 <p><em>La Grima</em> es un corto climático creado para ser presentado al <a href="https://www.48hourfilm.com/en/albuquerque-nm">2022 Albuquerque 48 Hour Film Project</a> concurso. Filmada en el Harwood Art Center en Albuquerque, Nuevo México.
 
@@ -84,20 +103,5 @@ Luchador en la línea n.° 2 — James Rodriguez
 * Selected for Screening
 
 </p>
-<h3>Detrás de cámaras</h3>
-<div class="row g-2">
-<div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/la_grima/behind_3.jpg"/>
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/la_grima/behind_1.jpg"/>
-<img alt="Póster" class="w-100 shadow-1-strong rounded mb-2" src="/img/la_grima/still_1_square.jpg"/>
-</div>
-<div class="col-lg-6 mb-6 mb-lg-0">
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/la_grima/behind_2.jpg"/>
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/la_grima/behind_4.jpg"/>
-</div>
-</div>
-<p><br/><br/></p>
-<h2>Película</h2>
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style>
-<div class="embed-container"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" frameborder="0" height="400vh" src="https://www.youtube.com/embed/5JyyQVF0cAI" title="reproductor de vídeos de youtube" width="100%"></iframe></div>
+
 </div>

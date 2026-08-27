@@ -3,7 +3,6 @@ title: The Converger
 date: 2023-10-28
 img: /img/stills/theconvergerstill.jpg
 summary: Cortometraje de ciencia ficción sobre universos paralelos
-gif: /img/gifs/converger.gif
 layout: layouts/post.njk
 navbar: navbar1
 footer: footer1
@@ -15,7 +14,33 @@ localizedPaths:
 permalink: /es/project/the-converger.html
 tags:
 - localized-project
+hoverVideoWebm: /img/project-videos/converger.webm
+hoverVideoMp4: /img/project-videos/converger.mp4
+hoverVideoPoster: /img/stills/theconvergerstill.jpg
+galleryHeading: "Detrás de cámaras"
+galleryImages:
+  - src: /img/the_converger/behind_the_scenes8.jpg
+    alt: "entre bastidores"
+  - src: /img/the_converger/behind_the_scenes6.jpg
+    alt: "entre bastidores"
+  - src: /img/the_converger/behind_the_scenes1.png
+    alt: "entre bastidores"
+  - src: /img/the_converger/behind_the_scenes4.jpg
+    alt: "entre bastidores"
+  - src: /img/the_converger/behind_the_scenes2.jpg
+    alt: "entre bastidores"
+  - src: /img/the_converger/behind_the_scenes3.jpg
+    alt: "entre bastidores"
+  - src: /img/the_converger/behind_the_scenes5.jpg
+    alt: "entre bastidores"
+  - src: /img/the_converger/behind_the_scenes7.jpg
+    alt: "entre bastidores"
+projectVideos:
+  - heading: "Tráiler"
+    id: Drc3I2FFqo8
+    type: youtube
 ---
+
 <div class="project-translation project-translation--es">
 <p><em>The Converger</em> es un cortometraje de ciencia ficción negra de universo paralelo creado para su presentación al <a href="https://www.48hourfilm.com/albuquerque/scifi_horror">2023 Albuquerque Horror/Sci-Fi 48 Hour Film Project</a> concurso. Filmada en el almacén de Blue Sky Landscape en Albuquerque, Nuevo México.
 
@@ -74,23 +99,5 @@ El doble de Gee -- Gary Shaw
 * <strong>Mejor Película</strong>
 
 </p>
-<h3>Detrás de cámaras</h3>
-<div class="row g-2">
-<div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/the_converger/behind_the_scenes8.jpg"/>
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/the_converger/behind_the_scenes6.jpg"/>
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/the_converger/behind_the_scenes1.png"/>
-</div>
-<div class="col-lg-6 mb-6 mb-lg-0">
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/the_converger/behind_the_scenes4.jpg"/>
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/the_converger/behind_the_scenes2.jpg"/>
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/the_converger/behind_the_scenes3.jpg"/>
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/the_converger/behind_the_scenes5.jpg"/>
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/the_converger/behind_the_scenes7.jpg"/>
-</div>
-</div>
-<p><br/><br/></p>
-<h2>Tráiler</h2>
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style>
-<div class="embed-container"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" frameborder="0" height="400vh" src="https://www.youtube.com/embed/Drc3I2FFqo8?si=mM7qC9uBR8qGpqWL" title="reproductor de vídeos de youtube" width="100%"></iframe></div>
+
 </div>

@@ -3,7 +3,6 @@ title: Pandora's Greenhouse
 date: 2025-04-07
 img: /img/stills/pandorastill.jpg
 summary: Cortometraje de terror cósmico
-gif: /img/gifs/pandora.gif
 layout: layouts/post.njk
 navbar: navbar1
 footer: footer1
@@ -15,7 +14,56 @@ localizedPaths:
 permalink: /es/project/pandora-s-greenhouse.html
 tags:
 - localized-project
+hoverVideoWebm: /img/project-videos/pandora.webm
+hoverVideoMp4: /img/project-videos/pandora.mp4
+hoverVideoPoster: /img/stills/pandorastill.jpg
+galleryHeading: "Detrás de cámaras"
+galleryImages:
+  - src: /img/pandoras_greenhouse/behind_3.jpg
+    alt: "Entre bastidores"
+  - src: /img/pandoras_greenhouse/behind_1.jpg
+    alt: "Entre bastidores"
+  - src: /img/pandoras_greenhouse/behind_5.jpg
+    alt: "Entre bastidores"
+  - src: /img/pandoras_greenhouse/behind_2.jpg
+    alt: "Entre bastidores"
+  - src: /img/pandoras_greenhouse/behind_4.jpg
+    alt: "Entre bastidores"
+  - src: /img/pandoras_greenhouse/behind_6.jpg
+    alt: "Entre bastidores"
+additionalGalleries:
+  - heading: "Fotogramas"
+    images:
+      - src: /img/pandoras_greenhouse/still_3.jpg
+        alt: "Fotograma de Pandora's Greenhouse"
+      - src: /img/pandoras_greenhouse/still_1.jpg
+        alt: "Fotograma de Pandora's Greenhouse"
+      - src: /img/pandoras_greenhouse/still_5.jpg
+        alt: "Fotograma de Pandora's Greenhouse"
+      - src: /img/pandoras_greenhouse/still_7.jpg
+        alt: "Fotograma de Pandora's Greenhouse"
+      - src: /img/pandoras_greenhouse/still_9.jpg
+        alt: "Fotograma de Pandora's Greenhouse"
+      - src: /img/pandoras_greenhouse/still_2.jpg
+        alt: "Fotograma de Pandora's Greenhouse"
+      - src: /img/pandoras_greenhouse/still_4.jpg
+        alt: "Fotograma de Pandora's Greenhouse"
+      - src: /img/pandoras_greenhouse/still_6.jpg
+        alt: "Fotograma de Pandora's Greenhouse"
+      - src: /img/pandoras_greenhouse/still_8.jpg
+        alt: "Fotograma de Pandora's Greenhouse"
+poster: /img/pandoras_greenhouse/poster.jpg
+posterHeading: "Cartel"
+posterAlt: "póster"
+projectVideos:
+  - heading: "Tráiler"
+    id: t6gWcsX-XvI
+    type: youtube
+movieComingSoon: true
+movieHeading: "Película"
+movieComingSoonText: "Muy pronto ..."
 ---
+
 <div class="project-translation project-translation--es">
 <p><em>Pandora's Greenhouse</em> es un corto de terror cósmico escrito y dirigido por <a href="https://www.adrianpijoan.net">Adrian Pijoan</a>. Filmado en varios lugares de Albuquerque, Nuevo México.
 
@@ -61,45 +109,5 @@ John Dewar como El narrador
 * Selección Oficial
 
 </p>
-<h3>Detrás de cámaras</h3>
-<div class="row g-2">
-<div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/pandoras_greenhouse/behind_3.jpg"/>
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/pandoras_greenhouse/behind_1.jpg"/>
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/pandoras_greenhouse/behind_5.jpg"/>
-</div>
-<div class="col-lg-6 mb-6 mb-lg-0">
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/pandoras_greenhouse/behind_2.jpg"/>
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/pandoras_greenhouse/behind_4.jpg"/>
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/pandoras_greenhouse/behind_6.jpg"/>
-</div>
-</div>
-<p><br/><br/></p>
-<h3>Stills</h3>
-<div class="row g-2">
-<div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-<img alt="Fotogramas" class="w-100 shadow-1-strong rounded mb-2" src="/img/pandoras_greenhouse/still_3.jpg"/>
-<img alt="Fotogramas" class="w-100 shadow-1-strong rounded mb-2" src="/img/pandoras_greenhouse/still_1.jpg"/>
-<img alt="Fotogramas" class="w-100 shadow-1-strong rounded mb-2" src="/img/pandoras_greenhouse/still_5.jpg"/>
-<img alt="Fotogramas" class="w-100 shadow-1-strong rounded mb-2" src="/img/pandoras_greenhouse/still_7.jpg"/>
-<img alt="Fotogramas" class="w-100 shadow-1-strong rounded mb-2" src="/img/pandoras_greenhouse/still_9.jpg"/>
-</div>
-<div class="col-lg-6 mb-6 mb-lg-0">
-<img alt="Fotogramas" class="w-100 shadow-1-strong rounded mb-2" src="/img/pandoras_greenhouse/still_2.jpg"/>
-<img alt="Fotogramas" class="w-100 shadow-1-strong rounded mb-2" src="/img/pandoras_greenhouse/still_4.jpg"/>
-<img alt="Fotogramas" class="w-100 shadow-1-strong rounded mb-2" src="/img/pandoras_greenhouse/still_6.jpg"/>
-<img alt="Fotogramas" class="w-100 shadow-1-strong rounded mb-2" src="/img/pandoras_greenhouse/still_8.jpg"/>
-</div>
-</div>
-<p><br/><br/></p>
-<h3>Cartel</h3>
-<p><br/>
-<img alt="póster" class="w-75 shadow-1-strong rounded mb-2" src="/img/pandoras_greenhouse/poster.jpg"/></p>
-<p><br/><br/></p>
-<h2>Tráiler</h2>
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style>
-<div class="embed-container"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" frameborder="0" height="400vh" src="https://www.youtube.com/embed/t6gWcsX-XvI" title="reproductor de vídeos de youtube" width="100%"></iframe></div>
-<p><br/><br/></p>
-<h2>Película</h2>
-<p><strong>Muy pronto ...</strong></p>
+
 </div>

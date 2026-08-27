@@ -3,7 +3,6 @@ title: Movie Monsters
 date: 2024-08-30
 img: /img/stills/moviemonstersstill.jpg
 summary: Cortometraje de comedia kaiju
-gif: /img/gifs/moviemonsters.gif
 layout: layouts/post.njk
 navbar: navbar1
 footer: footer1
@@ -15,7 +14,37 @@ localizedPaths:
 permalink: /es/project/movie-monsters.html
 tags:
 - localized-project
+hoverVideoWebm: /img/project-videos/moviemonsters.webm
+hoverVideoMp4: /img/project-videos/moviemonsters.mp4
+hoverVideoPoster: /img/stills/moviemonstersstill.jpg
+galleryHeading: "Detrás de cámaras"
+galleryImages:
+  - src: /img/movie_monsters/behind_the_scenes4.jpg
+    alt: "entre bastidores"
+  - src: /img/movie_monsters/behind_the_scenes1.jpg
+    alt: "entre bastidores"
+  - src: /img/movie_monsters/behind_the_scenes5.jpg
+    alt: "entre bastidores"
+  - src: /img/movie_monsters/behind_the_scenes2.jpg
+    alt: "entre bastidores"
+  - src: /img/movie_monsters/behind_the_scenes3.jpg
+    alt: "entre bastidores"
+  - src: /img/movie_monsters/behind_the_scenes7.jpg
+    alt: "entre bastidores"
+  - src: /img/movie_monsters/behind_the_scenes6.jpg
+    alt: "entre bastidores"
+poster: /img/movie_monsters/poster.jpg
+posterHeading: "Cartel"
+posterAlt: "póster"
+projectVideos:
+  - heading: "Detrás de cámaras"
+    id: mN9Piz9jcN4
+    type: youtube
+  - heading: "Película"
+    id: BUSTQP3A4dQ
+    type: youtube
 ---
+
 <div class="project-translation project-translation--es">
 <p><em>Movie Monsters</em> es un corto de comedia kaiju creado en colaboración con <a href="https://www.instagram.com/spaceagedaydreamfilms">Space Age Daydream</a>. Filmado en Studio 519 y MOOD Estudios en Albuquerque, Nuevo México.
 
@@ -61,30 +90,5 @@ Director Cómo se llama -- Dusty Deen</p>
 * Selección Oficial
 
 </p>
-<h3>Detrás de cámaras</h3>
-<div class="row g-2">
-<div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/movie_monsters/behind_the_scenes4.jpg"/>
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/movie_monsters/behind_the_scenes1.jpg"/>
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/movie_monsters/behind_the_scenes5.jpg"/>
-</div>
-<div class="col-lg-6 mb-6 mb-lg-0">
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/movie_monsters/behind_the_scenes2.jpg"/>
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/movie_monsters/behind_the_scenes3.jpg"/>
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/movie_monsters/behind_the_scenes7.jpg"/>
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/movie_monsters/behind_the_scenes6.jpg"/>
-</div>
-</div>
-<p><br/><br/></p>
-<h3>Cartel</h3>
-<p><br/>
-<img alt="póster" class="w-75 shadow-1-strong rounded mb-2" src="/img/movie_monsters/poster.jpg"/></p>
-<p><br/><br/></p>
-<h2>Detrás de cámaras</h2>
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style>
-<div class="embed-container"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" frameborder="0" height="400vh" src="https://www.youtube.com/embed/mN9Piz9jcN4" title="reproductor de vídeos de youtube" width="100%"></iframe></div>
-<p><br/><br/></p>
-<h2>Película</h2>
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style>
-<div class="embed-container"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" frameborder="0" height="400vh" src="https://www.youtube.com/embed/BUSTQP3A4dQ" title="reproductor de vídeos de youtube" width="100%"></iframe></div>
+
 </div>

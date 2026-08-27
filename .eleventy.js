@@ -16,6 +16,69 @@ const {
 // source image URLs so development never depends on generated assets.
 const useWebp = process.env.USE_WEBP === "true";
 const DEFAULT_LANGUAGE = "en";
+const PROJECT_STATUS_TAGS = new Set(["released", "coming-soon"]);
+
+function projectTypeFor(projectTaxonomy, projectSlug) {
+  const typeSlug = projectTaxonomy?.projects?.[projectSlug];
+  return (projectTaxonomy?.types || []).find(({ slug }) => slug === typeSlug) || null;
+}
+
+function projectTypeLabel(projectTaxonomy, projectSlug, language = DEFAULT_LANGUAGE) {
+  const type = projectTypeFor(projectTaxonomy, projectSlug);
+  return type?.labels?.[language] || type?.labels?.[DEFAULT_LANGUAGE] || "";
+}
+
+function canonicalProjectSlug(projectTaxonomy, projectSlug, language = DEFAULT_LANGUAGE) {
+  if (projectTaxonomy?.projects?.[projectSlug]) return projectSlug;
+  const localizedSlugs = projectTaxonomy?.localizedSlugs?.[language] || {};
+  return Object.entries(localizedSlugs).find(([, localizedSlug]) =>
+    localizedSlug === projectSlug
+  )?.[0] || projectSlug;
+}
+
+function localizedProjectUrl(
+  projectTaxonomy,
+  projectSlug,
+  language = DEFAULT_LANGUAGE
+) {
+  const localizedSlug = projectTaxonomy?.localizedSlugs?.[language]?.[projectSlug] || projectSlug;
+  const languagePrefix = language === DEFAULT_LANGUAGE ? "" : `/${language}`;
+  return `${languagePrefix}/project/${localizedSlug}.html`;
+}
+
+function projectDisplayTags(tags, typeSlug) {
+  const typeTags = new Set([typeSlug]);
+  if (["event", "exhibition", "installation"].includes(typeSlug)) {
+    typeTags.add("event");
+  }
+
+  return (Array.isArray(tags) ? tags : []).filter((tag) =>
+    !PROJECT_STATUS_TAGS.has(tag) &&
+    !["all", "nav", "post", "posts", "new", "news"].includes(tag) &&
+    !typeTags.has(tag)
+  );
+}
+
+function humanizeProjectTag(tag) {
+  return String(tag || "")
+    .split("-")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function projectFilterLabels(projectTaxonomy, language = DEFAULT_LANGUAGE) {
+  return {
+    types: Object.fromEntries((projectTaxonomy?.types || []).map((type) => [
+      type.slug,
+      type.labels?.[language] || type.labels?.[DEFAULT_LANGUAGE] || type.slug
+    ])),
+    tags: Object.fromEntries(Object.entries(projectTaxonomy?.tagLabels || {}).map(([tag, labels]) => [
+      tag,
+      labels?.[language] || labels?.[DEFAULT_LANGUAGE] || humanizeProjectTag(tag)
+    ]))
+  };
+}
 
 function valueAtPath(source, key) {
   return String(key || "")
@@ -215,6 +278,28 @@ ${content}
   };
 
   eleventyConfig.addFilter("filterTagList", filterTagList);
+  eleventyConfig.addFilter("projectTypeFor", projectTypeFor);
+  eleventyConfig.addFilter("projectTypeLabel", projectTypeLabel);
+  eleventyConfig.addFilter("projectTypeSlug", (projectTaxonomy, projectSlug) =>
+    projectTypeFor(projectTaxonomy, projectSlug)?.slug || ""
+  );
+  eleventyConfig.addFilter("projectTypeCount", (posts, projectTaxonomy, typeSlug) =>
+    (Array.isArray(posts) ? posts : []).filter((post) =>
+      projectTypeFor(projectTaxonomy, post?.fileSlug)?.slug === typeSlug
+    ).length
+  );
+  eleventyConfig.addFilter("projectBySlug", (posts, projectSlug) =>
+    (Array.isArray(posts) ? posts : []).find((post) => post?.fileSlug === projectSlug) || null
+  );
+  eleventyConfig.addFilter("canonicalProjectSlug", canonicalProjectSlug);
+  eleventyConfig.addFilter("localizedProjectUrl", localizedProjectUrl);
+  eleventyConfig.addFilter("projectDisplayTags", projectDisplayTags);
+  eleventyConfig.addFilter("projectTagLabel", (projectTaxonomy, tag, language = DEFAULT_LANGUAGE) =>
+    projectTaxonomy?.tagLabels?.[tag]?.[language] ||
+    projectTaxonomy?.tagLabels?.[tag]?.[DEFAULT_LANGUAGE] ||
+    humanizeProjectTag(tag)
+  );
+  eleventyConfig.addFilter("projectFilterLabels", projectFilterLabels);
 
   // Convert image paths only in the GitHub Pages build, preserving structure:
   // /img/stills/stalldstill.jpg -> /img/webp/stills/stalldstill.webp

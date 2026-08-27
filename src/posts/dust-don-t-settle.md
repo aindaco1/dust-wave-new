@@ -3,9 +3,16 @@ title: Dust Don't Settle
 date: 2025-04-15
 img: /img/stills/dustdontsettlestill.jpg
 summary: New Mexico DIY film documentary short
-gif: /img/gifs/dustdontsettle.gif
 tags:
   - documentary
+  - experimental
+hoverVideoWebm: /img/project-videos/dustdontsettle.webm
+hoverVideoMp4: /img/project-videos/dustdontsettle.mp4
+hoverVideoPoster: /img/stills/dustdontsettlestill.jpg
+projectVideos:
+  - heading: "Teaser"
+    id: ioR3uABTpck
+    type: youtube
 ---
 
 _Dust Don't Settle_ is a documentary short incorporating live-action and experimental elements to tell the unique story of how indie films are made in New Mexico.
@@ -34,13 +41,7 @@ Alonso Indacochea - Executive Producer
 
 ## Social Media
 
-<a href="https://www.instagram.com/dustdontsettledocumentary" class="link-fancy" target="_blank"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a><span> | </span><a href="https://youtube.com/@dustdontsettledocumentary" class="link-fancy" target="_blank"><i class="fa-brands fa-youtube" aria-hidden="true"></i></a><span> | </span><a href="https://bsky.app/profile/dustdontsettle.bsky.social" class="link-fancy" target="_blank"><i class="fa-brands fa-bluesky" aria-hidden="true"></i></a>
-</br>
-</br>
-
-## Teaser
-
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/ioR3uABTpck" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+<a href="https://www.instagram.com/dustdontsettledocumentary" class="link-fancy" target="_blank"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a><span> | </span><a href="https://youtube.com/@dustdontsettledocumentary" class="link-fancy" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><svg class="site-footer__social-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a><span> | </span><a href="https://bsky.app/profile/dustdontsettle.bsky.social" class="link-fancy" target="_blank"><i class="fa-brands fa-bluesky" aria-hidden="true"></i></a>
 </br>
 </br>
 

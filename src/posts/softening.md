@@ -3,11 +3,30 @@ title: Softening
 date: 2024-11-06
 img: /img/stills/softeningstill.jpg
 summary: Heartfelt musical drama
-gif: /img/gifs/softening.gif
 tags:
   - drama
   - musical
   - released
+hoverVideoWebm: /img/project-videos/softening.webm
+hoverVideoMp4: /img/project-videos/softening.mp4
+hoverVideoPoster: /img/stills/softeningstill.jpg
+galleryHeading: "Behind the scenes"
+galleryImages:
+  - src: /img/softening/behind_the_scenes4.jpg
+    alt: "behind the scenes"
+  - src: /img/softening/behind_the_scenes1.jpg
+    alt: "behind the scenes"
+  - src: /img/softening/behind_the_scenes5.jpg
+    alt: "behind the scenes"
+  - src: /img/softening/behind_the_scenes2.jpg
+    alt: "behind the scenes"
+  - src: /img/softening/behind_the_scenes3.jpg
+    alt: "behind the scenes"
+  - src: /img/softening/behind_the_scenes6.jpg
+    alt: "behind the scenes"
+movieComingSoon: true
+movieHeading: "Movie"
+movieComingSoonText: "Coming Soon ..."
 ---
 
 _Softening_ is a musical drama short shot at Flamenco Works in Albuquerque, New Mexico.
@@ -38,23 +57,3 @@ BTS — Alonso Indacochea</br>
 Editor — Kaidin Jarjusey
 </br>
 </br>
-
-### Behind the scenes
-
-<div class="row g-2">
-  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-	<img src="/img/softening/behind_the_scenes4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  	<img src="/img/softening/behind_the_scenes1.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  	<img src="/img/softening/behind_the_scenes5.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  </div>
-  <div class="col-lg-6 mb-6 mb-lg-0">
-	<img src="/img/softening/behind_the_scenes2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  	<img src="/img/softening/behind_the_scenes3.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  	<img src="/img/softening/behind_the_scenes6.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  </div>
-</div>
-<br><br>
-
-## Movie
-
-**Coming Soon ...**

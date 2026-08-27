@@ -3,11 +3,27 @@ title: Fumbled Not Stirred
 date: 2021-07-30
 img: /img/stills/fumbledstill.jpg
 summary: YouTube mixology series
-gif: /img/gifs/fumblednotstirred.gif
 tags:
   - released
   - comedy
   - mixology
+hoverVideoWebm: /img/project-videos/fumblednotstirred.webm
+hoverVideoMp4: /img/project-videos/fumblednotstirred.mp4
+hoverVideoPoster: /img/stills/fumbledstill.jpg
+galleryHeading: "Behind the scenes"
+galleryImages:
+  - src: /img/fumbled_not_stirred/behind_2.png
+    alt: "Behind the Scenes"
+  - src: /img/fumbled_not_stirred/behind_4.png
+    alt: "Behind the Scenes"
+  - src: /img/fumbled_not_stirred/behind_3.png
+    alt: "Behind the Scenes"
+  - src: /img/fumbled_not_stirred/behind_1.jpg
+    alt: "Behind the Scenes"
+projectVideos:
+  - heading: "Show"
+    id: JHykulmuHR8
+    type: youtube
 ---
 
 _Fumbled Not Stirred_ is our YouTube mixology tutorial series. We wanted to create evergreen content for the [Film Fumblers YouTube channel](https://www.youtube.com/channel/UCawu2pOm_jmtAss4dN7z2KQ) and decided to tie in to the [Film Fumblers review podcast](https://filmfumblers.com). Each episode is shot at the Fumbler Ranch in Corrales, New Mexico.
@@ -33,21 +49,3 @@ Original music by Matthew Atkins
 * [The Moloko Plus](https://www.youtube.com/watch?v=-SG5uNdHzbs)
 * [The Blood of Kali](https://www.youtube.com/watch?v=JHykulmuHR8)
 </br>
-
-### Behind the scenes
-
-<div class="row g-2">
-  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-    <img src="/img/fumbled_not_stirred/behind_2.png" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/fumbled_not_stirred/behind_4.png" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-  </div>
-  <div class="col-lg-6 mb-6 mb-lg-0">
-    <img src="/img/fumbled_not_stirred/behind_3.png" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/fumbled_not_stirred/behind_1.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-  </div>
-</div>
-<br><br>
-
-## Show
-
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/JHykulmuHR8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>

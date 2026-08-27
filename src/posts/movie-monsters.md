@@ -3,11 +3,39 @@ title: Movie Monsters
 date: 2024-08-30
 img: /img/stills/moviemonstersstill.jpg
 summary: Kaiju comedy short
-gif: /img/gifs/moviemonsters.gif
 tags:
   - kaiju
   - comedy
   - released
+hoverVideoWebm: /img/project-videos/moviemonsters.webm
+hoverVideoMp4: /img/project-videos/moviemonsters.mp4
+hoverVideoPoster: /img/stills/moviemonstersstill.jpg
+galleryHeading: "Behind the scenes"
+galleryImages:
+  - src: /img/movie_monsters/behind_the_scenes4.jpg
+    alt: "behind the scenes"
+  - src: /img/movie_monsters/behind_the_scenes1.jpg
+    alt: "behind the scenes"
+  - src: /img/movie_monsters/behind_the_scenes5.jpg
+    alt: "behind the scenes"
+  - src: /img/movie_monsters/behind_the_scenes2.jpg
+    alt: "behind the scenes"
+  - src: /img/movie_monsters/behind_the_scenes3.jpg
+    alt: "behind the scenes"
+  - src: /img/movie_monsters/behind_the_scenes7.jpg
+    alt: "behind the scenes"
+  - src: /img/movie_monsters/behind_the_scenes6.jpg
+    alt: "behind the scenes"
+poster: /img/movie_monsters/poster.jpg
+posterHeading: "Poster"
+posterAlt: "poster"
+projectVideos:
+  - heading: "Behind the Scenes"
+    id: mN9Piz9jcN4
+    type: youtube
+  - heading: "Movie"
+    id: BUSTQP3A4dQ
+    type: youtube
 ---
 
 _Movie Monsters_ is a kaiju comedy short created in partnership with [Space Age Daydream](https://www.instagram.com/spaceagedaydreamfilms). Shot at Studio 519 and MOOD Studios in Albuquerque, New Mexico.
@@ -64,35 +92,3 @@ Extras -- JP Mark, Ginny Leise, Jay Renteria, Gary Shaw, Jordyn Bernicke, Nico B
 * Official Selection
 </br>
 </br>
-
-### Behind the scenes
-
-<div class="row g-2">
-  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-	<img src="/img/movie_monsters/behind_the_scenes4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  	<img src="/img/movie_monsters/behind_the_scenes1.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  	<img src="/img/movie_monsters/behind_the_scenes5.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  </div>
-  <div class="col-lg-6 mb-6 mb-lg-0">
-	<img src="/img/movie_monsters/behind_the_scenes2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  	<img src="/img/movie_monsters/behind_the_scenes3.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  	<img src="/img/movie_monsters/behind_the_scenes7.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-	<img src="/img/movie_monsters/behind_the_scenes6.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  </div>
-</div>
-<br><br>
-
-### Poster
-<br>
-<img src="/img/movie_monsters/poster.jpg" class="w-75 shadow-1-strong rounded mb-2" alt="poster">
-
-<br><br>
-
-## Behind the Scenes
-
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/mN9Piz9jcN4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
-<br><br>
-
-## Movie
-
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/BUSTQP3A4dQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>

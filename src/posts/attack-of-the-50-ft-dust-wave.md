@@ -3,11 +3,96 @@ title: Attack of the 50 Ft. Dust Wave!
 date: 2025-11-21
 img: /img/stills/attackstill.png
 summary: A private screening of 13 of our newest short films at the Guild Cinema
-gif: /img/gifs/attack.gif
 tags:
-  - festival
+  - screening
   - event
   - released
+hoverVideoWebm: /img/project-videos/attack.webm
+hoverVideoMp4: /img/project-videos/attack.mp4
+hoverVideoPoster: /img/stills/attackstill.png
+galleryHeading: "Behind the Scenes"
+galleryImages:
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-1.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-2.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-3.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-4.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-5.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-6.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-7.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-8.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-9.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-10.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-11.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-12.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-13.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-14.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-15.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-16.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-17.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-18.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-19.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-20.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-21.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-22.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-23.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-24.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-25.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-26.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-27.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-28.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-29.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-30.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-31.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-32.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-33.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-34.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-35.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-36.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-37.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-38.jpg
+    alt: "behind the scenes"
+  - src: /img/attack_of_the_50_ft_dust_wave/behind-the-scenes-39.jpg
+    alt: "behind the scenes"
+poster: /img/attack_of_the_50_ft_dust_wave/poster.png
+posterHeading: "Poster"
+posterAlt: "poster"
 ---
 
 On November 20, Dust Wave held a private, invite-only screening of our newest short films at the legendary [Guild Cinema](https://guildcinema.com)! Featuring the works of:  
@@ -41,62 +126,3 @@ On November 20, Dust Wave held a private, invite-only screening of our newest sh
 and [Kaidin Jarjusey](https://www.instagram.com/qwaeofficial/)
 
 <br>
-
-## Behind the Scenes
-
-<div class="row g-2">
-  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-1.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-3.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-5.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-6.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-7.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-8.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-9.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-10.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-11.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-12.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-13.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-14.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-15.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-16.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-17.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-18.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-19.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-20.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  </div>
-  <div class="col-lg-6 mb-6 mb-lg-0">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-21.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-22.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-23.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-24.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-25.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-26.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-27.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-28.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-29.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-30.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-31.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-32.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-33.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-34.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-35.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-36.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-37.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-38.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-    <img src="/img/attack_of_the_50_ft_dust_wave/behind-the-scenes-39.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  </div>
-</div>
-<br><br>
-
-### Poster
-<br>
-<img src="/img/attack_of_the_50_ft_dust_wave/poster.png" class="w-75 shadow-1-strong rounded mb-2" alt="poster">
-
-<br><br>
-
-Thanks to co-producers [Alonso Indacochea](https://www.instagram.com/alonso_inda/) & [Anna Buan](https://www.instagram.com/a.m.buan/), host-with-the-most [Brandon Carter](https://www.instagram.com/cartercinema/), graphic designer with style and grace [Rhiannon Barela](https://www.instagram.com/rbarelafilm/), and [Kaidin Jarjusey](https://www.instagram.com/qwaeofficial/), poster designer and tied-for-our-favorite resident Chicagoan. And Keif and the [Guild Cinema](https://www.guildcinema.com/) for being paragons of the Albuquerque independent film community.
-
-<br><br>

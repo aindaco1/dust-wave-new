@@ -154,6 +154,11 @@ assert.match(
   /srcset="{{ show\.artworkWebpSmall }} 256w, {{ show\.artworkWebp }} 505w"/,
   "show artwork must use responsive generated WebPs"
 );
+assert.equal(
+  show.match(/{% if environment == "production" %}[\s\S]*?<source[\s\S]*?{% endif %}/g)?.length,
+  2,
+  "generated podcast WebP sources must only render after production image generation"
+);
 assert.match(
   show,
   /class="podcast-show__artwork"[\s\S]+width="505"[\s\S]+height="505"[\s\S]+fetchpriority="high"/,

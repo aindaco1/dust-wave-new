@@ -3,7 +3,6 @@ title: Red Pillow
 date: 2022-10-29
 img: /img/stills/redpillowstill.png
 summary: Parodia de un comercial de terror
-gif: /img/gifs/redpillow.gif
 layout: layouts/post.njk
 navbar: navbar1
 footer: footer1
@@ -15,7 +14,27 @@ localizedPaths:
 permalink: /es/project/red-pillow.html
 tags:
 - localized-project
+hoverVideoWebm: /img/project-videos/redpillow.webm
+hoverVideoMp4: /img/project-videos/redpillow.mp4
+hoverVideoPoster: /img/stills/redpillowstill.png
+galleryHeading: "Detrás de cámaras"
+galleryImages:
+  - src: /img/red_pillow/behind_3.png
+    alt: "Entre bastidores"
+  - src: /img/red_pillow/behind_1.jpg
+    alt: "Entre bastidores"
+  - src: /img/red_pillow/behind_4.jpg
+    alt: "Entre bastidores"
+  - src: /img/red_pillow/behind_2.jpg
+    alt: "Entre bastidores"
+  - src: /img/red_pillow/poster.png
+    alt: "Póster"
+projectVideos:
+  - heading: "Película"
+    id: 3l1Q3u9gli4
+    type: youtube
 ---
+
 <div class="project-translation project-translation--es">
 <p><em>Red Pillow</em> es una parodia comercial de terror creada para ser presentada al <a href="https://www.youtube.com/watch?v=o87H-Lnoy4U">2022 All Hallows' Eve Halloween Short Film Festival</a>. Filmada durante dos noches en Albuquerque, Nuevo México.
 
@@ -56,20 +75,5 @@ el hijo de jorge - Jo Indacochea
 * 10mo lugar
 
 </p>
-<h3>Detrás de cámaras</h3>
-<div class="row g-2">
-<div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/red_pillow/behind_3.png"/>
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/red_pillow/behind_1.jpg"/>
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/red_pillow/behind_4.jpg"/>
-</div>
-<div class="col-lg-6 mb-6 mb-lg-0">
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/red_pillow/behind_2.jpg"/>
-<img alt="Póster" class="w-100 shadow-1-strong rounded mb-2" src="/img/red_pillow/poster.png"/>
-</div>
-</div>
-<p><br/><br/></p>
-<h2>Película</h2>
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style>
-<div class="embed-container"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" frameborder="0" height="400vh" src="https://www.youtube.com/embed/3l1Q3u9gli4" title="reproductor de vídeos de youtube" width="100%"></iframe></div>
+
 </div>

@@ -3,7 +3,6 @@ title: The Haunters
 date: 2024-04-26
 img: /img/stills/thehauntersstill.jpg
 summary: Cortometraje de comedia y ciencia ficción sobre fantasmas
-gif: /img/gifs/haunters.gif
 layout: layouts/post.njk
 navbar: navbar1
 footer: footer1
@@ -15,7 +14,21 @@ localizedPaths:
 permalink: /es/project/the-haunters.html
 tags:
 - localized-project
+hoverVideoWebm: /img/project-videos/haunters.webm
+hoverVideoMp4: /img/project-videos/haunters.mp4
+hoverVideoPoster: /img/stills/thehauntersstill.jpg
+poster: /img/the_haunters/poster.jpg
+posterHeading: "Cartel"
+posterAlt: "póster"
+projectVideos:
+  - heading: "Detrás de cámaras"
+    id: lvc0oG-P19w
+    type: youtube
+  - heading: "Film"
+    id: p7rSKSSQx6w
+    type: youtube
 ---
+
 <div class="project-translation project-translation--es">
 <p><em>The Haunters</em> es un cortometraje de comedia de ciencia ficción rodado en octubre de 2023 en MOOD en Albuquerque y en la Biblioteca Comunitaria de Corrales en Corrales, Nuevo México.
 
@@ -66,15 +79,5 @@ dama fantasma -- Jade Stokes
 * <strong><a href="https://mindfieldff.com/winnerslive2024.html">Best Short Film, Platinum Award</a></strong>
 
 </p>
-<h3>Detrás de cámaras</h3>
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style>
-<div class="embed-container"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" frameborder="0" height="400vh" src="https://www.youtube.com/embed/lvc0oG-P19w?si=OAOw-RvRrYE0v-W8" title="reproductor de vídeos de youtube" width="100%"></iframe></div>
-<p><br/><br/></p>
-<h3>Cartel</h3>
-<p><br/>
-<img alt="póster" class="w-75 shadow-1-strong rounded mb-2" src="/img/the_haunters/poster.jpg"/></p>
-<p><br/><br/></p>
-<h2>Film</h2>
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style>
-<div class="embed-container"><iframe allowfullscreen="" frameborder="0" src="https://www.youtube.com/embed/p7rSKSSQx6w"></iframe></div>
+
 </div>

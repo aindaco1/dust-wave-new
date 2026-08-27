@@ -3,12 +3,35 @@ title: Accessory to Murder
 date: 2023-10-31
 img: /img/stills/accessorystill.jpg
 summary: Dark horror comedy
-gif: /img/gifs/accessory.gif
 tags:
   - horror
   - comedy
   - sitcom
   - released
+hoverVideoWebm: /img/project-videos/accessory.webm
+hoverVideoMp4: /img/project-videos/accessory.mp4
+hoverVideoPoster: /img/stills/accessorystill.jpg
+galleryHeading: "Behind the scenes"
+galleryImages:
+  - src: /img/accessory/behind_the_scenes_6.jpg
+    alt: "Behind the Scenes"
+  - src: /img/accessory/behind_the_scenes_4.jpg
+    alt: "Behind the Scenes"
+  - src: /img/accessory/behind_the_scenes_3.jpg
+    alt: "Behind the Scenes"
+  - src: /img/accessory/behind_the_scenes_1.jpg
+    alt: "Behind the Scenes"
+  - src: /img/accessory/behind_the_scenes_5.jpg
+    alt: "Behind the Scenes"
+  - src: /img/accessory/behind_the_scenes_2.jpg
+    alt: "Behind the Scenes"
+projectVideos:
+  - heading: "Festival Edit"
+    id: i7PqaCg32Gw
+    type: youtube
+  - heading: "Sitcom Edit"
+    id: 43BZ3HYVcbA
+    type: youtube
 ---
 
 _Accessory to Murder_ is a horror comedy short shot in December 2022 at the Corrales Community Library in Corrales, New Mexico. We created two different edits: one for festivals and one invoking sitcoms of the 80s and 90s.
@@ -56,28 +79,3 @@ Voice of the fetus — Kaidin Jarjusey
 * Official Selection -- [2023 Dark Red Horror Film Festival](https://www.darkredhorror.com)
 </br>
 </br>
-
-### Behind the scenes
-
-<div class="row g-2">
-  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-    <img src="/img/accessory/behind_the_scenes_6.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/accessory/behind_the_scenes_4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/accessory/behind_the_scenes_3.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-  </div>
-  <div class="col-lg-6 mb-6 mb-lg-0">
-    <img src="/img/accessory/behind_the_scenes_1.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/accessory/behind_the_scenes_5.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/accessory/behind_the_scenes_2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-  </div>
-</div>
-<br><br>
-
-## Festival Edit
-
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/i7PqaCg32Gw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
-<br>
-
-## Sitcom Edit
-
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/43BZ3HYVcbA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>

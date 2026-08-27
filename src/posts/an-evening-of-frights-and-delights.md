@@ -3,11 +3,27 @@ title: An Evening of Frights and Delights
 date: 2024-11-07
 img: /img/stills/eveningstill.jpg
 summary: A sold-out night of film premieres at the Guild Cinema
-gif: /img/gifs/evening.gif
 tags:
-  - festival
+  - screening
   - event
   - released
+hoverVideoWebm: /img/project-videos/evening.webm
+hoverVideoMp4: /img/project-videos/evening.mp4
+hoverVideoPoster: /img/stills/eveningstill.jpg
+galleryHeading: "Behind the Scenes"
+galleryImages:
+  - src: /img/evening/behind_the_scenes1.jpg
+    alt: "the space between home"
+  - src: /img/evening/behind_the_scenes2.jpg
+    alt: "the hands that hold us"
+  - src: /img/evening/behind_the_scenes3.jpg
+    alt: "untitled undocumented"
+  - src: /img/evening/behind_the_scenes6.jpg
+    alt: "a ghost truck"
+  - src: /img/evening/behind_the_scenes5.jpg
+    alt: "tower of cower"
+  - src: /img/evening/behind_the_scenes4.jpg
+    alt: "volumen de voz"
 ---
 
 On November 6, Dust Wave held a sold-out night of film premieres! Featuring:  
@@ -29,19 +45,3 @@ and ...
 The world premiere of [The Hundred Voices of Harry Hoffman](https://www.instagram.com/hundred_voices_movie), written and directed by the inimitable Brandon Carter!
 
 <br>
-
-## Behind the Scenes
-
-<div class="row g-2">
-  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-    <img src="/img/evening/behind_the_scenes1.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="the space between home">
-    <img src="/img/evening/behind_the_scenes2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="the hands that hold us">
-    <img src="/img/evening/behind_the_scenes3.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="untitled undocumented">
-  </div>
-  <div class="col-lg-6 mb-6 mb-lg-0">
-    <img src="/img/evening/behind_the_scenes6.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="a ghost truck">
-    <img src="/img/evening/behind_the_scenes5.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="tower of cower">
-    <img src="/img/evening/behind_the_scenes4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="volumen de voz">
-  </div>
-</div>
-<br><br>

@@ -3,7 +3,6 @@ title: Mike Mysteries
 date: 2021-09-13
 img: /img/stills/mikemysteriesstill.jpg
 summary: Falso documental de comedia
-gif: /img/gifs/mikemysteries.gif
 layout: layouts/post.njk
 navbar: navbar1
 footer: footer1
@@ -15,7 +14,27 @@ localizedPaths:
 permalink: /es/project/mike-mysteries.html
 tags:
 - localized-project
+hoverVideoWebm: /img/project-videos/mikemysteries.webm
+hoverVideoMp4: /img/project-videos/mikemysteries.mp4
+hoverVideoPoster: /img/stills/mikemysteriesstill.jpg
+galleryHeading: "Detrás de cámaras"
+galleryImages:
+  - src: /img/mike_mysteries/behind_3.jpg
+    alt: "Entre bastidores"
+  - src: /img/mike_mysteries/behind_1.png
+    alt: "Entre bastidores"
+  - src: /img/mike_mysteries/awards_2.jpg
+    alt: "Premios"
+  - src: /img/mike_mysteries/still.jpg
+    alt: "Entre bastidores"
+  - src: /img/mike_mysteries/awards_3.jpg
+    alt: "Premios"
+projectVideos:
+  - heading: "Película"
+    id: JFGP4nQMhzI
+    type: youtube
 ---
+
 <div class="project-translation project-translation--es">
 <p><em>Mike Mysteries</em> es un falso documental creado para ser presentado al <a href="https://www.48hourfilm.com/en/albuquerque-nm/48hfp/2021">48 Hour Film Project Albuquerque 2021</a> concurso. Filmada en múltiples ubicaciones en Albuquerque, Nuevo México.
 </p>
@@ -53,20 +72,5 @@ Entusiasta de vehículos recreativos - Jay Renteria
 * Mejor Película</p>
 <p><a href="https://www.youtube.com/watch?v=uJXB8tw_jpA">2022 Albuquerque 48 Hour Film Project Horror Extravaganza</a> -- Selected for Screening
 </p>
-<h3>Detrás de cámaras</h3>
-<div class="row g-2">
-<div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/mike_mysteries/behind_3.jpg"/>
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/mike_mysteries/behind_1.png"/>
-<img alt="Premios" class="w-100 shadow-1-strong rounded mb-2" src="/img/mike_mysteries/awards_2.jpg"/>
-</div>
-<div class="col-lg-6 mb-6 mb-lg-0">
-<img alt="Entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/mike_mysteries/still.jpg"/>
-<img alt="Premios" class="w-100 shadow-1-strong rounded mb-2" src="/img/mike_mysteries/awards_3.jpg"/>
-</div>
-</div>
-<p><br/><br/></p>
-<h2>Película</h2>
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style>
-<div class="embed-container"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" frameborder="0" height="400vh" src="https://www.youtube.com/embed/JFGP4nQMhzI" title="reproductor de vídeos de youtube" width="100%"></iframe></div>
+
 </div>

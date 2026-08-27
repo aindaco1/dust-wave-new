@@ -3,11 +3,33 @@ title: The Green Chile Bagel
 date: 2022-05-10
 img: /img/stills/greenchilestill.png
 summary: Bagel comedy short
-gif: /img/gifs/greenchilebagel.gif
 tags:
   - comedy
   - bagel
+  - challenge
   - released
+hoverVideoWebm: /img/project-videos/greenchilebagel.webm
+hoverVideoMp4: /img/project-videos/greenchilebagel.mp4
+hoverVideoPoster: /img/stills/greenchilestill.png
+galleryHeading: "Behind the scenes"
+galleryImages:
+  - src: /img/green_chile_bagel/behind_1.png
+    alt: "Behind the Scenes"
+  - src: /img/green_chile_bagel/behind_2.png
+    alt: "Behind the Scenes"
+  - src: /img/green_chile_bagel/behind_4.jpg
+    alt: "Behind the Scenes"
+  - src: /img/green_chile_bagel/behind_3.jpg
+    alt: "Behind the Scenes"
+  - src: /img/green_chile_bagel/behind_5.jpg
+    alt: "Poster"
+projectVideos:
+  - heading: "Movie"
+    id: dRiuvkiifl8
+    type: youtube
+  - heading: "Blooper Reel"
+    id: gKnrEQ5MUzs
+    type: youtube
 ---
 
 _The Green Chile Bagel_ is a short film originally created for submission to the [2022 Musicbed Challenge](https://challenge.musicbed.com) contest. The film was shot over the course of 1 day in downtown Albuquerque, New Mexico.
@@ -44,28 +66,3 @@ Waiter -- Taryn Bernicke
 * Official Selection. Screened on August 13th, 2022 at South Broadway Cultural Center in Albuquerque, New Mexico.
 </br>
 </br>
-
-### Behind the scenes
-
-<div class="row g-2">
-  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-    <img src="/img/green_chile_bagel/behind_1.png" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/green_chile_bagel/behind_2.png" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/green_chile_bagel/behind_4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-  </div>
-  <div class="col-lg-6 mb-6 mb-lg-0">
-    <img src="/img/green_chile_bagel/behind_3.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/green_chile_bagel/behind_5.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Poster">
-  </div>
-</div>
-<br><br>
-
-## Movie
-
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/dRiuvkiifl8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
-</br>
-</br>
-
-## Blooper Reel
-
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/gKnrEQ5MUzs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>

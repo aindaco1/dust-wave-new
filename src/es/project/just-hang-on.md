@@ -4,7 +4,6 @@ date: 2026-05-02
 summary: Drama corto sobre la resiliencia, la familia elegida y encontrar tu voz
 img: /img/stills/justhangonstill.jpg
 imgAlt: Bria mira hacia abajo pensativamente en una habitación cálidamente iluminada
-gif: /img/gifs/justhangon.gif
 layout: layouts/post.njk
 navbar: navbar1
 footer: footer1
@@ -16,7 +15,34 @@ localizedPaths:
 permalink: /es/project/just-hang-on.html
 tags:
 - localized-project
+hoverVideoWebm: /img/project-videos/justhangon.webm
+hoverVideoMp4: /img/project-videos/justhangon.mp4
+hoverVideoPoster: /img/stills/justhangonstill.jpg
+galleryHeading: "Detrás de cámaras"
+galleryImages:
+  - src: /img/just_hang_on/bts1.jpg
+    alt: "Dos artistas posan juguetonamente entre tomas."
+  - src: /img/just_hang_on/bts3.jpg
+    alt: "Dos artistas se toman una selfie con un accesorio para bebés mientras el equipo trabaja detrás de ellos."
+  - src: /img/just_hang_on/bts5.jpg
+    alt: "Dos miembros del reparto y del equipo se toman una selfie sonriente en el set"
+  - src: /img/just_hang_on/bts7.jpg
+    alt: "Un operador de cámara posa junto a una cámara de cine"
+  - src: /img/just_hang_on/bts9.jpg
+    alt: "Dos artistas posan juntos entre tomas."
+  - src: /img/just_hang_on/bts2.jpg
+    alt: "Una artista vestida de monja sostiene un accesorio para bebé junto a un miembro del equipo."
+  - src: /img/just_hang_on/bts4.jpg
+    alt: "Cuatro miembros del elenco posan juntos al aire libre"
+  - src: /img/just_hang_on/bts6.jpg
+    alt: "El elenco y el equipo preparan una escena de dormitorio alrededor de luces y equipo de cámara."
+  - src: /img/just_hang_on/bts8.jpg
+    alt: "El reparto y el equipo enmarcan una escena de dormitorio alrededor de un equipo de cámara"
+poster: /img/just_hang_on/poster.png
+posterHeading: "Cartel"
+posterAlt: "Just Hang On Póster con apuntes escolares, fotografías, una prueba de embarazo y el título de la película escrito a mano."
 ---
+
 <div class="project-translation project-translation--es">
 <p><em>Just Hang On</em> es un corto dramático escrito y dirigido por Chelsea Ambrose. La película sigue Bria, Una joven embarazada de 17 años que es enviada a un internado católico y comienza a buscar el coraje para hablar por sí misma.</p>
 <p>La <a href="https://www.kickstarter.com/projects/836858424/just-hang-on-a-short-film-about-survival-choice-and-hope">campaña de Kickstarter</a> de la película superó su objetivo con el apoyo de 63 patrocinadores.</p>
@@ -94,26 +120,5 @@ Servicios de catering y artesanía — Cate Church</p>
 <h3>Agradecimientos especiales</h3>
 <p>Abby Blanco, Alisha Edington &amp; Jordan Trimarchi, Alonso Indacochea, Amy Maestas, Brenna Moore, Brianna inman, Brian Sparks, Brooke Cholka, Cinelease Studios, Deb Burke, Dra. Elyse Carlson, Gary Shaw, Virgina Root, Iz Zamora, Jenny White, JP, Laura Loewenstein, Lindsay Campos, Mari Gish, Matthew Atkins, Colaboración Murphy Jones, Naomi Davidson, Rae Myss, Ryan Long, Sophia Minetos, Susan y Don Ambrose, Susan Chavez, Suzanne Sorenson, Tina Timelord</p>
 <p><br/></p>
-<h3>Cartel</h3>
-<div class="text-center">
-<img alt="Just Hang On Póster con apuntes escolares, fotografías, una prueba de embarazo y el título de la película escrito a mano." class="w-75 shadow-1-strong rounded mb-2" decoding="async" loading="lazy" src="{{ '/img/just_hang_on/poster.png' | toWebp }}"/>
-</div>
-<p><br/></p>
-<h3>Detrás de cámaras</h3>
-<div class="row g-2">
-<div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-<img alt="Dos artistas posan juguetonamente entre tomas." class="w-100 shadow-1-strong rounded mb-2" decoding="async" loading="lazy" src="{{ '/img/just_hang_on/bts1.jpg' | toWebp }}"/>
-<img alt="Dos artistas se toman una selfie con un accesorio para bebés mientras el equipo trabaja detrás de ellos." class="w-100 shadow-1-strong rounded mb-2" decoding="async" loading="lazy" src="{{ '/img/just_hang_on/bts3.jpg' | toWebp }}"/>
-<img alt="Dos miembros del reparto y del equipo se toman una selfie sonriente en el set" class="w-100 shadow-1-strong rounded mb-2" decoding="async" loading="lazy" src="{{ '/img/just_hang_on/bts5.jpg' | toWebp }}"/>
-<img alt="Un operador de cámara posa junto a una cámara de cine" class="w-100 shadow-1-strong rounded mb-2" decoding="async" loading="lazy" src="{{ '/img/just_hang_on/bts7.jpg' | toWebp }}"/>
-<img alt="Dos artistas posan juntos entre tomas." class="w-100 shadow-1-strong rounded mb-2" decoding="async" loading="lazy" src="{{ '/img/just_hang_on/bts9.jpg' | toWebp }}"/>
-</div>
-<div class="col-lg-6 mb-6 mb-lg-0">
-<img alt="Una artista vestida de monja sostiene un accesorio para bebé junto a un miembro del equipo." class="w-100 shadow-1-strong rounded mb-2" decoding="async" loading="lazy" src="{{ '/img/just_hang_on/bts2.jpg' | toWebp }}"/>
-<img alt="Cuatro miembros del elenco posan juntos al aire libre" class="w-100 shadow-1-strong rounded mb-2" decoding="async" loading="lazy" src="{{ '/img/just_hang_on/bts4.jpg' | toWebp }}"/>
-<img alt="El elenco y el equipo preparan una escena de dormitorio alrededor de luces y equipo de cámara." class="w-100 shadow-1-strong rounded mb-2" decoding="async" loading="lazy" src="{{ '/img/just_hang_on/bts6.jpg' | toWebp }}"/>
-<img alt="El reparto y el equipo enmarcan una escena de dormitorio alrededor de un equipo de cámara" class="w-100 shadow-1-strong rounded mb-2" decoding="async" loading="lazy" src="{{ '/img/just_hang_on/bts8.jpg' | toWebp }}"/>
-</div>
-</div>
-<p><br/><br/></p>
+
 </div>

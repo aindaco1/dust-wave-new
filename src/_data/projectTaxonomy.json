@@ -1,0 +1,162 @@
+{
+  "types": [
+    {
+      "slug": "film",
+      "labels": {
+        "en": "Film",
+        "es": "Película"
+      }
+    },
+    {
+      "slug": "music-video",
+      "labels": {
+        "en": "Music Video",
+        "es": "Video musical"
+      }
+    },
+    {
+      "slug": "series",
+      "labels": {
+        "en": "Series",
+        "es": "Serie"
+      }
+    },
+    {
+      "slug": "event",
+      "labels": {
+        "en": "Event",
+        "es": "Evento"
+      }
+    },
+    {
+      "slug": "installation",
+      "labels": {
+        "en": "Installation",
+        "es": "Instalación"
+      }
+    },
+    {
+      "slug": "software",
+      "labels": {
+        "en": "Software",
+        "es": "Software"
+      }
+    }
+  ],
+  "projects": {
+    "accessory-to-murder": "film",
+    "an-evening-of-frights-and-delights": "event",
+    "ascii-vj-remix": "software",
+    "attack-of-the-50-ft-dust-wave": "event",
+    "bag-check": "film",
+    "dancewave": "event",
+    "dead-ballerina": "music-video",
+    "dive-in": "event",
+    "dust-don-t-settle": "film",
+    "earworm": "film",
+    "film-fatale": "event",
+    "frograiser": "event",
+    "fronteras": "event",
+    "from-zema-with-love": "film",
+    "fumbled-not-stirred": "series",
+    "grainery": "software",
+    "gumshoe": "film",
+    "high-times-at-the-ranger-bowl-a-rama": "film",
+    "horse-vs-vamp": "event",
+    "horseheads": "film",
+    "just-hang-on": "film",
+    "la-grima": "film",
+    "life-after-dead-air": "installation",
+    "long-night": "film",
+    "mike-mysteries": "film",
+    "movie-monsters": "film",
+    "pandoras-greenhouse": "film",
+    "podcast-visualizer": "software",
+    "red-pillow": "film",
+    "red-razor-on-soft-skin": "film",
+    "record": "software",
+    "reserved": "film",
+    "shellfish-knish": "film",
+    "softening": "film",
+    "stalld": "film",
+    "the-converger": "film",
+    "the-darkest-place": "film",
+    "the-dust-wave-show": "series",
+    "the-green-chile-bagel": "film",
+    "the-haunters": "film",
+    "the-pool": "software",
+    "they-came-from-planet-x": "film",
+    "tower-of-cower-ii-at-city-brights": "installation",
+    "vita-life-chips": "film"
+  },
+  "localizedSlugs": {
+    "en": {
+      "dive-in": "dive-in-movies",
+      "fronteras": "fronteras-micro-film-festival",
+      "pandoras-greenhouse": "pandora-s-greenhouse",
+      "stalld": "stall-d",
+      "vita-life-chips": "vitalife-chips"
+    },
+    "es": {
+      "dive-in": "dive-in-movies",
+      "fronteras": "fronteras-micro-film-festival",
+      "pandoras-greenhouse": "pandora-s-greenhouse",
+      "stalld": "stall-d",
+      "vita-life-chips": "vitalife-chips"
+    }
+  },
+  "tagLabels": {
+    "16mm": { "en": "16mm", "es": "16 mm" },
+    "animation": { "en": "Animation", "es": "Animación" },
+    "ascii": { "en": "ASCII", "es": "ASCII" },
+    "audio-reactive": { "en": "Audio reactive", "es": "Audio reactivo" },
+    "anthology": { "en": "Anthology", "es": "Antología" },
+    "bagel": { "en": "Bagel", "es": "Bagel" },
+    "branded": { "en": "Branded", "es": "De marca" },
+    "challenge": { "en": "Challenge", "es": "Reto" },
+    "climate": { "en": "Climate", "es": "Clima" },
+    "comedy": { "en": "Comedy", "es": "Comedia" },
+    "commercial-satire": { "en": "Commercial Satire", "es": "Sátira publicitaria" },
+    "concert": { "en": "Concert", "es": "Concierto" },
+    "cross-platform": { "en": "Cross-platform", "es": "Multiplataforma" },
+    "crowdfunding": { "en": "Crowdfunding", "es": "Crowdfunding" },
+    "cosmic": { "en": "Cosmic", "es": "Cósmico" },
+    "crime": { "en": "Crime", "es": "Crimen" },
+    "documentary": { "en": "Documentary", "es": "Documental" },
+    "dogme-95": { "en": "Dogme 95", "es": "Dogma 95" },
+    "dance": { "en": "Dance", "es": "Baile" },
+    "drama": { "en": "Drama", "es": "Drama" },
+    "experimental": { "en": "Experimental", "es": "Experimental" },
+    "48-hour-film-project": { "en": "48 Hour Film Project", "es": "48 Hour Film Project" },
+    "fantasy": { "en": "Fantasy", "es": "Fantasía" },
+    "festival": { "en": "Festival", "es": "Festival" },
+    "food": { "en": "Food", "es": "Gastronomía" },
+    "fundraiser": { "en": "Fundraiser", "es": "Recaudación de fondos" },
+    "giallo": { "en": "Giallo", "es": "Giallo" },
+    "horror": { "en": "Horror", "es": "Terror" },
+    "immersive": { "en": "Immersive", "es": "Inmersivo" },
+    "interactive": { "en": "Interactive", "es": "Interactivo" },
+    "kaiju": { "en": "Kaiju", "es": "Kaiju" },
+    "lgbtqia+": { "en": "LGBTQIA+", "es": "LGBTQIA+" },
+    "mixology": { "en": "Mixology", "es": "Coctelería" },
+    "mockumentary": { "en": "Mockumentary", "es": "Falso documental" },
+    "multimedia": { "en": "Multimedia", "es": "Multimedia" },
+    "musical": { "en": "Musical", "es": "Musical" },
+    "noir": { "en": "Noir", "es": "Cine negro" },
+    "open-source": { "en": "Open source", "es": "Código abierto" },
+    "romance": { "en": "Romance", "es": "Romance" },
+    "public-access": { "en": "Public Access TV", "es": "Televisión de acceso público" },
+    "public-art": { "en": "Public Art", "es": "Arte público" },
+    "satire": { "en": "Satire", "es": "Sátira" },
+    "sci-fi": { "en": "Sci-fi", "es": "Ciencia ficción" },
+    "screening": { "en": "Screening", "es": "Proyección" },
+    "screen-recording": { "en": "Screen recording", "es": "Grabación de pantalla" },
+    "screenwriting": { "en": "Screenwriting", "es": "Guion" },
+    "silent": { "en": "Silent", "es": "Cine mudo" },
+    "sitcom": { "en": "Sitcom", "es": "Comedia de situación" },
+    "stop-motion": { "en": "Stop motion", "es": "Stop motion" },
+    "transcription": { "en": "Transcription", "es": "Transcripción" },
+    "women-in-film": { "en": "Women in film", "es": "Mujeres en el cine" },
+    "werewolf": { "en": "Werewolf", "es": "Hombres lobo" }
+  }
+}

@@ -3,7 +3,6 @@ title: Horseheads
 date: 2025-05-03
 img: /img/stills/horseheadsstill.jpg
 summary: Cortometraje de comedia criminal
-gif: /img/gifs/horseheads.gif
 layout: layouts/post.njk
 navbar: navbar1
 footer: footer1
@@ -15,7 +14,38 @@ localizedPaths:
 permalink: /es/project/horseheads.html
 tags:
 - localized-project
+hoverVideoWebm: /img/project-videos/horseheads.webm
+hoverVideoMp4: /img/project-videos/horseheads.mp4
+hoverVideoPoster: /img/stills/horseheadsstill.jpg
+galleryHeading: "Detrás de cámaras"
+galleryImages:
+  - src: /img/horseheads/behind_the_scenes4.jpg
+    alt: "entre bastidores"
+  - src: /img/horseheads/behind_the_scenes6.jpg
+    alt: "entre bastidores"
+  - src: /img/horseheads/behind_the_scenes5.jpg
+    alt: "entre bastidores"
+  - src: /img/horseheads/behind_the_scenes2.jpg
+    alt: "entre bastidores"
+  - src: /img/horseheads/behind_the_scenes3.jpg
+    alt: "entre bastidores"
+  - src: /img/horseheads/behind_the_scenes1.jpg
+    alt: "entre bastidores"
+poster: /img/horseheads/poster.jpg
+posterHeading: "Cartel"
+posterAlt: "póster"
+projectVideos:
+  - heading: "Tráiler"
+    id: Z-O3S2eo31s
+    type: youtube
+  - heading: "BTS Mini-Doc"
+    id: F5R6rnngJEw
+    type: youtube
+movieComingSoon: true
+movieHeading: "Película"
+movieComingSoonText: "Muy pronto ..."
 ---
+
 <div class="project-translation project-translation--es">
 <p><em>Horseheads</em> es un cortometraje de comedia criminal rodado en febrero de 2025 en Albuquerque, Nuevo México.
 
@@ -71,32 +101,5 @@ Extras: Alan De Lira-Richards, Alexis Padilla-Pérez, Brian Tucker, Collin Luthe
 * Selección, Mejor Cortometraje de Nuevo México</p>
 <p>
 </p>
-<h3>Detrás de cámaras</h3>
-<div class="row g-2">
-<div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/horseheads/behind_the_scenes4.jpg"/>
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/horseheads/behind_the_scenes6.jpg"/>
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/horseheads/behind_the_scenes5.jpg"/>
-</div>
-<div class="col-lg-6 mb-6 mb-lg-0">
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/horseheads/behind_the_scenes2.jpg"/>
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/horseheads/behind_the_scenes3.jpg"/>
-<img alt="entre bastidores" class="w-100 shadow-1-strong rounded mb-2" src="/img/horseheads/behind_the_scenes1.jpg"/>
-</div>
-</div>
-<p><br/><br/></p>
-<h3>Cartel</h3>
-<p><br/>
-<img alt="póster" class="w-75 shadow-1-strong rounded mb-2" src="/img/horseheads/poster.jpg"/></p>
-<p><br/><br/></p>
-<h2>Tráiler</h2>
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style>
-<div class="embed-container"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" frameborder="0" height="400vh" src="https://www.youtube.com/embed/Z-O3S2eo31s" title="reproductor de vídeos de youtube" width="100%"></iframe></div>
-<p><br/><br/></p>
-<h2>BTS Mini-Doc</h2>
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style>
-<div class="embed-container"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" frameborder="0" height="400vh" src="https://www.youtube.com/embed/F5R6rnngJEw" title="reproductor de vídeos de youtube" width="100%"></iframe></div>
-<p><br/><br/></p>
-<h2>Película</h2>
-<p><strong>Muy pronto ...</strong></p>
+
 </div>

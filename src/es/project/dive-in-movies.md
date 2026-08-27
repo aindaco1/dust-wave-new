@@ -3,7 +3,6 @@ title: Dive-In Movies
 date: 2024-08-29
 img: /img/stills/diveinstill.jpg
 summary: Proyecciones de cine en la piscina del Hotel Zazz
-gif: /img/gifs/divein.gif
 layout: layouts/post.njk
 navbar: navbar1
 footer: footer1
@@ -15,7 +14,29 @@ localizedPaths:
 permalink: /es/project/dive-in-movies.html
 tags:
 - localized-project
+hoverVideoWebm: /img/project-videos/divein.webm
+hoverVideoMp4: /img/project-videos/divein.mp4
+hoverVideoPoster: /img/stills/diveinstill.jpg
+galleryHeading: "Detrás de cámaras"
+galleryImages:
+  - src: /img/dive_in/bts1.jpg
+    alt: "bts 1"
+  - src: /img/dive_in/bts2.jpg
+    alt: "bts2"
+  - src: /img/dive_in/bts3.jpg
+    alt: "bts3"
+  - src: /img/dive_in/bts4.jpg
+    alt: "bts4"
+  - src: /img/dive_in/bts5.jpg
+    alt: "bts5"
+  - src: /img/dive_in/bts6.jpg
+    alt: "bts6"
+projectVideos:
+  - heading: "The Do's and Don't of Dive-In"
+    id: lvt_LvrI2ns
+    type: youtube
 ---
+
 <div class="project-translation project-translation--es">
 <p><a href="https://diveinmovies.xyz">Dive-In Movies</a> es simple: una aventura en la piscina con una proyección de película en el <a href="https://www.hotelzazz.com">Hotel Zazz</a> piscina! TheHay un bar (cortesía de <a href="https://www.hotelzazz.com/zlounge">Z Lounge</a>), Venta de palomitas de maíz y otras delicias. Mezclarse y nadar antes de la película, nadar y relajarse durante. Las puertas se abren a las 7:00 p. m., la película comienza al atardecer.</p>
 <p>Del 2 de mayo al 29 de agosto de 2024, junto con nuestros increíbles socios en <a href="https://www.sopapillaproductions.com">Sopapilla Productions</a>, Proyectamos películas todos los jueves por la noche (excepto el 4 de julio).).</p>
@@ -29,21 +50,5 @@ tags:
 <li><strong>Mención de Honor</strong>: <em>Cast Out</em> por <a href="https://www.instagram.com/gravedangerz">Zach Graves</a> &amp; <a href="https://www.instagram.com/thebeanwalrus">Daniel Gallegos</a></li>
 </ul>
 <p><br/></p>
-<h2>Detrás de cámaras</h2>
-<div class="row g-2">
-<div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-<img alt="bts 1" class="w-100 shadow-1-strong rounded mb-2" src="/img/dive_in/bts1.jpg"/>
-<img alt="bts2" class="w-100 shadow-1-strong rounded mb-2" src="/img/dive_in/bts2.jpg"/>
-<img alt="bts3" class="w-100 shadow-1-strong rounded mb-2" src="/img/dive_in/bts3.jpg"/>
-</div>
-<div class="col-lg-6 mb-6 mb-lg-0">
-<img alt="bts4" class="w-100 shadow-1-strong rounded mb-2" src="/img/dive_in/bts4.jpg"/>
-<img alt="bts5" class="w-100 shadow-1-strong rounded mb-2" src="/img/dive_in/bts5.jpg"/>
-<img alt="bts6" class="w-100 shadow-1-strong rounded mb-2" src="/img/dive_in/bts6.jpg"/>
-</div>
-</div>
-<p><br/><br/></p>
-<h2>The Do's and Don't of Dive-In</h2>
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style>
-<div class="embed-container"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" frameborder="0" height="400vh" src="https://www.youtube.com/embed/lvt_LvrI2ns" title="reproductor de vídeos de youtube" width="100%"></iframe></div>
+
 </div>

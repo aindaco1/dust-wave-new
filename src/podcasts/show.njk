@@ -35,10 +35,12 @@ eleventyComputed:
     <div class="container">
       <div class="podcast-show__wordmark-wrap">
         <picture>
+          {% if environment == "production" %}
           <source
             srcset="{{ show.wordmarkWebpSmall }} 640w, {{ show.wordmarkWebp }} 1280w, {{ show.wordmarkWebpLarge }} 2560w"
             sizes="(min-width: 1200px) 1088px, calc(100vw - 24px)"
             type="image/webp">
+          {% endif %}
           <img
             class="podcast-show__wordmark"
             src="{{ show.wordmark }}"
@@ -52,10 +54,12 @@ eleventyComputed:
       <div class="row align-items-center gy-4">
         <div class="col-12 col-md-5 col-lg-4">
           <picture>
+            {% if environment == "production" %}
             <source
               srcset="{{ show.artworkWebpSmall }} 256w, {{ show.artworkWebp }} 505w"
               sizes="(min-width: 992px) 33vw, (min-width: 768px) 42vw, calc(100vw - 24px)"
               type="image/webp">
+            {% endif %}
             <img
               class="podcast-show__artwork"
               src="{{ show.artwork }}"

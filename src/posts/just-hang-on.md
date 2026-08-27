@@ -4,10 +4,35 @@ date: 2026-05-02
 summary: Drama short about resilience, chosen family, and finding your voice
 img: /img/stills/justhangonstill.jpg
 imgAlt: Bria looks downward pensively in a warmly lit room
-gif: /img/gifs/justhangon.gif
 tags:
   - drama
   - released
+hoverVideoWebm: /img/project-videos/justhangon.webm
+hoverVideoMp4: /img/project-videos/justhangon.mp4
+hoverVideoPoster: /img/stills/justhangonstill.jpg
+galleryHeading: "Behind the Scenes"
+galleryImages:
+  - src: /img/just_hang_on/bts1.jpg
+    alt: "Two performers pose playfully between takes"
+  - src: /img/just_hang_on/bts3.jpg
+    alt: "Two performers take a selfie with a baby prop while crew work behind them"
+  - src: /img/just_hang_on/bts5.jpg
+    alt: "Two cast and crew members take a smiling selfie on set"
+  - src: /img/just_hang_on/bts7.jpg
+    alt: "A camera operator poses beside a cinema camera rig"
+  - src: /img/just_hang_on/bts9.jpg
+    alt: "Two performers pose together between takes"
+  - src: /img/just_hang_on/bts2.jpg
+    alt: "A performer dressed as a nun holds a baby prop beside a crew member"
+  - src: /img/just_hang_on/bts4.jpg
+    alt: "Four cast members pose together outdoors"
+  - src: /img/just_hang_on/bts6.jpg
+    alt: "Cast and crew prepare a bedroom scene around lights and camera equipment"
+  - src: /img/just_hang_on/bts8.jpg
+    alt: "Cast and crew frame a bedroom scene around a camera rig"
+poster: /img/just_hang_on/poster.png
+posterHeading: "Poster"
+posterAlt: "Just Hang On poster featuring school notes, photographs, a pregnancy test, and the handwritten film title"
 ---
 
 _Just Hang On_ is a drama short written and directed by Chelsea Ambrose. The film follows Bria, a pregnant 17-year-old who is sent to a Catholic boarding school and begins searching for the courage to speak for herself.
@@ -117,31 +142,3 @@ Catering and Craft Services — Cate Church
 Abby White, Alisha Edington & Jordan Trimarchi, Alonso Indacochea, Amy Maestas, Brenna Moore, Brianna Inman, Brian Sparks, Brooke Cholka, Cinelease Studios, Deb Burke, Dr. Elyse Carlson, Gary Shaw, Virgina Root, Iz Zamora, Jenny White, JP, Laura Loewenstein, Lindsay Campos, Mari Gish, Matthew Atkins, Murphy Jones Collaborative, Naomi Davidson, Rae Myss, Ryan Long, Sophia Minetos, Susan and Don Ambrose, Susan Chavez, Suzanne Sorenson, Tina Timelord
 
 <br>
-
-### Poster
-
-<div class="text-center">
-  <img src="{{ '/img/just_hang_on/poster.png' | toWebp }}" class="w-75 shadow-1-strong rounded mb-2" alt="Just Hang On poster featuring school notes, photographs, a pregnancy test, and the handwritten film title" loading="lazy" decoding="async">
-</div>
-
-<br>
-
-### Behind the Scenes
-
-<div class="row g-2">
-  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-    <img src="{{ '/img/just_hang_on/bts1.jpg' | toWebp }}" class="w-100 shadow-1-strong rounded mb-2" alt="Two performers pose playfully between takes" loading="lazy" decoding="async">
-    <img src="{{ '/img/just_hang_on/bts3.jpg' | toWebp }}" class="w-100 shadow-1-strong rounded mb-2" alt="Two performers take a selfie with a baby prop while crew work behind them" loading="lazy" decoding="async">
-    <img src="{{ '/img/just_hang_on/bts5.jpg' | toWebp }}" class="w-100 shadow-1-strong rounded mb-2" alt="Two cast and crew members take a smiling selfie on set" loading="lazy" decoding="async">
-    <img src="{{ '/img/just_hang_on/bts7.jpg' | toWebp }}" class="w-100 shadow-1-strong rounded mb-2" alt="A camera operator poses beside a cinema camera rig" loading="lazy" decoding="async">
-    <img src="{{ '/img/just_hang_on/bts9.jpg' | toWebp }}" class="w-100 shadow-1-strong rounded mb-2" alt="Two performers pose together between takes" loading="lazy" decoding="async">
-  </div>
-  <div class="col-lg-6 mb-6 mb-lg-0">
-    <img src="{{ '/img/just_hang_on/bts2.jpg' | toWebp }}" class="w-100 shadow-1-strong rounded mb-2" alt="A performer dressed as a nun holds a baby prop beside a crew member" loading="lazy" decoding="async">
-    <img src="{{ '/img/just_hang_on/bts4.jpg' | toWebp }}" class="w-100 shadow-1-strong rounded mb-2" alt="Four cast members pose together outdoors" loading="lazy" decoding="async">
-    <img src="{{ '/img/just_hang_on/bts6.jpg' | toWebp }}" class="w-100 shadow-1-strong rounded mb-2" alt="Cast and crew prepare a bedroom scene around lights and camera equipment" loading="lazy" decoding="async">
-    <img src="{{ '/img/just_hang_on/bts8.jpg' | toWebp }}" class="w-100 shadow-1-strong rounded mb-2" alt="Cast and crew frame a bedroom scene around a camera rig" loading="lazy" decoding="async">
-  </div>
-</div>
-
-<br><br>

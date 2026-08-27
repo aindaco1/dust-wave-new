@@ -3,11 +3,38 @@ title: Shellfish Knish
 date: 2024-11-06
 img: /img/stills/shellfishstill.jpg
 summary: Food comedy short
-gif: /img/gifs/shellfishknish.gif
 tags:
   - food
   - comedy
+  - animation
   - released
+hoverVideoWebm: /img/project-videos/shellfishknish.webm
+hoverVideoMp4: /img/project-videos/shellfishknish.mp4
+hoverVideoPoster: /img/stills/shellfishstill.jpg
+galleryHeading: "Behind the scenes"
+galleryImages:
+  - src: /img/shellfish_knish/behind_the_scenes4.jpg
+    alt: "behind the scenes"
+  - src: /img/shellfish_knish/behind_the_scenes6.jpg
+    alt: "behind the scenes"
+  - src: /img/shellfish_knish/behind_the_scenes5.jpg
+    alt: "behind the scenes"
+  - src: /img/shellfish_knish/behind_the_scenes2.jpg
+    alt: "behind the scenes"
+  - src: /img/shellfish_knish/behind_the_scenes3.jpg
+    alt: "behind the scenes"
+  - src: /img/shellfish_knish/behind_the_scenes1.jpg
+    alt: "behind the scenes"
+poster: /img/shellfish_knish/poster.png
+posterHeading: "Poster"
+posterAlt: "poster"
+projectVideos:
+  - heading: "Trailer"
+    id: kpJ6ybpMK5A
+    type: youtube
+movieComingSoon: true
+movieHeading: "Movie"
+movieComingSoonText: "Coming Soon ..."
 ---
 
 _Shellfish Knish_ is a food comedy short created in partnership with [Space Age Daydream](https://www.instagram.com/spaceagedaydreamfilms). Shot in Albuquerque, New Mexico.
@@ -67,34 +94,3 @@ Shiva Attendees -- Shea Jarjusey, Laura Siân Morris, Alonso Indacochea, Jade St
 
 </br>
 </br>
-
-### Behind the scenes
-
-<div class="row g-2">
-  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-	<img src="/img/shellfish_knish/behind_the_scenes4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  	<img src="/img/shellfish_knish/behind_the_scenes6.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  	<img src="/img/shellfish_knish/behind_the_scenes5.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  </div>
-  <div class="col-lg-6 mb-6 mb-lg-0">
-	<img src="/img/shellfish_knish/behind_the_scenes2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  	<img src="/img/shellfish_knish/behind_the_scenes3.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-	<img src="/img/shellfish_knish/behind_the_scenes1.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  </div>
-</div>
-<br><br>
-
-### Poster
-<br>
-<img src="/img/shellfish_knish/poster.png" class="w-75 shadow-1-strong rounded mb-2" alt="poster">
-
-<br><br>
-
-## Trailer
-
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/kpJ6ybpMK5A" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
-<br><br>
-
-## Movie
-
-**Coming Soon ...**

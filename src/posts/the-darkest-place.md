@@ -3,10 +3,28 @@ title: The Darkest Place
 date: 2023-06-23
 img: /img/stills/darkestplacestill.jpg
 summary: Dark skies documentary short
-gif: /img/gifs/darkestplace.gif
 tags:
   - documentary
   - released
+hoverVideoWebm: /img/project-videos/darkestplace.webm
+hoverVideoMp4: /img/project-videos/darkestplace.mp4
+hoverVideoPoster: /img/stills/darkestplacestill.jpg
+galleryHeading: "Behind the scenes"
+galleryImages:
+  - src: /img/darkest_place/behind_the_scenes_1.jpg
+    alt: "Behind the Scenes"
+  - src: /img/darkest_place/behind_the_scenes_5.jpg
+    alt: "Behind the Scenes"
+  - src: /img/darkest_place/behind_the_scenes_3.jpg
+    alt: "Behind the Scenes"
+  - src: /img/darkest_place/behind_the_scenes_2.jpg
+    alt: "Behind the Scenes"
+  - src: /img/darkest_place/behind_the_scenes_4.jpg
+    alt: "Behind the Scenes"
+projectVideos:
+  - heading: "Movie"
+    id: U6rcBOWV3h8
+    type: youtube
 ---
 
 _The Darkest Place_ is a dark skies documentary short created for submission to the [2023 Fronteras Micro-film Festival](https://fronterasmicrofilm.com).
@@ -27,22 +45,3 @@ Public domain footage courtesy of [NASA](https://nasa.gov)
 Special thanks - Barry Vacker, Stephen Hummel, Big Bend National Park, Big Bend Ranch State Park, City of Boquillas del Carmen, Coahuila, México.
 </br>
 </br>
-
-### Behind the scenes
-
-<div class="row g-2">
-  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-    <img src="/img/darkest_place/behind_the_scenes_1.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/darkest_place/behind_the_scenes_5.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/darkest_place/behind_the_scenes_3.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-  </div>
-  <div class="col-lg-6 mb-6 mb-lg-0">
-    <img src="/img/darkest_place/behind_the_scenes_2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/darkest_place/behind_the_scenes_4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-  </div>
-</div>
-<br><br>
-
-## Movie
-
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/U6rcBOWV3h8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>

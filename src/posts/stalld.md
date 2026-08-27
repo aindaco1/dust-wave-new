@@ -3,13 +3,38 @@ title: Stall'd
 date: 2025-09-02
 img: /img/stills/stalldstill.jpg
 summary: Romance drama short
-gif: /img/gifs/stalld.gif
 tags:
   - drama
+  - romance
+  - challenge
+  - 48-hour-film-project
   - released
+hoverVideoWebm: /img/project-videos/stalld.webm
+hoverVideoMp4: /img/project-videos/stalld.mp4
+hoverVideoPoster: /img/stills/stalldstill.jpg
+galleryHeading: "Behind the scenes"
+galleryImages:
+  - src: /img/stalld/behind_the_scenes4.jpg
+    alt: "behind the scenes"
+  - src: /img/stalld/behind_the_scenes6.jpg
+    alt: "behind the scenes"
+  - src: /img/stalld/behind_the_scenes5.jpg
+    alt: "behind the scenes"
+  - src: /img/stalld/behind_the_scenes2.jpg
+    alt: "behind the scenes"
+  - src: /img/stalld/behind_the_scenes3.jpg
+    alt: "behind the scenes"
+  - src: /img/stalld/behind_the_scenes1.jpg
+    alt: "behind the scenes"
+poster: /img/stalld/poster.jpg
+posterHeading: "Poster"
+posterAlt: "poster"
+movieComingSoon: true
+movieHeading: "Movie"
+movieComingSoonText: "Coming Soon ..."
 ---
 
-_Stall'd_ is a romance drama short created for submission to the [2025 Albuquerque 48 Hour Film Project](https://www.48hourfilm.com/albuquerque/) contest. Shot at the University of New Mexico in Albuquerque, New Mexico.
+_Stall'd_ is a romance drama short created for the [2025 Albuquerque 48 Hour Film Project](https://www.48hourfilm.com/albuquerque/). Shot at the University of New Mexico in Albuquerque, New Mexico.
 </br>
 </br>
 
@@ -51,27 +76,3 @@ Extras -- James Rodriguez, Jacklyn Le, Taryn Bernicke, Josh Omandam, Matthew Atk
 * **Best Film**
 </br>
 </br>
-
-### Behind the scenes
-<div class="row g-2">
-  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-  	<img src="/img/stalld/behind_the_scenes4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-	<img src="/img/stalld/behind_the_scenes6.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  	<img src="/img/stalld/behind_the_scenes5.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  </div>
-  <div class="col-lg-6 mb-6 mb-lg-0">
-	<img src="/img/stalld/behind_the_scenes2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  	<img src="/img/stalld/behind_the_scenes3.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  	<img src="/img/stalld/behind_the_scenes1.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  </div>
-</div>
-<br><br>
-
-### Poster
-<img src="/img/stalld/poster.jpg" class="w-75 shadow-1-strong rounded mb-2" alt="poster">
-
-<br><br>
-
-## Movie
-
-**Coming Soon ...**

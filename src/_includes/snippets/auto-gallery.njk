@@ -1,25 +1,55 @@
-{# Auto-generated gallery from galleryImages frontmatter array #}
+{# Project media sections generated from frontmatter. #}
 {# Usage: {% include "snippets/auto-gallery.njk" %} #}
 
 {% if galleryImages and galleryImages.length > 0 %}
-<h3>Behind the Scenes</h3>
+<h3>{{ galleryHeading or "Behind the Scenes" }}</h3>
 {% include "snippets/masonry-gallery.njk" %}
 <br><br>
 {% endif %}
 
+{% if additionalGalleries and additionalGalleries.length > 0 %}
+  {% for gallery in additionalGalleries %}
+<h3>{{ gallery.heading }}</h3>
+    {% set galleryImages = gallery.images %}
+    {% include "snippets/masonry-gallery.njk" %}
+<br><br>
+  {% endfor %}
+{% endif %}
+
 {# Auto-render poster if present #}
 {% if poster %}
-<h3>Poster</h3>
-<img src="{{ poster | toWebp }}" class="w-75 shadow-1-strong rounded mb-2" alt="Poster" loading="lazy">
+<h3>{{ posterHeading or "Poster" }}</h3>
+<img src="{{ poster | toWebp }}" class="w-75 shadow-1-strong rounded mb-2" alt="{{ posterAlt or posterHeading or 'Poster' }}" loading="lazy" decoding="async">
 <br><br>
 {% endif %}
 
-{# Auto-render video embed if videoId is present #}
-{% if videoId %}
-<h2>Movie</h2>
-{% if videoType == "vimeo" %}
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class="embed-container"><iframe src="https://player.vimeo.com/video/{{ videoId }}" title="Vimeo video player" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
-{% else %}
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class="embed-container"><iframe src="https://www.youtube-nocookie.com/embed/{{ videoId }}?rel=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
+{# Auto-render one or more project videos. #}
+{% if projectVideos and projectVideos.length > 0 %}
+  {% for video in projectVideos %}
+<h2>{{ video.heading or movieHeading or "Movie" }}</h2>
+<div class="embed-container">
+    {% if video.type == "vimeo" %}
+  <iframe src="https://player.vimeo.com/video/{{ video.id }}" title="{{ video.title or video.heading or 'Vimeo video player' }}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+    {% else %}
+  <iframe src="https://www.youtube-nocookie.com/embed/{{ video.id }}?rel=0" title="{{ video.title or video.heading or 'YouTube video player' }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+    {% endif %}
+</div>
+<br><br>
+  {% endfor %}
+{% elif videoId %}
+{# Backward compatibility for any non-project content still using one videoId. #}
+<h2>{{ movieHeading or "Movie" }}</h2>
+<div class="embed-container">
+  {% if videoType == "vimeo" %}
+  <iframe src="https://player.vimeo.com/video/{{ videoId }}" title="{{ videoTitle or movieHeading or 'Vimeo video player' }}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+  {% else %}
+  <iframe src="https://www.youtube-nocookie.com/embed/{{ videoId }}?rel=0" title="{{ videoTitle or movieHeading or 'YouTube video player' }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+  {% endif %}
+</div>
+<br><br>
 {% endif %}
+
+{% if movieComingSoon %}
+<h2>{{ movieHeading or "Movie" }}</h2>
+<p><strong>{{ movieComingSoonText or "Coming soon ..." }}</strong></p>
 {% endif %}

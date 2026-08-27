@@ -2,10 +2,45 @@
   {% set podcastPath = "/es/podcasts/opera-en-la-selva/" if language == "es" else "/podcasts/opera-en-la-selva/" %}
   <nav class="site-navbar__nav w-100" aria-label="{{ i18n | t(language, 'nav.main') }}">
   <ul class="navbar-nav site-navbar__links mx-auto">
-    <li class="nav-item">
+    <li class="nav-item site-nav-group" data-site-subnav>
+      <div class="site-nav-group__heading">
         <a class="nav-link initialism white-text" href="{{ i18n | localizedUrl(language, 'about', '/about.html') }}">
           {{ i18n | t(language, "nav.about") }}
         </a>
+        <button
+          class="site-nav-group__toggle white-text"
+          type="button"
+          data-site-subnav-toggle
+          data-label-open="{{ i18n | t(language, 'nav.aboutOpen') }}"
+          data-label-close="{{ i18n | t(language, 'nav.aboutClose') }}"
+          aria-controls="aboutSubnav"
+          aria-expanded="false">
+          <span class="visually-hidden" data-site-subnav-label>{{ i18n | t(language, "nav.aboutOpen") }}</span>
+          <span class="site-nav-group__chevron" aria-hidden="true"></span>
+        </button>
+      </div>
+      <ul class="site-nav-group__menu" id="aboutSubnav">
+        <li>
+          <a class="nav-link initialism white-text" href="{{ i18n | localizedUrl(language, 'partners', '/partners.html') }}">
+            {{ i18n | t(language, "nav.partners") }}
+          </a>
+        </li>
+        <li>
+          <a class="nav-link initialism white-text" href="{{ podcastPath }}">
+            {{ i18n | t(language, "nav.podcasts") }}
+          </a>
+        </li>
+        <li>
+          <a class="nav-link initialism white-text" href="{{ i18n | localizedUrl(language, 'microcinema', '/microcinema.html') }}">
+            {{ i18n | t(language, "nav.microcinema") }}
+          </a>
+        </li>
+        <li>
+          <a class="nav-link initialism white-text" href="{{ i18n | localizedUrl(language, 'newsletter', '/newsletter.html') }}">
+            {{ i18n | t(language, "nav.newsletter") }}
+          </a>
+        </li>
+      </ul>
     </li>
     <li class="nav-item">
         <a class="nav-link initialism white-text" href="{{ i18n | localizedUrl(language, 'news', '/news.html') }}">
@@ -13,23 +48,8 @@
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link initialism white-text" href="{{ podcastPath }}">
-          {{ i18n | t(language, "nav.podcasts") }}
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link initialism white-text" href="{{ i18n | localizedUrl(language, 'partners', '/partners.html') }}">
-          {{ i18n | t(language, "nav.partners") }}
-        </a>
-    </li>
-    <li class="nav-item">
         <a class="nav-link initialism white-text" href="{{ i18n | localizedUrl(language, 'contact', '/contact.html') }}">
           {{ i18n | t(language, "nav.contact") }}
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link initialism white-text" href="{{ i18n | localizedUrl(language, 'microcinema', '/microcinema.html') }}">
-          {{ i18n | t(language, "nav.microcinema") }}
         </a>
     </li>
     <li class="nav-item">

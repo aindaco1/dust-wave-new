@@ -14,14 +14,44 @@ eleventyComputed:
 
 <div class="container">
   {% set posts = collections.posts | reverse %}
+  {% set projectsUrl = i18n | localizedUrl(language, 'projects', '/projects.html') %}
   <div class="row d-flex justify-content-center">
-    <div class="col-12 text-center py-vh-3">
-      <h1>{{title}}</h1>
+    <div class="site-page-heading col-12 text-center">
+      <h1 class="display-huge projects-heading">{{title}}</h1>
     </div>
     <div class="col-11 col-lg-10 col-xl-6">
+      <nav class="project-filters" aria-label="{{ i18n | t(language, 'pages.projects.filterLabel') }}" data-project-filters>
+        <a class="project-filter-link" href="{{ projectsUrl }}" data-project-filter="" aria-current="page">{{ i18n | t(language, 'pages.projects.all') }}</a>
+        {% for type in projectTaxonomy.types %}
+          {% set typeCount = posts | projectTypeCount(projectTaxonomy, type.slug) %}
+          {% if typeCount > 0 %}
+            <a
+              class="project-filter-link"
+              href="{{ projectsUrl }}?type={{ type.slug }}"
+              data-project-filter="{{ type.slug }}">{{ type.labels[language] or type.labels.en }}</a>
+          {% endif %}
+        {% endfor %}
+      </nav>
+      <span class="visually-hidden" data-project-filter-announcement aria-live="polite"></span>
+      <div
+        class="project-filter-status-row"
+        data-project-filter-status-row
+        data-type-prefix="{{ i18n | t(language, 'pages.projects.filterLabel') }}"
+        data-tag-prefix="{{ i18n | t(language, 'pages.projects.tagFilter') }}"
+        hidden>
+        <p class="project-filter-status mb-0">
+          <span data-project-filter-status></span>
+          <span aria-hidden="true"> · </span>
+          <a href="{{ projectsUrl }}" data-project-filter-clear>{{ i18n | t(language, 'pages.projects.clear') }}</a>
+        </p>
+      </div>
       <div class="row border-bottom">
         {% include "snippets/loop.njk" %}
       </div>
+      <p class="project-filter-empty text-center py-vh-3" data-project-filter-empty hidden>{{ i18n | t(language, 'pages.projects.empty') }}</p>
     </div>
   </div>
 </div>
+
+<script id="project-filter-labels" type="application/json">{{ projectTaxonomy | projectFilterLabels(language) | safeJsonLd | safe }}</script>
+<script src="/js/project-filter.js" defer></script>

@@ -3,13 +3,33 @@ title: Dive-In Movies
 date: 2024-08-29
 img: /img/stills/diveinstill.jpg
 summary: Film screenings at the Hotel Zazz pool
-gif: /img/gifs/divein.gif
 tags:
   - festival
+  - screening
   - event
   - released
+hoverVideoWebm: /img/project-videos/divein.webm
+hoverVideoMp4: /img/project-videos/divein.mp4
+hoverVideoPoster: /img/stills/diveinstill.jpg
+galleryHeading: "Behind the Scenes"
+galleryImages:
+  - src: /img/dive_in/bts1.jpg
+    alt: "bts 1"
+  - src: /img/dive_in/bts2.jpg
+    alt: "bts2"
+  - src: /img/dive_in/bts3.jpg
+    alt: "bts3"
+  - src: /img/dive_in/bts4.jpg
+    alt: "bts4"
+  - src: /img/dive_in/bts5.jpg
+    alt: "bts5"
+  - src: /img/dive_in/bts6.jpg
+    alt: "bts6"
+projectVideos:
+  - heading: "The Do's and Don't of Dive-In"
+    id: lvt_LvrI2ns
+    type: youtube
 ---
-
 
 [Dive-In Movies](https://diveinmovies.xyz) is simple — a pool adventure with a movie screening at the [Hotel Zazz](https://www.hotelzazz.com) pool! There’s a bar (courtesy of [Z Lounge](https://www.hotelzazz.com/zlounge)), popcorn and other goodies for sale. Mingling and swimming before the movie, swimming and chilling during. Doors open at 7:00pm, movie starts at sunset.
 
@@ -27,23 +47,3 @@ On August 29th, we hosted the Dive-In Movies Film Fiesta at the Hotel Zazz. New 
 - **Honorable Mention**: *Cast Out* by [Zach Graves](https://www.instagram.com/gravedangerz) & [Daniel Gallegos](https://www.instagram.com/thebeanwalrus)
 
 <br>
-
-## Behind the Scenes
-
-<div class="row g-2">
-  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-    <img src="/img/dive_in/bts1.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="bts 1">
-    <img src="/img/dive_in/bts2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="bts2">
-    <img src="/img/dive_in/bts3.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="bts3">
-  </div>
-  <div class="col-lg-6 mb-6 mb-lg-0">
-    <img src="/img/dive_in/bts4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="bts4">
-    <img src="/img/dive_in/bts5.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="bts5">
-    <img src="/img/dive_in/bts6.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="bts6">
-  </div>
-</div>
-<br><br>
-
-## The Do's and Don't of Dive-In
-
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/lvt_LvrI2ns" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>

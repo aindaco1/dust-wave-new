@@ -5,7 +5,7 @@
     {% include 'snippets/head.njk' %}
   </head>
   <body
-    class="{% if bodyModifier %}{{ bodyModifier }} {% endif %}{% if translationKey == 'home' or translationKey == 'projects' %}test{% elif translationKey == 'news' %}news{% elif translationKey == 'partners' %}partners{% endif %}"
+    class="site-shell {% if bodyModifier %}{{ bodyModifier }} {% endif %}{% if translationKey == 'home' or translationKey == 'projects' %}test{% elif translationKey == 'news' %}news{% elif translationKey == 'partners' %}partners{% endif %}"
     {% if translationKey == "home" or translationKey == "projects" %}id="glitch-target"{% endif %}>
     <a class="skip-link" href="#main-content">{{ i18n | t(language, "nav.skipToContent") }}</a>
     {% if translationKey == "home" or translationKey == "projects" %}
@@ -15,6 +15,22 @@
       <source src="/img/home/intro.mp4" type="video/mp4">
       <img src="/img/home/intro-small.gif" alt="">
     </video>
+    {% for project in collections.posts %}
+      {% if project.data.hoverVideoWebm or project.data.hoverVideoMp4 %}
+    <video class="project-hover-video project-hover-video-{{ project.data.title | slugify }}" autoplay muted loop playsinline preload="metadata"
+      {% if project.data.hoverVideoPoster %}poster="{{ project.data.hoverVideoPoster }}"{% endif %} tabindex="-1" aria-hidden="true">
+      {% if project.data.hoverVideoWebm %}<source src="{{ project.data.hoverVideoWebm }}" type="video/webm">{% endif %}
+      {% if project.data.hoverVideoMp4 %}<source src="{{ project.data.hoverVideoMp4 }}" type="video/mp4">{% endif %}
+    </video>
+        {% if project.data.hoverVideoWrap %}
+    <video class="project-hover-video project-hover-video-{{ project.data.title | slugify }} project-hover-video--wrap" autoplay muted loop playsinline preload="metadata"
+      {% if project.data.hoverVideoPoster %}poster="{{ project.data.hoverVideoPoster }}"{% endif %} tabindex="-1" aria-hidden="true">
+      {% if project.data.hoverVideoWebm %}<source src="{{ project.data.hoverVideoWebm }}" type="video/webm">{% endif %}
+      {% if project.data.hoverVideoMp4 %}<source src="{{ project.data.hoverVideoMp4 }}" type="video/mp4">{% endif %}
+    </video>
+        {% endif %}
+      {% endif %}
+    {% endfor %}
     <div class="test-background"></div>
     {% elif translationKey == "news" %}
     <div class="news-background"></div>
@@ -23,7 +39,7 @@
     {% endif %}
     {% include 'snippets/sticky.njk' %}
     {% include "snippets/navbar1.njk" %}
-      <main id="main-content" tabindex="-1">
+      <main id="main-content" class="site-main site-main--page{% if isHomepage %} site-main--home{% endif %}" tabindex="-1">
         {{ content | safe }}
       </main>
     {% include "snippets/" + footer + ".njk" %}

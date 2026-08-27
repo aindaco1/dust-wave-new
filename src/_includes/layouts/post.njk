@@ -6,10 +6,10 @@ permalink: "subdir/{{ title | slugify }}/index.html"
   <head>
     {% include 'snippets/head.njk' %}
   </head>
-  <body {% if (bodyModifier) %} class="{{ bodyModifier }}" {% endif %}>
+  <body class="site-shell{% if bodyModifier %} {{ bodyModifier }}{% endif %}">
     <a class="skip-link" href="#main-content">{{ i18n | t(language, "nav.skipToContent") }}</a>
     {% include "snippets/navbar1.njk" %}
-    <main id="main-content" class="container py-vh-3">
+    <main id="main-content" class="site-main site-main--entry container" tabindex="-1">
       {# h-entry microformats wrapper for Fediverse/IndieWeb compatibility #}
       <article class="h-entry">
         <div class="row d-flex justify-content-center text-center">
@@ -20,12 +20,23 @@ permalink: "subdir/{{ title | slugify }}/index.html"
             <a class="u-url visually-hidden" href="{{ metadata.url }}{{ page.url }}">{{ i18n | t(language, "content.permalink") }}</a>
             {# Plain text content for Bluesky (avoids HTML rendering issues) #}
             {% if syndicate and "fediverse" in syndicate %}<span class="p-bridgy-bluesky-content visually-hidden">{{ summary }}</span>{% endif %}
-            <p class="lead pt-2 py-vh-2 p-summary {% if img %}{% else %}border-bottom{% endif %}">{{summary}}{% if syndicate and "fediverse" in syndicate %} <a href="https://fed.brid.gy/r/{{ metadata.url }}{{ page.url }}" title="Federated to the Fediverse" class="text-decoration-none" target="_blank">📡</a>{% endif %}</p>
+            <p class="lead pt-2 py-vh-2 p-summary {% if img or heroVideoWebm or heroVideoMp4 %}{% else %}border-bottom{% endif %}">{{summary}}{% if syndicate and "fediverse" in syndicate %} <a href="https://fed.brid.gy/r/{{ metadata.url }}{{ page.url }}" title="Federated to the Fediverse" class="text-decoration-none" target="_blank">📡</a>{% endif %}</p>
+            {% include "snippets/project-metadata.njk" %}
           </div>
-          {% if img %}
+          {% if heroVideoWebm or heroVideoMp4 %}
             <div class="row">
               <div class="col-12">
-                <img src="{{img | toWebp}}" class="img-fluid dropshadow u-photo" alt="{{imgAlt}}">
+                <video class="project-hero-video dropshadow" autoplay muted loop playsinline controls preload="metadata"{% if heroVideoPoster %} poster="{{ heroVideoPoster }}"{% endif %}{% if heroVideoLabel %} aria-label="{{ heroVideoLabel }}"{% endif %}>
+                  {% if heroVideoWebm %}<source src="{{ heroVideoWebm }}" type="video/webm">{% endif %}
+                  {% if heroVideoMp4 %}<source src="{{ heroVideoMp4 }}" type="video/mp4">{% endif %}
+                  {% if img %}<img src="{{ img | toWebp }}" alt="{{ imgAlt }}">{% endif %}
+                </video>
+              </div>
+            </div>
+          {% elif img %}
+            <div class="row">
+              <div class="col-12">
+                <img src="{{img | toWebp}}" class="img-fluid dropshadow u-photo{% if imgDisplay == 'compact' %} project-hero-image--compact{% endif %}" alt="{{imgAlt}}">
               </div>
             </div>
           {% endif %}

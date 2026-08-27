@@ -1,6 +1,6 @@
 name = "dustwave-newsletter"
 main = "src/index.js"
-compatibility_date = "2024-01-01"
+compatibility_date = "2026-08-27"
 
 [vars]
 RESEND_AUDIENCE_ID = "mailchimp"

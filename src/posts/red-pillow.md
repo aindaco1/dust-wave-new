@@ -3,11 +3,31 @@ title: Red Pillow
 date: 2022-10-29
 img: /img/stills/redpillowstill.png
 summary: Horror commercial parody
-gif: /img/gifs/redpillow.gif
 tags:
   - horror
   - satire
+  - commercial-satire
+  - challenge
   - released
+hoverVideoWebm: /img/project-videos/redpillow.webm
+hoverVideoMp4: /img/project-videos/redpillow.mp4
+hoverVideoPoster: /img/stills/redpillowstill.png
+galleryHeading: "Behind the scenes"
+galleryImages:
+  - src: /img/red_pillow/behind_3.png
+    alt: "Behind the Scenes"
+  - src: /img/red_pillow/behind_1.jpg
+    alt: "Behind the Scenes"
+  - src: /img/red_pillow/behind_4.jpg
+    alt: "Behind the Scenes"
+  - src: /img/red_pillow/behind_2.jpg
+    alt: "Behind the Scenes"
+  - src: /img/red_pillow/poster.png
+    alt: "Poster"
+projectVideos:
+  - heading: "Movie"
+    id: 3l1Q3u9gli4
+    type: youtube
 ---
 
 _Red Pillow_ is a horror commercial parody created for submission to the [2022 All Hallows' Eve Halloween Short Film Festival](https://www.youtube.com/watch?v=o87H-Lnoy4U). Shot over two evenings in Albuquerque, New Mexico.
@@ -57,22 +77,3 @@ George's child - Jo Indacochea
 * 10th Place
 </br>
 </br>
-
-### Behind the scenes
-
-<div class="row g-2">
-  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-    <img src="/img/red_pillow/behind_3.png" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/red_pillow/behind_1.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/red_pillow/behind_4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-  </div>
-  <div class="col-lg-6 mb-6 mb-lg-0">
-    <img src="/img/red_pillow/behind_2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="Behind the Scenes">
-    <img src="/img/red_pillow/poster.png" class="w-100 shadow-1-strong rounded mb-2" alt="Poster">
-  </div>
-</div>
-<br><br>
-
-## Movie
-
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/3l1Q3u9gli4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>

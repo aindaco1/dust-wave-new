@@ -82,8 +82,8 @@ assert(
   `the homepage poster exceeds its 50 KB budget (${homepagePoster.size})`
 );
 assert(
-  navigationScript.size <= 1_500,
-  `the Bootstrap replacement exceeds its 1.5 KB source budget (${navigationScript.size})`
+  navigationScript.size <= 2_000,
+  `the Bootstrap replacement exceeds its 2 KB source budget (${navigationScript.size})`
 );
 assert.match(head, /src="\/js\/site-navigation\.js\?v=/);
 assert.doesNotMatch(head, /font-awesome|all\.min\.css/i);

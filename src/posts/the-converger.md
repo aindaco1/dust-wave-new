@@ -3,13 +3,40 @@ title: The Converger
 date: 2023-10-28
 img: /img/stills/theconvergerstill.jpg
 summary: Parallel universe sci-fi short
-gif: /img/gifs/converger.gif
 tags:
   - sci-fi
+  - noir
+  - challenge
+  - 48-hour-film-project
   - released
+hoverVideoWebm: /img/project-videos/converger.webm
+hoverVideoMp4: /img/project-videos/converger.mp4
+hoverVideoPoster: /img/stills/theconvergerstill.jpg
+galleryHeading: "Behind the scenes"
+galleryImages:
+  - src: /img/the_converger/behind_the_scenes8.jpg
+    alt: "behind the scenes"
+  - src: /img/the_converger/behind_the_scenes6.jpg
+    alt: "behind the scenes"
+  - src: /img/the_converger/behind_the_scenes1.png
+    alt: "behind the scenes"
+  - src: /img/the_converger/behind_the_scenes4.jpg
+    alt: "behind the scenes"
+  - src: /img/the_converger/behind_the_scenes2.jpg
+    alt: "behind the scenes"
+  - src: /img/the_converger/behind_the_scenes3.jpg
+    alt: "behind the scenes"
+  - src: /img/the_converger/behind_the_scenes5.jpg
+    alt: "behind the scenes"
+  - src: /img/the_converger/behind_the_scenes7.jpg
+    alt: "behind the scenes"
+projectVideos:
+  - heading: "Trailer"
+    id: Drc3I2FFqo8
+    type: youtube
 ---
 
-_The Converger_ is a parallel universe sci-fi noir short created for submission to the [2023 Albuquerque Horror/Sci-Fi 48 Hour Film Project](https://www.48hourfilm.com/albuquerque/scifi_horror) contest. Shot at the Blue Sky Landscape warehouse in Albuquerque, New Mexico.
+_The Converger_ is a parallel universe sci-fi noir short created for the [2023 Albuquerque Horror/Sci-Fi 48 Hour Film Project](https://www.48hourfilm.com/albuquerque/scifi_horror). Shot at the Blue Sky Landscape warehouse in Albuquerque, New Mexico.
 </br>
 </br>
 
@@ -78,25 +105,3 @@ Gee's Doppelgänger -- Gary Shaw
 * **Best Film**
 </br>
 </br>
-
-### Behind the scenes
-
-<div class="row g-2">
-  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
-  	<img src="/img/the_converger/behind_the_scenes8.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-	<img src="/img/the_converger/behind_the_scenes6.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  	<img src="/img/the_converger/behind_the_scenes1.png" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  </div>
-  <div class="col-lg-6 mb-6 mb-lg-0">
-	<img src="/img/the_converger/behind_the_scenes4.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-	<img src="/img/the_converger/behind_the_scenes2.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  	<img src="/img/the_converger/behind_the_scenes3.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  	<img src="/img/the_converger/behind_the_scenes5.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-	<img src="/img/the_converger/behind_the_scenes7.jpg" class="w-100 shadow-1-strong rounded mb-2" alt="behind the scenes">
-  </div>
-</div>
-<br><br>
-
-## Trailer
-
-<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe width="100%" height="400vh" src="https://www.youtube.com/embed/Drc3I2FFqo8?si=mM7qC9uBR8qGpqWL" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
