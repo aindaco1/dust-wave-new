@@ -5,13 +5,13 @@
 {% set pageDescription = description or summary or metadata.description %}
 {% set pageUrl = metadata.url + page.url %}
 
-{# Determine OG image with fallback chain: og_image → img → default #}
-{% if og_image %}
-  {% set ogImage = metadata.url + og_image %}
-{% elif img %}
-  {% set ogImage = metadata.url + (img | toWebp) %}
+{# A project hero GIF is its canonical preview; otherwise use og_image → img → default. #}
+{% set isProjectPage = isProject or (tags and 'posts' in tags) %}
+{% set socialImagePath = og_image | socialPreviewImage(img, isProjectPage) %}
+{% if socialImagePath == img %}
+  {% set ogImage = metadata.url + (socialImagePath | toWebp) %}
 {% else %}
-  {% set ogImage = metadata.url + "/img/og/default.png" %}
+  {% set ogImage = metadata.url + socialImagePath %}
 {% endif %}
 
 {% set ogAlt = og_alt or imgAlt or pageTitle %}

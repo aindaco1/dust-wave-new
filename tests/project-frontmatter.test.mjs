@@ -3,6 +3,9 @@ import { access, readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
 import matter from "gray-matter";
+import socialPreviewImageModule from "../lib/social-preview-image.cjs";
+
+const { socialPreviewImage } = socialPreviewImageModule;
 
 const root = path.resolve(import.meta.dirname, "..");
 const sourceRoot = path.join(root, "src");
@@ -69,6 +72,31 @@ test("legacy GIF hover fields do not return", () => {
   for (const project of allProjects) {
     assert.equal(project.data.gif, undefined, `${label(project)} still uses the legacy gif field`);
   }
+});
+
+test("project hero GIFs are the canonical social and structured-data preview", async () => {
+  const gifProjects = allProjects.filter((project) => /\.gif$/iu.test(project.data.img || ""));
+  assert(gifProjects.length > 0, "expected at least one project with a GIF hero");
+
+  for (const project of gifProjects) {
+    assert.equal(
+      socialPreviewImage(project.data.og_image, project.data.img, true),
+      project.data.img,
+      `${label(project)}: its GIF hero must take precedence over og_image`
+    );
+    await assertLocalAsset(project, project.data.img, "img");
+  }
+});
+
+test("explicit preview overrides remain authoritative without a project GIF hero", () => {
+  assert.equal(
+    socialPreviewImage("/img/og/custom.jpg", "/img/stills/project.jpg", true),
+    "/img/og/custom.jpg"
+  );
+  assert.equal(
+    socialPreviewImage("/img/og/custom.jpg", "/img/news/animated.gif", false),
+    "/img/og/custom.jpg"
+  );
 });
 
 test("hover video definitions are complete and point to real assets", async () => {

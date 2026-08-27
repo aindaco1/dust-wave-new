@@ -1,5 +1,6 @@
 const { DateTime } = require("luxon");
 const { safeJsonLd } = require("./lib/safe-json-ld.cjs");
+const { socialPreviewImage } = require("./lib/social-preview-image.cjs");
 const navigationPlugin = require('@11ty/eleventy-navigation');
 const rssPlugin = require('@11ty/eleventy-plugin-rss');
 const { EleventyHtmlBasePlugin } = require("@11ty/eleventy");
@@ -306,6 +307,7 @@ ${content}
   // /img/digest/header/file.jpg -> /img/webp/digest/header/file.webp
   // /img/somefile.jpg -> /img/webp/somefile.webp
   eleventyConfig.addFilter("toWebp", resolveImagePath);
+  eleventyConfig.addFilter("socialPreviewImage", socialPreviewImage);
   eleventyConfig.addPassthroughCopy("src/fonts");
   // Members collection for about page
   eleventyConfig.addCollection("members", collectionAPI => {

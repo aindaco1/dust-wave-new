@@ -270,7 +270,10 @@ og_alt: "Description of the image"   # Alt text for OG image
 share_text: "Custom share text"      # Override default share text
 ```
 
-Every page automatically generates Open Graph and Twitter Card meta tags, plus JSON-LD structured data for SEO.
+Every page automatically generates Open Graph and Twitter Card meta tags, plus
+JSON-LD structured data for SEO. On project pages whose featured `img` is a
+GIF, that hero GIF is the canonical preview image across all three outputs;
+otherwise `og_image` remains the explicit override.
 
 ### RSS Feeds
 
