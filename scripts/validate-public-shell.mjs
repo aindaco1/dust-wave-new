@@ -11,7 +11,8 @@ const [
   navbarContent,
   sticky,
   adminLayout,
-  memberLayout
+  memberLayout,
+  socialLanding
 ] = await Promise.all([
   readFile(new URL("../src/_includes/snippets/footer1.njk", import.meta.url), "utf8"),
   readFile(new URL("../src/_includes/snippets/site-footer.njk", import.meta.url), "utf8"),
@@ -22,13 +23,16 @@ const [
   readFile(new URL("../src/_includes/snippets/navbar-content.njk", import.meta.url), "utf8"),
   readFile(new URL("../src/_includes/snippets/sticky.njk", import.meta.url), "utf8"),
   readFile(new URL("../src/_includes/layouts/podcast-admin.njk", import.meta.url), "utf8"),
-  readFile(new URL("../src/_includes/layouts/podcast-member.njk", import.meta.url), "utf8")
+  readFile(new URL("../src/_includes/layouts/podcast-member.njk", import.meta.url), "utf8"),
+  readFile(new URL("../src/social.njk", import.meta.url), "utf8")
 ]);
 
 assert.match(footer, /snippets\/site-footer\.njk/);
 assert.match(siteFooter, /from "snippets\/social-icon\.njk" import socialIcon/);
-assert.match(siteFooter, /href="\/social\/privacy"/);
-assert.match(siteFooter, /href="\/social\/terms"/);
+assert.doesNotMatch(siteFooter, /href="\/social\/(?:privacy|terms)"/);
+assert.match(socialLanding, /permalink: \/social\/index\.html/);
+assert.match(socialLanding, /href="\/social\/privacy"/);
+assert.match(socialLanding, /href="\/social\/terms"/);
 assert.doesNotMatch(siteFooter, /fa-brands|font-awesome/i);
 assert.equal(
   (siteFooter.match(/class="site-footer__item/g) || []).length,
