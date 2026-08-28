@@ -1246,8 +1246,18 @@ li p { margin-bottom: 0; }
   min-width: 0;
 }
 .site-footer__copyright {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: .3rem;
   justify-content: flex-start;
   text-align: left;
+}
+.site-footer__legal {
+  display: inline-flex;
+  font-size: .72em;
+  gap: .3rem;
+  letter-spacing: .04em;
+  white-space: nowrap;
 }
 .site-footer__language {
   justify-content: flex-end;
@@ -2111,17 +2121,21 @@ a:has(button) { text-decoration: none; }
   margin: -.25rem 0 .75rem 2.1rem;
   max-width: 48rem;
 }
-.slac-terms__content {
+.slac-terms__content,
+.legal-page__content {
   margin-top: 3rem;
 }
-.slac-terms__content h2 {
+.slac-terms__content h2,
+.legal-page__content h2 {
   margin-top: 3rem;
   width: 100%;
 }
-.slac-terms__content h3 {
+.slac-terms__content h3,
+.legal-page__content h3 {
   margin-top: 2rem;
 }
-.slac-terms__content li {
+.slac-terms__content li,
+.legal-page__content li {
   margin-bottom: .7rem;
 }
 

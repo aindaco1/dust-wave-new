@@ -27,6 +27,8 @@ const [
 
 assert.match(footer, /snippets\/site-footer\.njk/);
 assert.match(siteFooter, /from "snippets\/social-icon\.njk" import socialIcon/);
+assert.match(siteFooter, /href="\/social\/privacy"/);
+assert.match(siteFooter, /href="\/social\/terms"/);
 assert.doesNotMatch(siteFooter, /fa-brands|font-awesome/i);
 assert.equal(
   (siteFooter.match(/class="site-footer__item/g) || []).length,
