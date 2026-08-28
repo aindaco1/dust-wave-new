@@ -1833,8 +1833,27 @@ li p { margin-bottom: 0; }
 
 .close-btn {
   position: absolute; top: 5px; right: 10px;
-  font-size: 24px; font-weight: bold;
-  background: transparent; border: none; outline: none; cursor: pointer;
+  display: grid;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  place-items: center;
+  color: #000;
+  -webkit-text-fill-color: #000;
+  font-family: inherit;
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.close-btn:focus-visible {
+  outline: 2px solid #000;
+  outline-offset: 2px;
 }
 
 #mc_embed_signup { max-width: 600px; clear: left; font-size: smaller; }
@@ -2786,4 +2805,51 @@ article h2 { width: 60%; }
   position: relative;
   text-align: left;
   margin: 20px;
+}
+
+@media (max-width: 480px) {
+  #popup .popup-content {
+    padding: 0.625rem;
+  }
+
+  #popup #newsletter_signup form {
+    margin: 0.5rem;
+  }
+
+  #popup #newsletter_signup .gambado {
+    margin: 0 2.75rem 0.625rem 0;
+    font-size: clamp(1.125rem, 5vw, 1.35rem);
+    line-height: 1.1;
+  }
+
+  #popup #newsletter_signup .mc-field-group {
+    gap: 0.25rem;
+    margin: 0 0 0.625rem;
+    padding-top: 0;
+  }
+
+  #popup #newsletter_signup .mc-field-group label {
+    font-size: 0.9rem;
+    line-height: 1.2;
+  }
+
+  #popup #newsletter_signup .mc-field-group input[type="email"] {
+    min-height: 2.75rem;
+    padding: 0.5rem 0.625rem;
+    font-size: 1rem;
+  }
+
+  #popup #newsletter_signup .button {
+    min-height: 2.75rem;
+    margin-top: 0;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    line-height: 1.25;
+  }
+
+  #popup .close-btn {
+    top: 0.25rem;
+    right: 0.25rem;
+    font-size: 1.35rem;
+  }
 }
