@@ -12,7 +12,11 @@ const [
   sticky,
   adminLayout,
   memberLayout,
-  socialLanding
+  socialLanding,
+  socialPrivacy,
+  socialTerms,
+  socialPageRenderer,
+  i18nConfigRaw
 ] = await Promise.all([
   readFile(new URL("../src/_includes/snippets/footer1.njk", import.meta.url), "utf8"),
   readFile(new URL("../src/_includes/snippets/site-footer.njk", import.meta.url), "utf8"),
@@ -24,15 +28,35 @@ const [
   readFile(new URL("../src/_includes/snippets/sticky.njk", import.meta.url), "utf8"),
   readFile(new URL("../src/_includes/layouts/podcast-admin.njk", import.meta.url), "utf8"),
   readFile(new URL("../src/_includes/layouts/podcast-member.njk", import.meta.url), "utf8"),
-  readFile(new URL("../src/social.njk", import.meta.url), "utf8")
+  readFile(new URL("../src/social.njk", import.meta.url), "utf8"),
+  readFile(new URL("../src/social-privacy.njk", import.meta.url), "utf8"),
+  readFile(new URL("../src/social-terms.njk", import.meta.url), "utf8"),
+  readFile(new URL("../src/_includes/snippets/social-page.njk", import.meta.url), "utf8"),
+  readFile(new URL("../src/_data/i18n/config.json", import.meta.url), "utf8")
 ]);
+const { default: socialPages } = await import("../src/_data/socialPages.js");
+const i18nConfig = JSON.parse(i18nConfigRaw);
 
 assert.match(footer, /snippets\/site-footer\.njk/);
 assert.match(siteFooter, /from "snippets\/social-icon\.njk" import socialIcon/);
 assert.doesNotMatch(siteFooter, /href="\/social\/(?:privacy|terms)"/);
-assert.match(socialLanding, /permalink: \/social\/index\.html/);
-assert.match(socialLanding, /href="\/social\/privacy"/);
-assert.match(socialLanding, /href="\/social\/terms"/);
+for (const [template, key] of [
+  [socialLanding, "socialHome"],
+  [socialPrivacy, "socialPrivacy"],
+  [socialTerms, "socialTerms"]
+]) {
+  assert.match(template, new RegExp(`translationKey: ${key}`));
+  assert.match(template, /data: i18n\.config\.supportedLangs/);
+  assert.match(template, /snippets\/social-page\.njk/);
+}
+assert.deepEqual(i18nConfig.pages.socialHome, { en: "/social/", es: "/es/social/" });
+assert.deepEqual(i18nConfig.pages.socialPrivacy, { en: "/social/privacy/", es: "/es/social/privacy/" });
+assert.deepEqual(i18nConfig.pages.socialTerms, { en: "/social/terms/", es: "/es/social/terms/" });
+assert.match(socialPages.home.en.content, /href="\/social\/privacy\/"/);
+assert.match(socialPages.home.en.content, /href="\/social\/terms\/"/);
+assert.match(socialPages.home.es.content, /href="\/es\/social\/privacy\/"/);
+assert.match(socialPages.home.es.content, /href="\/es\/social\/terms\/"/);
+assert.match(socialPageRenderer, /socialPage\.content \| safe/);
 assert.doesNotMatch(siteFooter, /fa-brands|font-awesome/i);
 assert.equal(
   (siteFooter.match(/class="site-footer__item/g) || []).length,

@@ -57,6 +57,18 @@
       "en": "/slac-terms.html",
       "es": "/es/slac-terms.html"
     },
+    "socialHome": {
+      "en": "/social/",
+      "es": "/es/social/"
+    },
+    "socialPrivacy": {
+      "en": "/social/privacy/",
+      "es": "/es/social/privacy/"
+    },
+    "socialTerms": {
+      "en": "/social/terms/",
+      "es": "/es/social/terms/"
+    },
     "survey": {
       "en": "/survey.html",
       "es": "/es/survey.html"

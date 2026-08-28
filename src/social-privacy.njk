@@ -3,67 +3,16 @@ layout: layouts/default.njk
 navbar: navbar1
 footer: footer1
 colorModifier: dark
-title: Dust Wave Social Privacy Policy
-description: How Dust Wave Social handles connected-account data, content, credentials, analytics, and temporary media.
-permalink: /social/privacy/index.html
+translationKey: socialPrivacy
 eleventyExcludeFromCollections: true
+pagination:
+  data: i18n.config.supportedLangs
+  size: 1
+  alias: language
+permalink: "{{ i18n.config.pages.socialPrivacy[language] }}"
+eleventyComputed:
+  title: "{{ socialPages.privacy[language].title }}"
+  description: "{{ socialPages.privacy[language].description }}"
 ---
-<div class="container">
-  <div class="row d-flex justify-content-center">
-    <article class="col-11 col-lg-10 col-xl-8 py-vh-3">
-      <h1 class="text-center">Dust Wave Social Privacy Policy</h1>
-      <div class="legal-page__content">
-        <p><strong>Effective date:</strong> August 28, 2026</p>
-
-        <p>Dust Wave Social is a local-first macOS application for connecting social accounts, preparing and scheduling content, publishing content at the user's direction, and reviewing account and post analytics. This policy explains what information Dust Wave Social handles and when information leaves the user's Mac.</p>
-
-        <h2>Who operates Dust Wave Social</h2>
-        <p>Dust Wave operates Dust Wave Social. Privacy questions and data requests may be submitted through the <a href="/contact.html">Dust Wave contact page</a>.</p>
-
-        <h2>Information Dust Wave Social handles</h2>
-        <ul>
-          <li><strong>Connected-account information:</strong> provider account identifiers, display names, usernames, profile images, granted permissions, connection status, and provider-specific account metadata.</li>
-          <li><strong>Authentication information:</strong> OAuth access and refresh tokens, API credentials, and opaque broker connection credentials needed to connect to services selected by the user.</li>
-          <li><strong>Content and media:</strong> drafts, captions, publishing destinations, schedules, uploaded media, and provider responses associated with content the user prepares or publishes.</li>
-          <li><strong>Analytics:</strong> audience, post, video, engagement, and account metrics retrieved from connected providers at the user's request.</li>
-          <li><strong>Local operational data:</strong> settings, service configuration, job status, redacted logs, backup metadata, and error details needed to operate and troubleshoot the app.</li>
-          <li><strong>Search requests:</strong> keywords sent to media providers when the user searches services such as Unsplash or Klipy.</li>
-        </ul>
-
-        <h2>How information is used</h2>
-        <p>Dust Wave Social uses information only to provide user-requested features: connecting accounts, importing account data, searching media, preparing and scheduling content, publishing or assisting with publishing, displaying analytics, maintaining connections, creating local backups, and diagnosing failures.</p>
-
-        <h2>Where information is stored</h2>
-        <ul>
-          <li>App state, drafts, schedules, imported analytics, and redacted operational records are stored locally in the app's SQLite database and app-data directory.</li>
-          <li>Provider credentials and account tokens used directly by the desktop app are stored in the macOS Keychain, not in the local database or local backups.</li>
-          <li>TikTok OAuth access and refresh tokens are encrypted and stored by Dust Wave's Cloudflare-hosted TikTok broker. The desktop app stores only an opaque broker connection credential in the macOS Keychain. Broker connection credentials are stored by the broker only as one-way hashes.</li>
-          <li>When a provider requires a public media URL, selected media may be uploaded to Dust Wave's Cloudflare-hosted media staging service. Staged objects use hard-to-guess URLs and are temporary: the default lifetime is 24 hours and the maximum requested lifetime is seven days.</li>
-        </ul>
-
-        <h2>When information is shared</h2>
-        <p>Dust Wave Social sends information to a third-party service only when needed for a feature the user chooses. Depending on the configured integrations, those services may include Apple, Cloudflare, Meta/Facebook, Instagram, X, TikTok, Mastodon servers, Unsplash, and Klipy. Each service processes information under its own terms and privacy policy.</p>
-        <p>Dust Wave does not sell personal information, use connected-account data for advertising, or include hidden behavioral telemetry in Dust Wave Social.</p>
-
-        <h2>Data retention and deletion</h2>
-        <p>Local app data remains on the user's Mac until the user deletes it, removes an account, restores or resets the app, or removes the application data. Keychain credentials remain until removed by the app, the user, or macOS. Temporary staged media expires automatically under the limits described above.</p>
-        <p>Users can disconnect accounts in Dust Wave Social and can also revoke access through the connected provider. For deletion of TikTok broker data or other information held by Dust Wave-hosted services, submit a request through the <a href="/contact.html">Dust Wave contact page</a> and identify the provider account concerned without sending passwords, access tokens, or API keys.</p>
-
-        <h2>Security</h2>
-        <p>Dust Wave Social minimizes remote storage, keeps desktop credentials in the macOS Keychain, encrypts TikTok tokens held by the broker, hashes broker connection credentials, and redacts secrets from logs and support exports. No method of storage or transmission is completely secure, and users should revoke provider access if they believe a connection has been compromised.</p>
-
-        <h2>User choices and rights</h2>
-        <p>Users choose which providers to connect and which permissions to grant. Provider access can be revoked at any time. Depending on applicable law, users may also request access to, correction of, or deletion of personal information held by Dust Wave-hosted services through the <a href="/contact.html">Dust Wave contact page</a>.</p>
-
-        <h2>Children</h2>
-        <p>Dust Wave Social is not directed to children under 13, and Dust Wave does not knowingly collect personal information from children through the app.</p>
-
-        <h2>International processing</h2>
-        <p>Connected providers and infrastructure services may process information in countries other than the user's own. Their processing is governed by their respective policies and applicable law.</p>
-
-        <h2>Changes to this policy</h2>
-        <p>Dust Wave may update this policy when Dust Wave Social's features, providers, or data practices change. The effective date above will be updated when material changes are published.</p>
-      </div>
-    </article>
-  </div>
-</div>
+{% set socialPage = socialPages.privacy[language] %}
+{% include "snippets/social-page.njk" %}
