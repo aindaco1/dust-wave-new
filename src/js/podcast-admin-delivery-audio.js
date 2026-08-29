@@ -7,6 +7,10 @@ import {
   formatBytes,
   formatInteger
 } from "./podcast-admin-formatters.js";
+import {
+  appendDefinition,
+  createEmptyAdminMessage
+} from "./podcast-admin-dom.js";
 
 const WORKFLOW_NAME = "process-delivery-audio.yml";
 const ACTIVE_STATUSES = new Set(
@@ -203,7 +207,7 @@ export function mountDeliveryAudio({
     results.replaceChildren(
       ...(jobs.length
         ? jobs.map(renderJob)
-        : [emptyMessage(text("deliveryAudioNone"))])
+        : [createEmptyAdminMessage(text("deliveryAudioNone"))])
     );
     window.DWDigestAudio?.mount(results);
   }
@@ -405,18 +409,7 @@ export function mountDeliveryAudio({
 }
 
 function appendEvidenceRow(root, label, value) {
-  const term = document.createElement("dt");
-  term.textContent = label;
-  const description = document.createElement("dd");
-  description.textContent = value || "—";
-  root.append(term, description);
-}
-
-function emptyMessage(value) {
-  const message = document.createElement("p");
-  message.className = "podcast-admin__empty";
-  message.textContent = value;
-  return message;
+  appendDefinition(root, label, value || "—");
 }
 
 function cardStatus(status) {

@@ -6,6 +6,7 @@ import {
   formatBytes,
   formatInteger
 } from "./podcast-admin-formatters.js";
+import { createEmptyAdminMessage } from "./podcast-admin-dom.js";
 
 const WORKFLOW_NAME = "process-youtube-audio-rendition.yml";
 const ACTIVE_RENDITION_STATUSES = new Set([
@@ -199,7 +200,7 @@ export function mountYouTubeAudioRenditions({
     results.replaceChildren(
       ...(rows.length
         ? rows.map(renderRendition)
-        : [emptyMessage(text("youtubeAudioNone"))])
+        : [createEmptyAdminMessage(text("youtubeAudioNone"))])
     );
   }
 
@@ -263,14 +264,6 @@ export function mountYouTubeAudioRenditions({
     }
   };
 }
-
-function emptyMessage(value) {
-  const message = document.createElement("p");
-  message.className = "podcast-admin__empty";
-  message.textContent = value;
-  return message;
-}
-
 
 function humanize(value) {
   return String(value || "").replaceAll("_", " ");

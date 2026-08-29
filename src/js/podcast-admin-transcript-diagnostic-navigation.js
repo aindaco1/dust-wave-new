@@ -4,6 +4,8 @@ import {
   summarizeTranscriptReview,
   transcriptReviewDiagnosticItems
 } from "./podcast-admin-transcript-review.js";
+import { formatLocalizedNumber as localizedNumber } from
+  "./podcast-admin-formatters.js";
 
 const navigationStateProperty = "__podcastTranscriptDiagnosticState";
 
@@ -167,10 +169,4 @@ function textSpan(className, value) {
   span.className = className;
   span.textContent = value;
   return span;
-}
-
-function localizedNumber(value) {
-  return new Intl.NumberFormat(
-    globalThis.document?.documentElement?.lang || "en"
-  ).format(Number(value || 0));
 }

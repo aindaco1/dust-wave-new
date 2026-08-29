@@ -1,6 +1,8 @@
 import {
   transcriptCuePlainText
 } from "./podcast-admin-transcript-review.js";
+import { formatLocalizedNumber as localizedNumber } from
+  "./podcast-admin-formatters.js";
 
 export const TRANSCRIPT_SEARCH_LIMITS = Object.freeze({
   maximumQueryCharacters: 160,
@@ -204,12 +206,6 @@ function searchErrorKey(code) {
 function report(status, message, error = false) {
   status.textContent = message;
   status.classList.toggle("is-error", error);
-}
-
-function localizedNumber(value) {
-  return new Intl.NumberFormat(
-    globalThis.document?.documentElement?.lang || "en"
-  ).format(Number(value || 0));
 }
 
 function emptyController() {

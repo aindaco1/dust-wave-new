@@ -5,6 +5,10 @@ import {
 import {
   responsiveTurnstileSize
 } from "./dust-wave-admin-shell/turnstile.js?v=0.10.2";
+import {
+  loadPodcastTurnstile,
+  resetPodcastTurnstile
+} from "./podcast-turnstile.js";
 
 const translate = globalThis.DustWaveI18n?.t || ((key) => key);
 const pageLanguage = globalThis.DustWaveI18n?.language === "es"
@@ -317,7 +321,7 @@ function startPodcastCheckout(rootElement) {
   async function initializeTurnstile() {
     turnstileContainer.hidden = false;
     try {
-      await loadTurnstile();
+      await loadPodcastTurnstile();
       if (turnstileWidgetId !== undefined) return;
       turnstileWidgetId = globalThis.turnstile.render(
         "#podcast-checkout-turnstile",
@@ -359,9 +363,7 @@ function startPodcastCheckout(rootElement) {
 
   function resetTurnstile() {
     turnstileToken = "";
-    if (turnstileWidgetId !== undefined) {
-      globalThis.turnstile?.reset?.(turnstileWidgetId);
-    }
+    resetPodcastTurnstile(turnstileWidgetId);
   }
 
   function showCanceledCheckoutStatus() {
@@ -370,27 +372,6 @@ function startPodcastCheckout(rootElement) {
       unavailable.textContent = translate("checkout.canceled");
     }
   }
-}
-
-let turnstileLoader;
-
-function loadTurnstile() {
-  if (globalThis.turnstile) return Promise.resolve();
-  if (turnstileLoader) return turnstileLoader;
-  turnstileLoader = new Promise((resolve, reject) => {
-    const script = document.createElement("script");
-    script.src =
-      "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
-    script.async = true;
-    script.defer = true;
-    script.addEventListener("load", () => {
-      if (globalThis.turnstile) resolve();
-      else reject(new Error("turnstile_unavailable"));
-    }, { once: true });
-    script.addEventListener("error", reject, { once: true });
-    document.head.append(script);
-  });
-  return turnstileLoader;
 }
 
 function populateCountries(select) {

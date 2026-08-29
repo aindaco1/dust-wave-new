@@ -3,9 +3,11 @@ export function activeLocale() {
 }
 
 export function formatInteger(value, locale = activeLocale()) {
-  return new Intl.NumberFormat(locale).format(
-    Math.max(0, Number(value) || 0)
-  );
+  return formatLocalizedNumber(Math.max(0, Number(value) || 0), locale);
+}
+
+export function formatLocalizedNumber(value, locale = activeLocale()) {
+  return new Intl.NumberFormat(locale).format(Number(value || 0));
 }
 
 export function formatBytes(value, locale = activeLocale()) {
@@ -23,4 +25,16 @@ export function formatBytes(value, locale = activeLocale()) {
     minimumFractionDigits: 0,
     maximumFractionDigits
   }).format(amount)} ${units[unitIndex]}`;
+}
+
+export function formatWholeSecondTimestamp(value) {
+  const totalSeconds = Math.max(0, Math.floor(Number(value) / 1_000) || 0);
+  const hours = Math.floor(totalSeconds / 3_600);
+  const minutes = Math.floor((totalSeconds % 3_600) / 60);
+  const seconds = totalSeconds % 60;
+  return (hours ? [hours, minutes, seconds] : [minutes, seconds])
+    .map((part, index) =>
+      index === 0 ? String(part) : String(part).padStart(2, "0")
+    )
+    .join(":");
 }

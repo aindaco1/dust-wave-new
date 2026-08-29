@@ -4,6 +4,7 @@ import {
   formatBytes,
   formatInteger
 } from "./podcast-admin-formatters.js";
+import { setElementStatus as setStatus } from "./podcast-admin-dom.js";
 import { mountConfirmationDialog } from "./dust-wave-admin-shell/confirmation-dialog.js?v=0.10.2";
 import { mountRichTextEditor } from "./dust-wave-admin-shell/editor.js?v=0.10.2";
 import { markdownToEditorHtml } from "./dust-wave-admin-shell/editor-codec.js?v=0.10.2";
@@ -106,6 +107,10 @@ import { createDirectorySubmissionPacketActions, createDistributionFeedActions }
 import { PasswordlessAdminSession } from "./dust-wave-admin-shell/passwordless-session.js?v=0.10.2";
 import { mountAccessibleTabs } from "./dust-wave-admin-shell/tabs.js?v=0.10.2";
 import { responsiveTurnstileSize } from "./dust-wave-admin-shell/turnstile.js?v=0.10.2";
+import {
+  loadPodcastTurnstile,
+  resetPodcastTurnstile
+} from "./podcast-turnstile.js";
 
 const root = document.querySelector("[data-podcast-admin]");
 if (root) startPodcastAdmin(root);
@@ -1879,7 +1884,7 @@ function startPodcastAdmin(root) {
       announcementApprove.hidden = !(
         result.sendEnabled === true
         && Number(result.eligibleRecipientCount) > 0
-        && canApproveSelectedShowAnnouncement()
+        && canAdministerSelectedShow()
       );
     }
   }
@@ -1918,7 +1923,7 @@ function startPodcastAdmin(root) {
     if (
       !show
       || !review?.reviewHash
-      || !canApproveSelectedShowAnnouncement()
+      || !canAdministerSelectedShow()
       || announcementApprove?.disabled
     ) return;
     if (
@@ -2074,13 +2079,6 @@ function startPodcastAdmin(root) {
 
   function announcementStatusLabel(value) {
     return adminText(`announcementStatus_${String(value || "unknown")}`);
-  }
-
-  function canApproveSelectedShowAnnouncement() {
-    return (adminIdentity?.roles || []).some(({ role, showId }) =>
-      (role === "super_admin" || role === "admin")
-      && (role === "super_admin" || !showId || showId === selectedShowId)
-    );
   }
 
   async function saveShow(event) {
@@ -7228,7 +7226,7 @@ function startPodcastAdmin(root) {
       card.append(error);
     }
 
-    if (canManageSelectedShowDistribution()) {
+    if (canAdministerSelectedShow()) {
       const form = document.createElement("form");
       form.className = "podcast-admin__distribution-form";
       form.setAttribute("aria-label", adminText("directorySetupFormLabel", {
@@ -7532,7 +7530,7 @@ function startPodcastAdmin(root) {
     }
   }
 
-  function canManageSelectedShowDistribution() {
+  function canAdministerSelectedShow() {
     return (adminIdentity?.roles || []).some(({ role, showId }) =>
       (role === "super_admin" || role === "admin")
       && (role === "super_admin" || !showId || showId === selectedShowId)
@@ -7681,7 +7679,7 @@ function startPodcastAdmin(root) {
     const form = event.target.closest("[data-podcast-distribution-form]");
     if (!form) return;
     event.preventDefault();
-    if (!canManageSelectedShowDistribution()) return;
+    if (!canAdministerSelectedShow()) return;
     const button = form.querySelector('button[type="submit"]');
     const status = form.querySelector("[data-podcast-distribution-status]");
     button.disabled = true;
@@ -8226,7 +8224,7 @@ function startPodcastAdmin(root) {
       || turnstileWidgetId !== undefined
       || turnstileInitialization
     ) return;
-    turnstileInitialization = loadTurnstile()
+    turnstileInitialization = loadPodcastTurnstile()
       .then(() => {
         if (turnstileWidgetId !== undefined || authPanel.hidden) return;
         turnstileWidgetId = globalThis.turnstile.render("#podcast-turnstile", {
@@ -8252,41 +8250,8 @@ function startPodcastAdmin(root) {
 
   function resetTurnstile() {
     turnstileToken = "";
-    if (turnstileWidgetId !== undefined) {
-      globalThis.turnstile?.reset?.(turnstileWidgetId);
-    }
+    resetPodcastTurnstile(turnstileWidgetId);
   }
-}
-
-let turnstileLoader;
-
-function loadTurnstile() {
-  if (globalThis.turnstile) return Promise.resolve();
-  if (turnstileLoader) return turnstileLoader;
-  turnstileLoader = new Promise((resolve, reject) => {
-    const script = document.createElement("script");
-    script.src =
-      "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
-    script.async = true;
-    script.defer = true;
-    script.referrerPolicy = "no-referrer";
-    script.addEventListener("load", () => {
-      if (globalThis.turnstile) resolve();
-      else reject(new Error("turnstile_unavailable"));
-    }, { once: true });
-    script.addEventListener("error", reject, { once: true });
-    document.head.append(script);
-  }).catch((error) => {
-    turnstileLoader = undefined;
-    throw error;
-  });
-  return turnstileLoader;
-}
-
-function setStatus(element, message, error = false) {
-  if (!element) return;
-  element.textContent = message;
-  element.classList.toggle("is-error", error);
 }
 
 function emptyChapterSet(episodeId) {

@@ -4,9 +4,10 @@ import {
   sharedAdminShellImportPattern
 } from "./lib/shared-admin-shell-version.mjs";
 
-const [page, script, styles, configuration] = await Promise.all([
+const [page, script, turnstileScript, styles, configuration] = await Promise.all([
   readFile(new URL("../src/podcasts/show.njk", import.meta.url), "utf8"),
   readFile(new URL("../src/js/podcast-checkout.js", import.meta.url), "utf8"),
+  readFile(new URL("../src/js/podcast-turnstile.js", import.meta.url), "utf8"),
   readFile(
     new URL("../src/scss/themes/base/_style-theme.scss", import.meta.url),
     "utf8"
@@ -54,8 +55,9 @@ assert.match(script, /payload\.checkoutEnabled !== true/);
 assert.match(script, /priceId: selection\.id/);
 assert.match(script, /quoteSignature !== signature/);
 assert.match(script, /podcast_subscription_checkout/);
+assert.match(script, /loadPodcastTurnstile/);
 assert.match(
-  script,
+  turnstileScript,
   /https:\/\/challenges\.cloudflare\.com\/turnstile\/v0\/api\.js\?render=explicit/
 );
 assert.match(script, /"checkout\.stripe\.com"/);

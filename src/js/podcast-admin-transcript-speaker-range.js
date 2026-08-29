@@ -1,6 +1,8 @@
 import {
   applyTranscriptSpeakerRange
 } from "./podcast-admin-transcript-review.js";
+import { formatLocalizedNumber as localizedNumber } from
+  "./podcast-admin-formatters.js";
 
 const root = document.querySelector("[data-podcast-admin]");
 if (root) mountTranscriptSpeakerRange(root);
@@ -174,10 +176,4 @@ function text(key, variables = {}) {
   return translated && !translated.startsWith("[missing:")
     ? translated
     : `[missing: admin.${key}]`;
-}
-
-function localizedNumber(value) {
-  return new Intl.NumberFormat(
-    document.documentElement.lang || "en"
-  ).format(Number(value || 0));
 }

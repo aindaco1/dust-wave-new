@@ -1,3 +1,6 @@
+import { appendDefinition as appendEvidence } from
+  "./podcast-admin-dom.js";
+
 export function mountShowPremiumPrices({
   root,
   client,
@@ -179,13 +182,6 @@ export function mountShowPremiumPrices({
     }
   }
 
-  function appendEvidence(list, label, value) {
-    const term = document.createElement("dt");
-    const detail = document.createElement("dd");
-    term.textContent = label;
-    detail.textContent = value;
-    list.append(term, detail);
-  }
 }
 
 export function dollarsToCents(value) {

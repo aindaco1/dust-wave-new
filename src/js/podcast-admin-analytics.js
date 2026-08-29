@@ -5,6 +5,8 @@ import {
 import {
   renderContextualAnalyticsEpisodes
 } from "./podcast-admin-contextual-editing.js";
+import { formatLocalizedNumber as formatInteger } from
+  "./podcast-admin-formatters.js";
 
 let datatypeChartModule;
 
@@ -596,12 +598,6 @@ function localizedDimension(prefix, code) {
   return translated && !translated.startsWith("[missing:")
     ? translated
     : String(code || "").replaceAll("_", " ");
-}
-
-function formatInteger(value) {
-  return new Intl.NumberFormat(
-    document.documentElement.lang || "en"
-  ).format(Number(value || 0));
 }
 
 function formatPercent(value) {

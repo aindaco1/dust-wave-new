@@ -1,3 +1,6 @@
+import { formatLocalizedNumber as localizedNumber } from
+  "./podcast-admin-formatters.js";
+
 export const TRANSCRIPT_REVIEW_THRESHOLDS = Object.freeze({
   minimumCueDurationMs: 500,
   maximumCueDurationMs: 10_000,
@@ -328,12 +331,6 @@ function addSignal(items, key, signal, label) {
       cueIndexes: signal.cueIndexes
     });
   }
-}
-
-function localizedNumber(value) {
-  return new Intl.NumberFormat(
-    globalThis.document?.documentElement?.lang || "en"
-  ).format(Number(value || 0));
 }
 
 function localizedThreshold(value) {

@@ -1,6 +1,7 @@
 import {
   createRssImportCutoverController
 } from "./podcast-admin-rss-cutover.js";
+import { appendDefinition } from "./podcast-admin-dom.js";
 
 export function createRssImportReconciliationController({
   client,
@@ -484,11 +485,7 @@ export function createRssImportReconciliationController({
   }
 
   function appendEvidence(list, label, value) {
-    const term = document.createElement("dt");
-    term.textContent = label;
-    const description = document.createElement("dd");
-    description.textContent = String(value || text("notAvailable"));
-    list.append(term, description);
+    appendDefinition(list, label, String(value || text("notAvailable")));
   }
 
   function actionButton(key) {

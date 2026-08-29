@@ -7,6 +7,8 @@ import {
   createEditorialDraftLifecycle,
   preferredEditorialDraft
 } from "./podcast-admin-editorial-draft-lifecycle.js";
+import { formatWholeSecondTimestamp } from
+  "./podcast-admin-formatters.js";
 
 export {
   normalizeClipDraftCollection,
@@ -204,8 +206,8 @@ export function mountClipDraftAssistant({
       heading.textContent = candidate.title;
       timing.className = "podcast-admin__review-evidence";
       timing.textContent = text("clipDraftCandidateTiming", {
-        start: millisecondsToTimestamp(candidate.startsAtMs),
-        end: millisecondsToTimestamp(candidate.endsAtMs),
+        start: formatWholeSecondTimestamp(candidate.startsAtMs),
+        end: formatWholeSecondTimestamp(candidate.endsAtMs),
         seconds: Math.round(candidate.durationMs / 1_000)
       });
       reason.textContent = candidate.reason;
@@ -327,16 +329,4 @@ function matchesContext(source, context) {
   return source.language === context.language
     && source.revision === context.revision
     && source.contentSha256 === context.contentSha256;
-}
-
-function millisecondsToTimestamp(value) {
-  const totalSeconds = Math.max(0, Math.floor(value / 1_000));
-  const hours = Math.floor(totalSeconds / 3_600);
-  const minutes = Math.floor((totalSeconds % 3_600) / 60);
-  const seconds = totalSeconds % 60;
-  return (hours ? [hours, minutes, seconds] : [minutes, seconds])
-    .map((part, index) =>
-      index === 0 ? String(part) : String(part).padStart(2, "0")
-    )
-    .join(":");
 }

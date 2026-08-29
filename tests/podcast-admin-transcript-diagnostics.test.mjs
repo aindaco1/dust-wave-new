@@ -1,15 +1,6 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
-import path from "node:path";
 import test from "node:test";
-const source = await readFile(
-  path.resolve(
-    import.meta.dirname,
-    "../src/js/podcast-admin-transcript-review.js"
-  ),
-  "utf8"
-);
-const {
+import {
   applyTranscriptSpeakerRange,
   canAcknowledgeTranscriptSpeakerLabels,
   clipCueSummary,
@@ -21,9 +12,7 @@ const {
   transcriptReviewDiagnosticItems,
   transcriptCuePlainText,
   TRANSCRIPT_REVIEW_THRESHOLDS
-} = await import(
-  `data:text/javascript;base64,${Buffer.from(source).toString("base64")}`
-);
+} from "../src/js/podcast-admin-transcript-review.js";
 
 test("allows an explicit review of intentionally unlabeled cues", () => {
   assert.equal(canAcknowledgeTranscriptSpeakerLabels([

@@ -27,6 +27,10 @@ const adminScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin.js'),
   'utf8'
 );
+const podcastTurnstileScript = await readFile(
+  path.join(repositoryRoot, 'src/js/podcast-turnstile.js'),
+  'utf8'
+);
 const directoryPacketScript = await readFile(
   path.join(repositoryRoot, 'src/js/podcast-admin-directory-packet.js'),
   'utf8'
@@ -500,9 +504,10 @@ assert.match(
 );
 assert.match(
   adminScript,
-  /function loadTurnstile\(\) \{[\s\S]+document\.head\.append\(script\);/,
+  /loadPodcastTurnstile/,
   'The login surface must load Turnstile on demand'
 );
+assert.match(podcastTurnstileScript, /document\.head\.append\(script\);/);
 assert.match(adminConfig, /require\("\.\/podcastApi\.js"\)\.apiOrigin/);
 assert.match(podcastApiConfig, /https:\/\/feeds\.dustwave\.xyz/);
 assert.doesNotMatch(adminConfig, /workers\.dev/);
@@ -1663,7 +1668,7 @@ assert.match(
   JSON.stringify(spanishRuntime),
   /Seguiremos buscando el listado público/
 );
-assert.match(adminScript, /function canManageSelectedShowDistribution/);
+assert.match(adminScript, /function canAdministerSelectedShow/);
 assert.match(englishRuntimeText, /RSS feed directory/);
 assert.match(adminScript, /data-podcast-distribution-form/);
 assert.match(adminScript, /ownerSetupStatus/);
@@ -1990,7 +1995,10 @@ assert.match(
 );
 assert.match(adminScript, /function approveAnnouncement/);
 assert.match(adminScript, /function loadAnnouncementHistory/);
-assert.match(adminScript, /function canApproveSelectedShowAnnouncement/);
+assert(
+  (adminScript.match(/canAdministerSelectedShow/g) || []).length >= 5,
+  'Announcement and distribution mutations must share show-scoped admin access'
+);
 assert.match(adminScript, /review\.deliveryMode === "live"/);
 assert.match(adminScript, /globalThis\.confirm/);
 assert.match(adminScript, /announcementEditor\.getMarkdown/);

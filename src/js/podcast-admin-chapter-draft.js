@@ -7,6 +7,8 @@ import {
   createEditorialDraftLifecycle,
   preferredEditorialDraft
 } from "./podcast-admin-editorial-draft-lifecycle.js";
+import { formatWholeSecondTimestamp } from
+  "./podcast-admin-formatters.js";
 
 export {
   normalizeChapterDraftCollection,
@@ -214,23 +216,11 @@ function renderChapterList(target, chapters) {
     const item = document.createElement("li");
     const time = document.createElement("time");
     time.dateTime = `PT${Math.max(0, chapter.startsAtMs / 1_000)}S`;
-    time.textContent = millisecondsToTimestamp(chapter.startsAtMs);
+    time.textContent = formatWholeSecondTimestamp(chapter.startsAtMs);
     const title = document.createElement("span");
     title.textContent = chapter.title;
     item.append(time, title);
     return item;
   });
   target.replaceChildren(...items);
-}
-
-function millisecondsToTimestamp(value) {
-  const totalSeconds = Math.max(0, Math.floor(value / 1_000));
-  const hours = Math.floor(totalSeconds / 3_600);
-  const minutes = Math.floor((totalSeconds % 3_600) / 60);
-  const seconds = totalSeconds % 60;
-  return (hours ? [hours, minutes, seconds] : [minutes, seconds])
-    .map((part, index) =>
-      index === 0 ? String(part) : String(part).padStart(2, "0")
-    )
-    .join(":");
 }

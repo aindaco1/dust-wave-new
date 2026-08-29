@@ -1,3 +1,6 @@
+import { appendDefinition as appendEvidence } from
+  "./podcast-admin-dom.js";
+
 export function mountShowTaxPolicy({
   root,
   client,
@@ -167,14 +170,6 @@ export function mountShowTaxPolicy({
     } finally {
       button.disabled = false;
     }
-  }
-
-  function appendEvidence(list, label, value) {
-    const term = document.createElement("dt");
-    const detail = document.createElement("dd");
-    term.textContent = label;
-    detail.textContent = value;
-    list.append(term, detail);
   }
 
   function policySummary(policy) {

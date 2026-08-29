@@ -58,6 +58,7 @@ assert.match(
   sharedAdminShellImportPattern("passwordless-session")
 );
 assert.match(script, sharedAdminShellImportPattern("turnstile"));
+assert.match(script, /loadPodcastTurnstile/);
 assert.match(
   script,
   /size: responsiveTurnstileSize\(turnstileContainer\)/

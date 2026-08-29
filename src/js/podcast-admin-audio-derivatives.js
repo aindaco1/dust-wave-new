@@ -2,6 +2,10 @@ import {
   formatBytes,
   formatInteger
 } from "./podcast-admin-formatters.js";
+import {
+  appendDefinition,
+  createEmptyAdminMessage
+} from "./podcast-admin-dom.js";
 
 const DERIVATIVE_WORKFLOW =
   "process-audio-enhancement-derivative.yml";
@@ -114,7 +118,7 @@ export function mountAudioEnhancementDerivatives({
     resultsRoot.replaceChildren(
       ...(derivatives.length
         ? derivatives.map(renderDerivative)
-        : [emptyMessage(text("noFullDerivatives"))])
+        : [createEmptyAdminMessage(text("noFullDerivatives"))])
     );
     window.DWDigestAudio?.mount(resultsRoot);
   }
@@ -437,18 +441,7 @@ export function mountAudioEnhancementDerivatives({
 }
 
 function appendEvidence(root, label, value) {
-  const term = document.createElement("dt");
-  term.textContent = label;
-  const description = document.createElement("dd");
-  description.textContent = value || "—";
-  root.append(term, description);
-}
-
-function emptyMessage(value) {
-  const message = document.createElement("p");
-  message.className = "podcast-admin__empty";
-  message.textContent = value;
-  return message;
+  appendDefinition(root, label, value || "—");
 }
 
 function cardStatus(status) {

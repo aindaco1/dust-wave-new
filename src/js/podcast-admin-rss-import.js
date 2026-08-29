@@ -1,6 +1,7 @@
 import {
   createRssImportReconciliationController
 } from "./podcast-admin-rss-reconciliation.js";
+import { appendDefinition } from "./podcast-admin-dom.js";
 
 export function assessPodcastGuidCompatibility(
   targetPodcastGuid,
@@ -958,11 +959,7 @@ export function mountRssImportWorkbench({
   }
 
   function appendEvidence(list, label, value) {
-    const term = document.createElement("dt");
-    term.textContent = label;
-    const description = document.createElement("dd");
-    description.textContent = String(value || text("notAvailable"));
-    list.append(term, description);
+    appendDefinition(list, label, String(value || text("notAvailable")));
   }
 
   function appendIssues(card, label, values) {

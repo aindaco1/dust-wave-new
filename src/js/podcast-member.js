@@ -8,6 +8,11 @@ import {
 import {
   responsiveTurnstileSize
 } from "./dust-wave-admin-shell/turnstile.js?v=0.10.2";
+import { setElementStatus as setStatus } from "./podcast-admin-dom.js";
+import {
+  loadPodcastTurnstile,
+  resetPodcastTurnstile
+} from "./podcast-turnstile.js";
 
 const translate = globalThis.DustWaveI18n?.t || ((key) => key);
 const pageLanguage = globalThis.DustWaveI18n?.language === "es"
@@ -508,24 +513,11 @@ function startPodcastMember(rootElement) {
     return output;
   }
 
-  function initializeTurnstile() {
+  async function initializeTurnstile() {
     const siteKey = rootElement.dataset.turnstileSiteKey;
     if (!siteKey) return;
-    let attempts = 0;
-    const render = () => {
-      attempts += 1;
-      if (!globalThis.turnstile) {
-        if (attempts < 100) {
-          setTimeout(render, 100);
-        } else {
-          setStatus(
-            authStatus,
-            translate("member.verificationUnavailable"),
-            true
-          );
-        }
-        return;
-      }
+    try {
+      await loadPodcastTurnstile();
       turnstileWidgetId = globalThis.turnstile.render(
         "#podcast-member-turnstile",
         {
@@ -538,15 +530,18 @@ function startPodcastMember(rootElement) {
           "error-callback": () => { turnstileToken = ""; }
         }
       );
-    };
-    render();
+    } catch {
+      setStatus(
+        authStatus,
+        translate("member.verificationUnavailable"),
+        true
+      );
+    }
   }
 
   function resetTurnstile() {
     turnstileToken = "";
-    if (turnstileWidgetId !== undefined) {
-      globalThis.turnstile?.reset?.(turnstileWidgetId);
-    }
+    resetPodcastTurnstile(turnstileWidgetId);
   }
 }
 
@@ -577,12 +572,6 @@ function formatDate(value) {
     month: "short",
     day: "numeric"
   }).format(date);
-}
-
-function setStatus(element, message, error = false) {
-  if (!element) return;
-  element.textContent = message;
-  element.classList.toggle("is-error", error);
 }
 
 function trustedStripeUrl(value, expectedHost) {
