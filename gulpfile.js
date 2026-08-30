@@ -46,7 +46,10 @@ function copyPeaks() {
 }
 
 function copyJs() {
-  return src(`${DIR.src}/js/**/*.*`).pipe(dest(`${DIR.dev}/js`));
+  return src([
+    `${DIR.src}/js/**/*.*`,
+    `!${DIR.src}/js/package.json`
+  ]).pipe(dest(`${DIR.dev}/js`));
 }
 function copyAudioPlayerVendor() {
   return src(`${DIR.node}/wavesurfer.js/dist/wavesurfer.min.js`)

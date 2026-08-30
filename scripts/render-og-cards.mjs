@@ -220,8 +220,16 @@ async function main() {
   ensureDir(OUTPUT_DIR);
   ensureDir(DEV_OUTPUT_DIR);
   
-  // Collect all posts/news
-  const items = [];
+  // The site-wide fallback is referenced by pages without their own preview.
+  // Generate it alongside content cards so a clean CI build cannot publish a
+  // broken /img/og/default.png URL.
+  const items = [{
+    type: 'default',
+    slug: 'default',
+    title: 'Independent Film in Albuquerque',
+    summary: 'A film collective making independent work in Albuquerque, New Mexico.',
+    sourceImg: null
+  }];
   
   // Process posts
   for (const file of getMarkdownFiles(POSTS_DIR)) {

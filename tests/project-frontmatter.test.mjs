@@ -20,6 +20,10 @@ const taxonomy = JSON.parse(await readFile(
   "utf8"
 ));
 const pagesCms = await readFile(path.join(root, ".pages.yml"), "utf8");
+const ogRenderer = await readFile(
+  path.join(root, "scripts", "render-og-cards.mjs"),
+  "utf8"
+);
 
 async function loadProjects(directory) {
   const files = (await readdir(directory))
@@ -100,6 +104,11 @@ test("explicit preview overrides remain authoritative without a project GIF hero
     socialPreviewImage("/img/og/custom.jpg", "/img/news/animated.gif", false),
     "/img/og/custom.jpg"
   );
+});
+
+test("the fallback social preview is generated during clean builds", () => {
+  assert.match(ogRenderer, /slug:\s*['"]default['"]/u);
+  assert.match(ogRenderer, /OUTPUT_DIR[\s\S]*DEV_OUTPUT_DIR/u);
 });
 
 test("every film project has structured director credits", () => {
