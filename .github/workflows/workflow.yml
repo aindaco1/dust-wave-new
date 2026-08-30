@@ -27,7 +27,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
-          node-version: '20'
+          node-version-file: '.nvmrc'
           cache: 'npm'
 
       - name: Install dependencies
@@ -76,7 +76,7 @@ jobs:
       - name: Setup Node.js for edge configuration
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
-          node-version: '20'
+          node-version-file: '.nvmrc'
 
       - name: Enforce Cloudflare authenticated-route headers
         if: ${{ vars.CLOUDFLARE_ENABLED == 'true' }}
@@ -147,7 +147,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
-          node-version: '20'
+          node-version-file: '.nvmrc'
 
       - name: Send Bridgy Fed webmentions
         run: node scripts/ping-bridgy.mjs

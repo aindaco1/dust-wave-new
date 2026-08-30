@@ -1,6 +1,21 @@
+settings:
+  content:
+    # Preserve frontmatter owned by templates or newer site features even when a
+    # field has not yet been added to this editor configuration.
+    merge: true
+
 media:
-  input: src/img
-  output: /img
+  - name: images
+    label: Site Images
+    input: src/img
+    output: /img
+    categories: [image]
+
+  - name: videos
+    label: Site Videos
+    input: src/img
+    output: /img
+    categories: [video]
 
 content:
   # ═══════════════════════════════════════════════════════════
@@ -10,7 +25,7 @@ content:
     label: 👥 Members
     type: collection
     path: src/members
-    filename: "{slug}.md"
+    filename: "{fields.slug}.md"
     view:
       fields: [name, column, order]
       primary: name
@@ -34,10 +49,10 @@ content:
       - name: img
         label: Photo
         type: image
-        media:
-          input: src/img/about
-          output: /img/about
-          path: /
+        required: true
+        options:
+          media: images
+          path: src/img/about
         description: "Member photo. Size: 800×800px (1:1 square), under 200KB."
 
       - name: instagram
@@ -53,6 +68,7 @@ content:
       - name: column
         label: Column
         type: select
+        required: true
         options:
           values:
             - value: left
@@ -64,15 +80,21 @@ content:
       - name: order
         label: Display Order
         type: number
+        required: true
         description: "Order within the column (1 = top)."
 
   # ═══════════════════════════════════════════════════════════
   # 🎬 POSTS — Film projects and productions
   # ═══════════════════════════════════════════════════════════
   - name: posts
-    label: 🎬 Film Projects
+    label: 🎬 Film Projects (Edit Only)
     type: collection
     path: src/posts
+    filename: "{primary}.md"
+    operations:
+      create: false
+      rename: false
+      delete: false
     view:
       fields: [title, date, tags]
       primary: title
@@ -84,24 +106,42 @@ content:
       - name: title
         label: Title
         type: string
+        required: true
         description: "The project title (e.g., 'Stall'd', 'The Haunters')."
 
       - name: date
         label: Release Date
         type: date
+        required: true
         description: "Release or premiere date."
 
       - name: img
         label: Featured Image
         type: image
-        media:
-          input: src/img/stills
-          output: /img/stills
-        description: "Main image for project page. Size: 1800×1012px (16:9), under 400KB."
+        required: true
+        options:
+          media: images
+          path: src/img
+        description: "Main project image or GIF. Usually stored in stills/, gifs/, or software/."
+
+      - name: imgAlt
+        label: Featured Image Alt Text
+        type: string
+        description: "Concise visual description for accessibility and social previews."
+
+      - name: imgDisplay
+        label: Featured Image Display
+        type: select
+        options:
+          values:
+            - value: compact
+              label: Compact
+        description: "Optional compact presentation for app icons and other square artwork."
 
       - name: summary
         label: Short Description
         type: string
+        required: true
         description: "One-line tagline (e.g., 'Romance drama short', 'Dark horror comedy')."
 
       - name: directors
@@ -110,67 +150,183 @@ content:
         list: true
         description: "Film directors, one person per entry. Used for Movie structured data."
 
-      - name: gif
-        label: Hover GIF
-        type: image
-        media:
-          input: src/img/gifs
-          output: /img/gifs
+      - name: hoverVideoWebm
+        label: Hover Video (WebM)
+        type: file
         options:
-          extensions: [gif]
-        description: "Animated preview for homepage hover. Size: 800×450px (16:9), MAX 8MB (larger files fail silently), 3-4 second loop."
+          media: videos
+          path: src/img/project-videos
+          extensions: [webm]
+        description: "WebM homepage hover preview."
+
+      - name: hoverVideoMp4
+        label: Hover Video (MP4)
+        type: file
+        options:
+          media: videos
+          path: src/img/project-videos
+          extensions: [mp4]
+        description: "MP4 fallback for the homepage hover preview."
+
+      - name: hoverVideoPoster
+        label: Hover Video Poster
+        type: image
+        options:
+          media: images
+          path: src/img
+        description: "Static image shown before the hover video loads."
+
+      - name: hoverVideoWrap
+        label: Contain Hover Video
+        type: boolean
+        description: "Show the complete hover video inside its card instead of cropping it."
 
       - name: tags
         label: Tags
-        type: select
+        type: string
         list: true
-        options:
-          creatable: true
-          values:
-            - value: released
-              label: "✅ Released"
-            - value: in-production
-              label: "🎬 In Production"
-            - value: coming-soon
-              label: "🔜 Coming Soon"
-            - value: comedy
-              label: "Comedy"
-            - value: drama
-              label: "Drama"
-            - value: horror
-              label: "Horror"
-            - value: sci-fi
-              label: "Sci-Fi"
-            - value: documentary
-              label: "Documentary"
-            - value: satire
-              label: "Satire"
-            - value: mockumentary
-              label: "Mockumentary"
-            - value: stop-motion
-              label: "Stop-Motion"
-            - value: silent
-              label: "Silent"
-            - value: musical
-              label: "Musical"
-            - value: noir
-              label: "Noir"
-            - value: romance
-              label: "Romance"
-            - value: festival
-              label: "Festival/Event"
-            - value: event
-              label: "Event"
-        description: "Select from existing tags or type to create new ones."
+        required: true
+        description: "Lowercase taxonomy tags, one per entry (for example: released, horror, music-video)."
+
+      - name: galleryHeading
+        label: Gallery Heading
+        type: string
+        description: "Optional heading shown above the primary gallery."
 
       - name: galleryImages
         label: Gallery Images
+        type: object
+        list:
+          collapsible: true
+        fields:
+          - name: src
+            label: Image
+            type: image
+            required: true
+            options:
+              media: images
+              path: src/img
+          - name: alt
+            label: Alt Text
+            type: string
+            required: true
+          - name: caption
+            label: Caption
+            type: string
+        description: "Optional accessible masonry gallery rendered below the page body."
+
+      - name: additionalGalleries
+        label: Additional Galleries
+        type: object
+        list:
+          collapsible: true
+        fields:
+          - name: heading
+            label: Heading
+            type: string
+            required: true
+          - name: images
+            label: Images
+            type: object
+            list:
+              collapsible: true
+            fields:
+              - name: src
+                label: Image
+                type: image
+                required: true
+                options:
+                  media: images
+                  path: src/img
+              - name: alt
+                label: Alt Text
+                type: string
+                required: true
+              - name: caption
+                label: Caption
+                type: string
+
+      - name: poster
+        label: Poster
         type: image
-        list: true
-        media:
-          input: src/img
-          output: /img
-        description: "Optional masonry gallery rendered below the page body. Upload/select project images from the relevant folder under src/img."
+        options:
+          media: images
+          path: src/img
+
+      - name: posterHeading
+        label: Poster Heading
+        type: string
+
+      - name: posterAlt
+        label: Poster Alt Text
+        type: string
+
+      - name: projectVideos
+        label: Project Videos
+        type: object
+        list:
+          collapsible: true
+        fields:
+          - name: heading
+            label: Heading
+            type: string
+            required: true
+          - name: id
+            label: YouTube or Vimeo ID
+            type: string
+            required: true
+          - name: type
+            label: Provider
+            type: select
+            required: true
+            options:
+              values:
+                - value: youtube
+                  label: YouTube
+                - value: vimeo
+                  label: Vimeo
+
+      - name: movieComingSoon
+        label: Show Movie Coming Soon
+        type: boolean
+
+      - name: movieHeading
+        label: Movie Heading
+        type: string
+
+      - name: syndicate
+        label: Syndication Targets
+        type: select
+        options:
+          multiple: true
+          values:
+            - value: substack
+              label: Substack
+            - value: fediverse
+              label: Fediverse
+
+      - name: og_image
+        label: Open Graph Image Override
+        type: image
+        options:
+          media: images
+          path: src/img
+
+      - name: og_video
+        label: Open Graph Video
+        type: file
+        options:
+          media: videos
+          path: src/img
+          extensions: [mp4, webm]
+
+      - name: og_alt
+        label: Open Graph Alt Text
+        type: string
+
+      - name: share_text
+        label: Social Share Text
+        type: text
 
       - name: body
         label: Content
@@ -243,6 +399,9 @@ content:
     type: collection
     path: src/news
     subfolders: false
+    filename:
+      template: "{primary}.md"
+      field: create
     view:
       fields: [title, date]
       primary: title
@@ -254,34 +413,80 @@ content:
       - name: title
         label: Title
         type: string
+        required: true
         description: "Article headline (e.g., 'Bag Check selected at SISFA!')."
 
       - name: date
         label: Date
         type: date
+        required: true
         description: "Publication date."
 
       - name: summary
         label: Short Description
         type: string
+        required: true
         description: "One-sentence preview for listings (max 160 chars)."
 
       - name: img
         label: Header Image
         type: image
-        media:
-          input: src/img/news
-          output: /img/news
+        required: true
+        options:
+          media: images
+          path: src/img/news
         description: "Article header image. Size: 1600×900px (16:9), under 350KB."
+
+      - name: imgAlt
+        label: Header Image Alt Text
+        type: string
+
+      - name: author
+        label: Author
+        type: string
+
+      - name: syndicate
+        label: Syndication Targets
+        type: select
+        options:
+          multiple: true
+          values:
+            - value: substack
+              label: Substack
+            - value: fediverse
+              label: Fediverse
 
       - name: galleryImages
         label: Gallery Images
         type: image
-        list: true
-        media:
-          input: src/img
-          output: /img
+        options:
+          media: images
+          path: src/img/news
+          multiple: true
         description: "Optional masonry gallery rendered below the article body. Upload/select news images from the relevant folder under src/img."
+
+      - name: og_image
+        label: Open Graph Image Override
+        type: image
+        options:
+          media: images
+          path: src/img
+
+      - name: og_video
+        label: Open Graph Video
+        type: file
+        options:
+          media: videos
+          path: src/img
+          extensions: [mp4, webm]
+
+      - name: og_alt
+        label: Open Graph Alt Text
+        type: string
+
+      - name: share_text
+        label: Social Share Text
+        type: text
 
       - name: body
         label: Article Content
@@ -347,6 +552,11 @@ content:
     label: 📜 DIY Digests (⚠️ Edit Only - Do Not Create)
     type: collection
     path: src/news/digests
+    filename: "{primary}.md"
+    operations:
+      create: false
+      rename: false
+      delete: false
     view:
       fields: [title, date]
       primary: title
@@ -358,25 +568,71 @@ content:
       - name: title
         label: Title
         type: string
+        required: true
         description: "Digest title (e.g., 'DIY Filmmaker Digest 8 -- Week of December 8, 2025')."
 
       - name: date
         label: Date
         type: date
+        required: true
         description: "Publication date."
 
       - name: summary
         label: Short Description
         type: string
+        required: true
         description: "One-sentence preview for listings."
 
       - name: img
         label: Header Image
         type: image
-        media:
-          input: src/img/digest/header
-          output: /img/digest/header
+        required: true
+        options:
+          media: images
+          path: src/img/digest/header
         description: "Header image for the digest."
+
+      - name: imgAlt
+        label: Header Image Alt Text
+        type: string
+
+      - name: author
+        label: Author
+        type: string
+
+      - name: syndicate
+        label: Syndication Targets
+        type: select
+        options:
+          multiple: true
+          values:
+            - value: substack
+              label: Substack
+            - value: fediverse
+              label: Fediverse
+
+      - name: og_image
+        label: Open Graph Image Override
+        type: image
+        options:
+          media: images
+          path: src/img
+
+      - name: og_video
+        label: Open Graph Video
+        type: file
+        options:
+          media: videos
+          path: src/img
+          extensions: [mp4, webm]
+
+      - name: og_alt
+        label: Open Graph Alt Text
+        type: string
+
+      - name: share_text
+        label: Social Share Text
+        type: text
 
       - name: body
         label: Digest Content (HTML)

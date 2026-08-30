@@ -8,7 +8,8 @@ release adopts a newer shared contract.
 
 ## Requirements
 
-Node.js 20.9+ is required for the site build. Check your version:
+Node.js 24+ is required for the site build. The shared local/CI version is
+declared in `.nvmrc`. Check your active version:
 ```bash
 node --version
 ```
@@ -231,9 +232,14 @@ Content is managed via [Pages CMS](https://pagescms.org/) configured in `.pages.
 
 ### Collections
 - **👥 Members** (`src/members/`) — Team member profiles for the About page
-- **🎬 Film Projects** (`src/posts/`) — Project pages with raw HTML/Markdown content — [How-To Guide](https://www.notion.so/dustwave/2ca86545942d806c8077ef5b7ee5fa60#2ca86545942d80f7b446c2f1edc4afc2)
+- **🎬 Film Projects** (`src/posts/`) — Edit existing project pages and structured media fields — [How-To Guide](https://www.notion.so/dustwave/2ca86545942d806c8077ef5b7ee5fa60#2ca86545942d80f7b446c2f1edc4afc2)
 - **📢 News** (`src/news/`) — Announcements with raw HTML/Markdown content — [How-To Guide](https://www.notion.so/dustwave/2ca86545942d806c8077ef5b7ee5fa60#2ca86545942d80a8b1bfe2c2225602f9)
 - **📜 DIY Digests** (`src/news/digests/`) — Weekly digests (HTML editing only)
+
+Pages CMS merges editor changes into existing frontmatter so newer or
+template-owned metadata is not silently removed. Film Projects and DIY Digests
+are edit-only: create, rename, and delete are disabled because those workflows
+also depend on files outside their collection.
 
 ### Adding a New Member
 1. Go to **👥 Members** in Pages CMS
@@ -247,12 +253,31 @@ Content is managed via [Pages CMS](https://pagescms.org/) configured in `.pages.
    - **Order**: Position within column (1 = top)
 4. Save
 
+### Editing Film Projects
+
+Pages CMS exposes the current project metadata model, including directors,
+featured-image alt text, WebM/MP4 hover previews, accessible galleries, posters,
+embedded YouTube/Vimeo videos, coming-soon state, syndication, and social-card
+overrides.
+
+Creating a project remains a repository workflow rather than a CMS action. A
+new project must add all three of the following together so the production
+frontmatter gate remains valid:
+
+1. The canonical page in `src/posts/`
+2. Its localized page in `src/es/project/`
+3. Its entry in `src/_data/projectTaxonomy.json`
+
+News creation remains available. Pages CMS prompts for the filename on creation
+so editors can choose a stable, concise URL slug independently of the headline.
+
 ### Image Guidelines
 | Type | Size | Max File Size |
 |------|------|---------------|
 | Member Photo (about/) | 800×800px (1:1) | 200KB |
-| Featured Image (stills/) | 1800×1012px (16:9) | 400KB |
-| Hover GIF (gifs/) | 800×450px (16:9) | 8MB |
+| Featured Image/GIF | 1800×1012px (16:9) | 400KB image / 8MB GIF |
+| Hover Video (project-videos/) | 16:9 short loop | Keep web-optimized |
+| Hover Video Poster | Match the project card crop | 400KB |
 | News Header (news/) | 1600×900px (16:9) | 350KB |
 | Digest Header (digest/header/) | 1600×900px (16:9) | 350KB |
 

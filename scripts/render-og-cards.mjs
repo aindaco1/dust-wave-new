@@ -112,8 +112,6 @@ function generateOgHtml(title, summary, backgroundImage) {
 <head>
   <meta charset="utf-8">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@700;900&display=swap');
-    
     * {
       margin: 0;
       padding: 0;
@@ -214,15 +212,9 @@ async function main() {
   try {
     puppeteer = await import('puppeteer');
   } catch (e) {
-    console.log('⚠️  Puppeteer not installed. Skipping OG card generation.');
-    console.log('   To enable OG cards, run: npm install puppeteer');
-    console.log('   Or install as dev dependency: npm install -D puppeteer\n');
-    
-    // Create placeholder default OG image using a simple approach
-    ensureDir(OUTPUT_DIR);
-    ensureDir(DEV_OUTPUT_DIR);
-    console.log('📁 Created output directories for future use.\n');
-    return;
+    throw new Error('Puppeteer is required for OG card generation. Run npm install before building.', {
+      cause: e
+    });
   }
   
   ensureDir(OUTPUT_DIR);
@@ -284,6 +276,7 @@ async function main() {
   
   let generated = 0;
   let skipped = 0;
+  let failed = 0;
   
   for (const item of items) {
     const outputPath = path.join(OUTPUT_DIR, `${item.slug}.png`);
@@ -297,7 +290,7 @@ async function main() {
     
     try {
       const html = generateOgHtml(item.title, item.summary, item.sourceImg);
-      await page.setContent(html, { waitUntil: 'networkidle0' });
+      await page.setContent(html, { waitUntil: 'load', timeout: 10000 });
       
       // Save to both output directories
       await page.screenshot({ path: outputPath, type: 'png' });
@@ -307,13 +300,21 @@ async function main() {
       generated++;
     } catch (err) {
       console.error(`❌ Error generating ${item.slug}:`, err.message);
+      failed++;
     }
   }
   
   await browser.close();
   
-  console.log(`\n📊 Summary: ${generated} generated, ${skipped} skipped (already exist)`);
+  console.log(`\n📊 Summary: ${generated} generated, ${skipped} skipped (already exist), ${failed} failed`);
   console.log(`📁 Output: ${OUTPUT_DIR}\n`);
+
+  if (failed > 0) {
+    process.exitCode = 1;
+  }
 }
 
-main().catch(console.error);
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
