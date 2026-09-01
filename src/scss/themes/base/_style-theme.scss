@@ -2222,6 +2222,11 @@ a:has(button) { text-decoration: none; }
 .test      { text-shadow: 2px 2px #000; color: white !important; background-color: black; }
 article h2 { width: 60%; }
 
+/* Keep article section headings readable on phone-width viewports. */
+@media (max-width: 540px) {
+  article h2 { width: 100%; }
+}
+
 /* =========================================================
    DIY Filmmaker Digest — Shared blocks
    ========================================================= */

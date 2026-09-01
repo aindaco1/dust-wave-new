@@ -83,6 +83,18 @@ const getVar = (name, fallback) => {
 	const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 	return v || fallback;
 };
+function getPrecomputedDuration(payload) {
+	const explicitDuration = Number(payload?.duration);
+	if (Number.isFinite(explicitDuration) && explicitDuration > 0) return explicitDuration;
+
+	const length = Number(payload?.length);
+	const samplesPerPixel = Number(payload?.samples_per_pixel);
+	const sampleRate = Number(payload?.sample_rate);
+	const derivedDuration = length * samplesPerPixel / sampleRate;
+	return Number.isFinite(derivedDuration) && derivedDuration > 0
+		? derivedDuration
+		: undefined;
+}
 function hardenControl(btn) {
 	if (!btn) return;
 	if (btn.tagName === 'A') {
@@ -355,20 +367,23 @@ async function createWaveForCard(card, opts={eager:false}) {
 
 	// hidden <audio> to enable play; keep MP3 off the wire until needed
 	let media = card.querySelector('audio[id]');
+	const includeAudioCredentials = card.dataset.audioCredentials === "include";
 	if (!media) {
 		media = document.createElement('audio');
+		if (includeAudioCredentials) media.crossOrigin = "use-credentials";
+		media.preload = 'none';
 		media.src = url;
-		media.preload = opts.eager ? 'metadata' : 'none'; // ← key change
-		media.crossOrigin = 'anonymous';
 		media.playsInline = true;
 		media.style.display = 'none';
 		waveEl.insertAdjacentElement('afterend', media);
 	} else {
-	media.preload = opts.eager ? 'metadata' : (media.preload || 'none');
+		// Public third-party podcast redirects often omit CORS headers. Playback
+		// uses this media element directly, so keep it in normal no-CORS mode.
+		if (includeAudioCredentials) media.crossOrigin = "use-credentials";
+		else media.removeAttribute('crossorigin');
+		media.preload = 'none';
 	}
-	media.crossOrigin = card.dataset.audioCredentials === "include"
-		? "use-credentials"
-		: (media.crossOrigin || "anonymous");
+	media.playsInline = true;
 	attachPodcastEngagementTracking(card, media);
 
 	// skeleton + fallback progress + overlay
@@ -377,7 +392,9 @@ async function createWaveForCard(card, opts={eager:false}) {
 	const hint = document.createElement('button');
 	hint.className = 'play-hint';
 	hint.textContent = playerText(card, 'playNow', 'Play now');
+	hint.dataset.playerState = 'idle';
 	hardenControl(hint);
+	let hintRemovalTimer = 0;
 
 	// coordinate with scroll squelch (Arc/Safari)
 	['pointerdown','mousedown','touchstart'].forEach(t =>
@@ -390,12 +407,18 @@ async function createWaveForCard(card, opts={eager:false}) {
 
 	hint.addEventListener('click', (e) => {
 		e.preventDefault(); e.stopPropagation();
+		waveEl.classList.remove('wave--error');
+		waveEl.classList.add('wave--loading');
+		hint.dataset.playerState = 'loading';
 		// allow audio to load now that user interacted
 		media.preload = 'auto'; try { media.load?.(); } catch {}
 		window.__safeMediaPlay(media);
 		try { if (card._ws && !card._ws.isPlaying()) card._ws.play(); } catch {}
 		hint.classList.add('hidden');
-		setTimeout(() => hint.remove(), 300);
+		window.clearTimeout(hintRemovalTimer);
+		hintRemovalTimer = window.setTimeout(() => {
+			if (hint.dataset.playerState !== 'error') hint.remove();
+		}, 300);
 	});
 
 	const overlay = document.createElement('div');
@@ -417,6 +440,7 @@ async function createWaveForCard(card, opts={eager:false}) {
 
 	// ── NEW: fetch peaks and wait for them before creating WS ─────────────
 	let precomputedPeaks = undefined;
+	let precomputedDuration = undefined;
 	const peaksUrl = waveEl.dataset.peaksSrc;
 	if (peaksUrl) {
 		try {
@@ -430,10 +454,14 @@ async function createWaveForCard(card, opts={eager:false}) {
 		if (res.ok) {
 			const j = await res.json();
 			precomputedPeaks = j.data || j.samples || j.peaks || undefined;
+			if (precomputedPeaks) precomputedDuration = getPrecomputedDuration(j);
 		}
 		} catch {}
 	}
 	// ──────────────────────────────────────────────────────────────────────
+	// Valid precomputed peaks include their own duration, so they can render
+	// without asking Safari to preload metadata from a third-party audio host.
+	if (opts.eager && !precomputedDuration) media.preload = 'metadata';
 
 	const ws = WaveSurfer.create({
 		container: waveEl,
@@ -461,13 +489,16 @@ async function createWaveForCard(card, opts={eager:false}) {
 		fillParent: true,
 		autoCenter: false,
 		autoScroll: false,
-		peaks: precomputedPeaks // ← will be undefined if not found
+		peaks: precomputedPeaks, // ← will be undefined if not found
+		duration: precomputedDuration
 	});
 
 	waveEl.dataset.wsReady = "1";
 	ws.setPlaybackRate?.(1);
 
 	ws.on('ready', () => {
+		hint.dataset.playerState = 'ready';
+		window.clearTimeout(hintRemovalTimer);
 		zoomWaveToContainer(ws, waveEl);
 		observeWaveResize(ws, waveEl);
 		waveEl.classList.remove("wave--skeleton","wave--fallback","wave--loading");
@@ -477,9 +508,17 @@ async function createWaveForCard(card, opts={eager:false}) {
 		media.removeEventListener('progress',       updateFallback);
 		setupHoverTooltip(waveEl, ws);
 	});
-	ws.on('error', () => {
+	ws.on('error', (error) => {
 		waveEl.classList.remove("wave--skeleton","wave--fallback","wave--loading");
-		try { fb.remove(); hint.remove(); overlay.remove(); } catch {}
+		waveEl.classList.add("wave--fallback", "wave--error");
+		try { fb.remove(); overlay.remove(); } catch {}
+		window.clearTimeout(hintRemovalTimer);
+		hint.dataset.playerState = 'error';
+		hint.textContent = playerText(card, 'retry', 'Retry');
+		hint.setAttribute('aria-live', 'polite');
+		hint.classList.remove('hidden');
+		if (!hint.isConnected) waveEl.append(hint);
+		console.warn('Podcast player failed to load.', error);
 	});
 
 	wireControls(card, ws);
