@@ -60,9 +60,9 @@ permalink: "subdir/{{ title | slugify }}/index.html"
       </article>
     </main>
     {% if not (isProject and language == "es") %}
-    <div class="container-100 d-flex justify-content-between">
+    <nav class="entry-nav container-100" aria-label="More projects">
       {% include 'snippets/postprevnext.njk' %}
-    </div>
+    </nav>
     {% endif %}
     {% include "snippets/" + footer + ".njk" %}
   </body>

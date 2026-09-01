@@ -133,11 +133,51 @@
 
 /* Mobile sizes for audio card */
 @media (max-width: 420px){
-  :root{ --audio-h: 172px; --art-size: calc(var(--audio-h) * .46); }
-  .audio-card{ gap: 8px; padding: 8px; }
-  :root{ --card-py: 8px; --card-px: 8px; --art-h: calc(var(--audio-h) - (var(--card-py) * 2)); --art-w: var(--art-h); }
-  .audio-card .wave{ height: calc(var(--audio-h) * .58); flex-basis: calc(var(--audio-h) * .58); }
-  .audio-card .controls{ justify-content: center; margin-top: 12px; }
+  :root{
+    --audio-h: 172px;
+    --card-py: 8px;
+    --card-px: 8px;
+    --art-w: clamp(88px, 28vw, 104px);
+    --art-h: var(--art-w);
+  }
+  .audio-card{
+    display: grid;
+    grid-template-columns: var(--art-w) minmax(0, 1fr);
+    grid-template-rows: var(--art-h) auto;
+    column-gap: 8px;
+    row-gap: 8px;
+    height: auto;
+    min-height: 0;
+    padding: var(--card-py) var(--card-px);
+  }
+  .audio-card .art-col{
+    grid-column: 1;
+    grid-row: 1;
+    width: var(--art-w);
+    height: var(--art-h);
+  }
+  .audio-card > div:not(.art-col){ display: contents; }
+  .audio-card .wave{
+    grid-column: 2;
+    grid-row: 1;
+    width: 100%;
+    height: var(--art-h);
+    min-width: 0;
+    flex-basis: auto;
+  }
+  .audio-card .controls{
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    width: 100%;
+    margin: 0;
+  }
+  .audio-card .art-col:empty{ display: none; }
+  .audio-card:has(> .art-col:empty){ grid-template-columns: minmax(0, 1fr); }
+  .audio-card:has(> .art-col:empty) .wave{ grid-column: 1; }
+  .wave--fallback .play-hint{ width: 52px; height: 52px; }
   .audio-card .controls button:not([data-audio-speed]){ width: 44px; height: 44px; }
   .audio-card .controls button:not([data-audio-speed]) svg{ width: 18px; height: 18px; }
   .audio-card .controls [data-audio-speed]{ height: 44px; min-width: 44px; padding: 0 5px; font-size: .6rem; font-weight: 700; }
@@ -147,8 +187,8 @@
   .audio-card .controls .download svg{ width: 18px; height: 18px; }
 }
 @media (max-width: 360px){
-  :root{ --audio-h: 224px; }
-  .audio-card .wave{ height: calc(var(--audio-h) * .44); flex-basis: calc(var(--audio-h) * .44); }
+  :root{ --art-w: clamp(80px, 28vw, 96px); }
+  .wave--fallback .play-hint{ width: 48px; height: 48px; }
 }
 @media (min-width: 421px) and (max-width: 540px){
   :root{ --audio-h: 176px; --art-size: calc(var(--audio-h) * .48); }

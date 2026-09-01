@@ -16,7 +16,7 @@ permalink: "subdir/{{ title | slugify }}/index.html"
           <div class="col-12 col-lg-10 col-xl-8">
             {# Author preserved for microformats but hidden from display #}
             {% if author %}<span class="p-author visually-hidden">{{ author }}</span>{% endif %}
-            <h1 class="display-huge p-name">{{ title }}</h1>
+            <h1 class="display-huge p-name news-entry-title">{{ title }}</h1>
             <time class="dt-published visually-hidden" datetime="{{ date | htmlDateString }}">{{ date | localizedDate(language) }}</time>
             <a class="u-url visually-hidden" href="{{ metadata.url }}{{ page.url }}">{{ i18n | t(language, "content.permalink") }}</a>
             {# Plain text content for Bluesky (avoids HTML rendering issues) #}
@@ -49,9 +49,9 @@ permalink: "subdir/{{ title | slugify }}/index.html"
         {% include "snippets/bridgy-opt-in.njk" %}
       </article>
     </main>
-    <div class="container-100 d-flex justify-content-between">
+    <nav class="entry-nav container-100" aria-label="More stories">
       {% include 'snippets/newprevnext.njk' %}
-    </div>
+    </nav>
     {% include "snippets/" + footer + ".njk" %}
   </body>
 </html>

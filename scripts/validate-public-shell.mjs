@@ -16,7 +16,10 @@ const [
   socialPrivacy,
   socialTerms,
   socialPageRenderer,
-  i18nConfigRaw
+  i18nConfigRaw,
+  newsLayout,
+  postLayout,
+  entryNavigation
 ] = await Promise.all([
   readFile(new URL("../src/_includes/snippets/footer1.njk", import.meta.url), "utf8"),
   readFile(new URL("../src/_includes/snippets/site-footer.njk", import.meta.url), "utf8"),
@@ -32,7 +35,10 @@ const [
   readFile(new URL("../src/social-privacy.njk", import.meta.url), "utf8"),
   readFile(new URL("../src/social-terms.njk", import.meta.url), "utf8"),
   readFile(new URL("../src/_includes/snippets/social-page.njk", import.meta.url), "utf8"),
-  readFile(new URL("../src/_data/i18n/config.json", import.meta.url), "utf8")
+  readFile(new URL("../src/_data/i18n/config.json", import.meta.url), "utf8"),
+  readFile(new URL("../src/_includes/layouts/new.njk", import.meta.url), "utf8"),
+  readFile(new URL("../src/_includes/layouts/post.njk", import.meta.url), "utf8"),
+  readFile(new URL("../src/_includes/snippets/entryprevnext.njk", import.meta.url), "utf8")
 ]);
 const { default: socialPages } = await import("../src/_data/socialPages.js");
 const i18nConfig = JSON.parse(i18nConfigRaw);
@@ -151,5 +157,20 @@ assert.match(
 );
 assert.match(styles, /left:\s*min\(80%,\s*var\(--sticky-safe-left\)\)/);
 assert.match(styles, /@media \(prefers-reduced-motion:\s*reduce\)/);
+
+assert.match(newsLayout, /class="display-huge p-name news-entry-title"/);
+for (const layout of [newsLayout, postLayout]) {
+  assert.match(layout, /<nav class="entry-nav container-100"/);
+}
+assert.match(entryNavigation, /entryCollection \| getPreviousCollectionItem/);
+assert.match(entryNavigation, /entryCollection \| getNextCollectionItem/);
+assert.match(entryNavigation, /class="entry-nav__title link-fancy gambado"/);
+assert.match(entryNavigation, /rel="prev"/);
+assert.match(entryNavigation, /rel="next"/);
+assert.match(styles, /\.entry-nav\s*\{[\s\S]*grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/);
+assert.match(
+  styles,
+  /@media \(max-width: 575\.98px\)[\s\S]*\.news-entry-title\s*\{[\s\S]*font-size: clamp\(2rem, 9vw, 2\.25rem\)[\s\S]*\.entry-nav\s*\{[\s\S]*grid-template-columns: minmax\(0, 1fr\)/
+);
 
 console.log("Public shell validation passed.");

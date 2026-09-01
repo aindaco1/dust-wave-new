@@ -438,7 +438,13 @@ async function createWaveForCard(card, opts={eager:false}) {
 	const ws = WaveSurfer.create({
 		container: waveEl,
 		media,
-		height: Math.round(parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--audio-h")) * 0.6),
+		height: Math.max(
+			48,
+			Math.round(
+				waveEl.clientHeight
+				|| parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--audio-h")) * 0.6
+			)
+		),
 		waveColor:     getVar("--wave-backdrop", "rgba(255,255,255,.2)"),
 		progressColor: getVar("--wave-progress", "#f2f2f2"),
 		cursorColor:   getVar("--wave-cursor", "#ffd54d"),

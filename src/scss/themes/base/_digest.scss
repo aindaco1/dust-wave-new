@@ -1,0 +1,156 @@
+/* Alternating editorial features used by digest promos and postfaces.
+   Media stays first in source order so the narrow layout reads image, then text. */
+.digest-feature {
+  display: grid;
+  grid-template-areas:
+    "media"
+    "text";
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  align-items: center;
+  margin-block: 1.5rem;
+}
+
+.digest-feature__media {
+  grid-area: media;
+  min-width: 0;
+}
+
+.digest-feature__text {
+  grid-area: text;
+  min-width: 0;
+}
+
+.digest-feature__media > a,
+.digest-feature__media img {
+  display: block;
+  width: 100%;
+}
+
+.digest-feature__media img {
+  height: auto;
+  border: 1px solid var(--story-image-border);
+  border-radius: var(--story-image-radius) !important;
+  box-shadow: var(--story-image-shadow);
+}
+
+.digest-feature__caption {
+  width: 100%;
+  margin: .5rem 0 0;
+  color: rgba(255,255,255,.72);
+  font-size: clamp(.75rem, .7rem + .2vw, .9rem);
+  font-style: italic;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.digest-feature__text > :last-child {
+  margin-bottom: 0;
+}
+
+@media (min-width: 768px) {
+  .digest-feature {
+    --digest-media-track: minmax(0, 1fr);
+    --digest-text-track: minmax(0, 1fr);
+    column-gap: clamp(2rem, 5vw, 4.5rem);
+    margin-block: 2rem;
+  }
+
+  .digest-feature--media-left {
+    grid-template-areas: "media text";
+    grid-template-columns: var(--digest-columns, var(--digest-media-track) var(--digest-text-track));
+  }
+
+  .digest-feature--media-right {
+    grid-template-areas: "text media";
+    grid-template-columns: var(--digest-columns, var(--digest-text-track) var(--digest-media-track));
+  }
+
+  .digest-feature--contain-media .digest-feature__media {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
+  }
+
+  .digest-feature--contain-media .digest-feature__media > a {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .digest-feature--contain-media .digest-feature__media img {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+/* Digest cards become narrow columns on desktop. Keep the artwork and wave
+   above a full-width control row so every control remains available. */
+@media (min-width: 992px) {
+  #av-grid .audio-card {
+    --digest-player-art: clamp(128px, 14vw, 156px);
+    display: grid;
+    grid-template-columns: var(--digest-player-art) minmax(0, 1fr);
+    grid-template-rows: var(--digest-player-art) auto;
+    column-gap: 14px;
+    row-gap: 8px;
+    height: auto;
+    min-height: 0;
+  }
+
+  #av-grid .audio-card > img,
+  #av-grid .audio-card .art-col {
+    grid-column: 1;
+    grid-row: 1;
+    width: var(--digest-player-art);
+    height: var(--digest-player-art);
+  }
+
+  #av-grid .audio-card > img,
+  #av-grid .audio-card .art-col > img {
+    width: var(--digest-player-art);
+    height: var(--digest-player-art);
+    object-fit: cover;
+  }
+
+  #av-grid .audio-card > div:not(.art-col) {
+    display: contents;
+  }
+
+  #av-grid .audio-card .wave {
+    grid-column: 2;
+    grid-row: 1;
+    width: 100%;
+    height: var(--digest-player-art);
+    min-width: 0;
+    flex-basis: auto;
+  }
+
+  #av-grid .audio-card .controls {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    margin: 0;
+  }
+
+  #av-grid .audio-card .art-col:empty {
+    display: none;
+  }
+
+  #av-grid .audio-card:has(> .art-col:empty) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  #av-grid .audio-card:has(> .art-col:empty) .wave {
+    grid-column: 1;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1199.98px) {
+  .digest-feature--media-left,
+  .digest-feature--media-right {
+    grid-template-columns: var(--digest-columns-compact, var(--digest-columns));
+  }
+}

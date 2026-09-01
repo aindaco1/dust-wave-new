@@ -1,0 +1,18 @@
+{% set previousEntry = entryCollection | getPreviousCollectionItem %}
+{% set nextEntry = entryCollection | getNextCollectionItem %}
+<div class="entry-nav__item entry-nav__item--previous">
+  {% if previousEntry %}
+    <a href="{{ previousEntry.url }}" class="entry-nav__arrow link-fancy" rel="prev" aria-label="Previous: {{ previousEntry.data.title }}">{% include 'svg/arrow-left.svg' %}</a>
+    <a href="{{ previousEntry.url }}" class="entry-nav__title link-fancy gambado" rel="prev">{{ previousEntry.data.title }}</a>
+  {% else %}
+    <div class="entry-nav__boundary gambado">The End!</div>
+  {% endif %}
+</div>
+<div class="entry-nav__item entry-nav__item--next">
+  {% if nextEntry %}
+    <a href="{{ nextEntry.url }}" class="entry-nav__title link-fancy gambado" rel="next">{{ nextEntry.data.title }}</a>
+    <a href="{{ nextEntry.url }}" class="entry-nav__arrow link-fancy" rel="next" aria-label="Next: {{ nextEntry.data.title }}">{% include 'svg/arrow-right.svg' %}</a>
+  {% else %}
+    <div class="entry-nav__boundary gambado">The Beginning!</div>
+  {% endif %}
+</div>

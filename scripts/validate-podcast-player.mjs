@@ -11,6 +11,10 @@ const playerStyles = await readFile(
   path.join(repositoryRoot, 'src/scss/themes/base/_audio-player.scss'),
   'utf8'
 );
+const digestStyles = await readFile(
+  path.join(repositoryRoot, 'src/scss/themes/base/_digest.scss'),
+  'utf8'
+);
 const embedStyles = await readFile(
   path.join(repositoryRoot, 'src/scss/podcast-embed.scss'),
   'utf8'
@@ -74,11 +78,27 @@ assert.match(playerStyles, /\.audio-card/);
 assert.match(playerStyles, /@media \(max-width: 420px\)/);
 assert.match(playerStyles, /@media \(max-width: 360px\)/);
 assert.match(playerStyles, /flex-wrap: wrap/);
+const compactMobileStyles = playerStyles.match(
+  /@media \(max-width: 420px\)\{([\s\S]*?)\n\}\n@media \(max-width: 360px\)/
+)?.[1];
+assert.ok(compactMobileStyles, 'Expected the compact mobile player styles');
+assert.match(compactMobileStyles, /display: grid/);
+assert.match(compactMobileStyles, /height: auto/);
+assert.match(compactMobileStyles, /grid-column: 1 \/ -1/);
+assert.match(compactMobileStyles, /--art-w: clamp\(88px, 28vw, 104px\)/);
+const narrowMobileStyles = playerStyles.match(
+  /@media \(max-width: 360px\)\{([\s\S]*?)\n\}\n@media \(min-width: 421px\)/
+)?.[1];
+assert.ok(narrowMobileStyles, 'Expected the narrow mobile player styles');
+assert.doesNotMatch(narrowMobileStyles, /--audio-h:/);
 assert.match(
   playerStyles,
   /button:not\(\[data-audio-speed\]\)\{ width:44px; height:44px;/
 );
 assert.match(playerStyles, /:focus-visible/);
+assert.match(digestStyles, /@media \(min-width: 992px\)/);
+assert.match(digestStyles, /#av-grid \.audio-card[\s\S]*display: grid/);
+assert.match(digestStyles, /#av-grid \.audio-card \.controls[\s\S]*grid-column: 1 \/ -1/);
 assert.match(gulpfile, /function copyAudioPlayerVendor/);
 assert.match(gulpfile, /wavesurfer\.js\/dist\/wavesurfer\.min\.js/);
 assert.match(gulpfile, /function copyThirdPartyNotices/);
