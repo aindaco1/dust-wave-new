@@ -323,7 +323,9 @@ Posts with `syndicate: ["substack"]` get a clean HTML export for manual copy/pas
 2. Open `dev/substack-export/{slug}.html` in browser
 3. Copy and paste into Substack editor
 
-The export automatically converts relative URLs to absolute, transforms YouTube/Vimeo iframes to plain URLs (Substack auto-embeds), and strips unnecessary markup.
+The export automatically converts relative URLs to absolute and strips unnecessary markup. Digest article and podcast/video cards get dividers between items; podcast artwork and titles link to Overcast without printing a bare URL, and podcast images are responsive with a 450px maximum width. Digest YouTube videos become standalone canonical URLs for Substack's native embeds. Promo/postface images use semantic figures and captions with a 500px maximum. Other YouTube/Vimeo embeds likewise become plain URLs for Substack auto-embedding. Because Substack does not treat custom HTML/CSS as a stable editor contract, verify imported image sizes and captions in its web editor after pasting.
+
+Substack cleanup is implemented once in `lib/substack-export.cjs` and registered by `.eleventy.js`. Run `npm run test:substack-export` for the focused contract; it is also part of `npm run build`.
 
 Use `<!-- more:substack -->` in your markdown to control where the RSS excerpt ends — content after the marker stays only on dustwave.xyz.
 

@@ -82,12 +82,15 @@ const compactMobileStyles = playerStyles.match(
   /@media \(max-width: 540px\)\{([\s\S]*?)\n\}\n@media \(max-width: 360px\)/
 )?.[1];
 assert.ok(compactMobileStyles, 'Expected the compact mobile player styles');
-assert.match(compactMobileStyles, /display: grid/);
-assert.match(compactMobileStyles, /height: auto/);
-assert.match(compactMobileStyles, /grid-column: 1 \/ -1/);
+assert.match(
+  playerStyles,
+  /@mixin audio-card-grid-layout\([\s\S]*display: grid;[\s\S]*height: auto;[\s\S]*grid-column: 1 \/ -1;/
+);
+assert.match(
+  compactMobileStyles,
+  /@include audio-card-grid-layout\(var\(--art-w\), var\(--art-h\), 8px\)/
+);
 assert.match(compactMobileStyles, /--art-w: clamp\(88px, 28vw, 136px\)/);
-assert.match(compactMobileStyles, /\.audio-card > img,[\s\S]*\.audio-card \.art-col/);
-assert.match(compactMobileStyles, /object-fit: cover/);
 const narrowMobileStyles = playerStyles.match(
   /@media \(max-width: 360px\)\{([\s\S]*?)\n\}\n\n\/\* Tooltip/
 )?.[1];
@@ -103,8 +106,10 @@ assert.match(
 );
 assert.match(playerStyles, /:focus-visible/);
 assert.match(digestStyles, /@media \(min-width: 992px\)/);
-assert.match(digestStyles, /#av-grid \.audio-card[\s\S]*display: grid/);
-assert.match(digestStyles, /#av-grid \.audio-card \.controls[\s\S]*grid-column: 1 \/ -1/);
+assert.match(
+  digestStyles,
+  /#av-grid \.audio-card[\s\S]*@include audio-card-grid-layout\([\s\S]*var\(--digest-player-art\)/
+);
 assert.match(gulpfile, /function copyAudioPlayerVendor/);
 assert.match(gulpfile, /wavesurfer\.js\/dist\/wavesurfer\.min\.js/);
 assert.match(gulpfile, /function copyThirdPartyNotices/);

@@ -14,6 +14,55 @@
   --art-w: var(--art-h);
 }
 
+/* Shared compact layout used on phones and by Digest cards in narrow desktop
+   columns. Callers own only their artwork size and any control-size overrides. */
+@mixin audio-card-grid-layout($art-width, $art-height, $column-gap) {
+  display: grid;
+  grid-template-columns: $art-width minmax(0, 1fr);
+  grid-template-rows: $art-height auto;
+  column-gap: $column-gap;
+  row-gap: 8px;
+  height: auto;
+  min-height: 0;
+
+  > img,
+  .art-col {
+    grid-column: 1;
+    grid-row: 1;
+    width: $art-width;
+    height: $art-height;
+  }
+
+  > img,
+  .art-col > img {
+    width: $art-width;
+    height: $art-height;
+    object-fit: cover;
+  }
+
+  > div:not(.art-col) { display: contents; }
+
+  .wave {
+    grid-column: 2;
+    grid-row: 1;
+    width: 100%;
+    height: $art-height;
+    min-width: 0;
+    flex-basis: auto;
+  }
+
+  .controls {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    margin: 0;
+  }
+
+  .art-col:empty { display: none; }
+  &:has(> .art-col:empty) { grid-template-columns: minmax(0, 1fr); }
+  &:has(> .art-col:empty) .wave { grid-column: 1; }
+}
+
 .audio-card{
   display:flex; align-items:stretch; gap:14px;
   height:var(--audio-h); padding:var(--card-py) var(--card-px);
@@ -143,52 +192,20 @@
     --art-h: var(--art-w);
   }
   .audio-card{
-    display: grid;
-    grid-template-columns: var(--art-w) minmax(0, 1fr);
-    grid-template-rows: var(--art-h) auto;
-    column-gap: 8px;
-    row-gap: 8px;
-    height: auto;
-    min-height: 0;
+    @include audio-card-grid-layout(var(--art-w), var(--art-h), 8px);
     padding: var(--card-py) var(--card-px);
   }
   .audio-card > img,
-  .audio-card .art-col{
-    grid-column: 1;
-    grid-row: 1;
-    width: var(--art-w);
-    height: var(--art-h);
-  }
-  .audio-card > img,
   .audio-card .art-col > img{
-    width: var(--art-w);
-    height: var(--art-h);
-    object-fit: cover;
     border-radius: 10px;
     background: #151515;
     display: block;
   }
-  .audio-card > div:not(.art-col){ display: contents; }
-  .audio-card .wave{
-    grid-column: 2;
-    grid-row: 1;
-    width: 100%;
-    height: var(--art-h);
-    min-width: 0;
-    flex-basis: auto;
-  }
   .audio-card .controls{
-    grid-column: 1 / -1;
-    grid-row: 2;
     justify-content: center;
     flex-wrap: wrap;
     gap: 6px;
-    width: 100%;
-    margin: 0;
   }
-  .audio-card .art-col:empty{ display: none; }
-  .audio-card:has(> .art-col:empty){ grid-template-columns: minmax(0, 1fr); }
-  .audio-card:has(> .art-col:empty) .wave{ grid-column: 1; }
   .wave--fallback .play-hint{ width: 52px; height: 52px; }
   .audio-card .controls button:not([data-audio-speed]){ width: 44px; height: 44px; }
   .audio-card .controls button:not([data-audio-speed]) svg{ width: 18px; height: 18px; }

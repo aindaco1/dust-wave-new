@@ -12,6 +12,10 @@ const {
   renderIcon,
   replaceLegacyFontAwesomeIcons
 } = require("./lib/inline-icon.cjs");
+const {
+  absolutizeRootUrls,
+  cleanSubstackHtml
+} = require("./lib/substack-export.cjs");
 
 // WebP URLs are emitted only for the GitHub Pages build. Local builds keep
 // source image URLs so development never depends on generated assets.
@@ -457,121 +461,13 @@ ${content}
 
   // Clean HTML for Substack copy/paste - removes unsupported elements
   eleventyConfig.addFilter("substackClean", (html) => {
-    if (!html) return '';
-    return html
-      // Convert relative URLs to absolute (both /path and path formats)
-      .replace(/src="\/(?!\/)/g, `src="${siteUrl}/`)
-      .replace(/src='\/(?!\/)/g, `src='${siteUrl}/`)
-      .replace(/href="\/(?!\/)/g, `href="${siteUrl}/`)
-      .replace(/href='\/(?!\/)/g, `href='${siteUrl}/`)
-      // Also catch relative URLs without leading slash (e.g., "project/...")
-      .replace(/href="(project|news|about|members)\//g, `href="${siteUrl}/$1/`)
-      // Remove substack marker
-      .replace(/<!-- more:substack -->/g, '')
-      // Remove HTML comments
-      .replace(/<!--[\s\S]*?-->/g, '')
-      // Remove nav elements entirely (TOC won't work in Substack)
-      .replace(/<nav[^>]*>[\s\S]*?<\/nav>/gi, '')
-      // Remove script tags
-      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
-      // Remove audio players and buttons (podcasts)
-      .replace(/<audio[^>]*>[\s\S]*?<\/audio>/gi, '')
-      .replace(/<audio[^>]*\/>/gi, '')
-      .replace(/<audio[^>]*>[^<]*<\/audio>/gi, '')
-      .replace(/<button[^>]*>[\s\S]*?<\/button>/gi, '')
-      // Convert podcast download links to plain URLs (Substack embeds MP3s)
-      .replace(/<a[^>]*href="([^"]*\.mp3[^"]*)"[^>]*download[^>]*>[\s\S]*?<\/a>/gi, '\n\n$1\n\n')
-      // Remove SVGs
-      .replace(/<svg[^>]*>[\s\S]*?<\/svg>/gi, '')
-      // Convert caption divs to figcaption BEFORE removing other divs (Substack supports this)
-      .replace(/<div[^>]*class=["'][^"']*caption[^"']*["'][^>]*>([\s\S]*?)<\/div>/gi, '<figcaption><em>$1</em></figcaption>')
-      // Remove custom divs (keep content)
-      .replace(/<div[^>]*class="[^"]*date-written[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
-      .replace(/<div[^>]*class="[^"]*embed-container[^"]*"[^>]*>/gi, '')
-      .replace(/<\/div>/gi, '')
-      // Remove style tags
-      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-      // Remove inline styles
-      .replace(/\s*style="[^"]*"/gi, '')
-      // Remove class/id/data attributes
-      .replace(/\s*class="[^"]*"/gi, '')
-      .replace(/\s*id="[^"]*"/gi, '')
-      .replace(/\s*data-[a-z-]+="[^"]*"/gi, '')
-      .replace(/\s*loading="[^"]*"/gi, '')
-      .replace(/\s*decoding="[^"]*"/gi, '')
-      .replace(/\s*target="[^"]*"/gi, '')
-      // Remove captions that follow video embeds (Substack doesn't support video captions)
-      // Match embed-container (with any additional classes) followed by caption div
-      .replace(/<div[^>]*class=['"][^'"]*embed-container[^'"]*['"][^>]*><iframe[^>]*src=['"]([^'"]+)['"][^>]*><\/iframe><\/div>[\s\S]*?<div[^>]*class=["']caption["'][^>]*>[\s\S]*?<\/div>/gi, (match, src) => {
-        if (src.includes('youtube')) {
-          const videoId = src.match(/embed\/([^"'?]+)/)?.[1];
-          return videoId ? `<p>https://www.youtube.com/watch?v=${videoId}</p>\n` : '';
-        }
-        if (src.includes('vimeo')) {
-          const videoId = src.match(/\/(\d+)/)?.[1];
-          return videoId ? `<p>https://vimeo.com/${videoId}</p>\n` : '';
-        }
-        return '';
-      })
-      // Convert iframes to plain YouTube/Vimeo URLs (Substack auto-embeds these)
-      // Handle both single and double quotes, add line break after
-      .replace(/<iframe[^>]*src=["'][^"']*youtube[^"']*embed\/([^"'?]+)[^"']*["'][^>]*>[\s\S]*?<\/iframe>/gi, '<p>https://www.youtube.com/watch?v=$1</p>\n')
-      .replace(/<iframe[^>]*src=["'][^"']*vimeo[^"']*\/(\d+)[^"']*["'][^>]*>[\s\S]*?<\/iframe>/gi, '<p>https://vimeo.com/$1</p>\n')
-      // Remove remaining iframes
-      .replace(/<iframe[^>]*>[\s\S]*?<\/iframe>/gi, '')
-      // Fix invalid </br> tags
-      .replace(/<\/br>/gi, '')
-      // Convert <br> to newlines for cleaner output
-      .replace(/<br\s*\/?>/gi, '\n')
-      // Clean up row/col divs (Bootstrap grid)
-      .replace(/<div[^>]*>/gi, '')
-      // Remove empty paragraphs
-      .replace(/<p>\s*<\/p>/gi, '')
-      .replace(/<p>\s*\n\s*<\/p>/gi, '')
-      // Remove author signature block at end
-      .replace(/<h3>\s*<strong>Alonso Indacochea<\/strong>\s*<\/h3>\s*<h4>\s*<strong>Dust Wave co-founder<\/strong>\s*<\/h4>/gi, '')
-      .replace(/<h3><strong>Alonso Indacochea<\/strong><\/h3>\s*<h4><strong>Dust Wave co-founder<\/strong><\/h4>/gi, '')
-      // Wrap image + figcaption in figure element
-      .replace(/<center>\s*<img([^>]*)>\s*<\/center>\s*<figcaption>/gi, '<figure><img$1><figcaption>')
-      .replace(/<\/figcaption>(\s*)(?!<\/figure>)/gi, '</figcaption></figure>$1')
-      // Remove figcaptions that follow video URLs (Substack doesn't support video captions)
-      .replace(/(<p>https:\/\/www\.youtube\.com\/watch\?v=[^<]+<\/p>)\s*<figcaption>[\s\S]*?<\/figcaption>/gi, '$1')
-      .replace(/(<p>https:\/\/vimeo\.com\/\d+<\/p>)\s*<figcaption>[\s\S]*?<\/figcaption>/gi, '$1')
-      // Convert h3 to h2 with divider before
-      .replace(/<h3>/gi, '<hr>\n<h2>')
-      .replace(/<\/h3>/gi, '</h2>')
-      // Link digest article images to their article URLs (after stripping divs/classes)
-      // Pattern: <img src="...img/digest/..."> followed by <h4><a href="URL">
-      // Output clean HTML: linked image in its own paragraph, then h4 title
-      .replace(/<p>\s*<img(\s+src="[^"]*\/img\/digest\/[^"]*"[^>]*)\/>\s*\n*\s*<h4[^>]*><a\s+href="([^"]+)"/gi, 
-        '<p><a href="$2"><img$1 /></a></p>\n<h4><a href="$2"')
-      // Link podcast images to their podcast URLs AND swap to play-cache images
-      // Pattern: <img src="...img/podcasts/..."> followed by MP3 URL then <h4><a href="URL">
-      .replace(/<img(\s+src="([^"]*\/img\/podcasts\/[^"]*)"[^>]*)>\s*<\/p>\s*<p>\s*(https?:\/\/[^\s<]+\.mp3[^\s<]*)\s*<\/p>\s*<p>\s*<h4[^>]*><a\s+href="([^"]+)"/gi, 
-        (match, imgAttrs, artworkUrl, mp3Url, podcastUrl) => {
-          // Convert artwork URL to play-cache URL
-          const playCacheUrl = getPlayCacheUrl(artworkUrl);
-          // Replace the src in imgAttrs with play-cache URL
-          const newImgAttrs = imgAttrs.replace(artworkUrl, playCacheUrl);
-          return `<a href="${podcastUrl}"><img${newImgAttrs}></a>\n</p>\n<p>\n${mp3Url}\n</p>\n<p>\n<h4><a href="${podcastUrl}"`;
-        })
-      // Clean up excessive newlines
-      .replace(/\n{4,}/g, '\n\n\n')
-      // Trim
-      .trim();
+    return cleanSubstackHtml(html, { siteUrl, getPlayCacheUrl });
   });
 
   // Convert relative URLs to absolute for feeds (images, links)
   // Only converts paths starting with / that aren't already absolute (http/https)
   eleventyConfig.addFilter("absoluteUrls", (html) => {
-    if (!html) return '';
-    return html
-      // src="/path" but not src="//domain" or src="http"
-      .replace(/src="\/(?!\/)/g, `src="${siteUrl}/`)
-      .replace(/src='\/(?!\/)/g, `src='${siteUrl}/`)
-      // href="/path" but not href="//domain" or href="http"  
-      .replace(/href="\/(?!\/)/g, `href="${siteUrl}/`)
-      .replace(/href='\/(?!\/)/g, `href='${siteUrl}/`);
+    return absolutizeRootUrls(html, siteUrl);
   });
 
   // Clean HTML for RSS feeds - fix common issues that break feed parsers

@@ -80,11 +80,16 @@ Posts with `syndicate: ["substack"]` get a clean HTML export at `dev/substack-ex
 2. Open `dev/substack-export/{slug}.html` in browser or editor
 3. Copy content and paste into Substack editor (Cmd+V)
 
+The reusable cleanup contract lives in `lib/substack-export.cjs`; `.eleventy.js` only registers it as a filter. Run `npm run test:substack-export` after changing that module. The production `npm run build` includes this focused regression gate.
+
 **What gets cleaned:**
 - Relative URLs → absolute (`https://dustwave.xyz/...`)
-- YouTube/Vimeo iframes → plain URLs (Substack auto-embeds)
+- Digest YouTube videos → standalone canonical URLs for Substack's native embeds; other YouTube/Vimeo embeds → plain URLs
 - `<h3>` → `<h2>` with `<hr>` divider before each
-- Audio players → plain MP3 URLs (Substack auto-embeds)
+- Digest podcast players → linked Overcast artwork/title, without a bare URL embed
+- Digest podcast images → responsive with a 450px maximum width
+- Digest promo/postface images → semantic figures/captions with a 500px maximum width
+- Digest article and podcast/video cards → dividers between items only
 - Image captions → `<figure>/<figcaption>` (Substack supports these)
 - Video captions → removed (Substack doesn't support)
 - Author signature block → removed
@@ -97,6 +102,12 @@ Originally published on July 4, 2025 at dustwave.xyz
 ```
 
 **Note:** These files are dev-only — excluded from production build (`docs/`).
+
+**Substack editor limitation:** Substack does not support custom post CSS/HTML as a stable contract. The export uses semantic figures, alt text, linked media, and intrinsic width hints for copy/paste. After pasting, verify each imported image in Substack's web editor; use its native image resize and caption controls if the editor normalizes imported dimensions or captions.
+
+### Digest audio-card layout
+
+Phone-width players and Digest players in narrow desktop columns share `audio-card-grid-layout` from `src/scss/themes/base/_audio-player.scss`. Keep structural grid behavior in that mixin; `_digest.scss` should supply only Digest-specific artwork sizing and responsive overrides. Validate the source contract with `node scripts/validate-podcast-player.mjs` and the browser regression behavior with `node --test tests/podcast-player-mobile-regression.test.mjs`.
 
 ### Substack Excerpt Marker (for RSS feed)
 Add `<!-- more:substack -->` in your markdown to control where the RSS feed excerpt ends:

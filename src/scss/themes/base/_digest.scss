@@ -91,60 +91,11 @@
 @media (min-width: 992px) {
   #av-grid .audio-card {
     --digest-player-art: clamp(128px, 14vw, 156px);
-    display: grid;
-    grid-template-columns: var(--digest-player-art) minmax(0, 1fr);
-    grid-template-rows: var(--digest-player-art) auto;
-    column-gap: 14px;
-    row-gap: 8px;
-    height: auto;
-    min-height: 0;
-  }
-
-  #av-grid .audio-card > img,
-  #av-grid .audio-card .art-col {
-    grid-column: 1;
-    grid-row: 1;
-    width: var(--digest-player-art);
-    height: var(--digest-player-art);
-  }
-
-  #av-grid .audio-card > img,
-  #av-grid .audio-card .art-col > img {
-    width: var(--digest-player-art);
-    height: var(--digest-player-art);
-    object-fit: cover;
-  }
-
-  #av-grid .audio-card > div:not(.art-col) {
-    display: contents;
-  }
-
-  #av-grid .audio-card .wave {
-    grid-column: 2;
-    grid-row: 1;
-    width: 100%;
-    height: var(--digest-player-art);
-    min-width: 0;
-    flex-basis: auto;
-  }
-
-  #av-grid .audio-card .controls {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    width: 100%;
-    margin: 0;
-  }
-
-  #av-grid .audio-card .art-col:empty {
-    display: none;
-  }
-
-  #av-grid .audio-card:has(> .art-col:empty) {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  #av-grid .audio-card:has(> .art-col:empty) .wave {
-    grid-column: 1;
+    @include audio-card-grid-layout(
+      var(--digest-player-art),
+      var(--digest-player-art),
+      14px
+    );
   }
 }
 
