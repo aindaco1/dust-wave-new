@@ -75,22 +75,28 @@ assert.doesNotMatch(footer, /wavesurfer\.js|WAVESURFER_/i);
 assert.match(themeStyles, /@import "themes\/base\/audio-player"/);
 assert.match(embedStyles, /@import "themes\/base\/audio-player"/);
 assert.match(playerStyles, /\.audio-card/);
-assert.match(playerStyles, /@media \(max-width: 420px\)/);
+assert.match(playerStyles, /@media \(max-width: 540px\)/);
 assert.match(playerStyles, /@media \(max-width: 360px\)/);
 assert.match(playerStyles, /flex-wrap: wrap/);
 const compactMobileStyles = playerStyles.match(
-  /@media \(max-width: 420px\)\{([\s\S]*?)\n\}\n@media \(max-width: 360px\)/
+  /@media \(max-width: 540px\)\{([\s\S]*?)\n\}\n@media \(max-width: 360px\)/
 )?.[1];
 assert.ok(compactMobileStyles, 'Expected the compact mobile player styles');
 assert.match(compactMobileStyles, /display: grid/);
 assert.match(compactMobileStyles, /height: auto/);
 assert.match(compactMobileStyles, /grid-column: 1 \/ -1/);
-assert.match(compactMobileStyles, /--art-w: clamp\(88px, 28vw, 104px\)/);
+assert.match(compactMobileStyles, /--art-w: clamp\(88px, 28vw, 136px\)/);
+assert.match(compactMobileStyles, /\.audio-card > img,[\s\S]*\.audio-card \.art-col/);
+assert.match(compactMobileStyles, /object-fit: cover/);
 const narrowMobileStyles = playerStyles.match(
-  /@media \(max-width: 360px\)\{([\s\S]*?)\n\}\n@media \(min-width: 421px\)/
+  /@media \(max-width: 360px\)\{([\s\S]*?)\n\}\n\n\/\* Tooltip/
 )?.[1];
 assert.ok(narrowMobileStyles, 'Expected the narrow mobile player styles');
 assert.doesNotMatch(narrowMobileStyles, /--audio-h:/);
+assert.doesNotMatch(
+  playerStyles,
+  /@media \(min-width: 421px\) and \(max-width: 540px\)/
+);
 assert.match(
   playerStyles,
   /button:not\(\[data-audio-speed\]\)\{ width:44px; height:44px;/
