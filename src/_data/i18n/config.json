@@ -37,6 +37,14 @@
       "en": "/microcinema.html",
       "es": "/es/microcinema.html"
     },
+    "brandedContent": {
+      "en": "/branded-content.html",
+      "es": "/es/branded-content.html"
+    },
+    "writersGroup": {
+      "en": "/writers-group.html",
+      "es": "/es/writers-group.html"
+    },
     "newsletter": {
       "en": "/newsletter.html",
       "es": "/es/newsletter.html"

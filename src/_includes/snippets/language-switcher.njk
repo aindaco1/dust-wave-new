@@ -18,6 +18,13 @@
     es: page.url if currentLanguage == "es" else i18n.config.pages.news.es
   } %}
 {% endif %}
+{% if not pagePaths %}
+  {# Keep both language controls present on pages that do not yet have a translated twin. #}
+  {% set pagePaths = {
+    en: page.url if currentLanguage == "en" else i18n.config.pages.home.en,
+    es: page.url if currentLanguage == "es" else i18n.config.pages.home.es
+  } %}
+{% endif %}
 {% if pagePaths %}
 <nav class="site-footer__lang-switcher" aria-label="{{ i18n | t(currentLanguage, 'nav.languageSwitcher') }}">
   {% for lang in i18n.config.supportedLangs %}

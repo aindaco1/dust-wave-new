@@ -1,0 +1,174 @@
+---
+layout: layouts/default.njk
+navbar: navbar1
+footer: footer1
+colorModifier: dark
+bodyModifier: writers-group-shell
+translationKey: writersGroup
+pagination:
+  data: i18n.config.supportedLangs
+  size: 1
+  alias: language
+permalink: "{{ i18n.config.pages.writersGroup[language] }}"
+eleventyComputed:
+  title: "{{ i18n[language].pages.writersGroup.title }}"
+  description: "{{ i18n[language].pages.writersGroup.description }}"
+  og_alt: "{{ i18n[language].pages.writersGroup.ogAlt }}"
+og_image: /img/newsletter/meetup-03.jpg
+og_image_width: 801
+og_image_height: 535
+---
+<style>
+  #popup { display: none !important; }
+</style>
+
+<div class="container writers-group-page">
+  <header class="writers-group-hero">
+    <div class="writers-group-hero__copy">
+      <p class="writers-group-eyebrow">{{ i18n | t(language, "pages.writersGroup.eyebrow") }}</p>
+      <h1>{{ i18n | t(language, "pages.writersGroup.heroTitle") }}</h1>
+      <p class="writers-group-hero__lead">{{ i18n | t(language, "pages.writersGroup.heroLeadBeforeTime") }} <strong>{{ i18n | t(language, "pages.writersGroup.heroTime") }}</strong> {{ i18n | t(language, "pages.writersGroup.heroLeadAfterTime") }}</p>
+      <p class="writers-group-hero__welcome">{{ i18n | t(language, "pages.writersGroup.heroWelcome") }}</p>
+    </div>
+
+    <figure class="writers-group-hero__media">
+      <img src="/img/newsletter/meetup-03.jpg" width="801" height="535" alt="{{ i18n | t(language, 'pages.writersGroup.photoAlt') }}">
+      <figcaption>{{ i18n | t(language, "pages.writersGroup.photoCaption") }}</figcaption>
+    </figure>
+  </header>
+
+  <div class="writers-group-body">
+    <section class="writers-group-details" aria-labelledby="details-heading">
+      <div>
+        <p class="writers-group-eyebrow">{{ i18n | t(language, "pages.writersGroup.meetingEyebrow") }}</p>
+        <h2 id="details-heading">{{ i18n | t(language, "pages.writersGroup.detailsHeading") }}</h2>
+      </div>
+      <dl>
+        <div>
+          <dt>{{ i18n | t(language, "pages.writersGroup.whenLabel") }}</dt>
+          <dd>{{ i18n | t(language, "pages.writersGroup.whenValue") }}</dd>
+        </div>
+        <div>
+          <dt>{{ i18n | t(language, "pages.writersGroup.whereLabel") }}</dt>
+          <dd>
+            <address>
+              <a href="https://www.google.com/maps/search/?api=1&amp;query=709+Haines+Ave+NW%2C+Albuquerque%2C+NM+87102" target="_blank" rel="noopener noreferrer">709 Haines Ave NW<br>Albuquerque, NM 87102</a>
+            </address>
+          </dd>
+        </div>
+        <div>
+          <dt>{{ i18n | t(language, "pages.writersGroup.lengthLabel") }}</dt>
+          <dd>{{ i18n | t(language, "pages.writersGroup.lengthValue") }}</dd>
+        </div>
+        <div>
+          <dt>{{ i18n | t(language, "pages.writersGroup.parkingLabel") }}</dt>
+          <dd>{{ i18n | t(language, "pages.writersGroup.parkingBody") }} <a href="/img/microcinema/dw-hq-parking-map.png" target="_blank" rel="noopener">{{ i18n | t(language, "pages.writersGroup.parkingLink") }}</a></dd>
+        </div>
+      </dl>
+      <p class="writers-group-details__note">{{ i18n | t(language, "pages.writersGroup.detailsNoteBeforeLink") }} <a href="{{ i18n | localizedUrl(language, 'contact', '/contact.html') }}">{{ i18n | t(language, "pages.writersGroup.detailsNoteLink") }}</a> {{ i18n | t(language, "pages.writersGroup.detailsNoteAfterLink") }}</p>
+    </section>
+
+    <section class="writers-group-section writers-group-process" aria-labelledby="process-heading">
+      <div class="writers-group-section__intro">
+        <div>
+          <p class="writers-group-eyebrow">{{ i18n | t(language, "pages.writersGroup.processEyebrow") }}</p>
+          <h2 id="process-heading">{{ i18n | t(language, "pages.writersGroup.processHeading") }}</h2>
+        </div>
+        <p>{{ i18n | t(language, "pages.writersGroup.processIntro") }}</p>
+      </div>
+
+      <ol class="writers-group-steps">
+        <li>
+          <h3>{{ i18n | t(language, "pages.writersGroup.rolesTitle") }}</h3>
+          <p>{{ i18n | t(language, "pages.writersGroup.rolesBody") }}</p>
+        </li>
+        <li>
+          <h3>{{ i18n | t(language, "pages.writersGroup.readTitle") }}</h3>
+          <p>{{ i18n | t(language, "pages.writersGroup.readBody") }}</p>
+        </li>
+        <li>
+          <h3>{{ i18n | t(language, "pages.writersGroup.discussTitle") }}</h3>
+          <p>{{ i18n | t(language, "pages.writersGroup.discussBody") }}</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="writers-group-section writers-group-bring" aria-labelledby="scripts-heading">
+      <div>
+        <p class="writers-group-eyebrow">{{ i18n | t(language, "pages.writersGroup.scriptsEyebrow") }}</p>
+        <h2 id="scripts-heading">{{ i18n | t(language, "pages.writersGroup.scriptsHeading") }}</h2>
+      </div>
+      <div class="writers-group-bring__cards">
+        <article>
+          <h3>{{ i18n | t(language, "pages.writersGroup.submitTitle") }}</h3>
+          <p>{{ i18n | t(language, "pages.writersGroup.submitBodyBeforeLimit") }} <strong>{{ i18n | t(language, "pages.writersGroup.submitLimit") }}</strong>. {{ i18n | t(language, "pages.writersGroup.submitBodyAfterLimit") }} <a href="{{ i18n | localizedUrl(language, 'contact', '/contact.html') }}">{{ i18n | t(language, "pages.writersGroup.submitLink") }}</a> {{ i18n | t(language, "pages.writersGroup.submitBodyAfterLink") }}</p>
+        </article>
+        <article>
+          <h3>{{ i18n | t(language, "pages.writersGroup.attendTitle") }}</h3>
+          <p>{{ i18n | t(language, "pages.writersGroup.attendBody") }}</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="writers-group-section writers-group-rules" aria-labelledby="expectations-heading">
+      <div class="writers-group-rules__heading">
+        <p class="writers-group-eyebrow">{{ i18n | t(language, "pages.writersGroup.rulesEyebrow") }}</p>
+        <h2 id="expectations-heading">{{ i18n | t(language, "pages.writersGroup.rulesHeading") }}</h2>
+      </div>
+      <div class="writers-group-rules__list">
+        <div>
+          <strong>{{ i18n | t(language, "pages.writersGroup.carryTitle") }}</strong>
+          <p>{{ i18n | t(language, "pages.writersGroup.carryBody") }}</p>
+        </div>
+        <div>
+          <strong>{{ i18n | t(language, "pages.writersGroup.notesTitle") }}</strong>
+          <p>{{ i18n | t(language, "pages.writersGroup.notesBody") }}</p>
+        </div>
+        <div>
+          <strong>{{ i18n | t(language, "pages.writersGroup.listenTitle") }}</strong>
+          <p>{{ i18n | t(language, "pages.writersGroup.listenBody") }}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="writers-group-section writers-group-screen" aria-labelledby="screen-heading">
+      <div class="writers-group-screen__copy">
+        <p class="writers-group-eyebrow">{{ i18n | t(language, "pages.writersGroup.screenEyebrow") }}</p>
+        <h2 id="screen-heading">{{ i18n | t(language, "pages.writersGroup.screenHeading") }}</h2>
+        <p>{{ i18n | t(language, "pages.writersGroup.screenBody") }}</p>
+      </div>
+      <div class="writers-group-screen__films" aria-label="{{ i18n | t(language, 'pages.writersGroup.filmGridAria') }}">
+        <a href="{{ projectTaxonomy | localizedProjectUrl('shellfish-knish', language) }}">
+          <img src="/img/stills/shellfishstill.jpg" alt="{{ i18n | t(language, 'pages.writersGroup.shellfishAlt') }}" loading="lazy" decoding="async">
+          <span><em>Shellfish Knish</em></span>
+        </a>
+        <a href="{{ projectTaxonomy | localizedProjectUrl('pandora-s-greenhouse', language) }}">
+          <img src="/img/stills/pandorastill.jpg" alt="{{ i18n | t(language, 'pages.writersGroup.pandoraAlt') }}" loading="lazy" decoding="async">
+          <span><em>Pandora's Greenhouse</em></span>
+        </a>
+        <a href="{{ projectTaxonomy | localizedProjectUrl('horseheads', language) }}">
+          <img src="/img/stills/horseheadsstill.jpg" alt="{{ i18n | t(language, 'pages.writersGroup.horseheadsAlt') }}" loading="lazy" decoding="async">
+          <span><em>Horseheads</em></span>
+        </a>
+        <a href="{{ projectTaxonomy | localizedProjectUrl('long-night', language) }}">
+          <img src="/img/stills/longnightstill.jpg" alt="{{ i18n | t(language, 'pages.writersGroup.longNightAlt') }}" loading="lazy" decoding="async">
+          <span><em>Long Night</em></span>
+        </a>
+        <a href="{{ projectTaxonomy | localizedProjectUrl('just-hang-on', language) }}">
+          <img src="/img/stills/justhangonstill.jpg" alt="{{ i18n | t(language, 'pages.writersGroup.justHangOnAlt') }}" loading="lazy" decoding="async">
+          <span><em>Just Hang On</em></span>
+        </a>
+        <a href="{{ projectTaxonomy | localizedProjectUrl('red-razor-on-soft-skin', language) }}">
+          <img src="/img/digest/header/digest-header-2.jpg" alt="{{ i18n | t(language, 'pages.writersGroup.redRazorAlt') }}" loading="lazy" decoding="async">
+          <span><em>Red Razor on Soft Skin</em></span>
+        </a>
+      </div>
+    </section>
+
+    <section class="writers-group-section writers-group-contact" aria-labelledby="contact-heading">
+      <p class="writers-group-eyebrow">{{ i18n | t(language, "pages.writersGroup.contactEyebrow") }}</p>
+      <h2 id="contact-heading">{{ i18n | t(language, "pages.writersGroup.contactHeading") }}</h2>
+      <p>{{ i18n | t(language, "pages.writersGroup.contactBeforeLink") }} <a href="{{ i18n | localizedUrl(language, 'contact', '/contact.html') }}">{{ i18n | t(language, "pages.writersGroup.contactLink") }}</a> {{ i18n | t(language, "pages.writersGroup.contactAfterLink") }}</p>
+    </section>
+  </div>
+</div>

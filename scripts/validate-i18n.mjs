@@ -127,6 +127,8 @@ const localizedMarketingTemplates = new Map([
   ["partners.njk", "partners"],
   ["contact.njk", "contact"],
   ["microcinema.njk", "microcinema"],
+  ["branded-content.njk", "brandedContent"],
+  ["writers-group.njk", "writersGroup"],
   ["newsletter.njk", "newsletter"],
   ["404.njk", "error404"],
   ["dds-donation.njk", "ddsDonate"],

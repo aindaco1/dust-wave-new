@@ -180,7 +180,7 @@
 		if (!vid) return;
 
 		const title  = ifr.getAttribute('title') || 'YouTube video';
-		const poster = `https://i.ytimg.com/vi/${vid}/hqdefault.jpg`;
+		const poster = ifr.dataset.poster || `https://i.ytimg.com/vi/${vid}/hqdefault.jpg`;
 
 		const ratio = document.createElement('div');
 		ratio.className = 'embed-lite__ratio';

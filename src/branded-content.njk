@@ -1,0 +1,247 @@
+---
+layout: layouts/default.njk
+navbar: navbar1
+footer: footer1
+colorModifier: dark
+translationKey: brandedContent
+pagination:
+  data: i18n.config.supportedLangs
+  size: 1
+  alias: language
+permalink: "{{ i18n.config.pages.brandedContent[language] }}"
+eleventyComputed:
+  title: "{{ i18n[language].pages.brandedContent.title }}"
+  description: "{{ i18n[language].pages.brandedContent.description }}"
+  og_alt: "{{ i18n[language].pages.brandedContent.ogAlt }}"
+og_image: /img/branded-content/zemabar-homepage.jpg
+og_image_width: 1440
+og_image_height: 900
+---
+<style>
+  #popup { display: none !important; }
+</style>
+
+<div class="container branded-content-page">
+  <header class="branded-content-hero">
+    <div class="branded-content-hero__copy">
+      <h1>{{ i18n | t(language, "pages.brandedContent.heroTitleBefore") }} <em>{{ i18n | t(language, "pages.brandedContent.heroTitleEmphasis") }}</em> {{ i18n | t(language, "pages.brandedContent.heroTitleAfter") }}</h1>
+      <p class="branded-content-hero__lead"><strong>{{ i18n | t(language, "pages.brandedContent.heroLeadStrong") }}</strong> {{ i18n | t(language, "pages.brandedContent.heroLeadRest") }}</p>
+      <p class="branded-content-hero__aside">{{ i18n | t(language, "pages.brandedContent.heroAside") }}</p>
+      <div class="branded-content-actions">
+        <a class="branded-content-button branded-content-button--primary" href="#inquiry">{{ i18n | t(language, "pages.brandedContent.primaryAction") }}</a>
+        <a class="branded-content-button" href="#zema-case-study">{{ i18n | t(language, "pages.brandedContent.secondaryAction") }}</a>
+      </div>
+    </div>
+
+    <aside class="branded-content-hero__statement" aria-label="{{ i18n | t(language, 'pages.brandedContent.statementAria') }}">
+      <strong>{{ i18n | t(language, "pages.brandedContent.statementTitle") }}</strong>
+      <span>{{ i18n | t(language, "pages.brandedContent.statementBody") }}</span>
+    </aside>
+  </header>
+
+  <div class="branded-content-body">
+    <section class="branded-content-section branded-content-case" id="zema-case-study" aria-labelledby="zema-heading">
+      <div class="branded-content-case__intro">
+        <div>
+          <p class="branded-content-eyebrow">{{ i18n | t(language, "pages.brandedContent.caseEyebrow") }}</p>
+          <h2 id="zema-heading">{{ i18n | t(language, "pages.brandedContent.caseHeading") }}</h2>
+        </div>
+        <div class="branded-content-prose">
+          <p>{{ i18n | t(language, "pages.brandedContent.caseBody1BeforeZema") }} <a href="https://zemabar.com" target="_blank" rel="noopener noreferrer">ZEMA Vinyl Lounge</a> {{ i18n | t(language, "pages.brandedContent.caseBody1BetweenZemaHotel") }} <a href="https://hotelzazz.com" target="_blank" rel="noopener noreferrer">Hotel Zazz</a>, {{ i18n | t(language, "pages.brandedContent.caseBody1AfterHotel") }} <a href="{{ projectTaxonomy | localizedProjectUrl('from-zema-with-love', language) }}"><em>From Zema With Love</em></a>{{ i18n | t(language, "pages.brandedContent.caseBody1End") }}</p>
+          <p>{{ i18n | t(language, "pages.brandedContent.caseBody2BeforeLink") }} <a href="https://zemabar.com" target="_blank" rel="noopener noreferrer">zemabar.com</a>, {{ i18n | t(language, "pages.brandedContent.caseBody2AfterLink") }}</p>
+        </div>
+      </div>
+
+      <figure class="branded-content-video">
+        <div class="branded-content-video__frame">
+          <iframe src="https://www.youtube-nocookie.com/embed/He3yv-EXuRk?rel=0" data-poster="/img/stills/from-zema-with-love.jpg" title="{{ i18n | t(language, 'pages.brandedContent.videoTitle') }}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+        <figcaption>{{ i18n | t(language, "pages.brandedContent.videoCaptionBefore") }} <em>From Zema With Love</em>, {{ i18n | t(language, "pages.brandedContent.videoCaptionAfter") }}</figcaption>
+      </figure>
+
+      <figure class="branded-content-browser">
+        <div class="branded-content-browser__bar" aria-hidden="true"><span></span><span></span><span></span></div>
+        <a href="https://zemabar.com" target="_blank" rel="noopener noreferrer">
+          <img src="/img/branded-content/zemabar-homepage.jpg" width="1440" height="900" alt="{{ i18n | t(language, 'pages.brandedContent.browserAlt') }}">
+        </a>
+        <figcaption>{{ i18n | t(language, "pages.brandedContent.browserCaption") }} <a href="https://zemabar.com" target="_blank" rel="noopener noreferrer">zemabar.com</a></figcaption>
+      </figure>
+    </section>
+
+    <section class="branded-content-section" aria-labelledby="what-we-make-heading">
+      <div class="branded-content-section__heading">
+        <p class="branded-content-eyebrow">{{ i18n | t(language, "pages.brandedContent.whatEyebrow") }}</p>
+        <h2 id="what-we-make-heading">{{ i18n | t(language, "pages.brandedContent.whatHeading") }}</h2>
+        <p>{{ i18n | t(language, "pages.brandedContent.whatIntro") }}</p>
+      </div>
+
+      <ol class="branded-content-offer list-unstyled">
+        <li>
+          <span class="branded-content-offer__number" aria-hidden="true">01</span>
+          <h3>{{ i18n | t(language, "pages.brandedContent.offerFilmTitle") }}</h3>
+          <p>{{ i18n | t(language, "pages.brandedContent.offerFilmBody") }}</p>
+        </li>
+        <li>
+          <span class="branded-content-offer__number" aria-hidden="true">02</span>
+          <h3>{{ i18n | t(language, "pages.brandedContent.offerCrewTitle") }}</h3>
+          <p>{{ i18n | t(language, "pages.brandedContent.offerCrewBody") }}</p>
+        </li>
+        <li>
+          <span class="branded-content-offer__number" aria-hidden="true">03</span>
+          <h3>{{ i18n | t(language, "pages.brandedContent.offerSocialTitle") }}</h3>
+          <p>{{ i18n | t(language, "pages.brandedContent.offerSocialBody") }}</p>
+        </li>
+        <li>
+          <span class="branded-content-offer__number" aria-hidden="true">04</span>
+          <h3>{{ i18n | t(language, "pages.brandedContent.offerWebTitle") }}</h3>
+          <p>{{ i18n | t(language, "pages.brandedContent.offerWebBody") }}</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="branded-content-section branded-content-trust" aria-labelledby="trust-heading">
+      <div class="branded-content-trust__heading">
+        <p class="branded-content-eyebrow">{{ i18n | t(language, "pages.brandedContent.trustEyebrow") }}</p>
+        <h2 id="trust-heading">{{ i18n | t(language, "pages.brandedContent.trustHeading") }}</h2>
+      </div>
+      <div class="branded-content-trust__copy">
+        <p>{{ i18n | t(language, "pages.brandedContent.trustBody1") }}</p>
+        <p>{{ i18n | t(language, "pages.brandedContent.trustBody2") }}</p>
+        <p>{{ i18n | t(language, "pages.brandedContent.trustBody3") }}</p>
+      </div>
+    </section>
+
+    <section class="branded-content-section branded-content-proof" aria-labelledby="proof-heading">
+      <div class="branded-content-proof__intro">
+        <div>
+          <p class="branded-content-eyebrow">{{ i18n | t(language, "pages.brandedContent.proofEyebrow") }}</p>
+          <h2 id="proof-heading">{{ i18n | t(language, "pages.brandedContent.proofHeading") }}</h2>
+        </div>
+        <div class="branded-content-prose">
+          <p>{{ i18n | t(language, "pages.brandedContent.proofBody1") }}</p>
+          <p>{{ i18n | t(language, "pages.brandedContent.proofBody2") }}</p>
+        </div>
+      </div>
+
+      <div class="branded-content-film-grid" aria-label="{{ i18n | t(language, 'pages.brandedContent.filmGridAria') }}">
+        <a class="branded-content-film" href="{{ projectTaxonomy | localizedProjectUrl('red-razor-on-soft-skin', language) }}">
+          <img src="/img/digest/header/digest-header-2.jpg" alt="{{ i18n | t(language, 'pages.brandedContent.redRazorAlt') }}" loading="lazy" decoding="async">
+          <span><strong><em>Red Razor on Soft Skin</em></strong><small>{{ i18n | t(language, "pages.brandedContent.redRazorGenre") }}</small></span>
+        </a>
+        <a class="branded-content-film" href="{{ projectTaxonomy | localizedProjectUrl('pandora-s-greenhouse', language) }}">
+          <img src="/img/stills/pandorastill.jpg" alt="{{ i18n | t(language, 'pages.brandedContent.pandoraAlt') }}" loading="lazy" decoding="async">
+          <span><strong><em>Pandora’s Greenhouse</em></strong><small>{{ i18n | t(language, "pages.brandedContent.pandoraGenre") }}</small></span>
+        </a>
+        <a class="branded-content-film" href="{{ projectTaxonomy | localizedProjectUrl('the-haunters', language) }}">
+          <img src="/img/stills/thehauntersstill.jpg" alt="{{ i18n | t(language, 'pages.brandedContent.hauntersAlt') }}" loading="lazy" decoding="async">
+          <span><strong><em>The Haunters</em></strong><small>{{ i18n | t(language, "pages.brandedContent.hauntersGenre") }}</small></span>
+        </a>
+        <a class="branded-content-film" href="{{ projectTaxonomy | localizedProjectUrl('movie-monsters', language) }}">
+          <img src="/img/stills/moviemonstersstill.jpg" alt="{{ i18n | t(language, 'pages.brandedContent.monstersAlt') }}" loading="lazy" decoding="async">
+          <span><strong><em>Movie Monsters</em></strong><small>{{ i18n | t(language, "pages.brandedContent.monstersGenre") }}</small></span>
+        </a>
+        <a class="branded-content-film" href="{{ projectTaxonomy | localizedProjectUrl('dead-ballerina', language) }}">
+          <img src="/img/stills/deadballerinastill.jpg" alt="{{ i18n | t(language, 'pages.brandedContent.ballerinaAlt') }}" loading="lazy" decoding="async">
+          <span><strong><em>Dead Ballerina</em></strong><small>{{ i18n | t(language, "pages.brandedContent.ballerinaGenre") }}</small></span>
+        </a>
+        <a class="branded-content-film" href="{{ projectTaxonomy | localizedProjectUrl('high-times-at-the-ranger-bowl-a-rama', language) }}">
+          <img src="/img/stills/hightimesstill.png" alt="{{ i18n | t(language, 'pages.brandedContent.highTimesAlt') }}" loading="lazy" decoding="async">
+          <span><strong><em>High Times at the Ranger Bowl-a-Rama</em></strong><small>{{ i18n | t(language, "pages.brandedContent.highTimesGenre") }}</small></span>
+        </a>
+      </div>
+    </section>
+
+    <section class="branded-content-section branded-content-inquiry" id="inquiry" aria-labelledby="inquiry-heading">
+      <div class="branded-content-inquiry__intro">
+        <p class="branded-content-eyebrow">{{ i18n | t(language, "pages.brandedContent.inquiryEyebrow") }}</p>
+        <h2 id="inquiry-heading">{{ i18n | t(language, "pages.brandedContent.inquiryHeading") }}</h2>
+        <p>{{ i18n | t(language, "pages.brandedContent.inquiryBody") }}</p>
+        <p class="branded-content-inquiry__note">{{ i18n | t(language, "pages.brandedContent.inquiryNote") }}</p>
+      </div>
+
+      <div class="branded-content-inquiry__form-wrap">
+        <p class="branded-content-form-success" data-branded-form-success hidden>{{ i18n | t(language, "pages.brandedContent.formSuccess") }}</p>
+        <form class="branded-content-form" method="post" action="https://formspree.io/f/xvkorpoq" id="branded-content-form">
+          <input type="hidden" name="_subject" value="{{ i18n | t(language, 'pages.brandedContent.formSubject') }}">
+          <input type="hidden" name="service" value="{{ i18n | t(language, 'pages.brandedContent.formService') }}">
+          <input type="hidden" name="_next" value="https://dustwave.xyz{{ i18n | localizedUrl(language, 'brandedContent', '/branded-content.html') }}?submitted=1#inquiry">
+          <div class="branded-content-form__trap" aria-hidden="true">
+            <label for="branded-company-url">{{ i18n | t(language, "pages.brandedContent.formTrap") }}</label>
+            <input id="branded-company-url" type="text" name="_gotcha" tabindex="-1" autocomplete="off">
+          </div>
+
+          <div class="branded-content-form__row">
+            <div class="branded-content-form__field">
+              <label for="branded-name">{{ i18n | t(language, "pages.brandedContent.nameLabel") }} <span aria-hidden="true">*</span></label>
+              <input id="branded-name" type="text" name="name" autocomplete="name" required>
+            </div>
+            <div class="branded-content-form__field">
+              <label for="branded-email">{{ i18n | t(language, "pages.brandedContent.emailLabel") }} <span aria-hidden="true">*</span></label>
+              <input id="branded-email" type="email" name="email" autocomplete="email" inputmode="email" required>
+            </div>
+          </div>
+
+          <div class="branded-content-form__row">
+            <div class="branded-content-form__field">
+              <label for="branded-business">{{ i18n | t(language, "pages.brandedContent.businessLabel") }} <span aria-hidden="true">*</span></label>
+              <input id="branded-business" type="text" name="business" autocomplete="organization" required>
+            </div>
+            <div class="branded-content-form__field">
+              <label for="branded-website">{{ i18n | t(language, "pages.brandedContent.websiteLabel") }}</label>
+              <input id="branded-website" type="url" name="website" autocomplete="url" inputmode="url" placeholder="https://">
+            </div>
+          </div>
+
+          <div class="branded-content-form__row">
+            <div class="branded-content-form__field">
+              <label for="branded-location">{{ i18n | t(language, "pages.brandedContent.locationLabel") }} <span aria-hidden="true">*</span></label>
+              <select id="branded-location" name="location" required>
+                <option value="">{{ i18n | t(language, "pages.brandedContent.chooseOne") }}</option>
+                <option value="Albuquerque area">{{ i18n | t(language, "pages.brandedContent.locationAlbuquerque") }}</option>
+                <option value="Santa Fe area">{{ i18n | t(language, "pages.brandedContent.locationSantaFe") }}</option>
+                <option value="Elsewhere in New Mexico">{{ i18n | t(language, "pages.brandedContent.locationElsewhereNm") }}</option>
+                <option value="Outside New Mexico">{{ i18n | t(language, "pages.brandedContent.locationOutsideNm") }}</option>
+              </select>
+            </div>
+            <div class="branded-content-form__field">
+              <label for="branded-budget">{{ i18n | t(language, "pages.brandedContent.budgetLabel") }} <span aria-hidden="true">*</span></label>
+              <select id="branded-budget" name="budget" aria-describedby="branded-budget-help" required>
+                <option value="">{{ i18n | t(language, "pages.brandedContent.chooseRange") }}</option>
+                <option value="Under $5,000 — not a fit">{{ i18n | t(language, "pages.brandedContent.budgetUnder") }}</option>
+                <option value="$5,000–$9,999">$5,000–$9,999</option>
+                <option value="$10,000–$14,999 — sweet spot">{{ i18n | t(language, "pages.brandedContent.budgetSweet") }}</option>
+                <option value="$15,000–$24,999">$15,000–$24,999</option>
+                <option value="$25,000+">$25,000+</option>
+              </select>
+              <small id="branded-budget-help">{{ i18n | t(language, "pages.brandedContent.budgetHelp") }}</small>
+            </div>
+          </div>
+
+          <div class="branded-content-form__field">
+            <label for="branded-story">{{ i18n | t(language, "pages.brandedContent.storyLabel") }} <span aria-hidden="true">*</span></label>
+            <textarea id="branded-story" name="story" rows="7" placeholder="{{ i18n | t(language, 'pages.brandedContent.storyPlaceholder') }}" required></textarea>
+          </div>
+
+          <label class="branded-content-form__agreement" for="branded-trust">
+            <input id="branded-trust" type="checkbox" name="creative_trust" value="Yes" required>
+            <span>{{ i18n | t(language, "pages.brandedContent.trustAgreement") }} <span aria-hidden="true">*</span></span>
+          </label>
+
+          <div class="cf-turnstile" data-sitekey="{% if environment == 'production' %}0x4AAAAAAAAudwxAIPEUguw8{% else %}1x00000000000000000000AA{% endif %}" data-callback="javascriptCallback" data-theme="dark" data-language="{{ language }}"></div>
+
+          <button class="branded-content-button branded-content-button--primary branded-content-form__submit" type="submit">{{ i18n | t(language, "pages.brandedContent.submit") }}</button>
+        </form>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<script>
+(() => {
+  const success = document.querySelector('[data-branded-form-success]');
+  if (!success) return;
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('submitted') === '1') success.hidden = false;
+})();
+</script>

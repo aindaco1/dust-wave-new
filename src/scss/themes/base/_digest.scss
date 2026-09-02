@@ -21,6 +21,21 @@
   min-width: 0;
 }
 
+.digest-feature__logo-link,
+.digest-feature__logo {
+  display: block;
+}
+
+.digest-feature__logo-link {
+  width: min(100%, 18rem);
+  margin: 0 auto 1rem;
+}
+
+.digest-feature__logo {
+  width: 100%;
+  height: auto;
+}
+
 .digest-feature__media > a,
 .digest-feature__media img {
   display: block;

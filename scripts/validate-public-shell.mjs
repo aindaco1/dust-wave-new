@@ -19,7 +19,8 @@ const [
   i18nConfigRaw,
   newsLayout,
   postLayout,
-  entryNavigation
+  entryNavigation,
+  languageSwitcher
 ] = await Promise.all([
   readFile(new URL("../src/_includes/snippets/footer1.njk", import.meta.url), "utf8"),
   readFile(new URL("../src/_includes/snippets/site-footer.njk", import.meta.url), "utf8"),
@@ -38,7 +39,8 @@ const [
   readFile(new URL("../src/_data/i18n/config.json", import.meta.url), "utf8"),
   readFile(new URL("../src/_includes/layouts/new.njk", import.meta.url), "utf8"),
   readFile(new URL("../src/_includes/layouts/post.njk", import.meta.url), "utf8"),
-  readFile(new URL("../src/_includes/snippets/entryprevnext.njk", import.meta.url), "utf8")
+  readFile(new URL("../src/_includes/snippets/entryprevnext.njk", import.meta.url), "utf8"),
+  readFile(new URL("../src/_includes/snippets/language-switcher.njk", import.meta.url), "utf8")
 ]);
 const { default: socialPages } = await import("../src/_data/socialPages.js");
 const i18nConfig = JSON.parse(i18nConfigRaw);
@@ -70,6 +72,12 @@ assert.equal(
   "The shared footer must keep three top-level items."
 );
 assert.doesNotMatch(siteFooter, /site-footer__updates|footer\.newsletter/);
+assert.match(siteFooter, /class="site-footer__brand-mark"/);
+assert.match(siteFooter, /src="\/img\/favicon\/favicon\.png"/);
+assert.match(
+  languageSwitcher,
+  /\{% if not pagePaths %\}[\s\S]*en: page\.url if currentLanguage == "en" else i18n\.config\.pages\.home\.en,[\s\S]*es: page\.url if currentLanguage == "es" else i18n\.config\.pages\.home\.es/
+);
 
 for (const [name, layout] of [
   ["Podcast Admin", adminLayout],
@@ -113,15 +121,15 @@ assert.match(
 );
 assert.match(
   styles,
-  /@media only screen and \(max-width:\s*400px\)[\s\S]*#footer-items-column\s*\{[\s\S]*font-size:\s*\.8rem;[\s\S]*grid-template-columns:\s*1fr;[\s\S]*row-gap:\s*\.75rem;/
+  /@media only screen and \(max-width:\s*480px\)[\s\S]*#footer-items-column\s*\{[\s\S]*font-size:\s*\.8rem;[\s\S]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto;[\s\S]*row-gap:\s*\.65rem;/
 );
 assert.match(
   styles,
-  /@media only screen and \(max-width:\s*400px\)[\s\S]*\.site-footer__copyright,[\s\S]*\.site-footer__language\s*\{[\s\S]*justify-content:\s*center;[\s\S]*text-align:\s*center;/
+  /@media only screen and \(max-width:\s*480px\)[\s\S]*\.site-footer__copyright\s*\{[\s\S]*grid-column:\s*1;[\s\S]*grid-row:\s*1;[\s\S]*justify-content:\s*flex-start;/
 );
 assert.match(
   styles,
-  /@media only screen and \(max-width:\s*400px\)[\s\S]*\.site-footer__lang-switcher\s*\{[\s\S]*justify-content:\s*center;/
+  /@media only screen and \(max-width:\s*480px\)[\s\S]*\.footer-social\s*\{[\s\S]*grid-column:\s*1\s*\/\s*-1;[\s\S]*grid-row:\s*2;/
 );
 assert.match(styles, /\.site-footer__language\s*\{[\s\S]*justify-content:\s*flex-end/);
 assert.match(

@@ -12,15 +12,17 @@ hoverVideoPoster: /img/stills/from-zema-with-love.jpg
 tags:
   - branded
   - noir
-  - coming-soon
+  - released
 galleryHeading: Behind the scenes
 galleryImages:
   - src: /img/from-zema-with-love/bts-1.jpg
     alt: Cast and crew prepare a colorful bar scene inside the Zema Vinyl Lounge
   - src: /img/from-zema-with-love/bts-2.jpg
     alt: The camera team prepares a shot with the agent inside the Zema Vinyl Lounge
-movieComingSoon: true
-movieHeading: Movie
+projectVideos:
+  - heading: Movie
+    id: He3yv-EXuRk
+    type: youtube
 ---
 
 _From Zema With Love_ is a branded spy short created for the [Zema Vinyl Lounge](https://zemabar.com) at [Hotel Zazz](https://hotelzazz.com) in Albuquerque, New Mexico. A Dust Wave / Phantasmagoria production, the film premieres September 1, 2026.
