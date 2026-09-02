@@ -41,8 +41,6 @@ And now, the digest:
 <br><br>
 
 <nav id="digest-toc" class="my-3 digest-toc">
-  <h2 class="mb-2 gambado">Contents</h2>
-  <br>
   <!-- JS will inject section headings + lists here -->
   <div id="digest-toc-body"></div>
 </nav>
