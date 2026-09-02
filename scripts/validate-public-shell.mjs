@@ -121,17 +121,21 @@ assert.match(
 );
 assert.match(
   styles,
-  /@media only screen and \(max-width:\s*480px\)[\s\S]*#footer-items-column\s*\{[\s\S]*font-size:\s*\.72rem;[\s\S]*grid-template-columns:\s*max-content\s+minmax\(0,\s*1fr\)\s+max-content;[\s\S]*row-gap:\s*0;/
+  /@media only screen and \(max-width:\s*480px\)[\s\S]*#footer-items-column\s*\{[\s\S]*font-size:\s*\.72rem;[\s\S]*grid-template-columns:\s*max-content\s+minmax\(0,\s*1fr\)\s+max-content;[\s\S]*padding-inline:\s*clamp\(\.75rem,\s*4vw,\s*1rem\);[\s\S]*row-gap:\s*0;/
 );
 assert.match(
   styles,
-  /@media only screen and \(max-width:\s*480px\)[\s\S]*\.site-footer__copyright\s*\{[\s\S]*grid-column:\s*1;[\s\S]*grid-row:\s*1;[\s\S]*justify-content:\s*flex-start;/
+  /@media only screen and \(max-width:\s*480px\)[\s\S]*\.site-footer__copyright\s*\{[\s\S]*font-size:\s*\.66rem;[\s\S]*grid-column:\s*1;[\s\S]*grid-row:\s*1;[\s\S]*justify-content:\s*flex-start;/
 );
 assert.match(
   styles,
   /@media only screen and \(max-width:\s*480px\)[\s\S]*\.footer-social\s*\{[\s\S]*grid-column:\s*2;[\s\S]*grid-row:\s*1;/
 );
 assert.match(styles, /\.site-footer__language\s*\{[\s\S]*justify-content:\s*flex-end/);
+assert.match(
+  styles,
+  /@media only screen and \(max-width:\s*480px\)[\s\S]*\.site-footer__lang-link\s*\{[\s\S]*font-size:\s*\.62rem;/
+);
 assert.match(
   styles,
   /\.footer-social a\s*\{[\s\S]*min-height:\s*1\.5rem;[\s\S]*min-width:\s*1\.5rem;/
