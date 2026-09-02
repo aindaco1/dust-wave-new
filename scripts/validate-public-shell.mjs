@@ -20,7 +20,8 @@ const [
   newsLayout,
   postLayout,
   entryNavigation,
-  languageSwitcher
+  languageSwitcher,
+  brandedContent
 ] = await Promise.all([
   readFile(new URL("../src/_includes/snippets/footer1.njk", import.meta.url), "utf8"),
   readFile(new URL("../src/_includes/snippets/site-footer.njk", import.meta.url), "utf8"),
@@ -40,7 +41,8 @@ const [
   readFile(new URL("../src/_includes/layouts/new.njk", import.meta.url), "utf8"),
   readFile(new URL("../src/_includes/layouts/post.njk", import.meta.url), "utf8"),
   readFile(new URL("../src/_includes/snippets/entryprevnext.njk", import.meta.url), "utf8"),
-  readFile(new URL("../src/_includes/snippets/language-switcher.njk", import.meta.url), "utf8")
+  readFile(new URL("../src/_includes/snippets/language-switcher.njk", import.meta.url), "utf8"),
+  readFile(new URL("../src/branded-content.njk", import.meta.url), "utf8")
 ]);
 const { default: socialPages } = await import("../src/_data/socialPages.js");
 const i18nConfig = JSON.parse(i18nConfigRaw);
@@ -156,6 +158,22 @@ assert.match(
   /@media \(min-width:\s*992px\)[\s\S]*\.site-navbar__inner\s*\{[\s\S]*justify-content:\s*center !important;/
 );
 assert.match(styles, /\.site-navbar__brand\s*\{[\s\S]*position:\s*absolute;/);
+
+assert.match(
+  styles,
+  /\.branded-content-inquiry__form-wrap\s*\{[\s\S]*min-width:\s*0;/
+);
+assert.match(
+  styles,
+  /\.branded-content-form__row\s*\{[\s\S]*min-width:\s*0;/
+);
+assert.match(brandedContent, /window\.matchMedia\('\(max-width: 575\.98px\)'\)/);
+assert.match(brandedContent, /turnstileWidget\.dataset\.size = 'compact';/);
+assert.ok(
+  brandedContent.indexOf("turnstileWidget.dataset.size = 'compact'") <
+    brandedContent.indexOf("https://challenges.cloudflare.com/turnstile/v0/api.js"),
+  "The mobile Turnstile size must be selected before the external widget script loads."
+);
 
 assert.match(sticky, /<a[\s\S]*id="sticky-button"/);
 assert.doesNotMatch(sticky, /<button/);

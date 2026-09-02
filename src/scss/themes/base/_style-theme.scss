@@ -4235,12 +4235,14 @@ article h2 { width: 60%; }
 }
 
 .branded-content-inquiry__form-wrap {
+  min-width: 0;
   padding: clamp(1.5rem, 4vw, 3.5rem);
   border: 1px solid var(--branded-line);
   background: rgba(255, 255, 255, .035);
 }
 
 .branded-content-form {
+  min-width: 0;
   position: relative;
 }
 
@@ -4248,10 +4250,12 @@ article h2 { width: 60%; }
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
+  min-width: 0;
 }
 
 .branded-content-form__field {
   margin-bottom: 1.25rem;
+  min-width: 0;
 }
 
 .branded-content-form__field label {

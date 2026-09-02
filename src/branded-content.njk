@@ -236,12 +236,17 @@ og_image_height: 900
   </div>
 </div>
 
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script>
 (() => {
+  const turnstileWidget = document.querySelector('.cf-turnstile');
+  if (turnstileWidget && window.matchMedia('(max-width: 575.98px)').matches) {
+    turnstileWidget.dataset.size = 'compact';
+  }
+
   const success = document.querySelector('[data-branded-form-success]');
   if (!success) return;
   const params = new URLSearchParams(window.location.search);
   if (params.get('submitted') === '1') success.hidden = false;
 })();
 </script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
