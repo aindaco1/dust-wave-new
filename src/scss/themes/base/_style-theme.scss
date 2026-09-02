@@ -1495,45 +1495,83 @@ li p { margin-bottom: 0; }
 }
 @media only screen and (max-width: 480px) {
   #footer-items-column {
-    font-size: .8rem;
-    grid-template-columns: minmax(0, 1fr) auto;
-    padding-inline: 1rem;
-    row-gap: .65rem;
+    column-gap: .25rem;
+    font-size: .72rem;
+    grid-template-columns: max-content minmax(0, 1fr) max-content;
+    padding-inline: .5rem;
+    row-gap: 0;
   }
 
   .site-footer__copyright {
     grid-column: 1;
     grid-row: 1;
+    gap: .25rem;
     justify-content: flex-start;
     text-align: left;
   }
 
   .site-footer__language {
-    grid-column: 2;
+    grid-column: 3;
     grid-row: 1;
     justify-content: flex-end;
     text-align: right;
   }
 
   .footer-social {
-    grid-column: 1 / -1;
-    grid-row: 2;
+    gap: .05rem;
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .footer-social a {
+    min-height: 1.3rem;
+    min-width: 1.3rem;
+  }
+
+  .site-footer__social-icon {
+    height: .9rem;
+    width: .9rem;
+  }
+
+  .site-footer__brand-mark img {
+    height: 1.35rem;
+    width: 1.35rem;
   }
 
   .site-footer__lang-switcher {
+    gap: .25rem;
     justify-content: flex-end;
+  }
+
+  .site-footer__lang-link {
+    font-size: .68rem;
+    min-width: 0;
   }
 }
 
 @media only screen and (max-width: 330px) {
   #footer-items-column {
-    font-size: .72rem;
-    padding-inline: .75rem;
+    font-size: .66rem;
+    padding-inline: .35rem;
   }
 
   .site-footer__brand-mark img {
-    height: 1.4rem;
-    width: 1.4rem;
+    height: 1.2rem;
+    width: 1.2rem;
+  }
+
+  .footer-social a {
+    min-height: 1.15rem;
+    min-width: 1.15rem;
+  }
+
+  .site-footer__social-icon {
+    height: .82rem;
+    width: .82rem;
+  }
+
+  .site-footer__lang-link {
+    font-size: .6rem;
   }
 }
 
@@ -2959,6 +2997,11 @@ article h2 { width: 60%; }
   text-underline-offset: .2em;
 }
 
+.writers-group-page p strong,
+.writers-group-page p em {
+  color: #fff;
+}
+
 .writers-group-eyebrow {
   margin: 0 0 1rem;
   color: var(--writers-accent);
@@ -3763,6 +3806,11 @@ article h2 { width: 60%; }
   text-underline-offset: .18em;
 }
 
+.branded-content-page p strong,
+.branded-content-page p em {
+  color: #fff;
+}
+
 .branded-content-eyebrow {
   margin-bottom: .8rem;
   font-size: .72rem;
@@ -3774,7 +3822,7 @@ article h2 { width: 60%; }
 
 .branded-content-hero {
   display: grid;
-  grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr);
+  grid-template-columns: minmax(0, 1.18fr) minmax(20rem, .82fr);
   align-items: end;
   gap: clamp(2rem, 5vw, 5rem);
   min-height: min(78vh, 54rem);

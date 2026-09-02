@@ -121,7 +121,7 @@ assert.match(
 );
 assert.match(
   styles,
-  /@media only screen and \(max-width:\s*480px\)[\s\S]*#footer-items-column\s*\{[\s\S]*font-size:\s*\.8rem;[\s\S]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto;[\s\S]*row-gap:\s*\.65rem;/
+  /@media only screen and \(max-width:\s*480px\)[\s\S]*#footer-items-column\s*\{[\s\S]*font-size:\s*\.72rem;[\s\S]*grid-template-columns:\s*max-content\s+minmax\(0,\s*1fr\)\s+max-content;[\s\S]*row-gap:\s*0;/
 );
 assert.match(
   styles,
@@ -129,7 +129,7 @@ assert.match(
 );
 assert.match(
   styles,
-  /@media only screen and \(max-width:\s*480px\)[\s\S]*\.footer-social\s*\{[\s\S]*grid-column:\s*1\s*\/\s*-1;[\s\S]*grid-row:\s*2;/
+  /@media only screen and \(max-width:\s*480px\)[\s\S]*\.footer-social\s*\{[\s\S]*grid-column:\s*2;[\s\S]*grid-row:\s*1;/
 );
 assert.match(styles, /\.site-footer__language\s*\{[\s\S]*justify-content:\s*flex-end/);
 assert.match(

@@ -27,8 +27,8 @@ og_image_height: 535
     <div class="writers-group-hero__copy">
       <p class="writers-group-eyebrow">{{ i18n | t(language, "pages.writersGroup.eyebrow") }}</p>
       <h1>{{ i18n | t(language, "pages.writersGroup.heroTitle") }}</h1>
-      <p class="writers-group-hero__lead">{{ i18n | t(language, "pages.writersGroup.heroLeadBeforeTime") }} <strong>{{ i18n | t(language, "pages.writersGroup.heroTime") }}</strong> {{ i18n | t(language, "pages.writersGroup.heroLeadAfterTime") }}</p>
-      <p class="writers-group-hero__welcome">{{ i18n | t(language, "pages.writersGroup.heroWelcome") }}</p>
+      <p class="writers-group-hero__lead">{{ i18n | t(language, "pages.writersGroup.heroLeadBeforeTime") }} <strong>{{ i18n | t(language, "pages.writersGroup.heroTime") }}</strong> {{ i18n | t(language, "pages.writersGroup.heroLeadAt") }} <a href="{{ i18n | localizedUrl(language, 'microcinema', '/microcinema.html') }}"><strong>{{ i18n | t(language, "pages.writersGroup.heroLeadStudio") }}</strong></a> {{ i18n | t(language, "pages.writersGroup.heroLeadLocation") }} <strong>{{ i18n | t(language, "pages.writersGroup.heroLeadOpen") }}</strong> {{ i18n | t(language, "pages.writersGroup.heroLeadAudience") }}</p>
+      <p class="writers-group-hero__welcome">{{ i18n | t(language, "pages.writersGroup.heroWelcomeLead") }} <strong>{{ i18n | t(language, "pages.writersGroup.heroWelcomeNoScript") }}</strong> <em>{{ i18n | t(language, "pages.writersGroup.heroWelcomeJoin") }}</em></p>
     </div>
 
     <figure class="writers-group-hero__media">
@@ -80,7 +80,7 @@ og_image_height: 535
       <ol class="writers-group-steps">
         <li>
           <h3>{{ i18n | t(language, "pages.writersGroup.rolesTitle") }}</h3>
-          <p>{{ i18n | t(language, "pages.writersGroup.rolesBody") }}</p>
+          <p>{{ i18n | t(language, "pages.writersGroup.rolesBodyLead") }} <em>{{ i18n | t(language, "pages.writersGroup.rolesBodyEmphasis") }}</em></p>
         </li>
         <li>
           <h3>{{ i18n | t(language, "pages.writersGroup.readTitle") }}</h3>
@@ -105,7 +105,7 @@ og_image_height: 535
         </article>
         <article>
           <h3>{{ i18n | t(language, "pages.writersGroup.attendTitle") }}</h3>
-          <p>{{ i18n | t(language, "pages.writersGroup.attendBody") }}</p>
+          <p><strong>{{ i18n | t(language, "pages.writersGroup.attendLead") }}</strong> {{ i18n | t(language, "pages.writersGroup.attendRest") }}</p>
         </article>
       </div>
     </section>
@@ -135,7 +135,7 @@ og_image_height: 535
       <div class="writers-group-screen__copy">
         <p class="writers-group-eyebrow">{{ i18n | t(language, "pages.writersGroup.screenEyebrow") }}</p>
         <h2 id="screen-heading">{{ i18n | t(language, "pages.writersGroup.screenHeading") }}</h2>
-        <p>{{ i18n | t(language, "pages.writersGroup.screenBody") }}</p>
+        <p><strong>{{ i18n | t(language, "pages.writersGroup.screenLead") }}</strong> {{ i18n | t(language, "pages.writersGroup.screenRest") }}</p>
       </div>
       <div class="writers-group-screen__films" aria-label="{{ i18n | t(language, 'pages.writersGroup.filmGridAria') }}">
         <a href="{{ projectTaxonomy | localizedProjectUrl('shellfish-knish', language) }}">

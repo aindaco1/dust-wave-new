@@ -26,7 +26,7 @@ og_image_height: 900
     <div class="branded-content-hero__copy">
       <h1>{{ i18n | t(language, "pages.brandedContent.heroTitleBefore") }} <em>{{ i18n | t(language, "pages.brandedContent.heroTitleEmphasis") }}</em> {{ i18n | t(language, "pages.brandedContent.heroTitleAfter") }}</h1>
       <p class="branded-content-hero__lead"><strong>{{ i18n | t(language, "pages.brandedContent.heroLeadStrong") }}</strong> {{ i18n | t(language, "pages.brandedContent.heroLeadRest") }}</p>
-      <p class="branded-content-hero__aside">{{ i18n | t(language, "pages.brandedContent.heroAside") }}</p>
+      <p class="branded-content-hero__aside"><strong>{{ i18n | t(language, "pages.brandedContent.heroAsideLead") }}</strong> {{ i18n | t(language, "pages.brandedContent.heroAsideRest") }}</p>
       <div class="branded-content-actions">
         <a class="branded-content-button branded-content-button--primary" href="#inquiry">{{ i18n | t(language, "pages.brandedContent.primaryAction") }}</a>
         <a class="branded-content-button" href="#zema-case-study">{{ i18n | t(language, "pages.brandedContent.secondaryAction") }}</a>
@@ -48,7 +48,7 @@ og_image_height: 900
         </div>
         <div class="branded-content-prose">
           <p>{{ i18n | t(language, "pages.brandedContent.caseBody1BeforeZema") }} <a href="https://zemabar.com" target="_blank" rel="noopener noreferrer">ZEMA Vinyl Lounge</a> {{ i18n | t(language, "pages.brandedContent.caseBody1BetweenZemaHotel") }} <a href="https://hotelzazz.com" target="_blank" rel="noopener noreferrer">Hotel Zazz</a>, {{ i18n | t(language, "pages.brandedContent.caseBody1AfterHotel") }} <a href="{{ projectTaxonomy | localizedProjectUrl('from-zema-with-love', language) }}"><em>From Zema With Love</em></a>{{ i18n | t(language, "pages.brandedContent.caseBody1End") }}</p>
-          <p>{{ i18n | t(language, "pages.brandedContent.caseBody2BeforeLink") }} <a href="https://zemabar.com" target="_blank" rel="noopener noreferrer">zemabar.com</a>, {{ i18n | t(language, "pages.brandedContent.caseBody2AfterLink") }}</p>
+          <p><strong>{{ i18n | t(language, "pages.brandedContent.caseBody2Lead") }}</strong> {{ i18n | t(language, "pages.brandedContent.caseBody2BeforeLink") }} <a href="https://zemabar.com" target="_blank" rel="noopener noreferrer">zemabar.com</a>, {{ i18n | t(language, "pages.brandedContent.caseBody2AfterLink") }}</p>
         </div>
       </div>
 
@@ -105,9 +105,9 @@ og_image_height: 900
         <h2 id="trust-heading">{{ i18n | t(language, "pages.brandedContent.trustHeading") }}</h2>
       </div>
       <div class="branded-content-trust__copy">
-        <p>{{ i18n | t(language, "pages.brandedContent.trustBody1") }}</p>
-        <p>{{ i18n | t(language, "pages.brandedContent.trustBody2") }}</p>
-        <p>{{ i18n | t(language, "pages.brandedContent.trustBody3") }}</p>
+        <p>{{ i18n | t(language, "pages.brandedContent.trustBody1Main") }} <a href="{{ i18n | localizedUrl(language, 'contact', '/contact.html') }}"><em>{{ i18n | t(language, "pages.brandedContent.trustBody1Link") }}</em></a></p>
+        <p><strong>{{ i18n | t(language, "pages.brandedContent.trustBody2Lead") }}</strong> {{ i18n | t(language, "pages.brandedContent.trustBody2Rest") }}</p>
+        <p><strong>{{ i18n | t(language, "pages.brandedContent.trustBody3BeforeName") }} <a href="{{ i18n | localizedUrl(language, 'about', '/about.html') }}">{{ i18n | t(language, "pages.brandedContent.trustBody3Name") }}</a> {{ i18n | t(language, "pages.brandedContent.trustBody3AfterName") }}</strong> {{ i18n | t(language, "pages.brandedContent.trustBody3Rest") }}</p>
       </div>
     </section>
 
@@ -118,8 +118,8 @@ og_image_height: 900
           <h2 id="proof-heading">{{ i18n | t(language, "pages.brandedContent.proofHeading") }}</h2>
         </div>
         <div class="branded-content-prose">
-          <p>{{ i18n | t(language, "pages.brandedContent.proofBody1") }}</p>
-          <p>{{ i18n | t(language, "pages.brandedContent.proofBody2") }}</p>
+          <p>{{ i18n | t(language, "pages.brandedContent.proofBody1BeforeLink") }} <a href="{{ i18n | localizedUrl(language, 'projects', '/projects.html') }}"><strong>{{ i18n | t(language, "pages.brandedContent.proofBody1Link") }}</strong></a> {{ i18n | t(language, "pages.brandedContent.proofBody1AfterLink") }}</p>
+          <p><strong>{{ i18n | t(language, "pages.brandedContent.proofBody2Lead") }}</strong> {{ i18n | t(language, "pages.brandedContent.proofBody2Rest") }}</p>
         </div>
       </div>
 
@@ -155,7 +155,7 @@ og_image_height: 900
       <div class="branded-content-inquiry__intro">
         <p class="branded-content-eyebrow">{{ i18n | t(language, "pages.brandedContent.inquiryEyebrow") }}</p>
         <h2 id="inquiry-heading">{{ i18n | t(language, "pages.brandedContent.inquiryHeading") }}</h2>
-        <p>{{ i18n | t(language, "pages.brandedContent.inquiryBody") }}</p>
+        <p><strong>{{ i18n | t(language, "pages.brandedContent.inquiryBodyLead") }}</strong> {{ i18n | t(language, "pages.brandedContent.inquiryBodyRest") }}</p>
         <p class="branded-content-inquiry__note">{{ i18n | t(language, "pages.brandedContent.inquiryNote") }}</p>
       </div>
 
