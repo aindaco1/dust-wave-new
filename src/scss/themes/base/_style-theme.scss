@@ -2986,11 +2986,13 @@ article h2 { width: 60%; }
   --writers-ink: #17120f;
   --writers-muted: rgba(255, 255, 255, .72);
   --writers-line: rgba(255, 255, 255, .23);
+  --writers-shadow: rgba(255, 112, 77, .7);
   padding-top: clamp(5rem, 10vw, 9rem);
   padding-bottom: 0;
 }
 
-.writers-group-shell .site-footer {
+.writers-group-shell .site-footer,
+.microcinema-shell .site-footer {
   margin-block-start: clamp(2.5rem, 5vw, 5rem);
 }
 
@@ -3113,7 +3115,7 @@ article h2 { width: 60%; }
   background: var(--writers-paper);
   color: var(--writers-ink);
   transform: rotate(2.5deg);
-  box-shadow: 1.2rem 1.5rem 0 rgba(255, 112, 77, .7);
+  box-shadow: 1.2rem 1.5rem 0 var(--writers-shadow);
 }
 
 .writers-group-hero__media::before {
@@ -3482,7 +3484,7 @@ article h2 { width: 60%; }
 
   .writers-group-hero__media {
     width: calc(100% - 1rem);
-    box-shadow: .75rem .9rem 0 rgba(255, 112, 77, .7);
+    box-shadow: .75rem .9rem 0 var(--writers-shadow);
   }
 
   .writers-group-next {
@@ -3741,6 +3743,90 @@ article h2 { width: 60%; }
 
   .writers-group-screen__films span {
     min-height: 0;
+  }
+}
+
+// Microcinema shares the Writers Group layout with the studio facade's blue.
+.microcinema-page {
+  --writers-accent: #4a8eaa;
+  --writers-accent-soft: #a8d6e7;
+  --writers-shadow: rgba(74, 142, 170, .78);
+}
+
+.microcinema-page .microcinema-image {
+  width: 100%;
+  max-width: none;
+  height: auto;
+  margin: 0;
+  border: 0;
+  border-radius: 0 !important;
+  box-shadow: none;
+}
+
+.microcinema-hero__media {
+  max-width: 31rem;
+  justify-self: center;
+  padding-bottom: 1rem;
+}
+
+.microcinema-hero__media img {
+  aspect-ratio: 3 / 4;
+  object-position: center;
+}
+
+.microcinema-visit__copy p,
+.microcinema-visit__copy address {
+  margin: 0;
+  color: var(--writers-muted);
+  line-height: 1.7;
+}
+
+.microcinema-visit__copy address {
+  margin-top: 1rem;
+}
+
+.microcinema-visit__copy a {
+  color: #fff;
+}
+
+.microcinema-expect .writers-group-bring__cards article:first-child {
+  border-top: 0;
+}
+
+.microcinema-expect .writers-group-bring__cards article:last-child {
+  border-bottom: 0;
+}
+
+.microcinema-map {
+  align-self: center;
+  padding: .8rem;
+  transform: rotate(1.25deg);
+}
+
+.microcinema-map img {
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+}
+
+.microcinema-parking {
+  padding-bottom: 0;
+}
+
+@media (max-width: 991.98px) {
+  .microcinema-hero__media,
+  .microcinema-map {
+    justify-self: center;
+  }
+
+  .microcinema-map {
+    width: min(90%, 48rem);
+    margin-inline: auto;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .microcinema-page .writers-group-hero h1 {
+    font-size: clamp(3rem, 15vw, 4.5rem);
   }
 }
 

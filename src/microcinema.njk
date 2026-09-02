@@ -3,6 +3,7 @@ layout: layouts/default.njk
 navbar: navbar1
 footer: footer1
 colorModifier: dark
+bodyModifier: microcinema-shell
 og_image: /img/microcinema/dw-hq-parking-map.png
 translationKey: microcinema
 pagination:
@@ -15,39 +16,55 @@ eleventyComputed:
   description: "{{ i18n[language].pages.microcinema.description }}"
   og_alt: "{{ i18n[language].pages.microcinema.mapAlt }}"
 ---
-<div class="container">
-  <div class="row d-flex justify-content-center">
-    <div class="site-page-heading col-12 text-center">
+<div class="container writers-group-page microcinema-page">
+  <header class="writers-group-hero">
+    <div class="writers-group-hero__copy">
       <h1>{{ title }}</h1>
-      <p class="lead">{{ i18n | t(language, "pages.microcinema.lead") }}</p>
+      <p class="writers-group-hero__lead">{{ i18n | t(language, "pages.microcinema.lead") }}</p>
+      <p class="writers-group-hero__welcome">{{ i18n | t(language, "pages.microcinema.rentalPrompt") }} <a href="{{ i18n | localizedUrl(language, 'contact', '/contact.html') }}"><strong>{{ i18n | t(language, "pages.microcinema.rentalLink") }}</strong></a> {{ i18n | t(language, "pages.microcinema.rentalAfter") }}</p>
     </div>
-    <div class="col-12 py-vh-1">
-      <div class="row align-items-start">
-        <div class="col-12 col-lg-6">
-          <img src="/img/microcinema/microcinema-2.jpg" class="microcinema-image" alt="{{ i18n | t(language, 'pages.microcinema.photoAlt') }}">
-        </div>
-        <div class="col-12 col-lg-6">
-          <h3 class="mt-4">{{ i18n | t(language, "pages.microcinema.visit") }}</h3><br>
-          <p>{{ i18n | t(language, "pages.microcinema.visitBody") }}</p>
-          <p><strong><a class="link-fancy" href="https://maps.google.com/?q=709+Haines+Ave+NW+Albuquerque+NM+87102" target="_blank" rel="noopener">709 Haines Avenue NW, Albuquerque, NM 87102</a></strong></p>
-          <h3 class="mt-4">{{ i18n | t(language, "pages.microcinema.expect") }}</h3><br>
-          <p>{{ i18n | t(language, "pages.microcinema.expectBody1") }}</p>
-          <p>{{ i18n | t(language, "pages.microcinema.expectBody2") }}</p>
-        </div>
+
+    <figure class="writers-group-hero__media microcinema-hero__media">
+      <img src="/img/microcinema/microcinema-2.jpg" class="microcinema-image" alt="{{ i18n | t(language, 'pages.microcinema.photoAlt') }}">
+    </figure>
+  </header>
+
+  <div class="writers-group-body">
+    <section class="writers-group-details microcinema-visit" aria-labelledby="visit-heading">
+      <div>
+        <h2 id="visit-heading">{{ i18n | t(language, "pages.microcinema.visit") }}</h2>
       </div>
-    </div>
-    <div class="col-12 py-vh-1">
-      <h2 class="text-center">{{ i18n | t(language, "pages.microcinema.parking") }}</h2><br>
-      <div class="row align-items-start">
-        <div class="col-12 col-lg-7">
-          <img src="/img/microcinema/dw-hq-parking-map.png" class="microcinema-image" alt="{{ i18n | t(language, 'pages.microcinema.mapAlt') }}">
-        </div>
-        <div class="col-12 col-lg-5 mt-4">
-          <p><strong>{{ i18n | t(language, "pages.microcinema.parkingWarning") }}</strong> {{ i18n | t(language, "pages.microcinema.parkingWarningBody") }}</p>
-          <p><strong>{{ i18n | t(language, "pages.microcinema.parkingAllowed") }}</strong>{{ i18n | t(language, "pages.microcinema.parkingAllowedBody") }}</p>
-          <p>{{ i18n | t(language, "pages.microcinema.parkingTip") }}</p>
-        </div>
+      <div class="microcinema-visit__copy">
+        <p>{{ i18n | t(language, "pages.microcinema.visitBody") }}</p>
+        <address><strong><a href="https://maps.google.com/?q=709+Haines+Ave+NW+Albuquerque+NM+87102" target="_blank" rel="noopener">709 Haines Avenue NW, Albuquerque, NM 87102</a></strong></address>
       </div>
-    </div>
+    </section>
+
+    <section class="writers-group-section writers-group-bring microcinema-expect" aria-labelledby="expect-heading">
+      <div>
+        <h2 id="expect-heading">{{ i18n | t(language, "pages.microcinema.expect") }}</h2>
+      </div>
+      <div class="writers-group-bring__cards">
+        <article>
+          <p><strong>{{ i18n | t(language, "pages.microcinema.expectBody1Primary") }}</strong> <em>{{ i18n | t(language, "pages.microcinema.expectBody1Secondary") }}</em></p>
+        </article>
+        <article>
+          <p>{{ i18n | t(language, "pages.microcinema.expectBody2Lead") }} <strong>{{ i18n | t(language, "pages.microcinema.expectBody2Primary") }}</strong> {{ i18n | t(language, "pages.microcinema.expectBody2Join") }} <em>{{ i18n | t(language, "pages.microcinema.expectBody2Secondary") }}</em></p>
+        </article>
+      </div>
+    </section>
+
+    <section class="writers-group-section writers-group-screen microcinema-parking" aria-labelledby="parking-heading">
+      <div class="writers-group-screen__copy">
+        <h2 id="parking-heading">{{ i18n | t(language, "pages.microcinema.parking") }}</h2>
+        <p><strong>{{ i18n | t(language, "pages.microcinema.parkingWarning") }}</strong> {{ i18n | t(language, "pages.microcinema.parkingWarningBody") }}</p>
+        <p><strong>{{ i18n | t(language, "pages.microcinema.parkingAllowed") }}</strong>{{ i18n | t(language, "pages.microcinema.parkingAllowedBody") }}</p>
+        <p>{{ i18n | t(language, "pages.microcinema.parkingTip") }}</p>
+      </div>
+
+      <figure class="writers-group-hero__media microcinema-map">
+        <img src="/img/microcinema/dw-hq-parking-map.png" class="microcinema-image" alt="{{ i18n | t(language, 'pages.microcinema.mapAlt') }}">
+      </figure>
+    </section>
   </div>
 </div>

@@ -150,6 +150,8 @@ assert.match(navbarContent, /site-navbar__content/);
 assert.match(navbarContent, /site-navbar__links/);
 assert.match(navbarContent, /data-site-subnav/);
 assert.match(navbarContent, /data-site-subnav-toggle/);
+assert.match(navbarContent, /localizedUrl\(language, 'brandedContent', '\/branded-content\.html'\)/);
+assert.match(navbarContent, /localizedUrl\(language, 'writersGroup', '\/writers-group\.html'\)/);
 assert.match(navbarContent, /localizedUrl\(language, 'newsletter', '\/newsletter\.html'\)/);
 assert.match(styles, /\.site-nav-group__menu/);
 assert.match(styles, /\.site-nav-group\.is-open \.site-nav-group__menu/);
