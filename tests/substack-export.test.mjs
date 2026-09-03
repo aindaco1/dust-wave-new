@@ -1,10 +1,12 @@
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const require = createRequire(import.meta.url);
 const {
   SUBSTACK_CARD_MARKER,
+  cleanSubstackHtml,
   finalizeSubstackDigestHtml
 } = require('../lib/substack-export.cjs');
 
@@ -90,4 +92,28 @@ test('digest promo and postface images use semantic captions and a 500px maximum
   assert.match(output, /width="500"/);
   assert.match(output, /max-width:500px/);
   assert.doesNotMatch(output, /substack-feature/);
+});
+
+test('digest Substack export keeps live podcast artwork instead of unpublished play cache', () => {
+  const artwork = 'https://dustwave.xyz/img/podcasts/show.jpg';
+  const input = [
+    '<h2>Podcasts &amp; Videos</h2>',
+    '<div class="digest-card">',
+    `<p><img src="${artwork}"></p>`,
+    '<p>https://media.example.com/episode.mp3</p>',
+    '<p><h4><a href="https://overcast.fm/+example">Episode</a></h4></p>',
+    '</div>',
+    '<h2>Trailers</h2>'
+  ].join('\n');
+
+  const output = cleanSubstackHtml(input, { siteUrl: 'https://dustwave.xyz' });
+
+  assert.match(output, new RegExp(`src="${artwork}"`));
+  assert.doesNotMatch(output, /\/img\/news\/play-cache\//);
+  assert.equal((output.match(/href="https:\/\/overcast\.fm\/\+example"/g) || []).length, 2);
+});
+
+test('Substack export hero links back to the canonical post', () => {
+  const template = readFileSync(new URL('../src/substack-export.njk', import.meta.url), 'utf8');
+  assert.match(template, /<a href="\{\{ metadata\.url \}\}\/\{\{ post\.data\.title \| slugify \}\}\.html"><img/);
 });

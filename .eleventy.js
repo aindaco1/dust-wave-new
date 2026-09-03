@@ -7,7 +7,6 @@ const { EleventyHtmlBasePlugin } = require("@11ty/eleventy");
 const pluginRss = require("@11ty/eleventy-plugin-rss");
 const { SitemapStream, streamToPromise } = require("sitemap");
 const legacySlugify = require("@sindresorhus/slugify");
-const crypto = require("crypto");
 const {
   renderIcon,
   replaceLegacyFontAwesomeIcons
@@ -191,13 +190,6 @@ async function renderSitemap(items) {
 
   stream.end();
   return (await streamToPromise(stream)).toString();
-}
-
-function getPlayCacheUrl(artworkUrl) {
-  const cacheKey = `${artworkUrl}|dim=True`;
-  const urlHash = crypto.createHash('md5').update(cacheKey).digest('hex').slice(0, 12);
-  const ext = artworkUrl.toLowerCase().includes('.png') ? '.png' : '.jpg';
-  return `${siteUrl}/img/news/play-cache/play-${urlHash}${ext}`;
 }
 
 module.exports = function(eleventyConfig) {
@@ -461,7 +453,7 @@ ${content}
 
   // Clean HTML for Substack copy/paste - removes unsupported elements
   eleventyConfig.addFilter("substackClean", (html) => {
-    return cleanSubstackHtml(html, { siteUrl, getPlayCacheUrl });
+    return cleanSubstackHtml(html, { siteUrl });
   });
 
   // Convert relative URLs to absolute for feeds (images, links)
