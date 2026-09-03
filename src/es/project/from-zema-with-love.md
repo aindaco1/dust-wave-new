@@ -24,6 +24,16 @@ galleryImages:
     alt: El reparto y el equipo preparan una colorida escena de bar dentro del Zema Vinyl Lounge
   - src: /img/from-zema-with-love/bts-2.jpg
     alt: El equipo de cámara prepara una toma con la agente dentro del Zema Vinyl Lounge
+  - src: /img/from-zema-with-love/bts-3.png
+    alt: El reparto y el equipo se reúnen alrededor de las mesas bajo luces azules dentro del Zema Vinyl Lounge
+  - src: /img/from-zema-with-love/bts-4.jpg
+    alt: Una persona con chaqueta blanca sonríe bajo luces rosas y ámbar en el Zema Vinyl Lounge
+  - src: /img/from-zema-with-love/bts-5.png
+    alt: Dos personas hacen gestos divertidos mientras muestran un teléfono con una toma de la película
+  - src: /img/from-zema-with-love/bts-6.png
+    alt: Cuatro personas posan alrededor de un sofá naranja, dos de ellas con trajes azul y rojo
+  - src: /img/from-zema-with-love/bts-7.png
+    alt: Una intérprete vestida de naranja está sentada junto a la cámara durante el rodaje en el Zema Vinyl Lounge
 projectVideos:
   - heading: Película
     id: He3yv-EXuRk
