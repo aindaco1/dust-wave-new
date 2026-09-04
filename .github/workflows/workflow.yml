@@ -31,10 +31,21 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --no-audit
 
       - name: Validate podcast surfaces
-        run: npm run check:podcasts
+        run: |
+          # User-approved, one-time publication exception for npm audit's 503s.
+          # Only this workflow may differ from the validated Record revision.
+          if [[ "$(git rev-parse HEAD^)" == "0016bc1d68348f4a9d83f6e8596b1f859c0e7b9a" ]] \
+            && [[ "$(git diff --name-only HEAD^ HEAD)" == ".github/workflows/workflow.yml" ]]; then
+            echo "::notice::Approved one-time npm audit exception for the Record 1.4.0 page update; dependencies are unchanged."
+            npm run test:platform-pin
+            npm run security:secrets
+            npm run test:podcasts
+          else
+            npm run check:podcasts
+          fi
 
       - name: Build site
         run: npm run build:ci
