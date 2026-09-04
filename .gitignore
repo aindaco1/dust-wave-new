@@ -12,5 +12,8 @@ node_modules/
 # This prevents merge conflicts between local builds and CI builds
 docs/
 
+# Legacy Eleventy output at the repository root (source lives in src/)
+/project/
+
 # WebP derivatives are generated only in the GitHub Pages artifact
 src/img/webp/
