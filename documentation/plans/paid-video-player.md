@@ -1,18 +1,18 @@
-# Dust Wave Roadmap
+# Self-hosted embeddable paid video player
 
-## Planned
+Status: Proposed; implementation and provider acceptance are not established here.
 
-### Self-hosted embeddable paid video player
+Added: 2026-06-23
 
-Status: Proposed  
-Added: 2026-06-23  
 Priority: High when the first paid online screening or subscriber-only release is scheduled
 
-#### Goal
+Back to the [roadmap](../roadmap.md).
+
+## Goal
 
 Add a Dust Wave controlled embedded video player for paid films, premieres, and member-only screenings. It must work cleanly on dustwave.xyz, but the core player should be portable enough for other site owners to embed on domains they control. The player and paywall should live on Dust Wave infrastructure, use Cloudflare where practical, and use Stripe for checkout, billing, and customer self-service.
 
-#### Security reality check
+## Security reality check
 
 The literal requirement "cannot be ripped, downloaded, or screen recorded" is not technically achievable for browser playback. If a viewer can see and hear the film, a sufficiently motivated viewer can capture it with external hardware or another camera.
 
@@ -29,16 +29,19 @@ The practical target is:
 - Domain-verified embeds so the player can run on partner sites without exposing raw playback credentials to the parent page.
 - A clear upgrade path to multi-DRM or forensic watermarking if a distributor, festival, or sales contract requires stronger controls than Cloudflare Stream signed URLs provide.
 
-#### Current architecture fit
+## Architecture fit
 
 - The public site is an Eleventy static site deployed through GitHub Pages artifacts.
 - The source branch intentionally does not commit `docs/` build output.
 - There is one existing Cloudflare Worker at `workers/newsletter-subscribe/`, used for Resend newsletter signups.
 - Project pages currently use raw Markdown/HTML and YouTube/Vimeo embeds.
-- There is no user account system, session store, entitlement database, or Stripe integration yet.
+- The paid-film player has no dedicated implementation in this repository. The
+  existing Podcast member and Checkout interfaces consume a separate Worker;
+  evaluate any reusable contracts without assuming shared identity, entitlements,
+  or payment policy. See [Podcast integration](../podcasts.md).
 - Dust Wave should be treated as the first embed consumer. The paid player should not depend on Eleventy internals or Dust Wave page templates.
 
-#### Proposed Cloudflare plus Stripe architecture
+## Proposed Cloudflare plus Stripe architecture
 
 - Video delivery: Cloudflare Stream for transcoding, adaptive playback, signed URLs, allowed origins, and disabled download tokens.
 - Player shell: a hosted iframe application on a Dust Wave controlled player domain, for example `watch.dustwave.xyz`.
@@ -51,7 +54,7 @@ The practical target is:
 - Subscription management: Stripe Customer Portal for cancellations, payment method updates, invoices, and plan changes.
 - Webhooks: Stripe webhooks into the Worker for entitlement creation, renewal, revocation, refund handling, and idempotent reconciliation.
 
-#### Repository boundary
+## Repository boundary
 
 Create a separate repo once implementation starts, unless the first spike proves the scope is smaller than expected. Recommended repo shape:
 
@@ -65,7 +68,7 @@ Create a separate repo once implementation starts, unless the first spike proves
 
 Dust Wave's current repo should only consume the player through an Eleventy shortcode/snippet that emits the public embed code. This keeps the paid player portable and prevents the static site build from becoming the platform boundary.
 
-#### Embed model
+## Embed model
 
 - Every external embed uses an `embed_id` tied to a video, allowed domains, access model, and visual settings.
 - A site owner must prove control of a domain before that domain is allowed to frame the player.
@@ -79,7 +82,7 @@ Dust Wave's current repo should only consume the player through an Eleventy shor
 - The iframe should handle layout, paywall copy, player UI, token refresh, watermark, and restore-purchase flows internally.
 - Cross-domain embeds must not depend on third-party cookies. Browsers increasingly block or partition third-party storage, so the default flow should use one-time checkout/auth state, popup or top-level redirect completion, and iframe polling/token exchange instead of ambient cookies.
 
-#### Data model
+## Data model
 
 Minimum D1 tables:
 
@@ -94,7 +97,7 @@ Minimum D1 tables:
 - `playback_sessions`: entitlement id, embed id, token expiry, IP hash, user-agent hash, and timestamps for abuse review without storing raw personal network data.
 - `viewer_auth_sessions`: short-lived checkout/auth state used to reconnect a Stripe completion or magic-link auth flow to the iframe without relying on third-party cookies.
 
-#### Worker endpoints
+## Worker endpoints
 
 - `GET /embed/v1.js`: serve the versioned embed SDK with long-cache immutable URLs by version.
 - `GET /embed/:embed_id`: render the iframe application, validate the embed id, emit per-embed CSP `frame-ancestors`, and create a short-lived bootstrap session.
@@ -108,7 +111,7 @@ Minimum D1 tables:
 - `GET /oembed`: optional future endpoint for platforms that support oEmbed-style discovery.
 - `GET /health`: lightweight operational check for deploy and monitoring.
 
-#### Cloudflare implementation notes
+## Cloudflare implementation notes
 
 - Use a separate Worker from the newsletter Worker because payment/session/video access logic has a different security profile.
 - Prefer a separate repository for the player/Worker/SDK once the spike starts; this avoids coupling reusable embed infrastructure to the Eleventy site.
@@ -123,7 +126,7 @@ Minimum D1 tables:
 - Do not include the Stream UID, signed token, or source URL in static frontmatter or HTML when avoidable; use the public content slug and resolve the private Stream UID inside the Worker.
 - Do not include the Cloudflare Stream `downloadable` token flag for paid videos.
 
-#### Stripe implementation notes
+## Stripe implementation notes
 
 - Use Stripe Checkout Sessions rather than building a custom card form.
 - Use Stripe Prices, not deprecated Plans.
@@ -134,7 +137,7 @@ Minimum D1 tables:
 - Do not trust `session_id` from the browser by itself; retrieve and verify the Checkout Session server-side before granting access.
 - Required initial webhook events: `checkout.session.completed`, `invoice.paid`, `invoice.payment_failed`, `customer.subscription.updated`, `customer.subscription.deleted`, and refund/dispute events if one-time purchases or rentals are refundable.
 
-#### Eleventy/site work
+## Eleventy/site work
 
 - Add a protected video shortcode or snippet, for example `{% protectedVideo "embed_id" %}`, that emits the same embed code external sites use.
 - Do not implement Dust Wave-only player logic in Eleventy. Dust Wave should load `watch.dustwave.xyz/embed/v1.js` or the iframe fallback.
@@ -147,7 +150,7 @@ Minimum D1 tables:
 - Keep free trailers on YouTube/Vimeo if desired, but do not embed the full paid film through YouTube/Vimeo.
 - Add captions/subtitles support before launch.
 
-#### External site owner workflow
+## External site owner workflow
 
 1. Site owner requests or creates an embed for a film.
 2. Site owner verifies domain control with DNS TXT or a `.well-known` file.
@@ -173,7 +176,7 @@ Or a plain iframe fallback:
 
 5. The player validates that the iframe is being framed by an allowed domain and then handles paywall, checkout, restore purchase, and playback.
 
-#### Anti-rip controls
+## Anti-rip controls
 
 - Use Cloudflare Stream signed URLs with short expiry, renewed only after entitlement checks.
 - Disable downloadable MP4 links for paid videos.
@@ -187,7 +190,7 @@ Or a plain iframe fallback:
 - Keep signed Stream tokens inside the player iframe; never post them to the parent page.
 - If "screen recording must be blocked" is a hard contractual requirement, run a technical spike on a multi-DRM provider before implementation. Cloudflare Stream signed URLs are access control, not a complete DRM/capture-prevention system.
 
-#### Execution phases
+## Execution phases
 
 1. Product and platform decision
    - Choose one-time rental, permanent purchase, membership subscription, or a mix.
@@ -247,7 +250,7 @@ Or a plain iframe fallback:
    - Test on desktop Chrome, Safari, Firefox, iOS Safari, and Android Chrome.
    - Document operational steps for uploading a film, creating a Stripe Price, adding D1 catalog data, verifying a domain, creating an embed, and embedding the player.
 
-#### Acceptance criteria
+## Acceptance criteria
 
 - A visitor can pay through Stripe Checkout and return to Dust Wave to watch the paid video without manual intervention.
 - A visitor can pay through Stripe Checkout from an approved external embed and return to that embedded player without manual intervention.
@@ -263,7 +266,7 @@ Or a plain iframe fallback:
 - Webhook processing is idempotent.
 - The implementation has a written limitation note: it deters ripping and casual capture, but cannot guarantee impossible screen recording prevention.
 
-#### Open questions
+## Open questions
 
 - Is the first product a rental, permanent purchase, monthly membership, or festival-style timed screening?
 - Do viewers need accounts, or is email plus secure magic-link/session access enough?
@@ -274,7 +277,10 @@ Or a plain iframe fallback:
 - Should original masters live only in Cloudflare Stream, or should archival masters also live in R2/private storage?
 - What refund policy and support workflow should be published before launch?
 
-#### References checked
+## References recorded with the proposal
+
+These references were recorded for the June 2026 proposal. Recheck provider
+capabilities and contracts before implementation.
 
 - Cloudflare Stream signed URLs: https://developers.cloudflare.com/stream/viewing-videos/securing-your-stream/
 - Cloudflare Stream player embeds: https://developers.cloudflare.com/stream/viewing-videos/using-the-stream-player/

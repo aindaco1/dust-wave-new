@@ -1,8 +1,16 @@
-# Design QA
+# Newsletter popup mobile QA — 2026-08-27
 
-## Result
+Historical local QA record associated with the August 27 screenshots below.
+Preserved during the documentation consolidation on 2026-09-06. The local
+paths and reported checks identify that run; they are not portable repository
+assets or a new device/provider acceptance result.
 
-Passed.
+See [Testing](../testing.md) for current validation procedures and
+[Newsletter Worker](../../workers/newsletter-subscribe/README.md) for operations.
+
+## Recorded result
+
+Passed for the scope below in the original local QA run.
 
 ## Objective
 
@@ -34,4 +42,5 @@ The reference was cropped to the app-owned browser content and scaled to the imp
 
 - Close button dismissed the popup successfully through its accessible name.
 - Browser console reported no warnings or errors.
-- Production build completed successfully, including the repository's 11 automated tests.
+- The original report recorded a successful production build and 11 automated
+  tests. This historical count does not describe the current test suite.

@@ -1,5 +1,12 @@
 # Datatype analytics rollout
 
+This plan records the implemented site-local pilot and its remaining expansion
+gates. The pilot is recorded in [v1.2.0](../../CHANGELOG.md#v120---2026-07-29).
+Unchecked validation items remain open; this documentation move does not
+refresh browser, assistive-technology, or second-consumer evidence.
+
+Back to the [roadmap](../roadmap.md).
+
 ## Decision
 
 Use the self-hosted Datatype variable font for compact, decorative data

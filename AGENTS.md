@@ -1,206 +1,66 @@
 # AGENTS.md - Dust Wave Website
 
-## Commands
-- **Dev server**: `npm run watch` (Eleventy + BrowserSync with hot reload)
-- **Production build**: `npm run build` (outputs to `docs/` for GitHub Pages)
-- **CI production build**: `npm run build:ci` (GitHub Actions only; generates WebPs)
-- **Eleventy only**: `npm run serve` or `npx eleventy`
-- **Clean**: `npm run clean` (dev) | `npm run clean-prod` (docs)
+## Read first
 
-## Git Workflow
-- **`main` branch**: Source code only — no build output committed
-- **Deployment**: Via GitHub Pages artifacts (no gh-pages branch)
-- **Local development**: Use `npm run watch` → previews in `dev/` folder
-- **To deploy**: Push source changes to `main` → GitHub Actions builds and deploys automatically
-- **Manual deploy**: Actions tab → "Build and Deploy" → "Run workflow"
-- **Pages CMS edits**: Trigger the same workflow, no conflicts
-- **No pull conflicts**: CI never commits to `main`, so you can push freely
+Start with [README.md](README.md) and the guide for the area being changed:
 
-## Architecture
-- **Static site generator**: Eleventy (11ty) v2 with Nunjucks templates
-- **Styling**: Bootstrap 5 + custom SCSS in `src/scss/`, compiled via Gulp
-- **Build pipeline**: Gulp handles SCSS, asset copying, CSS purge, and minification
-- **Source**: `src/` → **Dev output**: `dev/` → **Prod output**: `docs/`
+- [Development and deployment](documentation/development.md): architecture,
+  immutable shared-code pin, build commands, hosting, and release procedure.
+- [Content publishing](documentation/content-publishing.md): Pages CMS,
+  frontmatter, image locations, feeds, Substack cleanup, and sharing.
+- [Podcast integration](documentation/podcasts.md): site/API ownership,
+  staging configuration, publication, and review contracts.
+- [Testing and performance](documentation/testing.md): required checks and
+  focused validation commands.
+- [Roadmap](documentation/roadmap.md): plans and links to dated evidence.
+- [Newsletter Worker](workers/newsletter-subscribe/README.md): signup and
+  welcome-email behavior, configuration, and deployment.
 
-## Structure
-- `src/_includes/layouts/` - Base templates (Nunjucks)
-- `src/_includes/snippets/` - Reusable components
-- `src/_data/` - Global data files (JSON)
-- `src/members/` - Team member profiles (Markdown with frontmatter)
-- `src/posts/` - Film project pages (Markdown)
-- `src/news/` - News articles; `src/news/digests/` for DIY Digests
-- `src/img/about/` - Member photos (800×800px, <200KB)
-- `src/img/gifs/` - Project hover GIFs
-- `src/img/stills/` - Project featured images
-- `src/img/favicon/` - Favicons, logos, and branding
-- `src/img/home/` - Homepage background GIFs
-- `src/img/digest/header/` - DIY Digest header images
-- `src/img/news/` - News article images and GIFs
-- `docs/img/webp/` - CI-generated WebP versions (never stored in `src/`)
-- `src/scss/theme.scss` - Main stylesheet entry point
-- `workers/newsletter-subscribe/` - Cloudflare Worker for newsletter signups
+Keep detailed procedures in those guides and link to them here.
 
-## Code Style
-- Templates use Nunjucks (`.njk`) with frontmatter for metadata
-- Content uses raw HTML/Markdown with YAML frontmatter (date, title, tags)
-- SCSS follows Bootstrap variable conventions; custom styles in `theme.scss`
+## Repository rules
 
-## Pages CMS Image Uploads
-- Member photos → `src/img/about/`
-- Featured images → `src/img/stills/`
-- Hover GIFs → `src/img/gifs/`
-- News images → `src/img/news/`
-- Digest headers → `src/img/digest/header/`
+- Source lives in `src/`. Eleventy 3 renders Nunjucks templates and Markdown;
+  Gulp compiles Bootstrap 5/custom SCSS and prepares production assets.
+- `main` contains source only. GitHub Pages deploys artifacts; CI never commits
+  generated output to `main`, and there is no `gh-pages` deployment branch.
+- `documentation/` contains maintained documentation. `dev/` and `docs/` are
+  disposable build output; cleanup and dev-server shutdown delete their contents.
+- Keep `README.md`, `AGENTS.md`, `CHANGELOG.md`, `LICENSE`, and
+  `THIRD_PARTY_NOTICES.md` at the root. The build and attribution validators
+  consume the root third-party notices.
+- Preserve unrelated worktree changes. Keep shared-platform docs and code in
+  their submodule, following its own guidance when working there.
+- Extend existing shared templates, selection flows, styles, and contracts.
+  The site, Newsletter Worker, and Podcast backend own separate deployments.
 
-## Syndication & Social Sharing
+## Commands and checks
 
-### Commands
-- `npm run build:og` - Generate Open Graph images (requires Puppeteer)
-- `npm run ping:bridgy` - Send webmentions for changed fediverse posts
-- `npm run ping:bridgy:all` - Send webmentions for all fediverse posts
+Run commands from the repository root unless a guide says otherwise.
 
-### Frontmatter Fields for Syndication
-Posts and news (including `src/news/digests/`) can include these optional fields:
+- Install: `git submodule update --init --recursive`, then `npm ci`.
+- Develop: `npm run watch` (Eleventy server plus Gulp asset watcher).
+- Eleventy only: `npm run serve` or `npx eleventy`.
+- Production build: `npm run build`; Pages/WebP build: `npm run build:ci`.
+  The explicit Podcast staging wrapper also uses the Pages/WebP pipeline.
+- Full Podcast/security gate: `npm run check:podcasts`. CI runs this separately
+  from the build; `npm run build` does not replace it.
+- Clean generated output: `npm run clean` / `npm run clean-prod`.
+- Run checks appropriate to the change and `git diff --check`; use the
+  [testing guide](documentation/testing.md) for focused commands and release gates.
 
-```yaml
-syndicate:
-  - substack    # Include in Substack feed (excerpt only)
-  - fediverse   # Federate via Bridgy Fed
-og_image: /img/og/custom-image.png   # Custom OG image (1200×630)
-og_video: /img/og/custom-video.mp4   # Optional OG video
-og_alt: "Description of the image"   # Alt text for OG image
-share_text: "Custom share text"      # Override default share text
-```
+## Contracts to preserve
 
-### Substack Export (Copy/Paste)
-Posts with `syndicate: ["substack"]` get a clean HTML export at `dev/substack-export/{slug}.html` for manual copy/paste into Substack's editor.
-
-**To use:**
-1. Run `npm run watch` (or `npx eleventy`)
-2. Open `dev/substack-export/{slug}.html` in browser or editor
-3. Copy content and paste into Substack editor (Cmd+V)
-
-The reusable cleanup contract lives in `lib/substack-export.cjs`; `.eleventy.js` only registers it as a filter. Run `npm run test:substack-export` after changing that module. The production `npm run build` includes this focused regression gate.
-
-**What gets cleaned:**
-- Relative URLs → absolute (`https://dustwave.xyz/...`)
-- Digest YouTube videos → standalone canonical URLs for Substack's native embeds; other YouTube/Vimeo embeds → plain URLs
-- `<h3>` → `<h2>` with `<hr>` divider before each
-- Digest podcast players → linked Overcast artwork/title, without a bare URL embed
-- Digest podcast images → responsive with a 450px maximum width
-- Digest promo/postface images → semantic figures/captions with a 500px maximum width
-- Digest article and podcast/video cards → dividers between items only
-- Image captions → `<figure>/<figcaption>` (Substack supports these)
-- Video captions → removed (Substack doesn't support)
-- Author signature block → removed
-- Classes, styles, scripts, navs, SVGs → stripped
-- `<!-- more:substack -->` marker → removed
-
-**Header format:**
-```
-Originally published on July 4, 2025 at dustwave.xyz
-```
-
-**Note:** These files are dev-only — excluded from production build (`docs/`).
-
-**Substack editor limitation:** Substack does not support custom post CSS/HTML as a stable contract. The export uses semantic figures, alt text, linked media, and intrinsic width hints for copy/paste. After pasting, verify each imported image in Substack's web editor; use its native image resize and caption controls if the editor normalizes imported dimensions or captions.
-
-### Digest audio-card layout
-
-Phone-width players and Digest players in narrow desktop columns share `audio-card-grid-layout` from `src/scss/themes/base/_audio-player.scss`. Keep structural grid behavior in that mixin; `_digest.scss` should supply only Digest-specific artwork sizing and responsive overrides. Validate the source contract with `node scripts/validate-podcast-player.mjs` and the browser regression behavior with `node --test tests/podcast-player-mobile-regression.test.mjs`.
-
-### Substack Excerpt Marker (for RSS feed)
-Add `<!-- more:substack -->` in your markdown to control where the RSS feed excerpt ends:
-
-```markdown
-This content appears in both Substack feed and the website.
-
-<!-- more:substack -->
-
-This content only appears on the website.
-{% youtube "VIDEO_ID" %}
-```
-
-- Content **before** the marker goes to Substack RSS feed with a "Continue reading" link
-- Content **after** the marker stays only on dustwave.xyz
-- The marker is invisible on the website
-- If no marker: falls back to first paragraph
-- Images use absolute URLs automatically (`https://dustwave.xyz/img/...`)
-
-### Feed Outputs
-| Feed | URL | Content |
-|------|-----|---------|
-| Main/Substack | `/feed` | Excerpt only + "Continue reading" link |
-| Syndicate | `/syndicate.xml` | Full HTML content |
-| JSON Feed | `/syndicate.json` | Full HTML content (JSON format) |
-
-All feeds use Mountain Time for dates and absolute URLs for images/links.
-
-### Share Panel
-Every news/project page includes a share panel with: Share button (Web Share API), Mastodon (with instance selector), Bluesky, X, Threads, LinkedIn, Facebook, Reddit, Email, Copy Link.
-
-### Open Graph & Twitter Cards
-Every page automatically generates OG and Twitter Card meta tags using:
-- `og_image` frontmatter (if provided)
-- `img` frontmatter converted to WebP (fallback)
-- `/img/og/default.png` (last resort fallback)
-
-Also includes JSON-LD structured data (Organization, Article/Movie, BreadcrumbList), theme colors, and PWA meta tags.
-
-### Fediverse via Bridgy Fed
-Posts with `syndicate: ["fediverse"]` include:
-- Microformats2 markup (`h-entry`, `p-name`, `e-content`, etc.) — author is hidden visually but preserved for microformats
-- `p-bridgy-bluesky-content` provides plain text summary for Bluesky (avoids HTML rendering issues)
-- Bridgy Fed opt-in link for federation
-- CI job sends webmentions after deploy (requires `BRIDGY_FED_ENABLED=true` repo variable)
-
-**Limitations:**
-- Bridgy Fed has anti-backfill protection — posts older than ~2-4 weeks may be silently dropped
-- Only new posts published after connecting to Bridgy Fed will reliably federate
-- The ping script adds 5-second delays between posts to avoid rate limiting
-- Bluesky federation is slower than Fediverse; posts may take several minutes to appear
-
-### Files
-- `src/_includes/snippets/meta-social.njk` - OG/Twitter meta tags
-- `src/_includes/snippets/share-panel.njk` - Share UI
-- `src/_includes/snippets/bridgy-opt-in.njk` - Bridgy Fed opt-in link
-- `src/feeds/feed.njk` → `/feed` (main RSS feed for Substack import)
-- `src/feeds/syndicate.njk` → `/syndicate.xml`
-- `src/feeds/syndicate-json.njk` → `/syndicate.json`
-- `scripts/render-og-cards.mjs` - OG image generator (Puppeteer)
-- `scripts/ping-bridgy.mjs` - Bridgy Fed webmention sender
-
-### Setup Checklist
-1. Install Puppeteer for OG cards: `npm install puppeteer`
-2. Create default OG image: `src/img/og/default.png` (1200×630)
-3. Register at webmention.io and update endpoint in `src/_includes/snippets/head.njk`
-4. Set up Bridgy Fed at https://fed.brid.gy/
-5. Add `BRIDGY_FED_ENABLED=true` as GitHub repo variable to enable CI federation
-
-## Newsletter Signups
-
-Newsletter subscriptions are handled via a Cloudflare Worker that adds contacts to Resend.
-
-### Architecture
-- **Frontend**: Forms in `footer1.njk` (popup) and `newsletter.njk` (full page)
-- **Backend**: Cloudflare Worker at `workers/newsletter-subscribe/`
-- **Email service**: Resend (contacts added to 'mailchimp' audience)
-
-### Worker Deployment
-```bash
-cd workers/newsletter-subscribe
-npm install
-wrangler secret put RESEND_API_KEY  # paste your Resend API key (Full Access)
-wrangler deploy
-```
-
-### Configuration
-- `wrangler.toml` — Worker config with `RESEND_AUDIENCE_ID` and `ALLOWED_ORIGIN`
-- Worker URL: `https://dustwave-newsletter.jogo.workers.dev`
-- CORS allows `https://dustwave.xyz` and localhost for dev
-
-### Files
-- `workers/newsletter-subscribe/src/index.js` — Worker code
-- `src/_includes/snippets/footer1.njk` — Popup form + JS handler
-- `src/newsletter.njk` — Full newsletter signup page
-- `src/scss/themes/base/_style-theme.scss` — Form styles (bottom of file)
+- SCSS follows Bootstrap variable conventions; use the existing theme partials.
+- Content uses YAML frontmatter and Markdown/raw HTML. Project creation updates
+  the canonical page, localized page, and taxonomy together. Keep interface
+  translations in sync; News remains in its published language.
+- Keep Substack cleanup in `lib/substack-export.cjs`; `.eleventy.js` only
+  registers it. Run `npm run test:substack-export` after changes.
+- Phone-width and narrow-column Digest players share `audio-card-grid-layout`
+  in `src/scss/themes/base/_audio-player.scss`. Keep grid structure there;
+  `_digest.scss` supplies Digest artwork sizes and responsive overrides.
+- Keep Podcast-only styles in the appropriate additive bundle and validate
+  visual changes in the rendered UI at relevant widths.
+- Treat dated QA/provider evidence as historical. Local tests, deployment,
+  provider acceptance, and manual device checks are separate claims.
