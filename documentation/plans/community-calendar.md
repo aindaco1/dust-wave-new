@@ -2,7 +2,8 @@
 
 Status: approved scope and implementation plan, September 8, 2026. The owner
 authorized implementation and completion after supplying the administrator
-address. Implementation and staging are now in place. The
+address. Implementation, staging and production are now in place; see the
+[launch evidence](../qa/2026-09-08-community-launch.md). The
 [Community Worker guide](../../workers/community/README.md) is authoritative
 for the implemented configuration, commands and release procedure.
 
