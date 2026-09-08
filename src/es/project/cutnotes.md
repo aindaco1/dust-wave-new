@@ -36,10 +36,6 @@ Macs con Apple Silicon y macOS 15 o posterior. Para organizar las notas localmen
 * **Conserva tu material de trabajo.** Cada sesión tiene sus propios archivos, y el audio o las transcripciones terminadas siguen disponibles si una etapa posterior falla. Los medios importados no se modifican.
 * **Trabaja desde la app o la terminal.** La app nativa para Mac y la herramienta de línea de comandos ofrecen los mismos flujos de grabación, importación y organización de notas. Las notas se guardan en Markdown para compartirlas o seguir editándolas.
 
-### Novedades de la versión 1.0.2
-
-CutNotes 1.0.2 lleva la búsqueda de actualizaciones a la barra de herramientas y corrige el comando de terminal que se instala desde la app. También añade una vista previa de los informes de soporte para que puedas revisar su contenido antes de decidir enviarlos.
-
 ### Código abierto
 
 CutNotes es gratis para usar, compartir y modificar bajo la licencia MIT.
@@ -52,4 +48,3 @@ CutNotes es gratis para usar, compartir y modificar bajo la licencia MIT.
 
 * [Descargar CutNotes para Mac](https://github.com/aindaco1/cutnotes/releases/latest)
 * [Código fuente en GitHub](https://github.com/aindaco1/cutnotes)
-* [Notas de la versión 1.0.2](https://github.com/aindaco1/cutnotes/releases/tag/v1.0.2)

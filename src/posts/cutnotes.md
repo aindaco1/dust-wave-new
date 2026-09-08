@@ -31,11 +31,6 @@ Apple Silicon Macs running macOS 15 or later. Local note formatting with Apple I
 * **Work from the app or the terminal.** The native Mac app and command-line tool offer the same recording, import, and formatting workflows. Notes save as Markdown for sharing or further editing.
 <br><br>
 
-### What's new in 1.0.2
-
-CutNotes 1.0.2 puts update checks in the app's toolbar and fixes the terminal command installed from the app. It also adds a support-report preview so you can review what would be sent before choosing to send it.
-<br><br>
-
 ### Open source
 
 CutNotes is free to use, share, and modify under the MIT License.
@@ -50,4 +45,3 @@ CutNotes is free to use, share, and modify under the MIT License.
 
 * [Download CutNotes for Mac](https://github.com/aindaco1/cutnotes/releases/latest)
 * [Source code on GitHub](https://github.com/aindaco1/cutnotes)
-* [CutNotes 1.0.2 release notes](https://github.com/aindaco1/cutnotes/releases/tag/v1.0.2)
