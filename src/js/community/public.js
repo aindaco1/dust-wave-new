@@ -1,24 +1,7 @@
 import {client,copy,errorText,mountChallenge,uploadFile} from './common.js';
-import {shareLink,copyLink} from '../share-actions.js';
+import {mountCalendar} from './calendar-navigation.js';
 
-document.querySelectorAll('[data-calendar-view]').forEach(button=>{
-  button.hidden=false;
-  button.addEventListener('click',()=>{
-    const calendar=button.closest('[data-community-calendar]');
-    const list=calendar.classList.toggle('community-calendar--list');
-    button.setAttribute('aria-pressed',String(list));button.textContent=list?copy.gridView:copy.listView;
-  });
-});
-document.querySelectorAll('[data-community-share]').forEach(root=>{
-  const data={url:root.dataset.shareUrl,title:root.dataset.shareTitle,text:root.dataset.shareTitle};
-  const status=root.querySelector('[data-share-status]');
-  root.querySelector('[data-community-copy]').addEventListener('click',async()=>{
-    try{await copyLink(data.url);status.textContent=copy.copied;}catch{status.textContent=`${copy.shareFallback} ${data.url}`;}
-  });
-  root.querySelector('[data-community-share-native]').addEventListener('click',async()=>{
-    try{if(!await shareLink(data)){await copyLink(data.url);status.textContent=copy.copied;}}catch{status.textContent=`${copy.shareFallback} ${data.url}`;}
-  });
-});
+mountCalendar(document.querySelector('[data-community-slot="1"]'),copy);
 
 const form=document.querySelector('[data-community-form]');
 if(form){

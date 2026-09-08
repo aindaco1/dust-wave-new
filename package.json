@@ -62,7 +62,7 @@
     "watch:server": "npm run clean && npm run build-assets && concurrently --kill-others-on-fail --names assets,site \"npm:sync\" \"npm:watch:all\"",
     "clean": "rm -rf dev/*",
     "clean-prod": "rm -rf docs/*",
-    "test:community": "node --test tests/community-contract.test.mjs && npm test --prefix workers/community && npm audit --prefix workers/community --audit-level=high",
+    "test:community": "node --test tests/community-contract.test.mjs tests/community-calendar-navigation.test.mjs && npm test --prefix workers/community && npm audit --prefix workers/community --audit-level=high",
     "build:community-staging": "COMMUNITY_STAGING_BUILD=true npm run build:ci && node scripts/prepare-community-staging.mjs docs"
   },
   "dependencies": {

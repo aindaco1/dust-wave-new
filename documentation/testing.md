@@ -158,7 +158,10 @@ control.
 Install `npm ci --prefix workers/community`, then run `npm run test:community`.
 This covers EN/ES contracts, domain tests, PDF limits, real PNG cards, and an
 isolated workerd/D1/R2 workflow with session, privacy, retry and concurrency
-checks. Run `npm run build:community-staging` for the production WebP pipeline.
+checks. A headless browser regression covers in-place month navigation, scroll
+position, browser history, retained proposals, metadata, request races and
+connection failures at desktop and phone widths in both languages. Run
+`npm run build:community-staging` for the production WebP pipeline.
 After deploying, `node scripts/smoke-community.mjs <origin>` checks all six
 current/upcoming month cards, both page languages, admin headers and private
 route denials. Also inspect the rendered UI at desktop and phone widths.

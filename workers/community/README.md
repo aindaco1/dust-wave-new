@@ -30,6 +30,11 @@ Public events require approval; only published image derivatives are served.
 Month cards are actual 1200×630 PNGs rendered with resvg WASM and bundled Inter.
 Their URLs include a digest of the public month content. No browser execution
 is needed for month-specific Open Graph tags or readable calendar navigation.
+With JavaScript, month links and the month picker fetch this same server-rendered
+markup and replace only the calendar. Scroll position, list view and entered
+proposal details are preserved; browser history, language links and share
+metadata track the selected month. Failed requests leave the current month
+readable and allow retrying the same controls.
 
 ## Local development and checks
 

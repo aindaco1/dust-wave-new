@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Fixed Microcinema month navigation to update in place without reloading or
+  scrolling the page, while preserving proposal drafts and month share links.
+
 - Added a bilingual Microcinema calendar with moderated HQ event proposals,
   month archive links and generated social preview images.
 - Added Writers Group agendas, private PDF submissions and automatic scheduling
