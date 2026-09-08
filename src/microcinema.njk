@@ -31,11 +31,6 @@ eleventyComputed:
   </header>
 
   <div class="writers-group-body">
-    <section id="calendar" class="community-section" aria-label="{{ i18n[language].community.calendarTitle }}">
-      <div data-community-slot="1"><h2>{{ i18n[language].community.calendarTitle }}</h2><p>{{ i18n[language].community.unavailable }}</p></div>
-      {% set communityKind = 'event' %}
-      {% include "community/form.njk" %}
-    </section>
     <section class="writers-group-details microcinema-visit" aria-labelledby="visit-heading">
       <div>
         <h2 id="visit-heading">{{ i18n | t(language, "pages.microcinema.visit") }}</h2>
@@ -71,6 +66,12 @@ eleventyComputed:
       <figure class="writers-group-hero__media microcinema-map">
         <img src="/img/microcinema/dw-hq-parking-map.png" class="microcinema-image" alt="{{ i18n | t(language, 'pages.microcinema.mapAlt') }}">
       </figure>
+    </section>
+
+    <section id="calendar" class="community-section" aria-label="{{ i18n[language].community.calendarTitle }}">
+      <div data-community-slot="1"><h2>{{ i18n[language].community.calendarTitle }}</h2><p>{{ i18n[language].community.unavailable }}</p></div>
+      {% set communityKind = 'event' %}
+      {% include "community/form.njk" %}
     </section>
   </div>
 </div>
