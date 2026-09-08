@@ -1,0 +1,135 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "dustwave-community",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-07",
+  "workers_dev": false,
+  "rules": [
+    {
+      "type": "Data",
+      "globs": [
+        "**/*.ttf"
+      ],
+      "fallthrough": true
+    }
+  ],
+  "vars": {
+    "SITE_BASE": "https://dustwave.xyz",
+    "APP_MODE": "production",
+    "LOGIN_FROM": "community@digest.dustwave.xyz"
+  },
+  "d1_databases": [
+    {
+      "binding": "COMMUNITY_DB",
+      "database_name": "dustwave-community",
+      "database_id": "287f3d8c-d73c-46c3-af05-2747143b6ed6",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "COMMUNITY_FILES",
+      "bucket_name": "dustwave-community-private"
+    }
+  ],
+  "images": {
+    "binding": "IMAGES"
+  },
+  "send_email": [
+    {
+      "name": "EMAIL",
+      "allowed_sender_addresses": [
+        "community@digest.dustwave.xyz"
+      ],
+      "allowed_destination_addresses": [
+        "alonso@dustwave.xyz"
+      ]
+    }
+  ],
+  "triggers": {
+    "crons": [
+      "15 10 * * *"
+    ]
+  },
+  "env": {
+    "staging": {
+      "name": "dustwave-community-staging",
+      "workers_dev": true,
+      "vars": {
+        "SITE_BASE": "https://dustwave-community-staging.jogo.workers.dev",
+        "APP_MODE": "staging",
+        "LOGIN_FROM": "community@digest.dustwave.xyz"
+      },
+      "d1_databases": [
+        {
+          "binding": "COMMUNITY_DB",
+          "database_name": "dustwave-community-staging",
+          "database_id": "41b4a1a0-54f2-4cc4-8b3b-73e78729eca8",
+          "migrations_dir": "migrations"
+        }
+      ],
+      "r2_buckets": [
+        {
+          "binding": "COMMUNITY_FILES",
+          "bucket_name": "dustwave-community-staging-private"
+        }
+      ],
+      "images": {
+        "binding": "IMAGES"
+      },
+      "send_email": [
+        {
+          "name": "EMAIL",
+          "allowed_sender_addresses": [
+            "community@digest.dustwave.xyz"
+          ],
+          "allowed_destination_addresses": [
+            "alonso@dustwave.xyz"
+          ]
+        }
+      ],
+      "assets": {
+        "directory": "../../.artifacts/community/site",
+        "binding": "SITE_ASSETS",
+        "run_worker_first": true,
+        "html_handling": "none"
+      },
+      "triggers": {
+        "crons": [
+          "15 10 * * *"
+        ]
+      },
+      "routes": []
+    }
+  },
+  "routes": [
+    {
+      "pattern": "dustwave.xyz/microcinema.html*",
+      "zone_name": "dustwave.xyz"
+    },
+    {
+      "pattern": "dustwave.xyz/es/microcinema.html*",
+      "zone_name": "dustwave.xyz"
+    },
+    {
+      "pattern": "dustwave.xyz/writers-group.html*",
+      "zone_name": "dustwave.xyz"
+    },
+    {
+      "pattern": "dustwave.xyz/es/writers-group.html*",
+      "zone_name": "dustwave.xyz"
+    },
+    {
+      "pattern": "dustwave.xyz/admin/community*",
+      "zone_name": "dustwave.xyz"
+    },
+    {
+      "pattern": "dustwave.xyz/es/admin/community*",
+      "zone_name": "dustwave.xyz"
+    },
+    {
+      "pattern": "dustwave.xyz/api/community/*",
+      "zone_name": "dustwave.xyz"
+    }
+  ]
+}

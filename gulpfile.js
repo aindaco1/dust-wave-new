@@ -142,7 +142,9 @@ gulp.task('purgecss', function purgeCssTask() {
     `${DIR.dist}/css/theme.min.css`,
     `${DIR.dist}/css/podcast-public.min.css`,
     `${DIR.dist}/css/podcast-member.min.css`,
-    `${DIR.dist}/css/podcast-admin.min.css`
+    `${DIR.dist}/css/podcast-admin.min.css`,
+    `${DIR.dist}/css/community.min.css`,
+    `${DIR.dist}/css/community-admin.min.css`
   ])
     .pipe(
       purgecss({
@@ -152,7 +154,8 @@ gulp.task('purgecss', function purgeCssTask() {
         content: [
           `${DIR.dist}/**/*.html`,
           `${DIR.dist}/js/**/*.js`,
-          `${DIR.src}/news/podcasts/**/*.njk`
+          `${DIR.src}/news/podcasts/**/*.njk`,
+          'workers/community/src/render.js'
         ],
         safelist: [
           'collapsed',

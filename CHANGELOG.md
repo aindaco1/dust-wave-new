@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- Added a bilingual Microcinema calendar with moderated HQ event proposals,
+  month archive links and generated social preview images.
+- Added Writers Group agendas, private PDF submissions and automatic scheduling
+  of two approved scripts per biweekly meeting from September 21, 2026.
+- Added separate Community admin editing, approval, queue preview/reordering and
+  meeting exceptions, reusing Dust Wave Platform controls and primitives.
+
 ## v1.4.0 - 2026-08-25
 
 - Added guarded Super-admin show creation and deletion workflows with stable

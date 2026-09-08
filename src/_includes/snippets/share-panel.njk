@@ -1,5 +1,5 @@
 {# Share panel for news and project pages #}
-{% set shareUrl = metadata.url + page.url %}
+{% set shareUrl = share_url or (metadata.url + page.url) %}
 {% set shareTitle = share_text or (title + " — Dust Wave") %}
 {% set shareText = shareTitle + " " + shareUrl %}
 
@@ -113,7 +113,8 @@
   </div>
 </dialog>
 
-<script>
+<script type="module">
+import { shareLink, copyLink } from "/js/share-actions.js?v={{ assets.version | default('dev') }}";
 (function() {
   // Web Share API for primary share button
   const primaryBtn = document.querySelector('.share-primary');
@@ -125,18 +126,11 @@
         url: this.dataset.shareUrl
       };
       
-      if (navigator.share) {
-        try {
-          await navigator.share(shareData);
-        } catch (err) {
-          if (err.name !== 'AbortError') {
-            console.log('Share failed:', err);
-          }
+      try {
+        if (!await shareLink(shareData)) {
+          document.querySelector('.share-links')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
-      } else {
-        // Fallback: scroll to share links if not visible
-        document.querySelector('.share-links')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
+      } catch (err) { console.log('Share failed:', err); }
     });
   }
 
@@ -145,7 +139,7 @@
     btn.addEventListener('click', async function() {
       const url = this.dataset.copyUrl;
       try {
-        await navigator.clipboard.writeText(url);
+        await copyLink(url);
         const linkIcon = this.querySelector('[data-copy-icon="link"]');
         const checkIcon = this.querySelector('[data-copy-icon="check"]');
         linkIcon.hidden = true;

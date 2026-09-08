@@ -53,3 +53,19 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+## Community Worker dependencies
+
+- **Inter 4.1 Bold**: Copyright Rasmus Andersson and the Inter contributors,
+  SIL Open Font License 1.1. The unmodified TTF and complete license are in
+  `workers/community/assets/`. Source: https://github.com/rsms/inter/releases/tag/v4.1.
+  TTF SHA-256: `288316099b1e0a47a4716d159098005eef7c0066921f34e3200393dbdb01947f`.
+- **@resvg/resvg-wasm 2.6.2**: Mozilla Public License 2.0. The Worker uses the
+  unmodified npm WASM package. Corresponding source is available at
+  https://github.com/yisibl/resvg-js/tree/v2.6.2; the license is preserved in
+  `workers/community/assets/resvg-MPL-2.0.txt`.
+- **pdf-lib 1.17.1**: Copyright (c) 2019 Andrew Dillon, MIT License. Its complete
+  license is preserved in `workers/community/assets/pdf-lib-LICENSE.txt`.
+
+These dependencies run in the Community Worker; script PDFs and private upload
+files are not distributed with the website.

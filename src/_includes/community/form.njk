@@ -1,0 +1,39 @@
+{% set community = i18n[language].community %}
+<details class="community-submit" id="community-submit">
+  <summary>{{ community.submitScript if communityKind == 'script' else community.submitEvent }}</summary>
+  <p>{{ community.scriptIntro if communityKind == 'script' else community.eventIntro }}</p>
+  <form class="community-form" data-community-form="{{ communityKind }}">
+    <fieldset disabled>
+      {% if communityKind == 'script' %}
+      <label>{{ community.scriptTitle }}<input name="title" required maxlength="100" autocomplete="off"></label>
+      <label>{{ community.author }}<input name="author" required maxlength="100" autocomplete="name"></label>
+      {% else %}
+      <label>{{ community.eventName }}<input name="title" required maxlength="100" autocomplete="off"></label>
+      <label>{{ community.description }}<textarea name="description" required maxlength="240" rows="2"></textarea></label>
+      <div class="community-form__pair">
+        <label>{{ community.date }}<input name="date" type="date" required></label>
+        <label>{{ community.time }}<input name="time" type="time" required></label>
+      </div>
+      {% endif %}
+      <div class="community-form__pair">
+        <label>{{ community.contactName }}<input name="contactName" required maxlength="100" autocomplete="name"></label>
+        <label>{{ community.email }}<input name="email" type="email" required maxlength="254" autocomplete="email"></label>
+      </div>
+      <label>{{ community.pdf if communityKind == 'script' else community.image }}
+        <input name="file" type="file" required accept="{{ 'application/pdf,.pdf' if communityKind == 'script' else 'image/jpeg,image/png,image/webp' }}" aria-describedby="community-file-help">
+      </label>
+      <p class="community-form__help" id="community-file-help">{{ community.pdfHelp if communityKind == 'script' else community.imageHelp }}</p>
+      {% if communityKind != 'script' %}<img class="community-image-preview" data-image-preview alt="" width="160" height="160" hidden>{% endif %}
+      {% if communityKind == 'script' %}
+      <label class="community-checkbox"><input name="local" type="checkbox" required> <span>{{ community.local }}</span></label>
+      <label class="community-checkbox"><input name="consent" type="checkbox" required> <span>{{ community.consent }}</span></label>
+      <p class="community-form__help">{{ community.retention }}</p>
+      {% endif %}
+      <div data-community-challenge></div>
+      <button type="submit" class="community-button community-button--primary">{{ community.submit }}</button>
+    </fieldset>
+    <p data-form-status role="status" tabindex="-1"></p>
+  </form>
+</details>
+<script type="application/json" id="community-copy">{{ community | safeJsonLd | safe }}</script>
+<script type="module" src="/js/community/public.js?v={{ assets.version | default('dev') }}"></script>

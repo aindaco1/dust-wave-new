@@ -8,6 +8,7 @@ work; none of these entries establishes live provider readiness.
 
 | Area | Scope and status | Plan |
 |---|---|---|
+| Community calendars | Implemented Microcinema calendar, moderated HQ proposals, private PDFs, and automatic two-script Writers Group scheduling with separate Community admin. Staging and release verification are in progress. | [Calendar and scheduling plan](plans/community-calendar.md) |
 | Podcast platform | Site interfaces are implemented; the backend owns remaining jobs, provider evidence, and launch gates. Consult its current roadmap and live readiness before treating a step as pending or complete. | [Execution strategy](plans/podcast-platform.md) |
 | Datatype analytics | The scoped Podcast analytics pilot is recorded in site v1.2.0. Broader accessibility/browser validation and second-consumer/shared-primitive gates remain listed for follow-up. | [Analytics rollout](plans/datatype-analytics.md) |
 | Paid video player | Proposed for the first paid online screening or subscriber-only film release. Product, hosting, external-embed, and protection requirements remain proposal decisions. | [Paid-video proposal](plans/paid-video-player.md) |

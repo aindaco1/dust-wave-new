@@ -207,3 +207,11 @@ does not establish current runtime or provider state.
 Worker-specific procedures stay beside the Worker. Shared-platform docs stay
 inside its submodule. Keep site content in `src/` so documentation is not
 rendered or published as site content.
+
+## Community calendar and Writers Group
+
+The [Community Worker guide](../workers/community/README.md) owns the separate
+D1/R2 deployment, email login, moderation and recurring meeting schedule.
+`npm run build:community-staging` reuses the production WebP build and prepares
+six page shells for its assets binding. Public calendar and agenda routes are
+rendered at the edge from shared meeting records; page assets remain in Pages.

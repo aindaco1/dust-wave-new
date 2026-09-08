@@ -13,6 +13,8 @@ Start with [README.md](README.md) and the guide for the area being changed:
 - [Testing and performance](documentation/testing.md): required checks and
   focused validation commands.
 - [Roadmap](documentation/roadmap.md): plans and links to dated evidence.
+- [Community calendar and queue](workers/community/README.md): shared meeting records,
+  submissions, private uploads, Community admin and independent deployment.
 - [Newsletter Worker](workers/newsletter-subscribe/README.md): signup and
   welcome-email behavior, configuration, and deployment.
 

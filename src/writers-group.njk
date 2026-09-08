@@ -4,6 +4,7 @@ navbar: navbar1
 footer: footer1
 colorModifier: dark
 bodyModifier: writers-group-shell
+cssBundle: community
 translationKey: writersGroup
 pagination:
   data: i18n.config.supportedLangs
@@ -37,6 +38,11 @@ og_image_height: 535
   </header>
 
   <div class="writers-group-body">
+    <section id="readings" class="community-section" aria-label="{{ i18n[language].community.upcoming }}">
+      <div data-community-slot="1"><h2>{{ i18n[language].community.upcoming }}</h2><p>{{ i18n[language].community.unavailable }}</p></div>
+      {% set communityKind = 'script' %}
+      {% include "community/form.njk" %}
+    </section>
     <section class="writers-group-details" aria-labelledby="details-heading">
       <div>
         <p class="writers-group-eyebrow">{{ i18n | t(language, "pages.writersGroup.meetingEyebrow") }}</p>
@@ -100,7 +106,7 @@ og_image_height: 535
       <div class="writers-group-bring__cards">
         <article>
           <h3>{{ i18n | t(language, "pages.writersGroup.submitTitle") }}</h3>
-          <p>{{ i18n | t(language, "pages.writersGroup.submitBodyBeforeLimit") }} <strong>{{ i18n | t(language, "pages.writersGroup.submitLimit") }}</strong>. {{ i18n | t(language, "pages.writersGroup.submitBodyAfterLimit") }} <a href="{{ i18n | localizedUrl(language, 'contact', '/contact.html') }}">{{ i18n | t(language, "pages.writersGroup.submitLink") }}</a> {{ i18n | t(language, "pages.writersGroup.submitBodyAfterLink") }}</p>
+          <p>{{ i18n | t(language, "pages.writersGroup.submitBodyBeforeLimit") }} <strong>{{ i18n | t(language, "pages.writersGroup.submitLimit") }}</strong>. {{ i18n | t(language, "pages.writersGroup.submitBodyAfterLimit") }} <a href="#community-submit">{{ i18n | t(language, "pages.writersGroup.submitLink") }}</a> {{ i18n | t(language, "pages.writersGroup.submitBodyAfterLink") }}</p>
         </article>
         <article>
           <h3>{{ i18n | t(language, "pages.writersGroup.attendTitle") }}</h3>

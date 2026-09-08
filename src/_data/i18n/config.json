@@ -88,6 +88,10 @@
     "podcastAdmin": {
       "en": "/admin/podcasts/",
       "es": "/es/admin/podcasts/"
+    },
+    "communityAdmin": {
+      "en": "/admin/community/",
+      "es": "/es/admin/community/"
     }
   }
 }

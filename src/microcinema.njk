@@ -4,6 +4,7 @@ navbar: navbar1
 footer: footer1
 colorModifier: dark
 bodyModifier: microcinema-shell
+cssBundle: community
 og_image: /img/microcinema/dw-hq-parking-map.png
 translationKey: microcinema
 pagination:
@@ -30,6 +31,11 @@ eleventyComputed:
   </header>
 
   <div class="writers-group-body">
+    <section id="calendar" class="community-section" aria-label="{{ i18n[language].community.calendarTitle }}">
+      <div data-community-slot="1"><h2>{{ i18n[language].community.calendarTitle }}</h2><p>{{ i18n[language].community.unavailable }}</p></div>
+      {% set communityKind = 'event' %}
+      {% include "community/form.njk" %}
+    </section>
     <section class="writers-group-details microcinema-visit" aria-labelledby="visit-heading">
       <div>
         <h2 id="visit-heading">{{ i18n | t(language, "pages.microcinema.visit") }}</h2>

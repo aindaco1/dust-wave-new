@@ -1,0 +1,27 @@
+{
+  "name": "dustwave-community",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "wrangler dev",
+    "test": "node --test test/*.test.mjs",
+    "check": "npm test && npm audit --audit-level=high && wrangler deploy --dry-run",
+    "deploy": "wrangler deploy",
+    "migrate:local": "wrangler d1 migrations apply COMMUNITY_DB --local",
+    "migrate:remote": "wrangler d1 migrations apply COMMUNITY_DB --remote"
+  },
+  "dependencies": {
+    "@dustwave/worker-core": "file:../../shared/dust-wave-platform/packages/worker-core",
+    "@resvg/resvg-wasm": "2.6.2",
+    "pdf-lib": "1.17.1"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.1",
+    "miniflare": "5.20260907.0-alpha",
+    "wrangler": "4.129.1"
+  }
+}

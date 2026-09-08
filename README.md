@@ -52,3 +52,9 @@ for acceptance checks.
 ## License
 
 See [LICENSE](LICENSE) and [third-party notices](THIRD_PARTY_NOTICES.md).
+
+## Community calendars
+
+The Microcinema calendar and Writers Group queue share one independent
+[Community Worker](workers/community/README.md). See its guide for admin access,
+private submissions, testing, deployment and rollback.

@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="{{ language }}">
+  <head>{% include "snippets/head.njk" %}<meta name="robots" content="noindex,nofollow,noarchive"></head>
+  <body class="community-admin-shell">
+    <a class="skip-link" href="#main-content">{{ i18n | t(language, 'nav.skipToContent') }}</a>
+    {% include "snippets/navbar1.njk" %}
+    <main id="main-content" class="container community-admin" tabindex="-1">{{ content | safe }}</main>
+    {% include "snippets/site-footer.njk" %}
+    <script type="module" src="/js/community/admin.js?v={{ assets.version | default('dev') }}"></script>
+  </body>
+</html>
