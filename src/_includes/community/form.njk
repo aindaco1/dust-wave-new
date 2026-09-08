@@ -2,7 +2,7 @@
 <details class="community-submit" id="community-submit">
   <summary>{{ community.submitScript if communityKind == 'script' else community.submitEvent }}</summary>
   <p>{{ community.scriptIntro if communityKind == 'script' else community.eventIntro }}</p>
-  <form class="community-form" data-community-form="{{ communityKind }}">
+  <form id="community-form" class="community-form" data-community-form="{{ communityKind }}">
     <fieldset disabled>
       {% if communityKind == 'script' %}
       <label>{{ community.scriptTitle }}<input name="title" required maxlength="100" autocomplete="off"></label>
