@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Added spacing below Community verification widgets and responsive resizing
+  that keeps them within the form gutters on narrow screens.
+
 - Added the calendar anchor to shared month URLs so recipients land on the
   selected calendar while in-page month controls preserve scroll position.
 

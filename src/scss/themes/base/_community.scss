@@ -136,6 +136,13 @@
   .community-checkbox { display: flex; align-items: flex-start; gap: .7rem; font-weight: 400; }
   input[type="checkbox"] { margin-top: .3rem; width: 1rem; height: 1rem; flex-shrink: 0; }
   [data-form-status], [data-login-status] { margin-top: 1rem; overflow-wrap: anywhere; }
+  [data-community-challenge] {
+    display: flow-root;
+    line-height: 0;
+    min-width: 0;
+    max-width: 100%;
+    margin-bottom: 1.5rem;
+  }
 }
 .community-form__pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
 .community-form__help { color: #bbb; font-size: .82rem; line-height: 1.6; }

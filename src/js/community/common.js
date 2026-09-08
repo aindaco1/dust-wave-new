@@ -25,9 +25,21 @@ export async function mountChallenge(root,config,action){
     script.onload=resolve;script.onerror=()=>reject(new Error('challenge_unavailable'));document.head.append(script);
   });
   await turnstileScript;
-  let token='';
-  const widget=globalThis.turnstile.render(root,{sitekey:config.siteKey,action,theme:'auto',size:responsiveTurnstileSize(root),language,
-    callback:value=>{token=value;},'expired-callback':()=>{token='';},'error-callback':()=>{token='';}});
+  let token='',widget,size;
+  const render=()=>{
+    if(root.getBoundingClientRect().width<=0)return;
+    const nextSize=responsiveTurnstileSize(root);
+    if(nextSize===size)return;
+    // Flexible widgets have a minimum width. Recreate only when crossing the
+    // shared compact threshold, including after rotation or resizing a window.
+    token='';
+    if(widget!==undefined)globalThis.turnstile.remove(widget);
+    size=nextSize;
+    widget=globalThis.turnstile.render(root,{sitekey:config.siteKey,action,theme:'auto',size,language,
+      callback:value=>{token=value;},'expired-callback':()=>{token='';},'error-callback':()=>{token='';}});
+  };
+  render();
+  new ResizeObserver(render).observe(root);
   return {token(){if(!token)throw new Error('challenge_required');return token;},reset(){token='';globalThis.turnstile.reset(widget);}};
 }
 export async function uploadFile(file,kind,token,{admin=false}={}){
