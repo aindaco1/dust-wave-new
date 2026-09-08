@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Added the calendar anchor to shared month URLs so recipients land on the
+  selected calendar while in-page month controls preserve scroll position.
+
 - Fixed Microcinema month navigation to update in place without reloading or
   scrolling the page, while preserving proposal drafts and month share links.
 

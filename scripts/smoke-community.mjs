@@ -17,6 +17,7 @@ for(const language of ['en','es']){
     const html=await response.text();assert.match(html,/data-community-calendar/);assert.doesNotMatch(html,/class="community-unavailable"/);
     assert.match(response.headers.get('Cache-Control'),/no-store/);
     assert(html.includes(`month=${month}`));
+    assert(html.includes(`data-share-url="${origin}${prefix}/microcinema.html?month=${month}#calendar"`));
     const card=html.match(/property="og:image" content="([^"]+)"/)[1];
     assert(card.startsWith(`${origin}/api/community/v1/cards/${language}/${month}/`));cards.add(card);
     const image=await get(card);assert.match(image.headers.get('Content-Type'),/image\/png/);

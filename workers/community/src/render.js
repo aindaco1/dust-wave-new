@@ -31,7 +31,7 @@ function eventMarkup(event, language) {
 }
 export function renderCalendar(view, origin = '') {
   const t = copy(view.language); const lang = view.language;
-  const href = m => `${monthUrl(m,lang)}#calendar`;
+  const href = (m, base = '') => `${monthUrl(m,lang,base)}#calendar`;
   const months = []; for (let m = view.first; m <= view.last; m = addMonths(m,1)) months.push(m);
   const nav = (month, label, enabled) => enabled ? `<a class="community-button" href="${href(month)}">${escape(label)}</a>` : `<span class="community-button" aria-disabled="true">${escape(label)}</span>`;
   const groups = new Map(Array.from({length: view.days}, (_,i) => [`${view.month}-${String(i+1).padStart(2,'0')}`, []]));
@@ -46,7 +46,7 @@ export function renderCalendar(view, origin = '') {
     <div class="community-calendar__weekdays" aria-hidden="true">${weekdayLabels(lang).map(d => `<span>${escape(d)}</span>`).join('')}</div>
     <ol class="community-calendar__grid">${blanks}${days}${trailing}</ol>
     ${view.events.length ? '' : `<p class="community-calendar__empty">${escape(t.emptyMonth)}</p>`}
-    <div class="community-calendar__footer"><p>${escape(t.atHQ)}<br>${escape(t.timezone)}</p><div class="community-share" data-community-share data-share-url="${escape(monthUrl(view.month,lang,origin))}" data-share-title="${escape(monthLabel(view.month,lang))} · Dust Wave Microcinema"><button type="button" data-community-share-native>${escape(t.shareMonth)}</button><button type="button" data-community-copy>${escape(t.copyLink)}</button><a href="${escape(monthUrl(view.month,lang))}">${escape(monthLabel(view.month,lang))}</a><span role="status" data-share-status></span></div></div>
+    <div class="community-calendar__footer"><p>${escape(t.atHQ)}<br>${escape(t.timezone)}</p><div class="community-share" data-community-share data-share-url="${escape(href(view.month,origin))}" data-share-title="${escape(monthLabel(view.month,lang))} · Dust Wave Microcinema"><button type="button" data-community-share-native>${escape(t.shareMonth)}</button><button type="button" data-community-copy>${escape(t.copyLink)}</button><a href="${escape(href(view.month))}">${escape(monthLabel(view.month,lang))}</a><span role="status" data-share-status></span></div></div>
   </div>`;
 }
 export function renderMeetings(meetings, language) {

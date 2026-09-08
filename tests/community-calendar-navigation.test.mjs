@@ -34,7 +34,7 @@ origin=`http://127.0.0.1:${server.address().port}`;
 const browser=await puppeteer.launch({headless:true,args:process.env.CI?['--no-sandbox']:[]});
 
 async function settled(page,month){
-  await page.waitForFunction(month=>document.querySelector('[data-community-share]').dataset.shareUrl.endsWith(`month=${month}`)&&!document.querySelector('[data-community-slot]').hasAttribute('aria-busy'),{},month);
+  await page.waitForFunction(month=>document.querySelector('[data-community-share]').dataset.shareUrl.endsWith(`month=${month}#calendar`)&&!document.querySelector('[data-community-slot]').hasAttribute('aria-busy'),{},month);
   await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
 }
 async function evidence(page){return page.evaluate(()=>({
@@ -57,6 +57,43 @@ function assertStable(before,after){
 }
 try{
   for(const language of ['en','es'])for(const width of [1440,390]){
+    await test(`shared month arrival scrolls once at ${width}px (${language})`,async()=>{
+      mode='normal';
+      const page=await browser.newPage();await page.setViewport({width,height:844});
+      const path=`${language==='es'?'/es':''}/microcinema.html`;
+      await page.goto(`${origin}${path}?month=2026-10`);
+      await page.waitForFunction(()=>window.ready);
+      assert.equal(await page.evaluate(()=>scrollY),0,'a URL without an anchor stays at the top');
+      const shared=await page.$eval('[data-community-share]',el=>el.dataset.shareUrl);
+      assert.equal(shared,`${origin}${path}?month=2026-10#calendar`);
+      assert.equal(await page.$eval('[data-community-share] a',el=>el.href),shared);
+      // Exercise the real copy/native-share handlers after extracting the shared URL.
+      await page.evaluate(()=>{
+        Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async value=>{window.copiedMonth=value;}}});
+        Object.defineProperty(navigator,'share',{configurable:true,value:async data=>{window.sharedMonth=data.url;}});
+      });
+      await page.click('[data-community-copy]');assert.equal(await page.evaluate(()=>window.copiedMonth),shared);
+      await page.click('[data-community-share-native]');assert.equal(await page.evaluate(()=>window.sharedMonth),shared);
+      // A fresh document uses native fragment navigation before any in-place changes.
+      await page.goto('about:blank');await page.goto(shared);await page.waitForFunction(()=>window.ready);
+      await page.waitForFunction(()=>Math.abs(document.querySelector('#calendar').getBoundingClientRect().top)<2);
+      assert.equal(await page.$eval('#calendar-heading',el=>el.textContent),monthLabel('2026-10',language));
+      assert((await page.evaluate(()=>scrollY))>1000);
+      await watchScroll(page);const before=await evidence(page);
+      await page.click('.community-calendar__nav > :last-child');await settled(page,'2026-11');assertStable(before,await evidence(page));
+      await page.click('.community-calendar__nav > :first-child');await settled(page,'2026-10');assertStable(before,await evidence(page));
+      // Native arrival and ordinary month links also work without the enhancement.
+      const plainPage=await browser.newPage();await plainPage.setViewport({width,height:844});
+      await plainPage.setJavaScriptEnabled(false);await plainPage.goto(shared);
+      for(let attempt=0;attempt<40;attempt++){
+        if(await plainPage.$eval('#calendar',el=>Math.abs(el.getBoundingClientRect().top)<2))break;
+        await new Promise(resolve=>setTimeout(resolve,50));
+      }
+      assert(await plainPage.$eval('#calendar',el=>Math.abs(el.getBoundingClientRect().top)<2));
+      assert.equal(await plainPage.$eval('#calendar-heading',el=>el.textContent),monthLabel('2026-10',language));
+      await plainPage.close();
+      await page.close();
+    });
     await test(`month navigation stays in place at ${width}px (${language})`,async()=>{
       mode='normal';
       const page=await browser.newPage();await page.setViewport({width,height:844});

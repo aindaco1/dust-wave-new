@@ -34,7 +34,11 @@ With JavaScript, month links and the month picker fetch this same server-rendere
 markup and replace only the calendar. Scroll position, list view and entered
 proposal details are preserved; browser history, language links and share
 metadata track the selected month. Failed requests leave the current month
-readable and allow retrying the same controls.
+readable and allow retrying the same controls. Share/copy URLs include
+`#calendar`: opening one in a new page uses native fragment scrolling to the
+selected month; in-place month controls update history without following the
+fragment again. Canonical and Open Graph URLs retain the month query without
+a fragment.
 
 ## Local development and checks
 
