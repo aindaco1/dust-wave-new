@@ -36,4 +36,4 @@
   </form>
 </details>
 <script type="application/json" id="community-copy">{{ community | safeJsonLd | safe }}</script>
-<script type="module" src="/js/community/public.js?v={{ assets.version | default('dev') }}"></script>
+<script data-cfasync="false" type="module" src="/js/community/public.js?v={{ assets.version | default('dev') }}"></script>

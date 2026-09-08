@@ -84,6 +84,32 @@ clock. They cover privacy, file validation, session replay, CSRF/Origin,
 idempotent submissions, concurrent revision claims, scheduling and DST,
 archive limits, server markup and actual PNG rendering. They send no emails.
 
+### Console diagnostics
+
+The public-form and admin module tags opt out of Rocket Loader with
+`data-cfasync="false"` before `src`, using Cloudflare's
+[script exclusion](https://developers.cloudflare.com/speed/optimization/content/rocket-loader/ignore-javascripts/).
+Keep this attribute in both templates: Rocket Loader otherwise generates
+classic-script preloads whose credentials mode differs from module requests.
+Imported modules and the on-demand Turnstile API load through the native browser.
+
+Cloudflare can sample responses with a
+[report-only resource monitoring policy](https://developers.cloudflare.com/client-side-security/reference/csp-header/)
+containing `script-src 'unsafe-inline' 'unsafe-eval'; connect-src 'none'`.
+Those reports are observational; distinguish them from enforced CSP failures.
+Do not loosen the authenticated shell policy to silence report-only messages.
+
+The zone's **Agent Readiness → WebMCP → Site MCP server** option must remain off
+unless a real MCP endpoint is deployed. It otherwise injects a bridge that
+POSTs to the nonexistent `/mcp` endpoint, producing HTTP 405 on every page.
+Content Credentials (C2PA) is independent and can remain enabled.
+
+When investigating Turnstile sandbox, font or GPU diagnostics, capture the
+source frame and repeat in a fresh browser profile without extensions.
+Messages from `challenges.cloudflare.com` or SingleFile hooks are distinct
+from first-party module failures. Verify widget rendering and the actual
+reported failure before changing site code; never hide all console errors.
+
 ## Configuration and administration
 
 Production and staging have separate D1, R2 and Turnstile resources. R2 public

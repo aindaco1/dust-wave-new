@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Excluded Community JavaScript modules from Rocket Loader to prevent duplicate
+  preloads with mismatched credentials on public forms and Community admin.
+- Disabled the unused Cloudflare Site MCP server bridge that requested a
+  nonexistent `/mcp` endpoint; Content Credentials remains enabled.
+
 - Added spacing below Community verification widgets and responsive resizing
   that keeps them within the form gutters on narrow screens.
 
