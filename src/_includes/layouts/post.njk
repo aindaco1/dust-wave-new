@@ -36,7 +36,7 @@ permalink: "subdir/{{ title | slugify }}/index.html"
           {% elif img %}
             <div class="row">
               <div class="col-12">
-                <img src="{{img | toWebp}}" class="img-fluid dropshadow u-photo{% if imgDisplay == 'compact' %} project-hero-image--compact{% endif %}" alt="{{imgAlt}}">
+                <img src="{{img | toWebp}}" class="img-fluid dropshadow u-photo{% if imgDisplay == 'compact' %} project-hero-image--compact{% endif %}{% if imgInvert %} project-hero-image--inverted{% endif %}" alt="{{imgAlt}}">
               </div>
             </div>
           {% endif %}

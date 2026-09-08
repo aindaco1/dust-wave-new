@@ -62,6 +62,11 @@ so editors can choose a stable, concise URL slug independently of the headline.
 | News Header (news/) | 1600×900px (16:9) | 350KB |
 | Digest Header (digest/header/) | 1600×900px (16:9) | 350KB |
 
+Square app icons can use `imgDisplay: compact`. Color inversion is separate:
+set `imgInvert: true` only when the artwork needs it against the page background.
+For a square social preview, set `og_image_width` and `og_image_height` to the
+image's actual pixel dimensions. These options are editable in Pages CMS.
+
 ## Syndication & Social Sharing
 
 Posts and news can include optional frontmatter for cross-platform syndication:

@@ -183,6 +183,9 @@ body#glitch-target::before {
   display: block;
   width: min(42vw, 22rem);
   margin-inline: auto;
+}
+
+.project-hero-image--inverted {
   filter: invert(1);
 }
 

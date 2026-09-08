@@ -4,6 +4,7 @@ date: 2026-08-07
 img: /img/software/record.png
 imgAlt: Ícono de Record con una cámara VHS de hombro de los años ochenta
 imgDisplay: compact
+imgInvert: true
 summary: Grabación de pantalla, capturas de imagen y transcripción local para Mac
 layout: layouts/post.njk
 navbar: navbar1

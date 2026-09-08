@@ -138,6 +138,11 @@ content:
               label: Compact
         description: "Optional compact presentation for app icons and other square artwork."
 
+      - name: imgInvert
+        label: Invert Featured Image Colors
+        type: boolean
+        description: "Optional color inversion for dark artwork on a transparent background. Independent of image size."
+
       - name: summary
         label: Short Description
         type: string
@@ -311,6 +316,16 @@ content:
         options:
           media: images
           path: src/img
+
+      - name: og_image_width
+        label: Open Graph Image Width
+        type: number
+        description: "Optional preview-image width in pixels; defaults to 1200."
+
+      - name: og_image_height
+        label: Open Graph Image Height
+        type: number
+        description: "Optional preview-image height in pixels; defaults to 630."
 
       - name: og_video
         label: Open Graph Video

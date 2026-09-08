@@ -4,6 +4,7 @@ date: 2026-04-07
 img: /img/software/record.png
 imgAlt: Record app icon showing a 1980s shoulder-mounted VHS camera
 imgDisplay: compact
+imgInvert: true
 summary: Screen recording, screenshots, and local transcription for Mac
 tags:
   - open-source

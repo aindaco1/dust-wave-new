@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Added bilingual CutNotes project pages with the original app icon and expanded
+  the homepage to seven projects, retaining its existing date order.
+- Made project-image color inversion independent of compact sizing, preserving
+  Record's appearance while displaying CutNotes' original icon colors.
+
 - Excluded Community JavaScript modules from Rocket Loader to prevent duplicate
   preloads with mismatched credentials on public forms and Community admin.
 - Disabled the unused Cloudflare Site MCP server bridge that requested a
