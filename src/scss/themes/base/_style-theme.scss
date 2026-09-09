@@ -2068,7 +2068,8 @@ li p { margin-bottom: 0; }
 #mc_embed_signup { max-width: 600px; clear: left; font-size: smaller; }
 .brandingLogo { display: none; }
 
-input[type=submit] {
+input[type=submit],
+#contact-form button {
   font-family: 'Gambado-Sans', sans-serif;
   background-color: black !important;
   color: white !important;
@@ -2299,6 +2300,7 @@ a:has(button) { text-decoration: none; }
 .contact-form__status:empty { display: none; }
 .contact-form__status[data-state="error"] { border-left: 3px solid currentColor; padding-left: 12px; }
 #contact-form button:disabled { opacity: .55; cursor: not-allowed; }
+#contact-form button { min-height: 44px; }
 .border-color-white { border-color: white !important; }
 
 .survey .contact-form__item label { font-size: smaller; }
