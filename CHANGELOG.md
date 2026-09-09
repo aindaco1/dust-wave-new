@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Cleared Contact loading copy when verification mounts and replaced a successful
+  submission with its confirmation, removing Turnstile instead of resetting it.
+
 - Kept Contact form verification and submission results on the page using
   Cloudflare Turnstile and Formspree JSON submissions, with bilingual recovery
   messages, retained drafts, duplicate-submit protection and responsive widgets.

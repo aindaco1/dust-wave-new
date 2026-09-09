@@ -173,5 +173,6 @@ Run `npm run test:contact` after changing Contact markup, submission behavior,
 translations, or verification styling. Browser tests render the actual template
 and theme with local Turnstile and Formspree fixtures; external requests are
 blocked. They cover both languages, success, retained drafts on errors, duplicate
-submission protection, verification recovery, and mobile/desktop gutters. CI runs
+submission protection, verification recovery, loading-copy dismissal, a completed
+state that cannot reload verification, and mobile/desktop gutters. CI runs
 this before building. These tests do not send email or prove provider delivery.

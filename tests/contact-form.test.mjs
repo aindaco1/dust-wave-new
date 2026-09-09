@@ -89,10 +89,13 @@ async function finished(page) { await page.waitForFunction(() => !document.query
 
 try {
   for (const language of ['en', 'es']) {
-    await test(`${language}: successful AJAX submission stays on page, sends token, and clears only confirmed messages`, async () => {
+    await test(`${language}: loading clears when the widget mounts and success ends verification permanently`, async () => {
       const page = await fixture(language), originalURL = page.url();
+      // The widget is ready for interaction, but has not verified the visitor.
+      assert.equal(await statusText(page), '');
       assert.equal(await submitDisabled(page), true);
       assert.equal(await page.$eval('[data-contact-retry]', el => getComputedStyle(el).display), 'none');
+      if (process.env.CONTACT_FORM_SCREENSHOTS) await page.screenshot({ path: `${process.env.CONTACT_FORM_SCREENSHOTS}/${language}-ready.png`, fullPage: true });
       await submit(page);
       assert.equal(await submitDisabled(page), true);
       assert.equal(await page.$eval('[name="message"]', el => el.disabled), true);
@@ -110,7 +113,24 @@ try {
       await page.evaluate(() => window.respond()); await finished(page);
       assert.equal(page.url(), originalURL); assert.equal(await statusText(page), i18n[language].pages.contact.sent);
       assert.equal(await page.$eval('[name="message"]', el => el.value), '');
-      assert.equal(await submitDisabled(page), true); assert.equal(await page.evaluate(() => window.resets), 1);
+      assert.equal(await submitDisabled(page), true);
+      assert.equal(await page.evaluate(() => window.resets), 0);
+      assert.equal(await page.$eval('[data-contact-challenge]', el => getComputedStyle(el).display), 'none');
+      assert.equal(await page.$$eval('.contact-form__item', els => els.every(el => getComputedStyle(el).display === 'none')), true);
+      assert.equal(await page.$eval('[role="status"]', el => document.activeElement === el), true);
+      // Resizing and late callbacks must not recreate verification or overwrite success.
+      await page.setViewport({ width: 320, height: 844 });
+      await page.evaluate(() => {
+        window.expireFixture(); window.failFixture(); window.verifyFixture();
+        document.querySelector('[data-contact-retry]').click();
+        document.querySelector('form').dispatchEvent(new Event('submit', { cancelable: true }));
+      });
+      await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+      assert.equal(await page.$$eval('[data-contact-challenge] iframe', els => els.length), 0);
+      assert.deepEqual(await page.evaluate(() => ({ renders: window.sizes.length, resets: window.resets, requests: window.requests.length })), { renders: 1, resets: 0, requests: 1 });
+      assert.equal(await statusText(page), i18n[language].pages.contact.sent);
+      assert.equal(await page.$eval('[data-contact-retry]', el => el.hidden), true);
+      if (process.env.CONTACT_FORM_SCREENSHOTS) await page.screenshot({ path: `${process.env.CONTACT_FORM_SCREENSHOTS}/${language}-success-mobile.png`, fullPage: true });
       await page.close();
     });
   }
@@ -127,6 +147,8 @@ try {
       assert.equal(await statusText(page), i18n.en.pages.contact[message]);
       assert.equal(await page.$eval('[name="message"]', el => el.value), 'Retained draft');
       assert.equal(await page.$eval('[name="message"]', el => el.disabled), false);
+      assert.equal(await page.$eval('[name="message"]', el => el.closest('.contact-form__item').hidden), false);
+      assert.equal(await page.evaluate(() => window.resets), 1);
       assert.equal(await submitDisabled(page), true); assert.equal(page.url(), `${origin}/contact.html`);
       await page.close();
     }
@@ -136,6 +158,7 @@ try {
     assert.equal(await statusText(page), i18n.es.pages.contact.verificationFailed);
     await page.evaluate(() => { window.turnstile = window.fakeAPI; });
     await page.click('[data-contact-retry]'); await page.waitForSelector('[data-contact-challenge] iframe');
+    assert.equal(await statusText(page), '');
     await page.evaluate(() => { window.verifyFixture(); window.expireFixture(); });
     assert.equal(await submitDisabled(page), true);
     assert.equal(await statusText(page), i18n.es.pages.contact.verificationExpired);

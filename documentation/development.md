@@ -122,7 +122,10 @@ The form reuses `src/js/turnstile.js` (also exposed through the existing Podcast
 loader exports) and Platform's responsive widget sizing. Submission stays disabled
 until JavaScript and verification are ready. Failed requests preserve entered
 text; a lost response is reported as uncertain delivery and never automatically
-retried. Every attempt requires a fresh verification token. Local regression
+retried. Loading copy clears when the widget mounts, before visitor verification.
+Failed attempts reset verification for a retry. A confirmed submission replaces
+the fields and controls with the success message, removes the widget, and stops
+its resize observer; late callbacks cannot restart verification. Local regression
 tests stub the provider and challenge and never send a real message.
 
 The provider setting is independent of a Pages deployment. After changing this

@@ -8,7 +8,7 @@ export function initContactForm(form, { loadChallenge = loadTurnstile, fetchImpl
   const submit = form.querySelector('[type="submit"]');
   const retry = form.querySelector('[data-contact-retry]');
   const fields = [...form.querySelectorAll('input:not([type="hidden"]), textarea')];
-  let api, widget, size, token = '', busy = false, loading = false;
+  let api, widget, size, token = '', busy = false, loading = false, completed = false;
 
   function show(message, kind = '') {
     status.textContent = message;
@@ -16,12 +16,12 @@ export function initContactForm(form, { loadChallenge = loadTurnstile, fetchImpl
   }
 
   function updateButton() {
-    submit.disabled = busy || !token;
+    submit.disabled = busy || completed || !token;
     submit.textContent = busy ? copy.sending : copy.submit;
   }
 
   function render() {
-    if (!api || busy || challenge.getBoundingClientRect().width <= 0) return;
+    if (!api || busy || completed || challenge.getBoundingClientRect().width <= 0) return;
     const nextSize = responsiveTurnstileSize(challenge);
     if (widget !== undefined && nextSize === size) return;
     token = '';
@@ -35,30 +35,35 @@ export function initContactForm(form, { loadChallenge = loadTurnstile, fetchImpl
       language: form.ownerDocument.documentElement.lang,
       size,
       callback(value) {
+        if (completed) return;
         token = value;
         retry.hidden = true;
         if (status.dataset.state === 'challenge') show('');
         updateButton();
       },
       'expired-callback'() {
+        if (completed) return;
         token = '';
         if (!busy) show(copy.verificationExpired, 'challenge');
         updateButton();
       },
       'error-callback'() {
+        if (completed) return;
         token = '';
         if (!busy) show(copy.verificationFailed, 'challenge');
         retry.hidden = false;
         updateButton();
       }
     });
+    // Turnstile owns the widget's loading/interaction UI once it is mounted.
+    if (status.dataset.state === 'loading') show('');
   }
 
   async function initializeChallenge() {
-    if (loading || busy) return;
+    if (loading || busy || completed) return;
     loading = true;
     retry.hidden = true;
-    show(copy.verificationLoading, 'challenge');
+    show(copy.verificationLoading, 'loading');
     try {
       api = await loadChallenge();
       if (widget !== undefined) {
@@ -77,7 +82,7 @@ export function initContactForm(form, { loadChallenge = loadTurnstile, fetchImpl
   retry.addEventListener('click', initializeChallenge);
   form.addEventListener('submit', async event => {
     event.preventDefault();
-    if (busy) return;
+    if (busy || completed) return;
     if (!token) {
       show(copy.verificationRequired, 'challenge');
       return;
@@ -106,6 +111,13 @@ export function initContactForm(form, { loadChallenge = loadTurnstile, fetchImpl
         show(response.status === 429 ? copy.rateLimited : captchaError ? copy.verificationFailed : copy.sendFailed, 'error');
         return;
       }
+      completed = true;
+      observer.disconnect();
+      api.remove(widget);
+      widget = undefined;
+      challenge.hidden = true;
+      retry.hidden = true;
+      form.querySelectorAll('.contact-form__item').forEach(item => { item.hidden = true; });
       form.reset();
       show(copy.sent, 'success');
       status.focus({ preventScroll: true });
@@ -116,15 +128,18 @@ export function initContactForm(form, { loadChallenge = loadTurnstile, fetchImpl
       clearTimeout(timeout);
       busy = false;
       form.removeAttribute('aria-busy');
-      fields.forEach(field => { field.disabled = false; });
       token = '';
-      api.reset(widget);
-      render();
+      if (!completed) {
+        fields.forEach(field => { field.disabled = false; });
+        api.reset(widget);
+        render();
+      }
       updateButton();
     }
   });
 
-  new ResizeObserver(render).observe(challenge);
+  const observer = new ResizeObserver(render);
+  observer.observe(challenge);
   initializeChallenge();
 }
 
