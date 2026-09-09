@@ -5,7 +5,8 @@
 - Repaired the Contact form CAPTCHA mismatch by using Formspree's hosted
   reCAPTCHA flow, with bilingual guidance for the verification step.
 - Updated locked `js-yaml` copies to 3.15.2/4.3.2 and `sharp` to 0.35.4
-  (including its native libraries) to address the advisories blocking deployment.
+  (including its native libraries and the Community test-tool copy) to address
+  the advisories blocking deployment.
 
 - Added bilingual CutNotes project pages with the original app icon and expanded
   the homepage to seven projects, retaining its existing date order.

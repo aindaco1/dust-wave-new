@@ -84,6 +84,12 @@ clock. They cover privacy, file validation, session replay, CSRF/Origin,
 idempotent submissions, concurrent revision claims, scheduling and DST,
 archive limits, server markup and actual PNG rendering. They send no emails.
 
+Miniflare's `sharp` dependency is overridden to `0.35.4` to address
+[GHSA-rgj7-g3m4-5g8c](https://github.com/advisories/GHSA-rgj7-g3m4-5g8c)
+while retaining the reviewed Miniflare/Wrangler versions. Remove the override
+when an adopted upstream release pins a patched version. This only affects
+local/CI tooling; production image processing uses the Cloudflare Images binding.
+
 ### Console diagnostics
 
 The public-form and admin module tags opt out of Rocket Loader with
