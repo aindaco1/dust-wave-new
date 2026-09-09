@@ -41,6 +41,9 @@ jobs:
           npm ci --prefix workers/community
           npm run test:community
 
+      - name: Validate Contact form
+        run: npm run test:contact
+
       - name: Build site
         run: npm run build:ci
         env:

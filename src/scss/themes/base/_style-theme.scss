@@ -2293,6 +2293,12 @@ a:has(button) { text-decoration: none; }
 :-moz-placeholder          { color: grey; }
 
 .contact-form__textarea { min-height: 200px; resize: none; }
+.contact-form__verification { margin-top: 24px; min-width: 0; }
+.contact-form__submit { margin-top: 24px; }
+.contact-form__status { margin-top: 16px; overflow-wrap: anywhere; }
+.contact-form__status:empty { display: none; }
+.contact-form__status[data-state="error"] { border-left: 3px solid currentColor; padding-left: 12px; }
+#contact-form button:disabled { opacity: .55; cursor: not-allowed; }
 .border-color-white { border-color: white !important; }
 
 .survey .contact-form__item label { font-size: smaller; }

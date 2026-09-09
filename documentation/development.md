@@ -110,12 +110,20 @@ the existing email/global-key pair remains a temporary fallback.
 
 ## Contact form provider
 
-The bilingual Contact page (`src/contact.njk`) submits a native HTML form to
-Formspree's `xrgrjbwo` (Inquiries) endpoint. Keep CAPTCHA enabled and select
-**reCAPTCHA** in Formspree's CAPTCHA settings so Formspree hosts the verification
-step. The page must not submit a Cloudflare Turnstile token to a form configured
-for Google reCAPTCHA. No custom CAPTCHA key or site-side CAPTCHA script is needed
-for this hosted flow. See [Formspree's reCAPTCHA guide](https://help.formspree.io/articles/form-and-project-settings/recaptcha-settings/).
+The bilingual Contact page (`src/contact.njk`) uses Cloudflare Turnstile and
+`src/js/contact-form.js` to POST to Formspree's `xrgrjbwo` (Inquiries) endpoint
+with `Accept: application/json`. Verification and submission results remain on
+the Contact page. Keep CAPTCHA enabled and select **Turnstile** in Formspree's
+CAPTCHA settings, with the secret matching the public site key in the template.
+The secret belongs only in Formspree's provider settings, never in site source.
+See [Formspree's Turnstile guide](https://help.formspree.io/articles/form-and-project-settings/protecting-your-forms-with-cloudflare-turnstile).
+
+The form reuses `src/js/turnstile.js` (also exposed through the existing Podcast
+loader exports) and Platform's responsive widget sizing. Submission stays disabled
+until JavaScript and verification are ready. Failed requests preserve entered
+text; a lost response is reported as uncertain delivery and never automatically
+retried. Every attempt requires a fresh verification token. Local regression
+tests stub the provider and challenge and never send a real message.
 
 The provider setting is independent of a Pages deployment. After changing this
 integration, verify both Contact page languages and the Formspree setting;

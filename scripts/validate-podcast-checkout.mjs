@@ -7,7 +7,7 @@ import {
 const [page, script, turnstileScript, styles, configuration] = await Promise.all([
   readFile(new URL("../src/podcasts/show.njk", import.meta.url), "utf8"),
   readFile(new URL("../src/js/podcast-checkout.js", import.meta.url), "utf8"),
-  readFile(new URL("../src/js/podcast-turnstile.js", import.meta.url), "utf8"),
+  readFile(new URL("../src/js/turnstile.js", import.meta.url), "utf8"),
   readFile(
     new URL("../src/scss/themes/base/_style-theme.scss", import.meta.url),
     "utf8"

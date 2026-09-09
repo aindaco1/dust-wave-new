@@ -28,7 +28,7 @@ const adminScript = await readFile(
   'utf8'
 );
 const podcastTurnstileScript = await readFile(
-  path.join(repositoryRoot, 'src/js/podcast-turnstile.js'),
+  path.join(repositoryRoot, 'src/js/turnstile.js'),
   'utf8'
 );
 const directoryPacketScript = await readFile(

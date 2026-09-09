@@ -2,8 +2,12 @@
 
 ## Unreleased
 
-- Repaired the Contact form CAPTCHA mismatch by using Formspree's hosted
-  reCAPTCHA flow, with bilingual guidance for the verification step.
+- Kept Contact form verification and submission results on the page using
+  Cloudflare Turnstile and Formspree JSON submissions, with bilingual recovery
+  messages, retained drafts, duplicate-submit protection and responsive widgets.
+
+- Repaired the Contact form CAPTCHA mismatch and configured Formspree to verify
+  the website's Cloudflare Turnstile tokens.
 - Updated locked `js-yaml` copies to 3.15.2/4.3.2 and `sharp` to 0.35.4
   (including its native libraries and the Community test-tool copy) to address
   the advisories blocking deployment.

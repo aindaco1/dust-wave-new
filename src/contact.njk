@@ -37,13 +37,15 @@ eleventyComputed:
             <label class="contact-form__label" for="contact-message">{{ i18n | t(language, "pages.contact.message") }} *</label>
             <textarea id="contact-message" name="message" placeholder="{{ i18n | t(language, 'pages.contact.messagePlaceholder') }}" class="contact-form__textarea" required></textarea>
           </div>
-          <p class="small">{{ i18n | t(language, "pages.contact.verificationNotice") }}</p>
+          <div class="contact-form__verification" data-contact-challenge data-sitekey="0x4AAAAAAAAudwxAIPEUguw8"></div>
+          <p class="contact-form__status small" role="status" aria-live="polite" tabindex="-1" data-state=""></p>
+          <button class="button border-color-white" type="button" data-contact-retry hidden>{{ i18n | t(language, 'pages.contact.retryVerification') }}</button>
+          <noscript><p>{{ i18n | t(language, 'pages.contact.javascriptRequired') }}</p></noscript>
 
-          <input type="hidden" name="_next" value="{{ i18n | localizedUrl(language, 'home', '/') }}" />
           <input type="hidden" name="_subject" value="{{ i18n | t(language, 'pages.contact.subject') }}" />
 
-          <div class="contact-form__item">
-            <input type="submit" value="{{ i18n | t(language, 'pages.contact.submit') }}" class="button button--large border-color-white">
+          <div class="contact-form__item contact-form__submit">
+            <button type="submit" class="button button--large border-color-white" disabled>{{ i18n | t(language, 'pages.contact.submit') }}</button>
           </div>
 
         </form>
@@ -53,3 +55,5 @@ eleventyComputed:
     </div>
   </div>
 </div>
+<script id="contact-copy" type="application/json">{{ i18n[language].pages.contact | dump | safe }}</script>
+<script type="module" data-cfasync="false" src="/js/contact-form.js?v={{ assets.version }}"></script>

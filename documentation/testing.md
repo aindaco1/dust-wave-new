@@ -166,3 +166,12 @@ After deploying, `node scripts/smoke-community.mjs <origin>` checks all six
 current/upcoming month cards, both page languages, admin headers and private
 route denials. Also inspect the rendered UI at desktop and phone widths.
 See the [Worker guide](../workers/community/README.md) for setup and release order.
+
+## Contact form
+
+Run `npm run test:contact` after changing Contact markup, submission behavior,
+translations, or verification styling. Browser tests render the actual template
+and theme with local Turnstile and Formspree fixtures; external requests are
+blocked. They cover both languages, success, retained drafts on errors, duplicate
+submission protection, verification recovery, and mobile/desktop gutters. CI runs
+this before building. These tests do not send email or prove provider delivery.
