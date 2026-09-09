@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Matched Contact confirmation and error messages to the site’s voice in English
+  and Spanish, keeping retry guidance and uncertain-delivery wording clear.
+
 - Cleared Contact loading copy when verification mounts and replaced a successful
   submission with its confirmation, removing Turnstile instead of resetting it.
 
