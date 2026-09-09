@@ -5,7 +5,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 const REPO_ROOT = fileURLToPath(new URL('../', import.meta.url));
-const PLATFORM_COMMIT = '2e79a8d70cb6d30805ea141e53d32f9387441756';
+const PLATFORM_COMMIT = 'af2a5e5e4b65f218e627652b8243feb9704c48a1';
 const PLATFORM_REMOTE = 'https://github.com/aindaco1/dust-wave-platform.git';
 
 function readJson(path) {
@@ -32,7 +32,7 @@ test('pins the reviewed Platform workspace and current site packages', () => {
   );
   assert.deepEqual(
     { name: mediaCore.name, version: mediaCore.version },
-    { name: '@dustwave/media-core', version: '0.3.0' }
+    { name: '@dustwave/media-core', version: '0.4.0' }
   );
   assert.equal(
     rootManifest.dependencies?.['@dustwave/media-core'],
@@ -40,7 +40,7 @@ test('pins the reviewed Platform workspace and current site packages', () => {
   );
   assert.deepEqual(lock.packages?.['shared/dust-wave-platform/packages/media-core'], {
     name: '@dustwave/media-core',
-    version: '0.3.0',
+    version: '0.4.0',
     license: 'MIT',
     engines: { node: '>=20.9' }
   });

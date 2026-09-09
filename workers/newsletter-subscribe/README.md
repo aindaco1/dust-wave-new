@@ -14,6 +14,7 @@ Worker development and deployment require Node.js 22+ (Wrangler 4).
 Run the following from the site repository root:
 
 ```bash
+git submodule update --init --recursive
 cd workers/newsletter-subscribe
 npm ci
 npx wrangler secret put RESEND_API_KEY  # Full Access key required
@@ -62,3 +63,17 @@ messages to the hard-coded recipients documented in
   [newsletter page](../../src/newsletter.njk): form markup and submission handlers.
 - [Form styles](../../src/scss/themes/base/_style-theme.scss): shared form styling.
 - [Site documentation](../../README.md#documentation): development and publishing.
+
+## Delivery defaults
+
+The welcome dispatcher uses the pinned Platform email helper. `RESEND_REPLY_TO` points to the existing Dust Wave support address; `Auto-Submitted: auto-generated` identifies the automatic message. The canonical subject and main message remain unchanged; the existing optional unsubscribe footer is now populated and checked by the new-subscriber fixture. Existing-contact and duplicate-contact protections remain in place. No broadcast is sent by deploying this change.
+
+Platform 0.36.0 is pinned by the root contract. The previous platform pin is `2e79a8d70cb6d30805ea141e53d32f9387441756`. Once an unsubscribe link has been issued, preserve the opt-out endpoint and its signing secret during rollback; disable new welcome sends instead of breaking existing opt-out links. The website and Community Worker deploy independently. See [the shared guide](https://github.com/aindaco1/dust-wave-platform/blob/main/docs/email-deliverability.md) for authentication, suppression, tracking and recipient verification.
+
+## Unsubscribe and signup protection
+
+`UNSUBSCRIBE_SECRET` is a stable random Worker secret; `UNSUBSCRIBE_ORIGIN` supplies the branded URL at `https://dustwave.xyz/newsletter/unsubscribe`. HMAC-signed links contain a contact ID, not an email address. The existing welcome template adds its original opt-out footer and the sender supplies RFC 8058 one-click headers. GET only shows a confirmation; an explicit form or one-click POST sets the contact's global Resend marketing opt-out. It does not stop transactional mail. Provider errors return a retryable failure page rather than reporting success. Keep the signing key stable for old links.
+
+This uses Resend's current [global contact unsubscribe API](https://resend.com/docs/api-reference/contacts/update-contact), which applies to all Broadcasts, not only the legacy audience. The confirmation page states that scope. No existing contacts are changed during deployment or testing.
+
+Public signup rejects foreign browser origins and uses a Cloudflare edge limit of 20 requests per minute per connecting IP before provider calls. This is a coarse abuse limit, not identity verification or a globally strict counter; its generous allowance accommodates shared networks. Existing-contact checks prevent repeated welcome sends. Unit fixtures cover throttling, forged opt-out tokens, scanner-safe GET, repeated POST and provider failures.

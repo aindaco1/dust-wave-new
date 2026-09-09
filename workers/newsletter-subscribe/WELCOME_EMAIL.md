@@ -19,4 +19,4 @@ The command requires `RESEND_API_KEY` in the shell. It uses `Dust Wave <newslett
 
 `scripts/welcome-test-worker.js` provides the same hard-limited test through an authenticated, ephemeral Wrangler preview when the local shell does not have the production secret. It is a separate entry point and is never deployed by the Worker’s normal `npm run deploy` command.
 
-Future follow-up: add a provider-managed unsubscribe URL and decide how Spanish-language signups should be identified and served.
+The normal signup route now supplies the template’s existing unsubscribe footer and RFC 8058 one-click headers. A signed branded endpoint persists the opt-out with Resend; see [configuration and rollback](README.md#unsubscribe-and-signup-protection). Standalone preview/test sends still omit a real subscriber-specific link. Spanish-language signup selection remains future work.
