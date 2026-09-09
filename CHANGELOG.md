@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Repaired the Contact form CAPTCHA mismatch by using Formspree's hosted
+  reCAPTCHA flow, with bilingual guidance for the verification step.
+
 - Added bilingual CutNotes project pages with the original app icon and expanded
   the homepage to seven projects, retaining its existing date order.
 - Made project-image color inversion independent of compact sizing, preserving

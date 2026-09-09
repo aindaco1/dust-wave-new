@@ -133,6 +133,7 @@
       "namePlaceholder": "Your name…",
       "message": "Message",
       "messagePlaceholder": "Your message…",
+      "verificationNotice": "Complete the verification on the next screen to send your message.",
       "submit": "Submit",
       "subject": "Dust Wave contact form submission"
     },

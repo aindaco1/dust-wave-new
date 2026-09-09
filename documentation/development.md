@@ -108,6 +108,20 @@ responses after the cache purge. Prefer a zone-scoped
 `CLOUDFLARE_TRANSFORM_RULES_TOKEN` with Zone Transform Rules Write permission;
 the existing email/global-key pair remains a temporary fallback.
 
+## Contact form provider
+
+The bilingual Contact page (`src/contact.njk`) submits a native HTML form to
+Formspree's `xrgrjbwo` (Inquiries) endpoint. Keep CAPTCHA enabled and select
+**reCAPTCHA** in Formspree's CAPTCHA settings so Formspree hosts the verification
+step. The page must not submit a Cloudflare Turnstile token to a form configured
+for Google reCAPTCHA. No custom CAPTCHA key or site-side CAPTCHA script is needed
+for this hosted flow. See [Formspree's reCAPTCHA guide](https://help.formspree.io/articles/form-and-project-settings/recaptcha-settings/).
+
+The provider setting is independent of a Pages deployment. After changing this
+integration, verify both Contact page languages and the Formspree setting;
+end-to-end delivery additionally requires a real, explicitly authorized test
+submission. The Community forms use their own Worker and are separate.
+
 ## Project Structure
 
 ```

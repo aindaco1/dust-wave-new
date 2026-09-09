@@ -133,6 +133,7 @@
       "namePlaceholder": "Tu nombre…",
       "message": "Mensaje",
       "messagePlaceholder": "Tu mensaje…",
+      "verificationNotice": "Completa la verificación en la siguiente pantalla para enviar tu mensaje.",
       "submit": "Enviar",
       "subject": "Mensaje del formulario de contacto de Dust Wave"
     },
