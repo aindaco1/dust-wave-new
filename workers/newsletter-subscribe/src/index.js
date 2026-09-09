@@ -1,3 +1,4 @@
+import { handleUnsubscribe, unsubscribeUrl } from './unsubscribe.js';
 import { createWelcomeEmail } from './welcome-email.js';
 import { prepareResendEmail } from '../../../shared/dust-wave-platform/packages/worker-core/src/email.js';
 
@@ -56,8 +57,8 @@ async function createContact(audienceId, email, apiKey) {
   return { created: true, contact: result };
 }
 
-async function sendWelcomeEmail({ apiKey, contactId, email, from, replyTo }) {
-  const { html, subject, text } = createWelcomeEmail();
+async function sendWelcomeEmail({ apiKey, contactId, email, from, replyTo, unsubscribe }) {
+  const { html, subject, text } = createWelcomeEmail({ unsubscribeUrl: unsubscribe });
   const response = await fetch(`${RESEND_API}/emails`, {
     method: 'POST',
     headers: {
@@ -70,6 +71,10 @@ async function sendWelcomeEmail({ apiKey, contactId, email, from, replyTo }) {
       subject,
       html,
       text,
+      headers: {
+        'List-Unsubscribe': `<${unsubscribe}>`,
+        'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+      },
     }, { replyTo })),
   });
   const result = await response.json().catch(() => ({}));
@@ -79,6 +84,8 @@ async function sendWelcomeEmail({ apiKey, contactId, email, from, replyTo }) {
 
 export default {
   async fetch(request, env, context) {
+    const unsubscribeResponse = await handleUnsubscribe(request, env);
+    if (unsubscribeResponse) return unsubscribeResponse;
     const origin = request.headers.get('Origin') || '';
     const allowedOrigins = [env.ALLOWED_ORIGIN, 'http://localhost:8080', 'http://localhost:3000'];
     const corsOrigin = allowedOrigins.includes(origin) ? origin : env.ALLOWED_ORIGIN;
@@ -94,6 +101,10 @@ export default {
     }
 
     try {
+      if (origin && !allowedOrigins.includes(origin)) return json({ error: 'Origin not allowed' }, { status: 403, headers: corsHeaders });
+      if (!env.SIGNUP_RATE_LIMIT) return json({ error: 'Signup temporarily unavailable' }, { status: 503, headers: corsHeaders });
+      const limited = await env.SIGNUP_RATE_LIMIT.limit({ key: `newsletter-signup:${request.headers.get('CF-Connecting-IP') || 'local'}` });
+      if (!limited.success) return json({ error: 'Please wait a minute before trying again.' }, { status: 429, headers: { ...corsHeaders, 'Retry-After': '60' } });
       const { email: submittedEmail } = await request.json();
       const email = normalizeEmail(submittedEmail);
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -106,6 +117,7 @@ export default {
         return json({ success: true, status: 'existing', message: "You're already subscribed!" }, { headers: corsHeaders });
       }
 
+      if (!env.UNSUBSCRIBE_SECRET || !env.UNSUBSCRIBE_ORIGIN) throw new Error('Newsletter unsubscribe is unavailable');
       const { created, contact } = await createContact(audienceId, email, env.RESEND_API_KEY);
       if (!created) {
         return json({ success: true, status: 'existing', message: "You're already subscribed!" }, { headers: corsHeaders });
@@ -119,6 +131,7 @@ export default {
         email,
         from: env.RESEND_FROM,
         replyTo: env.RESEND_REPLY_TO,
+        unsubscribe: await unsubscribeUrl(contact.id, env),
       }).catch((error) => console.error('Newsletter welcome failed', error));
 
       if (context?.waitUntil) context.waitUntil(welcome);

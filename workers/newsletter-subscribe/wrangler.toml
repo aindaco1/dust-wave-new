@@ -1,11 +1,22 @@
 name = "dustwave-newsletter"
 main = "src/index.js"
 compatibility_date = "2026-08-27"
+workers_dev = true
+routes = [{ pattern = "dustwave.xyz/newsletter/unsubscribe*", zone_name = "dustwave.xyz" }]
 
 [vars]
 RESEND_AUDIENCE_ID = "mailchimp"
 ALLOWED_ORIGIN = "https://dustwave.xyz"
 RESEND_REPLY_TO = "info@dustwave.xyz"
+UNSUBSCRIBE_ORIGIN = "https://dustwave.xyz"
 
 # Set RESEND_API_KEY as a secret:
 # wrangler secret put RESEND_API_KEY
+
+# Provision a stable random UNSUBSCRIBE_SECRET before deploying.
+# Keep it stable so previously issued opt-out links continue working.
+
+[[ratelimits]]
+name = "SIGNUP_RATE_LIMIT"
+namespace_id = "291701"
+simple = { limit = 20, period = 60 }
