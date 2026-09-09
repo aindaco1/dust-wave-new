@@ -1,10 +1,12 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import worker from '../src/index.js';
+import { createWelcomeEmail } from '../src/welcome-email.js';
 
 const env = {
   ALLOWED_ORIGIN: 'https://dustwave.xyz',
   RESEND_API_KEY: 'test-key',
+  RESEND_REPLY_TO: 'support@example.com',
   RESEND_AUDIENCE_ID: 'audience-id',
 };
 
@@ -64,7 +66,14 @@ test('a brand-new subscriber receives exactly one welcome email', async () => {
   const emailCalls = calls.filter((call) => call.url.endsWith('/emails'));
   assert.equal(emailCalls.length, 1);
   assert.equal(emailCalls[0].headers['Idempotency-Key'], 'newsletter-welcome/new-contact');
-  assert.deepEqual(JSON.parse(emailCalls[0].body).to, ['new@example.com']);
+  const { html, subject, text } = createWelcomeEmail();
+  assert.deepEqual(JSON.parse(emailCalls[0].body), {
+    html, subject, text,
+    from: 'Dust Wave <newsletter@dustwave.xyz>',
+    to: ['new@example.com'],
+    reply_to: 'support@example.com',
+    headers: { 'Auto-Submitted': 'auto-generated' },
+  });
   assert.equal(calls.some((call) => /\/contacts(?:\?|$)/.test(call.url) && call.method === 'GET'), false);
 });
 

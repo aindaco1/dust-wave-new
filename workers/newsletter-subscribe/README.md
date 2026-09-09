@@ -14,6 +14,7 @@ Worker development and deployment require Node.js 22+ (Wrangler 4).
 Run the following from the site repository root:
 
 ```bash
+git submodule update --init --recursive
 cd workers/newsletter-subscribe
 npm ci
 npx wrangler secret put RESEND_API_KEY  # Full Access key required
@@ -62,3 +63,9 @@ messages to the hard-coded recipients documented in
   [newsletter page](../../src/newsletter.njk): form markup and submission handlers.
 - [Form styles](../../src/scss/themes/base/_style-theme.scss): shared form styling.
 - [Site documentation](../../README.md#documentation): development and publishing.
+
+## Delivery defaults
+
+The welcome dispatcher uses the pinned Platform email helper. `RESEND_REPLY_TO` points to the existing Dust Wave support address; `Auto-Submitted: auto-generated` identifies the automatic message. The canonical subject, HTML and plain text remain byte-for-byte unchanged, as checked by the new-subscriber fixture. Existing-contact and duplicate-contact protections remain in place. No broadcast is sent by deploying this change.
+
+Platform 0.36.0 is pinned by the root contract. Roll back the complete adoption commit, including its lockfile and previous platform pin `2e79a8d70cb6d30805ea141e53d32f9387441756`, then redeploy the previous Newsletter Worker. The website and Community Worker deploy independently. See [the shared guide](https://github.com/aindaco1/dust-wave-platform/blob/main/docs/email-deliverability.md) for authentication, suppression, tracking and recipient verification.

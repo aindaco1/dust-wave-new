@@ -5,6 +5,7 @@ compatibility_date = "2026-08-27"
 [vars]
 RESEND_AUDIENCE_ID = "mailchimp"
 ALLOWED_ORIGIN = "https://dustwave.xyz"
+RESEND_REPLY_TO = "info@dustwave.xyz"
 
 # Set RESEND_API_KEY as a secret:
 # wrangler secret put RESEND_API_KEY

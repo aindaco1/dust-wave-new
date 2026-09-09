@@ -1,4 +1,5 @@
 import { createWelcomeEmail } from './welcome-email.js';
+import { prepareResendEmail } from '../../../shared/dust-wave-platform/packages/worker-core/src/email.js';
 
 const RESEND_API = 'https://api.resend.com';
 const DEFAULT_WELCOME_FROM = 'Dust Wave <newsletter@dustwave.xyz>';
@@ -55,7 +56,7 @@ async function createContact(audienceId, email, apiKey) {
   return { created: true, contact: result };
 }
 
-async function sendWelcomeEmail({ apiKey, contactId, email, from }) {
+async function sendWelcomeEmail({ apiKey, contactId, email, from, replyTo }) {
   const { html, subject, text } = createWelcomeEmail();
   const response = await fetch(`${RESEND_API}/emails`, {
     method: 'POST',
@@ -63,13 +64,13 @@ async function sendWelcomeEmail({ apiKey, contactId, email, from }) {
       ...resendHeaders(apiKey),
       'Idempotency-Key': `newsletter-welcome/${contactId}`,
     },
-    body: JSON.stringify({
+    body: JSON.stringify(prepareResendEmail({
       from: from || DEFAULT_WELCOME_FROM,
       to: [email],
       subject,
       html,
       text,
-    }),
+    }, { replyTo })),
   });
   const result = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(result.message || 'Failed to send newsletter welcome');
@@ -117,6 +118,7 @@ export default {
         contactId: contact.id,
         email,
         from: env.RESEND_FROM,
+        replyTo: env.RESEND_REPLY_TO,
       }).catch((error) => console.error('Newsletter welcome failed', error));
 
       if (context?.waitUntil) context.waitUntil(welcome);
