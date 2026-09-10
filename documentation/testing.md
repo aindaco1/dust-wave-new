@@ -156,8 +156,8 @@ control.
 ## Responsive review
 
 Run `npm run qa:responsive` against the local Community preview on port 8787.
-It checks eight recent public/admin entry points in both languages at 320,
-390, 768, 1024 and 1440 pixels (80 page/viewport combinations), saves screenshots
+It checks nine public/admin entry points, including News, in both languages at 320,
+390, 768, 1024 and 1440 pixels (90 page/viewport combinations), saves screenshots
 at phone/tablet/desktop widths, and reports document or visible-element overflow.
 Set `QA_ORIGIN`, `QA_OUTPUT`, `QA_WIDTHS` or `QA_ROUTES` to target a deployed
 origin, retain a named run, or narrow a follow-up. It blocks outgoing submissions;

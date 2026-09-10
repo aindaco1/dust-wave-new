@@ -440,7 +440,8 @@ a:hover { color: gray !important; }
   text-transform: uppercase;
 }
 
-.project-list-item {
+.project-list-item,
+.news-list-item {
   gap: clamp(.8rem, 1.5vw, 1.25rem);
   padding-block: 1.15rem !important;
 }
@@ -462,12 +463,14 @@ a:hover { color: gray !important; }
   padding-top: var(--site-action-gap) !important;
 }
 
-.project-list-main {
+.project-list-main,
+.news-list-main {
   flex: 1 1 auto;
   min-width: 0;
 }
 
-.project-list-title {
+.project-list-title,
+.news-list-title {
   line-height: 1.02;
   overflow-wrap: anywhere;
   width: auto;
@@ -495,7 +498,8 @@ a:hover { color: gray !important; }
   text-underline-offset: .22em;
 }
 
-.project-list-date {
+.project-list-date,
+.news-list-date {
   flex: 0 0 auto;
   margin-left: auto;
   white-space: nowrap;
@@ -602,7 +606,8 @@ a:hover { color: gray !important; }
     letter-spacing: -.035em;
   }
 
-  .project-list-item {
+  .project-list-item,
+  .news-list-item {
     align-items: flex-start !important;
     gap: .8rem;
   }
@@ -611,19 +616,25 @@ a:hover { color: gray !important; }
     padding-block: .9rem !important;
   }
 
-  .project-list-main {
+  .project-list-main,
+  .news-list-main {
     max-width: calc(100% - 6.6rem);
   }
 
-  .project-list-title {
+  .project-list-title,
+  .news-list-title {
     font-size: 1.16rem;
     line-height: 1.04;
   }
 
-  .project-list-date {
+  .project-list-date,
+  .news-list-date {
     margin-left: 0;
-    padding-top: 1.05rem;
     font-size: .76rem;
+  }
+
+  .project-list-date {
+    padding-top: 1.05rem;
   }
 
   .project-taxonomy {

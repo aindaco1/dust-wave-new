@@ -4,7 +4,7 @@ import {mkdir,writeFile} from 'node:fs/promises';
 const origin=new URL(process.env.QA_ORIGIN||'http://localhost:8787').origin,out=process.env.QA_OUTPUT||'.artifacts/responsive';
 await mkdir(out,{recursive:true});
 const browser=await puppeteer.launch({headless:true,args:process.env.CI?['--no-sandbox']:[]});
-const routes=(process.env.QA_ROUTES||'/,/microcinema.html,/writers-group.html,/contact.html,/branded-content.html,/project/cutnotes.html,/project/record.html,/admin/community/').split(',');
+const routes=(process.env.QA_ROUTES||'/,/news.html,/microcinema.html,/writers-group.html,/contact.html,/branded-content.html,/project/cutnotes.html,/project/record.html,/admin/community/').split(',');
 const widths=(process.env.QA_WIDTHS||'320,390,768,1024,1440').split(',').map(Number),results=[],queue=[];
 for(const lang of ['en','es'])for(const route of routes)for(const width of widths)queue.push({lang,route,width});
 try{await Promise.all(Array.from({length:2},async()=>{

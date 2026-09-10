@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Match News title/date spacing to Home and Projects, reusing their compact
+  phone typography, column gaps and unbroken dates.
+
 - Improved phone/tablet spacing across Community admin and Contact, kept public
   form controls at a readable size, and removed the extra info-sheet divider.
   Shared footer links now wrap into two rows on smaller screens with usable
