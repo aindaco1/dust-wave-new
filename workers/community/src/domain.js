@@ -2,6 +2,7 @@ import { dateAtTimeInTimeZone, getTimeZoneDateKey, getTimeZoneParts } from '@dus
 
 export const TIMEZONE = 'America/Denver';
 export const FIRST_MEETING = '2026-09-21';
+export const MEETING_DEFAULTS = Object.freeze({ title: 'Writers Group', description: 'An open evening of script readings and feedback.', time: '19:00', endTime: '21:00' });
 export const API = '/api/community/v1';
 export const PUBLIC_STATES = new Set(['published', 'cancelled']);
 export class CommunityError extends Error {
@@ -73,10 +74,26 @@ export function newEvent(input, upload, now = new Date()) {
     contactName: plain(input.contactName, 100), email: email(input.email), status: 'pending',
     createdAt: now.toISOString(), everPublished: false, readings: [] };
 }
-export function newScript(input, upload, now = new Date()) {
-  if (input.local !== true || input.consent !== true) fail('consent_required');
-  return { id: id(), ...scriptFields(input), contactName: plain(input.contactName, 100), email: email(input.email),
-    pdfId: upload.id, pages: upload.pages, status: 'pending', createdAt: now.toISOString(), approvedAt: '', position: 0 };
+export function scriptContactFields(input, { required = true } = {}) {
+  const address = plain(input.email, 254, required);
+  return { contactName: plain(input.contactName, 100, required), email: address ? email(address) : '' };
+}
+export function pdfFilename(value) {
+  // Match the shared download helper's portable filename policy, retaining
+  // Unicode letters and draft/version markers while removing paths and controls.
+  const stem = String(value || '').normalize('NFC').split(/[\\/]/u).pop()
+    .replace(/\.pdf$/iu, '').replace(/[^\p{L}\p{N} ._-]/gu, ' ')
+    .replace(/\.{2,}/gu, '.').replace(/\s+/gu, ' ').replace(/^[^\p{L}\p{N}]+/u, '')
+    .slice(0, 120).replace(/[\uD800-\uDBFF]$/u, '').replace(/[.\s]+$/u, '');
+  return `${stem || 'writers-group-script'}.pdf`;
+}
+export function scriptPdfFields(upload) {
+  return { pdfId: upload.id, pages: upload.pages, fileName: upload.fileName || '' };
+}
+export function newScript(input, upload, now = new Date(), { admin = false } = {}) {
+  if (!admin && (input.local !== true || input.consent !== true)) fail('consent_required');
+  return { id: id(), ...scriptFields(input), ...scriptContactFields(input, { required: !admin }),
+    ...scriptPdfFields(upload), status: 'pending', createdAt: now.toISOString(), approvedAt: '', position: 0 };
 }
 export function emptyState() { return { revision: 0, events: [], scripts: [] }; }
 export function ensureMeetings(state, now = new Date()) {
@@ -88,26 +105,26 @@ export function ensureMeetings(state, now = new Date()) {
   for (let index = 0; index < 2000; index++, date = addDays(date, 14)) {
     const key = `writers-${date}`;
     if (!byId.has(key)) {
-      const fields = eventFields({ title: 'Writers Group', description: 'An open evening of script readings and feedback.', date, time: '19:00', endTime: '21:00' });
+      const fields = eventFields({ ...MEETING_DEFAULTS, date });
       const meeting = { id: key, kind: 'meeting', ...fields, imageId: '', status: 'published', everPublished: true, readings: [], createdAt: now.toISOString() };
       state.events.push(meeting); byId.set(key, meeting);
     }
     const meeting = byId.get(key);
-    if (meeting.startsAt > now.toISOString() && meeting.status === 'published') future++;
+    if (meeting.startsAt > now.toISOString() && meeting.status === 'published' && !meeting.agendaLocked) future++;
     if (date >= horizon && future >= Math.ceil(activeCount / 2) + 1) break;
     if (index === 1999) fail('schedule_limit', 409);
   }
   return state;
 }
 export function activeQueue(state, now = new Date()) {
-  const locked = new Set(state.events.filter(e => e.kind === 'meeting' && e.startsAt <= now.toISOString()).flatMap(e => e.readings || []));
+  const locked = new Set(state.events.filter(e => e.kind === 'meeting' && (e.agendaLocked || e.startsAt <= now.toISOString())).flatMap(e => e.readings || []));
   return state.scripts.filter(s => s.status === 'approved' && !locked.has(s.id))
     .sort((a, b) => a.position - b.position || a.approvedAt.localeCompare(b.approvedAt) || a.id.localeCompare(b.id));
 }
 export function allocate(state, now = new Date()) {
   ensureMeetings(state, now);
   const queue = activeQueue(state, now);
-  const meetings = state.events.filter(e => e.kind === 'meeting' && e.startsAt > now.toISOString()).sort((a,b) => a.startsAt.localeCompare(b.startsAt) || a.id.localeCompare(b.id));
+  const meetings = state.events.filter(e => e.kind === 'meeting' && !e.agendaLocked && e.startsAt > now.toISOString()).sort((a,b) => a.startsAt.localeCompare(b.startsAt) || a.id.localeCompare(b.id));
   let offset = 0;
   for (const meeting of meetings) {
     meeting.readings = meeting.status === 'published' ? queue.slice(offset, offset + 2).map(s => s.id) : [];
@@ -126,8 +143,8 @@ export function reorder(state, ids, now = new Date()) {
 export function publicEvent(event, state, language = 'en') {
   const lang = locale(language);
   const scripts = new Map(state.scripts.map(s => [s.id, s]));
-  return { id: event.id, kind: event.kind, title: event.kind === 'meeting' && event.title === 'Writers Group' ? (lang === 'es' ? 'Grupo de Guion' : 'Writers Group') : event.title,
-    description: event.kind === 'meeting' && event.description === 'An open evening of script readings and feedback.' ? (lang === 'es' ? 'Una noche abierta de lectura de guiones y comentarios.' : 'An open evening of script readings and feedback.') : event.description,
+  return { id: event.id, kind: event.kind, title: event.kind === 'meeting' && event.title === MEETING_DEFAULTS.title ? (lang === 'es' ? 'Grupo de Guion' : MEETING_DEFAULTS.title) : event.title,
+    description: event.kind === 'meeting' && event.description === MEETING_DEFAULTS.description ? (lang === 'es' ? 'Una noche abierta de lectura de guiones y comentarios.' : MEETING_DEFAULTS.description) : event.description,
     date: event.date, time: event.time, endTime: event.endTime, startsAt: event.startsAt, endsAt: event.endsAt,
     status: event.status, image: event.imageId ? `${API}/images/${event.imageId}/320.webp` : '/img/newsletter/meetup-03.jpg',
     readings: event.agenda || (event.readings || []).map(key => scripts.get(key)).filter(Boolean).map(s => ({ title: s.title, author: s.author })) };
@@ -135,7 +152,7 @@ export function publicEvent(event, state, language = 'en') {
 export function monthView(state, month, language = 'en', now = new Date()) {
   const current = currentMonth(now);
   const last = addMonths(current, 2);
-  const historical = state.events.filter(e => e.everPublished).map(e => e.date.slice(0,7)).sort()[0];
+  const historical = state.events.filter(e => e.everPublished && e.status !== 'deleted').map(e => e.date.slice(0,7)).sort()[0];
   const first = historical && historical < current ? historical : current;
   const selected = month == null ? current : monthKey(month);
   if (selected < first || selected > last) fail('month_unavailable', 404);
@@ -155,21 +172,22 @@ export function applyAction(state, input, now = new Date()) {
   if (input.action === 'extend') return allocate(next, now);
   const collection = input.kind === 'script' ? next.scripts : next.events;
   let item = collection.find(e => e.id === input.id);
-  if (input.action === 'create_event') {
+  if (['create_event', 'create_meeting'].includes(input.action)) {
     if(input.kind!=='event') fail('invalid_action');
-    item = { id: id(), kind: 'event', ...eventFields(input.fields), imageId: '', status: 'draft', everPublished: false, createdAt: now.toISOString(), readings: [] };
-    next.events.push(item); return next;
+    const meeting = input.action === 'create_meeting';
+    item = { id: id(), kind: meeting ? 'meeting' : 'event', ...eventFields(input.fields), imageId: '', status: meeting ? 'published' : 'draft', everPublished: meeting, createdAt: now.toISOString(), readings: [] };
+    next.events.push(item); return allocate(next, now);
   }
-  if (!item) fail('not_found', 404);
-  const allowed = input.kind === 'script' ? ['edit','approve','reject','withdraw','read','requeue'] : ['edit','approve','reject','cancel'];
+  if (!item || item.status === 'deleted') fail('not_found', 404);
+  const allowed = input.kind === 'script' ? ['edit','approve','reject','withdraw','read','requeue'] : ['edit','approve','reject','cancel','delete'];
   if (!allowed.includes(input.action)) fail('invalid_action');
-  if (item.kind === 'meeting' && item.startsAt <= now.toISOString()) fail('meeting_started',409);
+  // Editing or deleting a past meeting must not put already-read scripts back
+  // in the queue, even if its date is subsequently moved into the future.
+  if (item.kind === 'meeting' && item.startsAt <= now.toISOString()) item.agendaLocked = true;
   if (input.action === 'edit') {
     if (input.kind === 'script') Object.assign(item, scriptFields(input.fields));
     else {
-      if (item.startsAt <= now.toISOString() && item.kind === 'meeting') fail('meeting_started', 409);
       const fields=eventFields(input.fields);
-      if(item.kind==='meeting'&&fields.startsAt<=now.toISOString())fail('meeting_started',409);
       Object.assign(item, fields);
     }
   } else if (input.action === 'approve') {
@@ -177,9 +195,10 @@ export function applyAction(state, input, now = new Date()) {
     if (input.kind === 'script') {
       if (!item.approvedAt) { item.approvedAt = now.toISOString(); item.position = Math.max(-1, ...next.scripts.map(s => s.position)) + 1; }
     } else item.everPublished = true;
-  } else if (['reject', 'cancel', 'withdraw', 'read'].includes(input.action)) {
-    if (item.kind === 'meeting' && item.startsAt <= now.toISOString()) fail('meeting_started', 409);
-    item.status = ({ reject: 'rejected', cancel: 'cancelled', withdraw: 'withdrawn', read: 'read' })[input.action];
+  } else if (['reject', 'cancel', 'withdraw', 'read', 'delete'].includes(input.action)) {
+    item.status = ({ reject: 'rejected', cancel: 'cancelled', withdraw: 'withdrawn', read: 'read', delete: 'deleted' })[input.action];
+    // Retain the record ID so recurrence generation cannot recreate a deletion.
+    if (input.action === 'delete') item.deletedAt = now.toISOString();
   } else if (input.action === 'requeue' && input.kind === 'script') {
     for (const e of next.events) {
       if ((e.readings || []).includes(item.id)) {

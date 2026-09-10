@@ -7,6 +7,16 @@ address. Implementation, staging and production are now in place; see the
 [Community Worker guide](../../workers/community/README.md) is authoritative
 for the implemented configuration, commands and release procedure.
 
+## September 10 implementation update
+
+Admins can create, edit and delete events and Writers Group meetings using the
+shared editor and confirmation controls. Deleted records are hidden from both
+public projections and retained internally to prevent recurrence regeneration.
+Deleting a future meeting reallocates its scripts; past reading history remains
+locked even if the meeting date changes. The public script form is always
+visible, mounts the existing responsive Turnstile control immediately, and has
+no trailing divider. Public upload grants remain protected by server verification.
+
 ## Confirmed scope
 
 - Microcinema events take place at Dust Wave HQ only.
@@ -17,13 +27,16 @@ for the implemented configuration, commands and release procedure.
 - Every month has a shareable URL with its own title and calendar image in
   social previews.
 - Writers Group meets every other Monday, 7–9 p.m., starting September 21, 2026.
-  Scripts remain limited to 20 pages each. Two approved scripts automatically
+  Scripts remain limited to 35 pages each. Two approved scripts automatically
   fill each meeting in queue order.
 - Writers submit private PDFs. Public meeting agendas show script titles and
   author names, with no script download or link.
 - Writers Group meetings also appear on Microcinema, using the same records.
-- A dedicated Community admin page has a separate administrator allowlist and
-  supports submission editing, approval, and queue reordering.
+- A dedicated Community admin page has an independent user directory and
+  supports submission editing, approval, and queue reordering. Super-admins
+  also manage users; Limited-admins have the same event, meeting and script
+  tools. The September 10 refinement replaces the original email allowlist
+  with Store-style roles and makes alonso@dustwave.xyz the initial Super-admin.
 
 The attached Hyperreal calendar is visual reference material. Its event content,
 branding, weekday-only schedule, and any text in the image are not product rules
@@ -267,7 +280,7 @@ Reject active formats such as SVG as uploads. Strip unnecessary metadata and
 use fixed-size image slots to prevent layout jumps.
 
 PDFs remain private permanently unless an owner changes this product scope.
-Validate a readable, non-encrypted PDF and the 20-page maximum on the server
+Validate a readable, non-encrypted PDF and the 35-page maximum on the server
 with a bounded parser selected during the upload spike; do not trust the typed
 page count. Serve downloads only to authorized Community admins, as attachments
 with no-store and nosniff headers. Public visitors and guessed object IDs cannot
@@ -284,8 +297,10 @@ submitter accounts, self-service edits, and announcement/reminder emails are
 outside the first version; admin login email is part of authentication only.
 
 Implement separate Community email-login endpoints with single-use expiring
-tokens, secure HttpOnly sessions, CSRF checks, and the separate allowlist. Reuse
-the platform's protocol and helpers, not another product's cookies or roles.
+tokens, secure HttpOnly sessions, CSRF checks, and the separate user directory.
+Reuse the platform's protocol and helpers; keep membership and role assignments
+independent of every other product. See the [Worker guide](../../workers/community/README.md#users-and-roles)
+for the implemented user-management policy and migration.
 Prefer same-origin API paths, consumer-specific cookie names and scope, and
 no-store admin responses. Test production header transforms as well as staging
 headers; the existing admin CSP must allow exactly the resources this UI uses.

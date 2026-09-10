@@ -17,5 +17,5 @@ test('both server-rendered slots, additive bundles and shared admin modules are 
   const gulp=await read('gulpfile.js');
   assert.match(gulp,/community\.min\.css/);assert.match(gulp,/community-admin\.min\.css/);assert.match(gulp,/workers\/community\/src\/render\.js/);
   const admin=await read('src/js/community/admin.js');
-  for(const primitive of ['passwordless-session','tabs','confirmation-dialog','unsaved-changes','dirty-controls','credentialed-download'])assert(admin.includes(`dust-wave-admin-shell/${primitive}.js`));
+  for(const primitive of ['passwordless-session','tabs','confirmation-dialog','unsaved-changes','credentialed-download'])assert(admin.includes(`dust-wave-admin-shell/${primitive}.js`));
 });

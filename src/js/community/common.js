@@ -17,7 +17,7 @@ export function button(text,handler,attributes={}){
 }
 let turnstileScript;
 export async function mountChallenge(root,config,action){
-  if(config.local)return {token:()=>'',reset:()=>{}};
+  if(config.local&&action==='community_login')return {token:()=>'',reset:()=>{},destroy:()=>{}};
   if(!config.siteKey)throw new Error('challenge_not_configured');
   turnstileScript ||= new Promise((resolve,reject)=>{
     if(globalThis.turnstile){resolve();return;}
@@ -25,9 +25,9 @@ export async function mountChallenge(root,config,action){
     script.onload=resolve;script.onerror=()=>reject(new Error('challenge_unavailable'));document.head.append(script);
   });
   await turnstileScript;
-  let token='',widget,size;
+  let token='',widget,size,destroyed=false;
   const render=()=>{
-    if(root.getBoundingClientRect().width<=0)return;
+    if(destroyed||root.getBoundingClientRect().width<=0)return;
     const nextSize=responsiveTurnstileSize(root);
     if(nextSize===size)return;
     // Flexible widgets have a minimum width. Recreate only when crossing the
@@ -39,12 +39,12 @@ export async function mountChallenge(root,config,action){
       callback:value=>{token=value;},'expired-callback':()=>{token='';},'error-callback':()=>{token='';}});
   };
   render();
-  new ResizeObserver(render).observe(root);
-  return {token(){if(!token)throw new Error('challenge_required');return token;},reset(){token='';globalThis.turnstile.reset(widget);}};
+  const observer=new ResizeObserver(render);observer.observe(root);
+  return {token(){if(!token)throw new Error('challenge_required');return token;},reset(){token='';if(!destroyed&&widget!==undefined)globalThis.turnstile.reset(widget);},destroy(){destroyed=true;token='';observer.disconnect();if(widget!==undefined){globalThis.turnstile.remove(widget);widget=undefined;}}};
 }
 export async function uploadFile(file,kind,token,{admin=false}={}){
   if(!file||file.size>(kind==='pdf'?10:5)*1024*1024)throw new Error('file_too_large');
-  const grant=await client.request(admin?'/admin/uploads':'/uploads',{method:'POST',body:{kind,turnstileToken:token},csrf:admin});
+  const grant=await client.request(admin?'/admin/uploads':'/uploads',{method:'POST',body:{kind,fileName:file.name,turnstileToken:token},csrf:admin});
   const response=await fetch(grant.url,{method:'PUT',headers:{'Content-Type':file.type||'application/octet-stream','x-upload-token':grant.token},body:file,credentials:'same-origin'});
   const result=await response.json();if(!response.ok)throw new Error(result.error||'request_failed');
   return {id:grant.id,token:grant.token,pages:result.pages};

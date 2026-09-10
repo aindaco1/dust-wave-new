@@ -19,6 +19,8 @@ backend/provider acceptance is owned by the Podcast repository.
 
 ## Historical evidence
 
+- [Responsive and Community review — 2026-09-10](qa/2026-09-10-responsive-community.md):
+  phone/tablet/desktop coverage, layout fixes, role migration and deployment scope.
 - [Podcast staging snapshot — 2026-08-02](archive/2026-08-02-podcast-staging-evidence.md):
   former completion-plan baseline, detailed progress ledger, execution queue,
   and owner decisions.

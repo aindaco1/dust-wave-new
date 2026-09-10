@@ -1,6 +1,6 @@
 import { PDFDocument } from 'pdf-lib';
 import { randomToken, sha256Hex, sha256BytesHex, timingSafeEqual } from '@dustwave/worker-core/crypto';
-import { API, fail, id } from './domain.js';
+import { API, fail, id, plain, pdfFilename } from './domain.js';
 import { bodyJson, boundedBytes, challenge, json, requestLimit, verifyOrigin, requireAdmin } from './security.js';
 import { getUpload } from './repository.js';
 
@@ -14,7 +14,7 @@ export async function validatePdf(bytes) {
   if (document.isEncrypted) fail('invalid_pdf');
   let pages;
   try { pages = document.getPageCount(); } catch { fail('invalid_pdf'); }
-  if (pages < 1 || pages > 20) fail('pdf_page_limit');
+  if (pages < 1 || pages > 35) fail('pdf_page_limit');
   return { pages };
 }
 export function imageType(bytes) {
@@ -52,8 +52,9 @@ export async function uploadRoute(request, env, route) {
     if (route === '/admin/uploads') await requireAdmin(request, env);
     else await challenge(request, env, data.turnstileToken, 'community_submit');
     const uploadId = id(); const token = randomToken();
-    await env.COMMUNITY_DB.prepare("INSERT INTO community_uploads(id,token_hash,kind,state,expires_at) VALUES (?,?,?,'pending',?)")
-      .bind(uploadId, await sha256Hex(token), data.kind, Date.now()+3600000).run();
+    const fileName = data.kind === 'pdf' ? plain(data.fileName, 255, false) : '';
+    await env.COMMUNITY_DB.prepare("INSERT INTO community_uploads(id,token_hash,kind,state,expires_at,data) VALUES (?,?,?,'pending',?,?)")
+      .bind(uploadId, await sha256Hex(token), data.kind, Date.now()+3600000, JSON.stringify(fileName ? {fileName:pdfFilename(fileName)} : {})).run();
     return json({ id: uploadId, token, url: `${API}/uploads/${uploadId}`, maxBytes: data.kind === 'pdf' ? PDF_LIMIT : IMAGE_LIMIT }, 201);
   }
   const match = route.match(/^\/uploads\/([a-f0-9-]{36})$/u);
@@ -68,7 +69,7 @@ export async function uploadRoute(request, env, route) {
     }
     let metadata = { digest };
     if (upload.kind === 'pdf') {
-      metadata = { ...metadata, ...await validatePdf(bytes) };
+      metadata = { ...metadata, fileName: upload.fileName || '', ...await validatePdf(bytes) };
       metadata.fileKey = `private/${upload.id}/${digest}.pdf`;
       await env.COMMUNITY_FILES.put(metadata.fileKey, bytes, { httpMetadata: { contentType: 'application/pdf' } });
     } else {

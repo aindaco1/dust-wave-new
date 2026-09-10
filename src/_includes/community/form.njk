@@ -1,6 +1,6 @@
 {% set community = i18n[language].community %}
-<details class="community-submit" id="community-submit">
-  <summary>{{ community.submitScript if communityKind == 'script' else community.submitEvent }}</summary>
+<section class="community-submit" id="community-submit" aria-labelledby="community-submit-heading">
+  <h2 id="community-submit-heading">{{ community.submitScript if communityKind == 'script' else community.submitEvent }}</h2>
   <p>{{ community.scriptIntro if communityKind == 'script' else community.eventIntro }}</p>
   <form id="community-form" class="community-form" data-community-form="{{ communityKind }}">
     <fieldset disabled>
@@ -34,6 +34,6 @@
     </fieldset>
     <p data-form-status role="status" tabindex="-1"></p>
   </form>
-</details>
+</section>
 <script type="application/json" id="community-copy">{{ community | safeJsonLd | safe }}</script>
 <script data-cfasync="false" type="module" src="/js/community/public.js?v={{ assets.version | default('dev') }}"></script>

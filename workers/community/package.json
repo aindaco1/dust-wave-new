@@ -7,7 +7,7 @@
     "node": ">=24"
   },
   "scripts": {
-    "dev": "wrangler dev",
+    "dev": "wrangler dev --local --local-upstream localhost:8787 --upstream-protocol http",
     "test": "node --test test/*.test.mjs",
     "check": "npm test && npm audit --audit-level=high && wrangler deploy --dry-run",
     "deploy": "wrangler deploy",

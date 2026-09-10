@@ -2,6 +2,52 @@
 
 ## Unreleased
 
+- Improved phone/tablet spacing across Community admin and Contact, kept public
+  form controls at a readable size, and removed the extra info-sheet divider.
+  Shared footer links now wrap into two rows on smaller screens with usable
+  touch targets and enough room when web fonts are unavailable.
+
+- Added the downloadable branded short info sheet to the English and Spanish
+  Branded Content inquiry sections.
+
+- Added Community Super-admin and Limited-admin roles, with a protected Users
+  tab for adding, editing and deleting access. The initial Super-admin uses
+  alonso@dustwave.xyz; Community membership stays independent of other apps.
+  User changes detect conflicts and revoke old sessions when access changes.
+
+- Kept the shared footer at the bottom of short pages across public and admin
+  layouts, with normal scrolling beneath longer content.
+
+- Moved Add event into the Events tab, replaced manual dashboard refresh with
+  automatic updates that preserve drafts, and improved admin tabs and fields
+  with a mobile section picker using the existing Platform components.
+- Made Microcinema event proposals always visible without a trailing divider,
+  and removed the redundant Writers Group contact section in both languages.
+
+- Added create/edit/delete controls for Writers Group meetings and deletion for
+  events. Deleted records disappear from both calendars and stay deleted when
+  recurring dates are generated; past reading history remains intact.
+- Made the script submission form always visible, with immediate Turnstile
+  initialization, widget cleanup after success, and no trailing divider.
+
+- Increased the script PDF limit to 35 pages for public submissions and admin
+  uploads/replacements, with matching English and Spanish guidance.
+
+- Added automatic saving for script queue order and existing script details,
+  with updated meeting assignments, save feedback, retry and conflict protection.
+  Desktop reordering has a visible grip and before/after drop indicators.
+
+- Kept uploaded PDF filenames in Community admin and downloads, updating the
+  filename alongside the contents and page count when replacing a script.
+
+- Fixed local Community sign-in by keeping Wrangler's development origin aligned
+  with the local site URL instead of inferring the production domain.
+
+- Added direct script creation in Community admin with a required private PDF,
+  optional contact details, and automatic placement at the end of the approved
+  reading queue. Queue controls have visible movement labels. Public agendas show titles
+  and authors only, with two scripts per meeting.
+
 - Matched Contact confirmation and error messages to the site’s voice in English
   and Spanish, keeping retry guidance and uncertain-delivery wording clear.
 

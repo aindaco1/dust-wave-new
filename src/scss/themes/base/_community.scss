@@ -15,6 +15,7 @@
   a { text-underline-offset: .2em; }
   button, select { font: inherit; }
   button, .community-button {
+    min-height: 44px;
     color: var(--community-ink);
     border: 1px solid currentColor;
     border-radius: 0;
@@ -43,7 +44,7 @@
   gap: .75rem;
   padding: .8rem 1rem;
   border-bottom: 1px solid var(--community-ink);
-  a { font-size: .8rem; font-weight: 700; }
+  a { display: inline-flex; align-items: center; min-height: 44px; font-size: .8rem; font-weight: 700; }
 }
 .community-calendar__tools {
   display: flex;
@@ -53,7 +54,7 @@
   padding: .8rem 1rem;
   form { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem; }
   label { font-size: .8rem; }
-  select { max-width: 100%; background: transparent; color: inherit; border: 1px solid currentColor; padding: .4rem; font-size: .85rem; }
+  select { max-width: 100%; min-height: 44px; background: transparent; color: inherit; border: 1px solid currentColor; padding: .4rem; font-size: max(1rem, 16px); }
 }
 .community-calendar__weekdays {
   display: grid;
@@ -109,9 +110,9 @@
 .community-share [role="status"] { flex-basis: 100%; }
 .community-submit {
   margin-top: 2.3rem;
-  border-block: 1px solid var(--writers-line, #555);
-  padding-block: 1.3rem;
-  > summary { font-size: clamp(1.15rem, 2vw, 1.55rem); font-weight: 700; cursor: pointer; }
+  border-top: 1px solid var(--writers-line, #555);
+  padding-top: 1.3rem;
+  > h2 { font-size: clamp(1.15rem, 2vw, 1.55rem); margin: 0; }
   > p { max-width: 42rem; margin: 1.5rem 0; }
 }
 .community-form {
@@ -128,14 +129,16 @@
     border-radius: 0;
     padding: .75rem;
     font: inherit;
+    font-size: max(1rem, 16px);
     color-scheme: dark;
   }
-  input[type="file"] { font-size: .8rem; }
+  input[type="file"] { font-size: max(1rem, 16px); }
   input::file-selector-button { padding: .4rem .6rem; margin-right: .75rem; }
   button { background: #f4eddf; color: #17120f; font: inherit; font-weight: 700; padding: .75rem 1rem; border: 1px solid #f4eddf; border-radius: 0; }
   .community-checkbox { display: flex; align-items: flex-start; gap: .7rem; font-weight: 400; }
   input[type="checkbox"] { margin-top: .3rem; width: 1rem; height: 1rem; flex-shrink: 0; }
   [data-form-status], [data-login-status] { margin-top: 1rem; overflow-wrap: anywhere; }
+  [data-community-challenge]:empty { margin-bottom: 0; }
   [data-community-challenge] {
     display: flow-root;
     line-height: 0;

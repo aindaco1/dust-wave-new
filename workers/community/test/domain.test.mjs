@@ -65,3 +65,45 @@ test('in-progress meetings remain on upcoming list until local end',()=>{
   const state=initial();assert.equal(upcoming(state,'en',new Date('2026-09-22T01:30Z'))[0].date,'2026-09-21');
   assert.equal(upcoming(state,'en',new Date('2026-09-22T03:01Z'))[0].date,'2026-10-05');
 });
+test('admins create and reschedule meetings, delete either event kind, and keep recurring deletions absent',()=>{
+  let state=initial();
+  const fields={title:'Extra Writers Group',description:'An extra evening of readings.',date:'2026-09-14',time:'19:00',endTime:'21:00'};
+  state=applyAction(state,{kind:'event',action:'create_meeting',fields},now);
+  const added=state.events.find(e=>e.title===fields.title);
+  assert.equal(added.status,'published');assert.deepEqual(added.readings,['s1','s2']);
+  assert.equal(upcoming(state,'en',now)[0].id,added.id);
+  assert(monthView(state,'2026-09','en',now).events.some(e=>e.id===added.id));
+  state=applyAction(state,{kind:'event',action:'edit',id:added.id,fields:{...fields,title:'Updated meeting',date:'2026-09-28'}},now);
+  assert.deepEqual(state.events.find(e=>e.id===added.id).readings,['s3','s4']);
+  state=applyAction(state,{kind:'event',action:'cancel',id:'writers-2026-09-21'},now);
+  assert(monthView(state,'2026-09','en',now).events.some(e=>e.status==='cancelled'));
+  for(const id of ['writers-2026-09-21',added.id])state=applyAction(state,{kind:'event',action:'delete',id},now);
+  state=allocate(state,new Date('2026-09-09T18:00:00Z'));
+  assert.equal(monthView(state,'2026-09','en',now).events.length,0);
+  assert.equal(upcoming(state,'en',now)[0].date,'2026-10-05');
+  assert.deepEqual(upcoming(state,'en',now)[0].readings,[{title:'Script 1',author:'Writer 1'},{title:'Script 2',author:'Writer 2'}]);
+  for(const action of ['edit','approve','delete'])assert.throws(()=>applyAction(state,{kind:'event',action,id:added.id,fields},now),/not_found/);
+  state=applyAction(state,{kind:'event',action:'create_event',fields:{...fields,title:'Screening'}},now);
+  const event=state.events.find(e=>e.title==='Screening');assert.equal(event.status,'draft');
+  state=applyAction(state,{kind:'event',action:'approve',id:event.id},now);
+  assert.equal(monthView(state,'2026-09','en',now).events[0].title,'Screening');
+  state=applyAction(state,{kind:'event',action:'delete',id:event.id},now);
+  assert.equal(monthView(state,'2026-09','en',now).events.length,0);
+});
+test('editing and deleting started meetings preserve their reading history and queue exclusions',()=>{
+  const later=new Date('2026-09-22T02:00:00Z');
+  let state=initial();
+  const first=state.events[0],agenda=first.agenda;
+  state=applyAction(state,{kind:'event',action:'edit',id:first.id,fields:{...first,title:'Corrected meeting',date:'2026-09-28'}},later);
+  state=applyAction(state,{kind:'script',action:'edit',id:'s1',fields:{title:'Changed later',author:'New author'}},later);
+  assert.deepEqual(state.events.find(e=>e.id===first.id).agenda,agenda);
+  assert.deepEqual(activeQueue(state,later).map(s=>s.id),['s3','s4','s5','s6']);
+  state=applyAction(state,{kind:'event',action:'delete',id:first.id},later);
+  assert.deepEqual(activeQueue(state,later).map(s=>s.id),['s3','s4','s5','s6']);
+  assert(!upcoming(state,'en',later).some(e=>e.id===first.id));
+  assert.deepEqual(state.events.find(e=>e.id===first.id).agenda,agenda);
+});
+test('deleted events do not extend the public archive range',()=>{
+  const state=initial();state.events.push({id:'deleted-history',everPublished:true,status:'deleted',date:'2025-12-01'});
+  assert.equal(monthView(state,null,'en',now).first,'2026-09');
+});

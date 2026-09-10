@@ -45,7 +45,7 @@
     "test:i18n:rendered": "node scripts/validate-built-podcast-i18n.mjs",
     "test:i18n:staging": "node scripts/validate-deployed-podcast-i18n.mjs",
     "test:public-shell": "node scripts/validate-public-shell.mjs",
-    "test:footer": "npm run test:public-shell",
+    "test:footer": "npm run test:public-shell && node --test tests/site-footer-layout.test.mjs",
     "test:podcast-admin-youtube": "node --test tests/podcast-admin-episode-youtube.test.mjs tests/podcast-admin-youtube-audio-renditions.test.mjs && node --check src/js/podcast-admin-episode-youtube-requests.js && node --check src/js/podcast-admin-retriable-operation.js",
     "test:podcast-admin-media": "node --test tests/podcast-admin-delivery-audio.test.mjs && node --check src/js/podcast-admin-delivery-audio-approval.js && node --check src/js/podcast-admin-request-security.js",
     "test:podcast-admin-readiness": "node --test tests/podcast-admin-readiness-loader.test.mjs tests/podcast-admin-workflow-responsive.test.mjs && node --check src/js/podcast-admin-readiness-loader.js && node --check src/js/podcast-admin-workflow-responsive.js && node --check src/js/podcast-admin-workflow-option-label.js",
@@ -63,8 +63,10 @@
     "clean": "rm -rf dev/*",
     "clean-prod": "rm -rf docs/*",
     "test:contact": "node --test tests/contact-form.test.mjs",
-    "test:community": "node --test tests/community-contract.test.mjs tests/community-calendar-navigation.test.mjs tests/community-challenge-layout.test.mjs && npm test --prefix workers/community && npm audit --prefix workers/community --audit-level=high",
-    "build:community-staging": "COMMUNITY_STAGING_BUILD=true npm run build:ci && node scripts/prepare-community-staging.mjs docs"
+    "test:community:admin": "node --test tests/community-admin.test.mjs",
+    "test:community": "node --test tests/community-contract.test.mjs tests/community-calendar-navigation.test.mjs tests/community-challenge-layout.test.mjs tests/community-submission.test.mjs && npm run test:community:admin && npm test --prefix workers/community && npm audit --prefix workers/community --audit-level=high",
+    "build:community-staging": "COMMUNITY_STAGING_BUILD=true npm run build:ci && node scripts/prepare-community-staging.mjs docs",
+    "qa:responsive": "node scripts/audit-site-responsive.mjs"
   },
   "dependencies": {
     "@11ty/eleventy": "^3.1.6",

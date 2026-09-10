@@ -153,6 +153,29 @@ Set `PODCAST_ADMIN_MOCK_WORKFLOW_TARGET` to `attach_media`,
 state and verify that the guided workflow opens and focuses the exact repair
 control.
 
+## Responsive review
+
+Run `npm run qa:responsive` against the local Community preview on port 8787.
+It checks eight recent public/admin entry points in both languages at 320,
+390, 768, 1024 and 1440 pixels (80 page/viewport combinations), saves screenshots
+at phone/tablet/desktop widths, and reports document or visible-element overflow.
+Set `QA_ORIGIN`, `QA_OUTPUT`, `QA_WIDTHS` or `QA_ROUTES` to target a deployed
+origin, retain a named run, or narrow a follow-up. It blocks outgoing submissions;
+web fonts and Turnstile may load, but this is not an email-delivery or CAPTCHA
+acceptance test. Inspect the screenshots for vertical rhythm and clipping;
+an overflow check alone cannot establish good layout.
+
+`npm run test:footer` tests all four page shells in both languages across nine
+widths, with short and long content and external fonts blocked. It checks
+footer placement, readable labels, non-overlapping links and 44-pixel touch
+targets. Keep these rendered checks instead of prescribing exact CSS rules
+in the source validator. The full Podcast gate includes them.
+
+Authenticated Community tests separately cover all tabs and editors, long
+filenames, tablet layouts, user roles, validation and save/recovery states using
+synthetic records. Keep the real local `.wrangler` data out of these fixtures.
+See the [September 10 review](qa/2026-09-10-responsive-community.md).
+
 ## Community calendar and queue
 
 Install `npm ci --prefix workers/community`, then run `npm run test:community`.
@@ -160,7 +183,38 @@ This covers EN/ES contracts, domain tests, PDF limits, real PNG cards, and an
 isolated workerd/D1/R2 workflow with session, privacy, retry and concurrency
 checks. A headless browser regression covers in-place month navigation, scroll
 position, browser history, retained proposals, metadata, request races and
-connection failures at desktop and phone widths in both languages. Run
+connection failures at desktop and phone widths in both languages.
+`npm run test:community:admin` also renders the real admin template and styles
+against an isolated Worker/D1/R2 instance. It covers event and Writers Group
+meeting creation, editing and deletion, as well as adding scripts, required
+PDFs and optional contacts, drag/keyboard reordering with automatic scheduling,
+private download/replacement (including uploaded filenames), and detail autosave
+in English/Spanish at desktop and 320-pixel widths.
+It checks rapid changes, invalid drafts, stale revisions and lost-response retries
+and real desktop mouse drags with before/after insertion feedback. Navigation
+checks cover keyboard tabs, the mobile picker, saved selection and tab-specific
+actions. Automatic-update checks exercise focus/interval/reconnection, retained
+editors and failed queue drafts, keyboard focus, stale reads after saves, and
+recovery when the initial data load fails. It blocks external requests
+and uses only synthetic PDFs and local sign-in links. Set
+`COMMUNITY_ADMIN_SCREENSHOTS=.artifacts/community-admin` to retain screenshots.
+Role tests cover Super-admin user creation/editing/deletion in both languages,
+Limited-admin operational access with no Users tab or mobile option, retained
+drafts across tabs, conflicts, failed/lost saves, and private-data cleanup after
+session revocation. The Worker tests directly exercise permission denials,
+unique emails, self-account and last-Super-admin protection, atomic concurrent
+user writes, session/link revocation, and independence from legacy allowlists
+and other apps. They run all schema migrations, including the initial
+`alonso@dustwave.xyz` Super-admin. Invitation tests use a fake email binding;
+they do not verify real provider acceptance or inbox delivery.
+The submission browser test renders the shared form in English and Spanish
+at 320 and 1440 pixels, checking always-visible script and event forms,
+immediate challenge mounting, token expiry,
+retry, success cleanup and the absence of a trailing form divider. A provider
+fixture verifies that missing, invalid, reused or wrong-action tokens cannot
+issue public upload grants. Worker tests also check deletion across both public
+projections, the daily recurrence trigger, and preserved past reading history.
+Run
 `npm run build:community-staging` for the production WebP pipeline.
 After deploying, `node scripts/smoke-community.mjs <origin>` checks all six
 current/upcoming month cards, both page languages, admin headers and private

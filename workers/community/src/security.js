@@ -3,6 +3,7 @@ import { SECURITY_HEADERS, normalizeOrigin } from '@dustwave/worker-core/http';
 import { verifyTurnstile } from '@dustwave/worker-core/turnstile';
 import { API, fail, email, locale } from './domain.js';
 import { rateLimit } from './repository.js';
+import { findAdmin, publicAdmin } from './users.js';
 
 const SESSION_COOKIE = 'dw_community_session';
 export function siteOrigin(env) { return normalizeOrigin(env.SITE_BASE) || 'https://dustwave.xyz'; }
@@ -57,28 +58,49 @@ export async function requestLimit(request, env, scope, count, seconds) {
   const ip = request.headers.get('CF-Connecting-IP') || (localMode(env) ? 'local' : 'unknown');
   await rateLimit(env.COMMUNITY_DB, `${scope}:${await sha256Hex(ip)}`, count, seconds);
 }
-export function admins(env) {
-  return String(env.COMMUNITY_ADMIN_EMAILS || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
-}
 export async function requireAdmin(request, env, { csrf = true } = {}) {
   let token = '';
   try { token = getCookie(request, SESSION_COOKIE); } catch { fail('unauthorized', 401); }
   if (!token || token.length > 256) fail('unauthorized', 401);
   const session = await env.COMMUNITY_DB.prepare('SELECT * FROM community_sessions WHERE hash=? AND expires_at>?').bind(await sha256Hex(token), Date.now()).first();
-  if (!session || !admins(env).includes(session.email)) fail('unauthorized', 401);
+  const user=session?await findAdmin(env.COMMUNITY_DB,session.email):null;
+  if (!session || !user) fail('unauthorized', 401);
   if (csrf && !['GET','HEAD'].includes(request.method)) {
     verifyOrigin(request, env);
     if (!timingSafeEqual(request.headers.get('x-dustwave-csrf'), session.csrf)) fail('csrf_failed', 403);
   }
-  return session;
+  return {...session,...user};
 }
 function cookie(token, env, age) {
   return `${SESSION_COOKIE}=${token}; Path=${API}/admin; HttpOnly; SameSite=Strict; Max-Age=${age}${localMode(env) ? '' : '; Secure'}`;
 }
+export async function sendLogin(env,address,lang,{invitation=false}={}) {
+  const token=randomToken(),hash=await sha256Hex(token);
+  // Only a current Community user can receive a usable sign-in link.
+  if(!await findAdmin(env.COMMUNITY_DB,address))fail('invalid_login',401);
+  await env.COMMUNITY_DB.prepare('INSERT INTO community_auth_tokens(hash,email,expires_at) VALUES (?,?,?)').bind(hash,address,Date.now()+900000).run();
+  const url=`${siteOrigin(env)}${lang==='es'?'/es':''}/admin/community/#magic-link=${token}`;
+  if(localMode(env))return {localLoginUrl:url};
+  try{
+    const intro=invitation
+      ?lang==='es'?'Ya tienes acceso a Community admin de Dust Wave.':'You now have access to Dust Wave Community admin.'
+      :lang==='es'?'Accede a Community admin.':'Sign in to Community admin.';
+    const sent=await env.EMAIL.send({
+      from:{email:env.LOGIN_FROM,name:'Dust Wave Community'},to:address,
+      subject:invitation?(lang==='es'?'Tu acceso a Dust Wave Community':'Your Dust Wave Community access'):(lang==='es'?'Tu enlace de acceso a Dust Wave':'Your Dust Wave Community sign-in link'),
+      text:`${intro} ${lang==='es'?'El enlace caduca en 15 minutos.':'This link expires in 15 minutes.'}\n\n${url}\n\n${lang==='es'?'Si no lo esperabas, ignora este mensaje.':'If you weren’t expecting this, ignore this message.'}`
+    });
+    if(!sent?.messageId)throw new Error('email_not_accepted');
+    return {sent:true};
+  }catch{
+    await env.COMMUNITY_DB.prepare('DELETE FROM community_auth_tokens WHERE hash=?').bind(hash).run();
+    fail('login_unavailable',503);
+  }
+}
 export async function authRoute(request, env, route) {
   if (route === '/admin/session' && request.method === 'GET') {
     const session = await requireAdmin(request, env);
-    return json({ email: session.email, csrfToken: session.csrf });
+    return json({ email: session.email, csrfToken: session.csrf, user:publicAdmin(session) });
   }
   if (route === '/admin/logout' && request.method === 'POST') {
     const session = await requireAdmin(request, env);
@@ -91,28 +113,8 @@ export async function authRoute(request, env, route) {
     await requestLimit(request, env, 'login', 8, 900);
     await rateLimit(env.COMMUNITY_DB, `email:${await sha256Hex(address)}`, 3, 900);
     await challenge(request, env, data.turnstileToken, 'community_login');
-    if (!admins(env).length || (!env.EMAIL && !localMode(env))) fail('login_unavailable', 503);
-    if (admins(env).includes(address)) {
-      const token = randomToken(); const hash = await sha256Hex(token);
-      await env.COMMUNITY_DB.prepare('INSERT INTO community_auth_tokens(hash,email,expires_at) VALUES (?,?,?)').bind(hash, address, Date.now()+900000).run();
-      const lang = locale(data.preferredLanguage);
-      const url = `${siteOrigin(env)}${lang === 'es' ? '/es' : ''}/admin/community/#magic-link=${token}`;
-      if (localMode(env)) {
-        // Only explicit loopback local mode exposes a test login; never log tokens.
-        return json({ ok: true, localLoginUrl: url });
-      }
-      try {
-        const sent = await env.EMAIL.send({
-          from: { email: env.LOGIN_FROM, name: 'Dust Wave Community' }, to: address,
-          subject: lang === 'es' ? 'Tu enlace de acceso a Dust Wave' : 'Your Dust Wave Community sign-in link',
-          text: `${lang === 'es' ? 'Accede a Community admin. El enlace caduca en 15 minutos.' : 'Sign in to Community admin. This link expires in 15 minutes.'}\n\n${url}\n\n${lang === 'es' ? 'Si no lo solicitaste, ignora este mensaje.' : 'If you did not request this, ignore this message.'}`
-        });
-        if (!sent?.messageId) throw new Error('email_not_accepted');
-      } catch {
-        await env.COMMUNITY_DB.prepare('DELETE FROM community_auth_tokens WHERE hash=?').bind(hash).run();
-        fail('login_unavailable', 503);
-      }
-    }
+    if (!env.EMAIL && !localMode(env)) fail('login_unavailable',503);
+    if(await findAdmin(env.COMMUNITY_DB,address))return json({ok:true,...await sendLogin(env,address,locale(data.preferredLanguage))});
     return json({ ok: true });
   }
   if (route === '/admin/auth/exchange' && request.method === 'POST') {
@@ -121,11 +123,12 @@ export async function authRoute(request, env, route) {
     if (typeof data.token !== 'string' || data.token.length > 256) fail('invalid_login', 401);
     const hash = await sha256Hex(data.token);
     const row = await env.COMMUNITY_DB.prepare('DELETE FROM community_auth_tokens WHERE hash=? AND expires_at>? RETURNING email').bind(hash, Date.now()).first();
-    if (!row || !admins(env).includes(row.email)) fail('invalid_login', 401);
+    const user=row?await findAdmin(env.COMMUNITY_DB,row.email):null;
+    if (!user) fail('invalid_login', 401);
     const token = randomToken(); const csrf = randomToken();
     await env.COMMUNITY_DB.prepare('INSERT INTO community_sessions(hash,email,csrf,expires_at) VALUES (?,?,?,?)')
       .bind(await sha256Hex(token), row.email, csrf, Date.now()+43200000).run();
-    return json({ email: row.email, csrfToken: csrf }, 200, { 'Set-Cookie': cookie(token, env, 43200) });
+    return json({ email: row.email, csrfToken: csrf, user:publicAdmin(user) }, 200, { 'Set-Cookie': cookie(token, env, 43200) });
   }
   return null;
 }

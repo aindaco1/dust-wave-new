@@ -15,7 +15,7 @@ eleventyComputed:
 ---
 {% set c = i18n[language].community %}
 <script type="application/json" id="community-copy">{{ c | safeJsonLd | safe }}</script>
-<header class="community-admin__header"><div><p class="writers-group-eyebrow">DUST WAVE</p><h1>{{ c.adminTitle }}</h1></div><button type="button" data-admin-logout hidden>{{ c.signOut }}</button></header>
+<header class="community-admin__header"><div><h1>{{ c.adminTitle }}</h1></div><button type="button" data-admin-logout hidden>{{ c.signOut }}</button></header>
 <p data-admin-status role="status" tabindex="-1"></p>
 <form class="community-form community-login" data-admin-login>
   <h2>{{ c.signIn }}</h2><p>{{ c.loginIntro }}</p>
@@ -25,24 +25,40 @@ eleventyComputed:
   <p data-login-status role="status"></p>
 </form>
 <div data-admin-workspace hidden>
-  <div class="community-admin__toolbar"><button type="button" data-admin-refresh>{{ c.refresh }}</button><button type="button" data-admin-create>{{ c.addEvent }}</button></div>
+  <p data-sync-status role="status"></p>
   <div data-admin-tabs>
     <div role="tablist" aria-label="{{ c.title }}">
       <button type="button" id="community-tab-events" role="tab" data-tab="events" aria-controls="community-events">{{ c.events }}</button>
       <button type="button" id="community-tab-queue" role="tab" data-tab="queue" aria-controls="community-queue">{{ c.queue }}</button>
       <button type="button" id="community-tab-meetings" role="tab" data-tab="meetings" aria-controls="community-meetings">{{ c.meetings }}</button>
     </div>
-    <section id="community-events" role="tabpanel" aria-labelledby="community-tab-events"><div data-admin-events></div></section>
+    <section id="community-events" role="tabpanel" aria-labelledby="community-tab-events">
+      <div class="community-admin__toolbar"><h2>{{ c.events }}</h2><button type="button" class="community-admin__primary" data-admin-create>{{ c.addEvent }}</button></div>
+      <div data-admin-events></div>
+    </section>
     <section id="community-queue" role="tabpanel" aria-labelledby="community-tab-queue" hidden>
-      <p>{{ c.dragHint }}</p><ol data-admin-queue class="community-admin-queue"></ol>
-      <button type="button" data-admin-preview disabled>{{ c.preview }}</button>
-      <div data-admin-preview-result></div>
-      <button type="button" data-admin-save-queue hidden>{{ c.saveQueue }}</button>
+      <div class="community-admin__toolbar"><h2>{{ c.queue }}</h2><button type="button" class="community-admin__primary" data-admin-add-script>{{ c.addScript }}</button></div>
+      <p>{{ c.queueIntro }}</p>
+      <p id="community-queue-instructions">{{ c.dragHint }}</p>
+      <p data-queue-status role="status"></p><div class="community-admin__actions"><button type="button" data-queue-retry hidden>{{ c.retrySave }}</button><button type="button" data-queue-discard hidden>{{ c.useSavedOrder }}</button></div>
+      <ol data-admin-queue class="community-admin-queue"></ol>
       <h2>{{ c.pending }}</h2><div data-admin-scripts></div>
     </section>
-    <section id="community-meetings" role="tabpanel" aria-labelledby="community-tab-meetings" hidden><div data-admin-meetings></div></section>
+    <section id="community-meetings" role="tabpanel" aria-labelledby="community-tab-meetings" hidden>
+      <div class="community-admin__toolbar"><h2>{{ c.meetings }}</h2><button type="button" class="community-admin__primary" data-admin-add-meeting>{{ c.addMeeting }}</button></div>
+      <div data-admin-meetings></div>
+    </section>
+    <section id="community-users" role="tabpanel" aria-labelledby="community-tab-users" hidden>
+      <form class="community-form community-users" data-admin-users-form>
+        <div class="community-admin__toolbar"><h2>{{ c.users }}</h2><button type="button" class="community-admin__primary" data-user-add>{{ c.addUser }}</button></div>
+        <p>{{ c.usersIntro }}</p>
+        <p data-users-status role="status"></p>
+        <div data-users-list></div>
+        <div class="community-admin__actions"><button type="submit" class="community-admin__primary" data-users-save disabled>{{ c.saveUsers }}</button><button type="button" data-users-discard hidden>{{ c.useSavedVersion }}</button></div>
+      </form>
+    </section>
   </div>
 </div>
 <dialog class="community-editor" data-admin-editor aria-labelledby="community-editor-heading">
-  <form class="community-form" data-admin-editor-form><h2 id="community-editor-heading">{{ c.edit }}</h2><div data-editor-fields></div><p data-editor-status role="status"></p><div class="community-admin__actions"><button type="submit">{{ c.save }}</button><button type="button" data-editor-close>{{ c.cancel }}</button></div></form>
+  <form class="community-form" data-admin-editor-form><h2 id="community-editor-heading">{{ c.edit }}</h2><div data-editor-fields></div><p data-editor-status role="status"></p><button type="button" data-editor-refresh hidden>{{ c.useSavedVersion }}</button><button type="button" data-editor-retry hidden>{{ c.retrySave }}</button><div class="community-admin__actions"><button type="submit" class="community-admin__primary">{{ c.save }}</button><button type="button" data-editor-close>{{ c.cancel }}</button></div></form>
 </dialog>

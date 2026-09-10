@@ -6,7 +6,7 @@ mountCalendar(document.querySelector('[data-community-slot="1"]'),copy);
 const form=document.querySelector('[data-community-form]');
 if(form){
   const kind=form.dataset.communityForm, status=form.querySelector('[data-form-status]'),fieldset=form.querySelector('fieldset'),submit=form.querySelector('[type=submit]');
-  let challenge,mounting=false,upload,submissionKey=crypto.randomUUID(),previewUrl='';
+  let challenge,upload,submissionKey=crypto.randomUUID(),previewUrl='';
   const fileInput=form.elements.file;
   fileInput.addEventListener('change',()=>{
     upload=null;submissionKey=crypto.randomUUID();
@@ -17,12 +17,8 @@ if(form){
   async function initialize(){
     try{
       const config=await client.request('/config',{csrf:false});
-      // Render challenges after the disclosure opens, so the responsive primitive
-      // can measure its available width and the widget is not hidden from users.
       fieldset.disabled=false;
-      const details=form.closest('details');
-      const mount=async()=>{if(challenge||mounting||!details.open)return;mounting=true;try{challenge=await mountChallenge(form.querySelector('[data-community-challenge]'),config,'community_submit');}catch(e){status.textContent=errorText(e);}finally{mounting=false;}};
-      details.addEventListener('toggle',mount);await mount();
+      challenge=await mountChallenge(form.querySelector('[data-community-challenge]'),config,'community_submit');
     }catch(error){status.textContent=errorText(error);}
   }
   form.addEventListener('submit',async event=>{
@@ -34,7 +30,7 @@ if(form){
       const fields=Object.fromEntries(new FormData(form));delete fields.file;
       fields.local=form.elements.local?.checked===true;fields.consent=form.elements.consent?.checked===true;
       const receipt=await client.request(kind==='script'?'/scripts':'/events',{method:'POST',csrf:false,body:{...fields,uploadId:upload.id,uploadToken:upload.token,submissionKey}});
-      fieldset.hidden=true;status.textContent=`${copy.success} ${copy.receipt}: ${receipt.id}`;status.focus();
+      challenge.destroy();fieldset.hidden=true;status.textContent=`${copy.success} ${copy.receipt}: ${receipt.id}`;status.focus();
     }catch(error){status.textContent=errorText(error);status.focus();if(!upload)challenge?.reset();}
     finally{submit.disabled=false;fieldset.removeAttribute('aria-busy');}
   });
