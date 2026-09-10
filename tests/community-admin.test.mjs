@@ -61,11 +61,8 @@ const server=createServer(async(req,res)=>{
   }catch(error){res.writeHead(500);res.end(String(error));}
 });
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));origin=`http://127.0.0.1:${server.address().port}`;
-// Linux headless runners have no physical mouse; make the desktop input contract explicit.
-const browser=await puppeteer.launch({headless:true,args:[
-  '--blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4',
-  ...(process.env.CI?['--no-sandbox']:[])
-]});
+// CI uses Xvfb: Linux headless Chrome can report no mouse or hover capability.
+const browser=await puppeteer.launch({headless:process.env.COMMUNITY_BROWSER_HEADED!=='true',args:process.env.CI?['--no-sandbox']:[]});
 const screenshots=process.env.COMMUNITY_ADMIN_SCREENSHOTS;
 if(screenshots)await mkdir(screenshots,{recursive:true});
 

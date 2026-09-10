@@ -33,8 +33,9 @@ Changes from the review:
   private PDF limits and filenames, all admin tabs/editors, queue/metadata
   autosave, drag-and-drop, conflict recovery, and Super/Limited-admin permissions.
   Added English/Spanish tablet cases for event/meeting and user editing.
-  Desktop drag tests explicitly configure mouse/hover input on headless Linux;
-  a separate touch-tablet case checks the saved reorder buttons and hidden grips.
+  Linux CI runs authenticated browser tests in Xvfb with a desktop mouse/hover
+  assertion; headless Chrome can report no pointing device on that runner.
+  A separate touch-tablet case checks the saved reorder buttons and hidden grips.
 - Contact: six browser tests covering success, verification cleanup, retained
   drafts, provider/network failures, retries, and mobile/tablet/desktop gutters.
 - Full Podcast/security gate, production Pages/WebP build and deployed checks

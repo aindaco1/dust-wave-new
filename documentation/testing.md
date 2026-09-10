@@ -174,6 +174,10 @@ in the source validator. The full Podcast gate includes them.
 Authenticated Community tests separately cover all tabs and editors, long
 filenames, tablet layouts, user roles, validation and save/recovery states using
 synthetic records. Keep the real local `.wrangler` data out of these fixtures.
+Linux CI uses `COMMUNITY_BROWSER_HEADED=true xvfb-run --auto-servernum npm run
+test:community` so desktop drag tests have a mouse/hover-capable display.
+The normal local command remains headless; the tablet test explicitly enables
+touch input and verifies the reorder buttons.
 See the [September 10 review](qa/2026-09-10-responsive-community.md).
 
 ## Community calendar and queue
