@@ -72,7 +72,7 @@ async function selectTab(page,name){
   else await page.click(`#community-tab-${name}`);
   await page.waitForFunction(name=>!document.querySelector(`#community-${name}`).hidden,{},name);
 }
-async function fixture(lang='en',width=1440,{role='super_admin'}={}){
+async function fixture(lang='en',width=1440,{role='super_admin',hasTouch=false}={}){
   loseNextCreateResponse=false;
   failNextState=false;
   nextActionMode='';releaseAction=null;actionCalls=0;stateReads=0;holdNextState=false;releaseState=null;nextUsersMode='';
@@ -85,7 +85,8 @@ async function fixture(lang='en',width=1440,{role='super_admin'}={}){
   const token=new URL((await start.json()).localLoginUrl).hash;
   const context=await browser.createBrowserContext(),page=await context.newPage(),errors=[];
   page.on('pageerror',error=>errors.push(error.message));
-  await page.setViewport({width,height:1000});
+  // Changing touch support reloads the page, so configure it before login/navigation.
+  await page.setViewport({width,height:1000,hasTouch});
   await page.setRequestInterception(true);
   page.on('request',request=>request.url().startsWith(origin)||request.url().startsWith('blob:')?request.continue():request.abort());
   await page.evaluateOnNewDocument(()=>{
@@ -454,9 +455,8 @@ try{
     }finally{await f.close();}
   });
   await test('touch tablet uses reorder buttons without desktop drag handles',async()=>{
-    const f=await fixture('en',768),{page,copy}=f;
+    const f=await fixture('en',768,{hasTouch:true}),{page,copy}=f;
     try{
-      await page.setViewport({width:768,height:1024,hasTouch:true});
       for(let i=1;i<=2;i++){await openScript(page,`Script ${i}`,`Writer ${i}`);await saveScript(page,i);}
       assert(await page.evaluate(()=>matchMedia('(pointer: coarse)').matches));
       assert.equal(await page.$eval('[data-queue-drag]',node=>getComputedStyle(node).display),'none');
