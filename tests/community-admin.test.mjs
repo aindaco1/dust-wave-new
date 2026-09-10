@@ -61,7 +61,11 @@ const server=createServer(async(req,res)=>{
   }catch(error){res.writeHead(500);res.end(String(error));}
 });
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));origin=`http://127.0.0.1:${server.address().port}`;
-const browser=await puppeteer.launch({headless:true,args:process.env.CI?['--no-sandbox']:[]});
+// Linux headless runners have no physical mouse; make the desktop input contract explicit.
+const browser=await puppeteer.launch({headless:true,args:[
+  '--blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4',
+  ...(process.env.CI?['--no-sandbox']:[])
+]});
 const screenshots=process.env.COMMUNITY_ADMIN_SCREENSHOTS;
 if(screenshots)await mkdir(screenshots,{recursive:true});
 
@@ -452,11 +456,26 @@ try{
       assert.equal(await page.$eval('[data-admin-status]',node=>node.textContent),copy.sessionExpired);
     }finally{await f.close();}
   });
+  await test('touch tablet uses reorder buttons without desktop drag handles',async()=>{
+    const f=await fixture('en',768),{page,copy}=f;
+    try{
+      await page.setViewport({width:768,height:1024,hasTouch:true});
+      for(let i=1;i<=2;i++){await openScript(page,`Script ${i}`,`Writer ${i}`);await saveScript(page,i);}
+      assert(await page.evaluate(()=>matchMedia('(pointer: coarse)').matches));
+      assert.equal(await page.$eval('[data-queue-drag]',node=>getComputedStyle(node).display),'none');
+      await page.tap('[data-admin-queue] li:last-child [data-queue-control="up"]');
+      await page.waitForFunction(message=>document.querySelector('[data-queue-status]').textContent===message,{},copy.actionDone);
+      assert.deepEqual(await titles(page),['Script 2','Script 1']);
+      await fits(page);
+    }finally{await f.close();}
+  });
   await test('desktop grip dragging shows insertion positions and saves the dropped order',async()=>{
     const f=await fixture('en',1440),{page,copy}=f;
     try{
       await page.setViewport({width:1440,height:1600});
       for(let i=1;i<=3;i++){await openScript(page,`Script ${i}`,`Writer ${i}`);await saveScript(page,i);}
+      const inputMode=await page.evaluate(()=>({hover:matchMedia('(hover: hover)').matches,finePointer:matchMedia('(pointer: fine)').matches}));
+      assert.deepEqual(inputMode,{hover:true,finePointer:true},'desktop drag fixture has a mouse with hover support');
       await page.setDragInterception(true);
       const drag=async(from,to,after=false)=>{
         const rows=await page.$$('[data-queue-id]'),handle=await rows[from].$('[data-queue-drag]');
