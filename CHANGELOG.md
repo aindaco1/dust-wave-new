@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Added Tecolote in English and Spanish with film credits, stills, poster
+  attribution, Instagram cast/BTS embeds, and a ten-second hover montage.
+- Added the wrap BTS video to both Red Razor on Soft Skin project pages.
+- Standardized heading spacing across public pages, projects, articles, and
+  Digests, including automatic cleanup of legacy heading spacer breaks.
+
 - Match News title/date spacing to Home and Projects, reusing their compact
   phone typography, column gaps and unbroken dates.
 

@@ -20,7 +20,7 @@ permalink: "subdir/{{ title | slugify }}/index.html"
             <a class="u-url visually-hidden" href="{{ metadata.url }}{{ page.url }}">{{ i18n | t(language, "content.permalink") }}</a>
             {# Plain text content for Bluesky (avoids HTML rendering issues) #}
             {% if syndicate and "fediverse" in syndicate %}<span class="p-bridgy-bluesky-content visually-hidden">{{ summary }}</span>{% endif %}
-            <p class="lead pt-2 py-vh-2 p-summary {% if img or heroVideoWebm or heroVideoMp4 %}{% else %}border-bottom{% endif %}">{{summary}}{% if syndicate and "fediverse" in syndicate %} <a href="https://fed.brid.gy/r/{{ metadata.url }}{{ page.url }}" title="Federated to the Fediverse" class="text-decoration-none" target="_blank">📡</a>{% endif %}</p>
+            <p class="lead py-vh-2 p-summary {% if img or heroVideoWebm or heroVideoMp4 %}{% else %}border-bottom{% endif %}">{{summary}}{% if syndicate and "fediverse" in syndicate %} <a href="https://fed.brid.gy/r/{{ metadata.url }}{{ page.url }}" title="Federated to the Fediverse" class="text-decoration-none" target="_blank">📡</a>{% endif %}</p>
             {% include "snippets/project-metadata.njk" %}
           </div>
           {% if heroVideoWebm or heroVideoMp4 %}
@@ -42,8 +42,11 @@ permalink: "subdir/{{ title | slugify }}/index.html"
           {% endif %}
           <div class="row d-flex justify-content-center text-start">
             <div class="col-12 col-lg-10 col-xl-10 py-vh-2 e-content story-content project-content">
-              {{ content | safe }}
-              {% include "snippets/auto-gallery.njk" %}
+              {% set storyContent %}
+                {{ content | safe }}
+                {% include "snippets/auto-gallery.njk" %}
+              {% endset %}
+              {{ storyContent | normalizeHeadingSpacing | safe }}
             </div>
           </div>
         </div>

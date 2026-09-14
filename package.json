@@ -44,7 +44,7 @@
     "test:substack-export": "node --test tests/substack-export.test.mjs",
     "test:i18n:rendered": "node scripts/validate-built-podcast-i18n.mjs",
     "test:i18n:staging": "node scripts/validate-deployed-podcast-i18n.mjs",
-    "test:public-shell": "node scripts/validate-public-shell.mjs",
+    "test:public-shell": "node scripts/validate-public-shell.mjs && node --test tests/heading-spacing.test.mjs",
     "test:footer": "npm run test:public-shell && node --test tests/site-footer-layout.test.mjs",
     "test:podcast-admin-youtube": "node --test tests/podcast-admin-episode-youtube.test.mjs tests/podcast-admin-youtube-audio-renditions.test.mjs && node --check src/js/podcast-admin-episode-youtube-requests.js && node --check src/js/podcast-admin-retriable-operation.js",
     "test:podcast-admin-media": "node --test tests/podcast-admin-delivery-audio.test.mjs && node --check src/js/podcast-admin-delivery-audio-approval.js && node --check src/js/podcast-admin-request-security.js",

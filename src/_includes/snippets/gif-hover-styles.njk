@@ -1,5 +1,5 @@
 {# Generate project hover backgrounds directly from each project's media frontmatter. #}
-{% if isHomepage or title == "Projects" %}
+{% if translationKey == "home" or translationKey == "projects" %}
 <style id="project-hover-gif-styles">
   {% for project in collections.posts %}
     {% if project.data.gif %}

@@ -257,9 +257,15 @@ test("project video and coming-soon frontmatter is complete", () => {
         assert(video.heading?.trim(), `${label(project)}: projectVideos[${index}].heading is required`);
         assert(video.id?.toString().trim(), `${label(project)}: projectVideos[${index}].id is required`);
         assert(
-          ["youtube", "vimeo"].includes(video.type),
-          `${label(project)}: projectVideos[${index}].type must be youtube or vimeo`
+          ["youtube", "vimeo", "instagram"].includes(video.type),
+          `${label(project)}: projectVideos[${index}].type must be youtube, vimeo, or instagram`
         );
+        if (video.placement) {
+          assert(
+            ["after-content", "after-galleries", "after-poster"].includes(video.placement),
+            `${label(project)}: projectVideos[${index}].placement must name a supported media position`
+          );
+        }
       }
     }
 

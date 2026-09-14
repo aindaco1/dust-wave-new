@@ -35,6 +35,7 @@ Its welcome-email send command is a separate provider action.
 | Pages CMS collections and editor fields | `npm run test:pages-cms` |
 | Substack HTML cleanup | `npm run test:substack-export` |
 | Public navigation/footer and asset budgets | `npm run test:public-shell` and `node scripts/validate-site-performance.mjs` |
+| Shared heading spacing and legacy article spacers | `npm run test:public-shell`, `npm run build`, and rendered desktop/mobile review of projects, News, Digest cards, and public pages |
 | Shared Podcast/Digest player | `node scripts/validate-podcast-player.mjs` and `node --test tests/podcast-player-mobile-regression.test.mjs` |
 | Datatype asset integrity and rendering contract | `node scripts/validate-datatype.mjs` |
 | Interface translations | `npm run test:i18n`; after building, `npm run test:i18n:rendered` |
@@ -44,6 +45,12 @@ Its welcome-email send command is a separate provider action.
 The mobile player regression file checks source-level duration/retry and
 phone-width heading contracts. Pair it with real rendered checks when changing
 layout or playback; it does not launch a browser or establish device acceptance.
+
+Heading spacing must also be checked against the production CSS in `docs/`:
+CSS purging can remove selectors even when the development stylesheet looks
+correct. Check both languages, multiline headings, text/gallery/embed boundaries,
+and compact card titles. The public-shell command includes content-preservation
+tests for the legacy heading-spacer filter.
 
 ## Documentation changes
 

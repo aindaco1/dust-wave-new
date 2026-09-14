@@ -142,7 +142,7 @@ test("film fields match the current project frontmatter model", () => {
   const videos = fieldByName("posts", "projectVideos");
   assert.equal(videos.type, "object");
   assert(videos.list);
-  assert.deepEqual(videos.fields.map((field) => field.name), ["heading", "id", "type"]);
+  assert.deepEqual(videos.fields.map((field) => field.name), ["heading", "id", "type", "placement"]);
 
   const newsGallery = fieldByName("news-regular", "galleryImages");
   assert.equal(newsGallery.type, "image");

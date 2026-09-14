@@ -266,6 +266,12 @@ content:
         label: Poster Alt Text
         type: string
 
+      - name: posterCaption
+        label: Poster Caption (HTML links supported)
+        type: code
+        options:
+          lang: html
+
       - name: projectVideos
         label: Project Videos
         type: object
@@ -277,7 +283,7 @@ content:
             type: string
             required: true
           - name: id
-            label: YouTube or Vimeo ID
+            label: YouTube/Vimeo ID or Instagram Post Code
             type: string
             required: true
           - name: type
@@ -290,6 +296,19 @@ content:
                   label: YouTube
                 - value: vimeo
                   label: Vimeo
+                - value: instagram
+                  label: Instagram
+          - name: placement
+            label: Placement
+            type: select
+            options:
+              values:
+                - value: after-content
+                  label: After Page Body
+                - value: after-galleries
+                  label: After Galleries
+                - value: after-poster
+                  label: After Poster (default)
 
       - name: movieComingSoon
         label: Show Movie Coming Soon

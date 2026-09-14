@@ -1,0 +1,22 @@
+{# Render videos at the requested media position; omitted placement keeps the
+   established location after the poster. #}
+{% for video in projectVideos %}
+  {% if (video.placement or "after-poster") == projectVideoPlacement %}
+<h2 class="project-media-heading">{{ video.heading or movieHeading or "Movie" }}</h2>
+    {% if video.type == "instagram" %}
+<div class="project-instagram-embed" data-embed-title="{{ video.heading }}">
+  <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/{{ video.id }}/" data-instgrm-version="14">
+    <a href="https://www.instagram.com/p/{{ video.id }}/">{{ video.heading }}</a>
+  </blockquote>
+</div>
+    {% else %}
+<div class="embed-container">
+      {% if video.type == "vimeo" %}
+  <iframe src="https://player.vimeo.com/video/{{ video.id }}" title="{{ video.title or video.heading or 'Vimeo video player' }}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      {% else %}
+  <iframe src="https://www.youtube-nocookie.com/embed/{{ video.id }}?rel=0" title="{{ video.title or video.heading or 'YouTube video player' }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+      {% endif %}
+</div>
+    {% endif %}
+  {% endif %}
+{% endfor %}

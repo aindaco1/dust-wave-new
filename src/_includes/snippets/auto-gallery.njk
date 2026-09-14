@@ -1,10 +1,12 @@
 {# Project media sections generated from frontmatter. #}
 {# Usage: {% include "snippets/auto-gallery.njk" %} #}
 
+{% set projectVideoPlacement = "after-content" %}
+{% include "snippets/project-videos.njk" %}
+
 {% if galleryImages and galleryImages.length > 0 %}
 <h3>{{ galleryHeading or "Behind the Scenes" }}</h3>
 {% include "snippets/masonry-gallery.njk" %}
-<br><br>
 {% endif %}
 
 {% if additionalGalleries and additionalGalleries.length > 0 %}
@@ -12,30 +14,37 @@
 <h3>{{ gallery.heading }}</h3>
     {% set galleryImages = gallery.images %}
     {% include "snippets/masonry-gallery.njk" %}
-<br><br>
   {% endfor %}
 {% endif %}
+
+{% set projectVideoPlacement = "after-galleries" %}
+{% include "snippets/project-videos.njk" %}
 
 {# Auto-render poster if present #}
 {% if poster %}
 <h3>{{ posterHeading or "Poster" }}</h3>
+<figure>
 <img src="{{ poster | toWebp }}" class="w-75 shadow-1-strong rounded mb-2" alt="{{ posterAlt or posterHeading or 'Poster' }}" loading="lazy" decoding="async">
-<br><br>
+  {% if posterCaption %}
+<figcaption>{{ posterCaption | safe }}</figcaption>
+  {% endif %}
+</figure>
 {% endif %}
 
 {# Auto-render one or more project videos. #}
 {% if projectVideos and projectVideos.length > 0 %}
+  {% set projectVideoPlacement = "after-poster" %}
+  {% include "snippets/project-videos.njk" %}
+  {% set hasInstagramEmbed = false %}
   {% for video in projectVideos %}
-<h2>{{ video.heading or movieHeading or "Movie" }}</h2>
-<div class="embed-container">
-    {% if video.type == "vimeo" %}
-  <iframe src="https://player.vimeo.com/video/{{ video.id }}" title="{{ video.title or video.heading or 'Vimeo video player' }}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe>
-    {% else %}
-  <iframe src="https://www.youtube-nocookie.com/embed/{{ video.id }}?rel=0" title="{{ video.title or video.heading or 'YouTube video player' }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+    {% if video.type == "instagram" %}
+      {% set hasInstagramEmbed = true %}
     {% endif %}
-</div>
-<br><br>
   {% endfor %}
+  {% if hasInstagramEmbed %}
+<script defer src="/js/project-instagram-embeds.js"></script>
+<script async src="https://www.instagram.com/embed.js"></script>
+  {% endif %}
 {% elif videoId %}
 {# Backward compatibility for any non-project content still using one videoId. #}
 <h2>{{ movieHeading or "Movie" }}</h2>
@@ -46,7 +55,6 @@
   <iframe src="https://www.youtube-nocookie.com/embed/{{ videoId }}?rel=0" title="{{ videoTitle or movieHeading or 'YouTube video player' }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
   {% endif %}
 </div>
-<br><br>
 {% endif %}
 
 {% if movieComingSoon %}

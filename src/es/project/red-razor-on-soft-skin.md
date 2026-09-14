@@ -38,6 +38,9 @@ projectVideos:
   - heading: "Tráiler"
     id: vmiSH7eNYng
     type: youtube
+  - heading: "¡Terminamos el rodaje! — Detrás de cámaras"
+    id: iAhxPfFIy7M
+    type: youtube
 movieComingSoon: true
 movieHeading: "Película"
 ---

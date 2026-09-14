@@ -89,7 +89,7 @@
   margin-top: .85rem;
   overflow-wrap: anywhere;
   img { display: block; width: 4rem; height: 4rem; object-fit: cover; margin-bottom: .5rem; }
-  h3 { margin: 0 0 .4rem; font-size: 1rem; font-weight: 800; letter-spacing: -.035em; line-height: 1.15; }
+  h3 { margin: 0 0 var(--heading-space-compact, .75rem); font-size: 1rem; font-weight: 800; letter-spacing: -.035em; line-height: 1.15; }
   p { margin: 0 0 .45rem; font-size: .78rem; line-height: 1.45; }
   a { font-size: .75rem; }
   & + & { border-top: 1px solid #897f70; padding-top: .8rem; }
@@ -112,7 +112,7 @@
   margin-top: 2.3rem;
   border-top: 1px solid var(--writers-line, #555);
   padding-top: 1.3rem;
-  > h2 { font-size: clamp(1.15rem, 2vw, 1.55rem); margin: 0; }
+  > h2 { font-size: clamp(1.15rem, 2vw, 1.55rem); margin: 0 0 var(--heading-space-after, 1.5rem); }
   > p { max-width: 42rem; margin: 1.5rem 0; }
 }
 .community-form {
@@ -155,7 +155,7 @@
 .community-readings summary { padding-block: 1rem; font-weight: 700; cursor: pointer; }
 .community-meetings { list-style: none; margin: 1.5rem 0; padding: 0; }
 .community-meeting { margin: 0 !important; display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: 1.75rem; border-top: 1px solid var(--writers-line, #555); padding: 1.5rem 0; align-items: center; }
-.community-meeting h3 { margin: 0 0 .8rem; font-size: 1.1rem; }
+.community-meeting h3 { margin: 0 0 var(--heading-space-compact, .75rem); font-size: 1.1rem; }
 .community-meeting ol { margin: 0; padding-left: 1.3rem; }
 .community-meeting li { padding: .3rem 0; overflow-wrap: anywhere; }
 .community-open-slot { color: #b5b5b5; font-style: italic; }

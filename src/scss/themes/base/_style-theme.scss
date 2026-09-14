@@ -691,17 +691,18 @@ a:hover { color: gray !important; }
 
 .dds-support-section h2 {
   max-width: 13ch;
-  margin-bottom: 1.25rem;
+  margin-bottom: var(--heading-space-after);
   font-size: clamp(1.8rem, 3.5vw, 3.25rem);
   line-height: .98;
 }
 
 .dds-support-section h3 {
+  margin-bottom: var(--heading-space-compact);
   font-size: clamp(1.05rem, 1.4vw, 1.3rem);
 }
 
 .dds-support-funds {
-  margin-top: clamp(1.75rem, 4vh, 3rem);
+  margin-top: 0;
   border-bottom: 1px solid rgba(255, 255, 255, .35);
 }
 
@@ -1559,7 +1560,7 @@ li p { margin-bottom: 0; }
 
 .podcast-show__hero h1 {
   max-width: 14ch;
-  margin-bottom: 1rem;
+  margin-bottom: var(--heading-space-after);
   font-size: clamp(2.6rem, 8vw, 6rem);
   line-height: .92;
 }
@@ -2235,12 +2236,7 @@ a:has(button) { text-decoration: none; }
 }
 .slac-terms__content h2,
 .legal-page__content h2 {
-  margin-top: 3rem;
   width: 100%;
-}
-.slac-terms__content h3,
-.legal-page__content h3 {
-  margin-top: 2rem;
 }
 .slac-terms__content li,
 .legal-page__content li {
@@ -2254,6 +2250,7 @@ a:has(button) { text-decoration: none; }
 .white-text { color: white !important; }
 .test      { text-shadow: 2px 2px #000; color: white !important; background-color: black; }
 article h2 { width: 60%; }
+.story-content .project-media-heading { width: 100%; }
 
 /* Keep article section headings readable on phone-width viewports. */
 @media (max-width: 540px) {
@@ -2277,6 +2274,27 @@ article h2 { width: 60%; }
   position: absolute; top: 0; left: 0;
   width: 100%; height: 100%;
   border: 0; border-radius: .5rem; padding: 10px;
+}
+
+/* Instagram sizes its own post frames; allow them to fit narrow articles. */
+.project-instagram-embed {
+  width: 100%;
+  max-width: 540px;
+  margin-inline: auto;
+
+  .instagram-media {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+}
+
+@media (max-width: 389.98px) {
+  .project-instagram-embed .instagram-media {
+    // Give Instagram's 326px minimum layout room inside narrow articles.
+    zoom: .8;
+  }
 }
 
 /* Lite YouTube embed */
@@ -2369,7 +2387,6 @@ article h2 { width: 60%; }
 /* TOC */
 .digest-toc { margin-bottom: 1.25rem; }
 .digest-toc h4 { font-size: 1.15rem; line-height: 1.2; }
-.digest-toc section + section h3 { margin-top: 2rem; }
 .digest-toc__list { list-style: disc outside; margin: .25rem 0 1rem 1.25rem; padding: 0; }
 .digest-toc__item { line-height: 1.35; margin: .25rem 0; display: list-item; }
 .digest-toc__link { text-decoration: underline; text-underline-offset: 2px; text-decoration-thickness: 1px; color: inherit; }
@@ -2595,7 +2612,7 @@ article h2 { width: 60%; }
 }
 
 .newsletter-page__heading h1 {
-  margin-bottom: 1rem;
+  margin-bottom: var(--heading-space-after);
   font-size: clamp(2.65rem, 5.5vw, 5.25rem);
   line-height: .92;
 }
@@ -2669,7 +2686,7 @@ article h2 { width: 60%; }
 
 .newsletter-page__pitch h2,
 .newsletter-page__signup h2 {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--heading-space-after);
   font-size: clamp(1.9rem, 3vw, 3rem);
   line-height: .98;
 }
@@ -2695,7 +2712,7 @@ article h2 { width: 60%; }
 }
 
 .newsletter-page__highlights h3 {
-  margin-bottom: .35rem;
+  margin-bottom: var(--heading-space-compact);
   font-size: 1.05rem;
 }
 
@@ -2938,7 +2955,7 @@ article h2 { width: 60%; }
 
 .writers-group-hero h1 {
   max-width: 10ch;
-  margin: 0;
+  margin: 0 0 var(--heading-space-after);
   font-size: clamp(3.65rem, 7.8vw, 8rem);
   line-height: .84;
   letter-spacing: -.065em;
@@ -3101,7 +3118,7 @@ article h2 { width: 60%; }
 
 .writers-group-next h2,
 .writers-group-section h2 {
-  margin: 0;
+  margin: 0 0 var(--heading-space-after);
   font-size: clamp(2.35rem, 5vw, 5rem);
   line-height: .94;
   letter-spacing: -.045em;
@@ -3182,7 +3199,7 @@ article h2 { width: 60%; }
 
 .writers-group-steps h3,
 .writers-group-bring h3 {
-  margin-bottom: .8rem;
+  margin-bottom: var(--heading-space-compact);
   font-size: clamp(1.4rem, 2.5vw, 2rem);
   line-height: 1.05;
 }
@@ -3453,7 +3470,7 @@ article h2 { width: 60%; }
 
 .writers-group-details h2,
 .writers-group-section h2 {
-  margin: 0;
+  margin: 0 0 var(--heading-space-after);
   font-size: clamp(2.15rem, 4vw, 3.75rem);
   line-height: 1;
   letter-spacing: -.04em;
@@ -3820,7 +3837,7 @@ article h2 { width: 60%; }
 
 .branded-content-hero h1 {
   max-width: 9ch;
-  margin: 0;
+  margin: 0 0 var(--heading-space-after);
   font-size: clamp(3.35rem, 7.5vw, 7.4rem);
   line-height: .88;
   letter-spacing: -.055em;
@@ -3935,7 +3952,7 @@ article h2 { width: 60%; }
 }
 
 .branded-content-section h2 {
-  margin: 0;
+  margin: 0 0 var(--heading-space-after);
   font-size: clamp(2.5rem, 5vw, 5rem);
   line-height: .95;
   letter-spacing: -.04em;
@@ -4100,7 +4117,7 @@ article h2 { width: 60%; }
 
 .branded-content-offer h3 {
   max-width: 15ch;
-  margin-bottom: 1rem;
+  margin-bottom: var(--heading-space-compact);
   font-size: clamp(1.4rem, 2.2vw, 2rem);
   line-height: 1.08;
 }

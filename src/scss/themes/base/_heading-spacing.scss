@@ -1,0 +1,79 @@
+// Containers own page/section padding; headings own the gap to their content.
+.site-main {
+  --heading-space-after: clamp(1.5rem, 2.5vw, 2rem);
+  --heading-space-before: clamp(2.5rem, 5vw, 4rem);
+  --subheading-space-before: clamp(2rem, 4vw, 3rem);
+  --subheading-space-after: 1rem;
+  --heading-space-compact: .75rem;
+}
+
+.site-main :where(h1, h2, h3) {
+  margin-block: 0 var(--heading-space-after);
+}
+
+.site-main :where(h4, h5, h6) {
+  margin-block: 0 var(--subheading-space-after);
+}
+
+// A heading alone in a grid column does not add to the grid's row gap.
+.site-main :where(h1, h2, h3, h4, h5, h6):last-child {
+  margin-bottom: 0;
+}
+
+// Avoid adding a second gap from the following paragraph or media block.
+.site-main :is(h1, h2, h3, h4, h5, h6) + :is(p, ul, ol, dl, figure, blockquote, .embed-container, .masonry-gallery) {
+  margin-top: 0;
+}
+
+// Direct children avoid section-sized margins inside cards and players.
+.story-content,
+.project-translation,
+.legal-page__content,
+.slac-terms__content {
+  > :is(h1, h2, h3) {
+    margin-block: var(--heading-space-before) var(--heading-space-after);
+  }
+
+  > :is(h4, h5, h6) {
+    margin-block: var(--subheading-space-before) var(--subheading-space-after);
+  }
+
+  > :is(h1, h2, h3, h4, h5, h6):first-child {
+    margin-top: 0;
+  }
+
+  // Consecutive headings (for example a byline and role) stay together.
+  > :is(h1, h2, h3, h4, h5, h6):has(+ :is(h1, h2, h3, h4, h5, h6)) {
+    margin-bottom: var(--subheading-space-after);
+  }
+
+  > :is(h1, h2, h3, h4, h5, h6) + :is(h1, h2, h3, h4, h5, h6) {
+    margin-top: 0;
+  }
+
+  // Remove competing image/gallery/list margins at a heading boundary.
+  > :is(h1, h2, h3, h4, h5, h6) + * {
+    margin-top: 0;
+  }
+
+  > :is(h1, h2, h3, h4, h5, h6) + :is(figure, center, p) > img {
+    margin-top: 0;
+  }
+}
+
+.site-main--entry .p-summary {
+  padding-top: 0;
+}
+
+// Compact panel titles, including legacy Digest headings with mb-2 utilities.
+.site-main :is(.card, .podcast-tier-card, .podcast-checkout__quote) :is(h2, h3, h4, h5, h6) {
+  margin-block: 0 var(--heading-space-compact) !important;
+}
+
+.digest-toc section + section {
+  margin-top: var(--subheading-space-before);
+}
+
+.digest-toc :is(h3, h4) {
+  margin-block: 0 var(--subheading-space-after) !important;
+}

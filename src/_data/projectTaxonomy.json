@@ -80,6 +80,7 @@
     "shellfish-knish": "film",
     "softening": "film",
     "stalld": "film",
+    "tecolote": "film",
     "the-converger": "film",
     "the-darkest-place": "film",
     "the-dust-wave-show": "series",
@@ -156,7 +157,9 @@
     "silent": { "en": "Silent", "es": "Cine mudo" },
     "sitcom": { "en": "Sitcom", "es": "Comedia de situación" },
     "stop-motion": { "en": "Stop motion", "es": "Stop motion" },
+    "thriller": { "en": "Thriller", "es": "Suspenso" },
     "transcription": { "en": "Transcription", "es": "Transcripción" },
+    "western": { "en": "Western", "es": "Western" },
     "women-in-film": { "en": "Women in film", "es": "Mujeres en el cine" },
     "werewolf": { "en": "Werewolf", "es": "Hombres lobo" }
   }

@@ -37,8 +37,21 @@ also depend on files outside their collection.
 
 Pages CMS exposes the current project metadata model, including directors,
 featured-image alt text, WebM/MP4 hover previews, accessible galleries, posters,
-embedded YouTube/Vimeo videos, coming-soon state, syndication, and social-card
+embedded YouTube/Vimeo videos and Instagram posts, coming-soon state, syndication, and social-card
 overrides.
+
+Use `posterCaption` for an optional caption beneath the poster; it accepts
+trusted author-written HTML, including attribution links. `projectVideos`
+accepts `type: instagram` with the post code as `id` (for example,
+`DX9T74WAaCf`), alongside the existing YouTube/Vimeo providers. The shared
+template loads Instagram's official embed script once when needed and keeps
+the heading link available if the provider cannot load. Translate headings
+and captions in the corresponding Spanish project page.
+
+Each `projectVideos` entry can set `placement` to `after-content` (after the
+page body), `after-galleries` (after all image galleries), or `after-poster`.
+Omitting it preserves the default position after the poster. Videos at the
+same position follow their list order; providers share the same renderer.
 
 Creating a project remains a repository workflow rather than a CMS action. A
 new project must add all three of the following together so the production
@@ -50,6 +63,23 @@ frontmatter gate remains valid:
 
 News creation remains available. Pages CMS prompts for the filename on creation
 so editors can choose a stable, concise URL slug independently of the headline.
+
+### Heading spacing
+
+Use ordinary Markdown or HTML headings, followed by the paragraph, list, image,
+gallery, or embed. Do not add `<br>` tags or spacing utilities around headings.
+The shared public theme supplies responsive spacing: 24–32px below major
+headings, 40–64px above editorial sections, 16px below smaller subheadings,
+and 12px below compact card titles. Page and grid containers supply their own
+outer spacing, so a heading alone in a column does not add a second gap.
+
+The rules live in
+[`_heading-spacing.scss`](../src/scss/themes/base/_heading-spacing.scss).
+Project and News layouts apply
+[`normalizeHeadingSpacing`](../lib/heading-spacing.cjs) to their rendered body
+and generated media. This removes older heading-adjacent spacer breaks without
+rewriting source posts, changing feeds, or removing line breaks within credits,
+captions, or paragraphs. The same layout rules cover translated project bodies.
 
 ### Image Guidelines
 
