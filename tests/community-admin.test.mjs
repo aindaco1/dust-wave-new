@@ -50,7 +50,11 @@ const server=createServer(async(req,res)=>{
       if(holdNextState&&url.pathname.endsWith('/admin/state')){holdNextState=false;await new Promise(resolve=>{releaseState=()=>{releaseState=null;resolve();};});}
       if(mode==='lose'&&response.ok){res.writeHead(503,{'Content-Type':'application/json'});res.end('{"error":"request_failed"}');return;}
       if(loseNextCreateResponse&&url.pathname.endsWith('/admin/scripts')&&response.ok){loseNextCreateResponse=false;res.writeHead(503,{'Content-Type':'application/json'});res.end('{"error":"request_failed"}');return;}
-      res.writeHead(response.status,Object.fromEntries(response.headers));res.end(Buffer.from(await response.arrayBuffer()));return;
+      // Runtime disposal can cancel a late body read during fixture teardown.
+      // Finish reading before committing headers, and ignore a closed client.
+      const body=Buffer.from(await response.arrayBuffer());
+      if(res.destroyed||res.writableEnded)return;
+      res.writeHead(response.status,Object.fromEntries(response.headers));res.end(body);return;
     }
     if(assets.has(url.pathname)){res.setHeader('Content-Type',url.pathname.endsWith('.js')?'text/javascript':'font/woff2');res.end(assets.get(url.pathname));return;}
     if(url.pathname==='/theme.css'){res.setHeader('Content-Type','text/css');res.end(styles);return;}
@@ -58,7 +62,11 @@ const server=createServer(async(req,res)=>{
     const language=url.pathname.startsWith('/es/')?'es':'en';
     res.setHeader('Content-Type','text/html; charset=utf-8');
     res.end(`<!doctype html><html lang="${language}"><head><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/theme.css"></head><body class="community-admin-shell"><main class="container community-admin">${renderer.renderString(template,{language,i18n})}</main><script type="module" src="/js/community/admin.js"></script></body></html>`);
-  }catch(error){res.writeHead(500);res.end(String(error));}
+  }catch(error){
+    if(res.destroyed||res.writableEnded)return;
+    if(res.headersSent){res.destroy();return;}
+    res.writeHead(500);res.end(String(error));
+  }
 });
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));origin=`http://127.0.0.1:${server.address().port}`;
 // CI uses Xvfb: Linux headless Chrome can report no mouse or hover capability.
