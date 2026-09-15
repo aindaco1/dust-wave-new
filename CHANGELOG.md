@@ -5,6 +5,8 @@
 - Added Tecolote in English and Spanish with film credits, stills, poster
   attribution, Instagram cast/BTS embeds, and a ten-second hover montage.
 - Added the wrap BTS video to both Red Razor on Soft Skin project pages.
+- Added Awards sections to both Red Razor on Soft Skin project pages with
+  the 2026 Altered Images and Way OUT West official selections and laurels.
 - Standardized heading spacing across public pages, projects, articles, and
   Digests, including automatic cleanup of legacy heading spacer breaks.
 
