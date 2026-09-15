@@ -5,7 +5,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 const REPO_ROOT = fileURLToPath(new URL('../', import.meta.url));
-const PLATFORM_COMMIT = 'af2a5e5e4b65f218e627652b8243feb9704c48a1';
+const PLATFORM_COMMIT = '556fadad0755556bfbe3f177a9f60c208a6031a5';
 const PLATFORM_REMOTE = 'https://github.com/aindaco1/dust-wave-platform.git';
 
 function readJson(path) {
