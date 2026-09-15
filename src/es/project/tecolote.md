@@ -21,16 +21,20 @@ galleryHeading: Fotogramas
 galleryImages:
   - src: /img/tecolote/still-1.jpg
     alt: Tres figuras con capas oscuras se recortan contra la última luz del atardecer
-  - src: /img/tecolote/still-2.jpg
-    alt: Vidal está afuera de noche con un rifle cruzado sobre el pecho
   - src: /img/tecolote/still-3.jpg
     alt: El rostro de Vidal queda en la sombra bajo un sombrero de ala ancha
   - src: /img/tecolote/still-4.jpg
     alt: Vidal abre una puerta inundada de luz azul
   - src: /img/tecolote/still-5.jpg
     alt: Don Ulises yace sobre una almohada con el rostro cubierto de sudor
-  - src: /img/stills/tecolote.jpg
-    alt: Don Arcadio mira hacia abajo, con el rostro iluminado por una lámpara cálida y un resplandor azul
+  - src: /img/tecolote/still-6.png
+    alt: Vista cenital de un hombre en un ataúd de madera, con flores blancas sobre el pecho y un sombrero en la tapa
+  - src: /img/tecolote/still-7.png
+    alt: Primer plano de un hombre con bigote que mira hacia un lado, con el rostro iluminado por una luz cálida
+  - src: /img/tecolote/still-8.png
+    alt: Un hombre apunta un rifle hacia la cámara, con el rostro tenso parcialmente iluminado por luz azul
+  - src: /img/tecolote/still-9.png
+    alt: El rostro de un hombre emerge de la oscuridad, con luz cálida sobre la boca y el mentón
 additionalGalleries:
   - heading: Detrás de cámaras
     images:

@@ -17,16 +17,20 @@ galleryHeading: Film Stills
 galleryImages:
   - src: /img/tecolote/still-1.jpg
     alt: Three figures in dark cloaks stand against the last light of dusk
-  - src: /img/tecolote/still-2.jpg
-    alt: Vidal stands outside at night with a rifle across his chest
   - src: /img/tecolote/still-3.jpg
     alt: Vidal's face in shadow beneath a wide-brimmed hat
   - src: /img/tecolote/still-4.jpg
     alt: Vidal pushes through a doorway flooded with blue light
   - src: /img/tecolote/still-5.jpg
     alt: Don Ulises lies on a pillow, sweat glistening on his face
-  - src: /img/stills/tecolote.jpg
-    alt: Don Arcadio looks down, his face lit by warm lamplight and a blue glow
+  - src: /img/tecolote/still-6.png
+    alt: Overhead view of a man lying in a wooden coffin with white flowers on his chest and a sombrero on the lid
+  - src: /img/tecolote/still-7.png
+    alt: Close-up of a mustached man looking to the side, his face lit by warm light
+  - src: /img/tecolote/still-8.png
+    alt: A man points a rifle toward the camera, his tense face partly lit by blue light
+  - src: /img/tecolote/still-9.png
+    alt: A man's face emerges from deep shadow, with warm light across his mouth and chin
 additionalGalleries:
   - heading: Behind the Scenes
     images:
