@@ -196,7 +196,11 @@ try{
       assert.deepEqual(await titles(page),['Script 1','Script 3','Script 2']);
       await page.evaluate(()=>{
         const rows=document.querySelectorAll('[data-queue-id]'),dataTransfer=new DataTransfer();
-        rows[2].querySelector('[data-queue-drag]').dispatchEvent(new DragEvent('dragstart',{bubbles:true,dataTransfer}));rows[0].dispatchEvent(new DragEvent('drop',{bubbles:true,cancelable:true,dataTransfer}));
+        rows[2].querySelector('[data-queue-drag]').dispatchEvent(new DragEvent('dragstart',{bubbles:true,dataTransfer}));
+        // Focusing the phone-width move button may scroll the target above the
+        // viewport. A default clientY=0 then means "after", not "before".
+        rows[0].scrollIntoView({block:'center'});
+        rows[0].dispatchEvent(new DragEvent('drop',{bubbles:true,cancelable:true,dataTransfer,clientY:rows[0].getBoundingClientRect().top+1}));
       });
       assert.deepEqual(await titles(page),['Script 2','Script 1','Script 3']);
       await page.waitForFunction(message=>document.querySelector('[data-queue-status]').textContent===message,{},copy.actionDone);

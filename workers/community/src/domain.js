@@ -93,7 +93,8 @@ export function scriptPdfFields(upload) {
 export function newScript(input, upload, now = new Date(), { admin = false } = {}) {
   if (!admin && (input.local !== true || input.consent !== true)) fail('consent_required');
   return { id: id(), ...scriptFields(input), ...scriptContactFields(input, { required: !admin }),
-    ...scriptPdfFields(upload), status: 'pending', createdAt: now.toISOString(), approvedAt: '', position: 0 };
+    ...scriptPdfFields(upload), source: admin ? 'admin' : 'public', language: locale(input.language),
+    status: 'pending', createdAt: now.toISOString(), approvedAt: '', position: 0 };
 }
 export function emptyState() { return { revision: 0, events: [], scripts: [] }; }
 export function ensureMeetings(state, now = new Date()) {
