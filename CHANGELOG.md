@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Added Resend confirmations for public script submissions, notices to all
+  Community admins, and a writer email on first approval. English/Spanish writer
+  messages use a durable delivery queue with bounded retries and duplicate protection.
+
 - Added Tecolote in English and Spanish with film credits, stills, poster
   attribution, Instagram cast/BTS embeds, and a ten-second hover montage.
 - Added the wrap BTS video to both Red Razor on Soft Skin project pages.

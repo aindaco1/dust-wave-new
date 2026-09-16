@@ -1,4 +1,4 @@
-import {client,copy,errorText,mountChallenge,uploadFile} from './common.js';
+import {client,copy,errorText,mountChallenge,uploadFile,language} from './common.js';
 import {mountCalendar} from './calendar-navigation.js';
 
 mountCalendar(document.querySelector('[data-community-slot="1"]'),copy);
@@ -29,7 +29,7 @@ if(form){
       upload ||= await uploadFile(fileInput.files[0],kind==='script'?'pdf':'image',challenge.token());
       const fields=Object.fromEntries(new FormData(form));delete fields.file;
       fields.local=form.elements.local?.checked===true;fields.consent=form.elements.consent?.checked===true;
-      const receipt=await client.request(kind==='script'?'/scripts':'/events',{method:'POST',csrf:false,body:{...fields,uploadId:upload.id,uploadToken:upload.token,submissionKey}});
+      const receipt=await client.request(kind==='script'?'/scripts':'/events',{method:'POST',csrf:false,body:{...fields,language,uploadId:upload.id,uploadToken:upload.token,submissionKey}});
       challenge.destroy();fieldset.hidden=true;status.textContent=`${copy.success} ${copy.receipt}: ${receipt.id}`;status.focus();
     }catch(error){status.textContent=errorText(error);status.focus();if(!upload)challenge?.reset();}
     finally{submit.disabled=false;fieldset.removeAttribute('aria-busy');}

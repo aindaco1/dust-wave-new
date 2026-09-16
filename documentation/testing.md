@@ -218,6 +218,10 @@ user writes, session/link revocation, and independence from legacy allowlists
 and other apps. They run all schema migrations, including the initial
 `alonso@dustwave.xyz` Super-admin. Invitation tests use a fake email binding;
 they do not verify real provider acceptance or inbox delivery.
+Script email tests use isolated D1 and fake Resend responses to cover atomic
+submission/approval enqueueing, both admin roles, language, repeat/concurrent
+requests, immutable retries, leases, rate limits, permanent failures, retry-window
+expiry and local/staging recipient restrictions. They do not send email.
 The submission browser test renders the shared form in English and Spanish
 at 320 and 1440 pixels, checking always-visible script and event forms,
 immediate challenge mounting, token expiry,

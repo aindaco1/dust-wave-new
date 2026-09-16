@@ -19,7 +19,7 @@ for(const [prefix,directory] of [['/js/community/','src/js/community/'],['/js/du
   for(const name of await readdir(new URL(directory,root)))if(/\.(js|woff2?)$/.test(name))assets.set(prefix+name,await readFile(new URL(directory+name,root)));
 }
 assets.set('/js/share-actions.js',await read('src/js/share-actions.js'));
-let grants=0,submissions=0;
+let grants=0,submissions=0,submitted=[];
 const server=createServer(async(req,res)=>{
   const url=new URL(req.url,'http://localhost');
   if(assets.has(url.pathname)){res.setHeader('Content-Type',url.pathname.endsWith('.js')?'text/javascript':'font/woff2');res.end(assets.get(url.pathname));return;}
@@ -34,7 +34,8 @@ const server=createServer(async(req,res)=>{
   }
   if(url.pathname==='/api/community/v1/uploads/fixture-upload'){for await(const _ of req){}json({ready:true,pages:1});return;}
   if(['/api/community/v1/scripts','/api/community/v1/events'].includes(url.pathname)){
-    for await(const _ of req){}submissions++;json(submissions===1?{error:'request_failed'}:{id:'fixture-receipt'},submissions===1?503:201);return;
+    const chunks=[];for await(const chunk of req)chunks.push(chunk);
+    submitted.push(JSON.parse(Buffer.concat(chunks)));submissions++;json(submissions===1?{error:'request_failed'}:{id:'fixture-receipt'},submissions===1?503:201);return;
   }
   const language=url.pathname.startsWith('/es/')?'es':'en',communityKind=url.searchParams.has('event')?'event':'script';
   res.setHeader('Content-Type','text/html; charset=utf-8');
@@ -46,7 +47,7 @@ const screenshots=process.env.COMMUNITY_ADMIN_SCREENSHOTS;
 if(screenshots)await mkdir(screenshots,{recursive:true});
 try{
   for(const language of ['en','es'])for(const width of [1440,320])await test(`visible script form requires verification and retires the widget after success (${language}, ${width}px)`,async()=>{
-    grants=0;submissions=0;
+    grants=0;submissions=0;submitted=[];
     const page=await browser.newPage(),errors=[];page.on('pageerror',error=>errors.push(error.message));
     await page.setViewport({width,height:1000});await page.setRequestInterception(true);
     page.on('request',req=>req.url().startsWith(origin)?req.continue():req.abort());
@@ -85,6 +86,8 @@ try{
       assert.equal(grants,1);assert.equal(submissions,1);assert.equal(await page.$eval('[name="title"]',node=>node.value),'Test script');
       await page.click('[type="submit"]');await page.waitForSelector('fieldset[hidden]');
       assert.equal(grants,1,'retry uses the verified upload grant');assert.equal(submissions,2);
+      assert.equal(submitted[0].language,language,'email language follows the page');
+      assert.deepEqual(submitted[1],submitted[0],'a retry retains the same receipt payload');
       assert.equal(await page.evaluate(()=>window.removals),1);const renders=await page.evaluate(()=>window.renders);
       await page.setViewport({width:width===320?1440:320,height:1000});
       await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));

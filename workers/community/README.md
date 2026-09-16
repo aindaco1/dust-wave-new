@@ -157,13 +157,13 @@ Use separate host-restricted widgets for `dustwave.xyz`
 and `dustwave-community-staging.jogo.workers.dev`. The pinned verifier checks
 the challenge/action; the dedicated widget restricts its accepted hostname.
 
-Email uses Cloudflare's existing onboarded `digest.dustwave.xyz` sender domain,
+Login and invitation email uses Cloudflare's existing onboarded `digest.dustwave.xyz` sender domain,
 with `community@digest.dustwave.xyz` and the display name Dust Wave Community.
 The [email binding](https://developers.cloudflare.com/email-service/configuration/send-bindings/)
 is restricted to that sender; the Worker restricts recipients to current
 Community users. Do not retain the old `allowed_destination_addresses` list:
 it would prevent new users from receiving their sign-in emails.
-No additional Resend key is needed. Login links last 15 minutes, are single-use,
+Login does not use Resend. Login links last 15 minutes, are single-use,
 and exchange for a 12-hour HttpOnly, Secure, SameSite=Strict cookie plus CSRF
 token. Tokens and private upload grants must never be logged or committed.
 
@@ -270,7 +270,78 @@ still require local-attendance/consent confirmations, contact details and review
 Approval
 publishes the approved title/author in the next available reading slot.
 Rejecting/withdrawing a script removes it from future agendas. Requeueing a
-read script preserves the earlier agenda. None of these actions emails writers.
+read script preserves the earlier agenda. Only first approval sends a writer
+email, as described below; rejection, withdrawal and requeueing do not.
+
+### Script notification emails
+
+Resend sends three transactional messages, using the existing Platform email,
+outbox identity/retry, and provider error helpers:
+
+- A new **public** script submission queues a receipt for its contact email and
+  one separate review notice for each current Super-admin and Limited-admin.
+  Recipients come from Community's Users directory, never a newsletter audience.
+- The first explicit approval queues a writer confirmation with a link to the
+  current reading schedule. It does not promise a fixed date: future queue and
+  meeting changes can move a reading. Previews, retries, later approvals, edits,
+  reordering and requeueing do not send additional approval messages.
+- Admin-created scripts send none of these messages. Existing pending public
+  scripts receive a confirmation when first approved; deploying does not email
+  old submissions or already-approved scripts.
+
+Public submissions retain their form language. Writer messages are English or
+Spanish; older records without a language use English. Admin review notices use
+English because the directory has no per-user language preference. Messages are
+plain text, contain no PDF attachment or download token, and keep private PDFs
+behind authenticated Community access. The sender is **Dust Wave Writers Group
+<community@dustwave.xyz>**, with replies to **info@dustwave.xyz**. No newsletter
+subscription is created or changed.
+
+Migration **0004_script_email_outbox.sql** adds a Community-owned D1 outbox. Email
+intent, script changes, file attachment and receipt commit atomically. Successful
+submissions/approvals return independently of provider availability. `waitUntil`
+starts delivery after a successful request; `*/5 * * * *` retries due work. The
+existing daily schedule-extension/upload-cleanup trigger remains separate.
+
+Each recipient/event has a permanent deduplication key and an immutable payload.
+Atomic 60-second leases prevent concurrent dispatchers from claiming the same job.
+The dispatcher uses 10-second provider timeouts, at most eight attempts, provider
+Retry-After, and exponential backoff. Automatic retries stop within 23 hours of
+the first attempt, inside Resend's 24-hour deduplication window. A lost lease or
+uncertain response is treated conservatively; `uncertain` requires checking the
+provider before any manual resend. Never change an attempted payload or replace
+its idempotency key to force a retry.
+
+Before dispatch, removed admins and changed writer addresses are excluded;
+withdrawn approvals and deleted script records are also excluded. Resend retains
+its bounce/complaint suppression. No suppression is automatically cleared.
+
+Configuration in each Worker environment:
+
+- `SCRIPT_EMAILS_ENABLED="true"` enables enqueueing and delivery. Setting it to
+  `"false"` stops both; existing jobs remain stored. Missing `RESEND_API_KEY`
+  pauses delivery without losing newly queued jobs.
+- `RESEND_API_KEY` is an independent, sending-only Worker secret restricted to
+  the verified `dustwave.xyz` Resend domain. Use separate production/staging keys.
+- `RESEND_FROM` and `RESEND_REPLY_TO` hold the non-secret identities above.
+- Staging sends only to the comma-separated `SCRIPT_EMAIL_TEST_RECIPIENTS`
+  allowlist, currently Resend's `delivered@resend.dev` simulator. Other staging
+  jobs are cancelled before provider calls. Explicit loopback local mode never
+  sends, even if real credentials and the feature flag are present.
+
+Inspect delivery without exposing recipients or content:
+
+```sh
+npx wrangler d1 execute COMMUNITY_DB --remote --command "SELECT kind,status,count(*) AS total FROM community_email_outbox GROUP BY kind,status"
+```
+
+`accepted` means Resend returned a message ID; it does not establish recipient
+delivery or inbox placement. For `failed`/`uncertain`, inspect `last_error`,
+`attempts`, `first_attempt_at` and the provider ID through authorized D1 tools,
+then reconcile in Resend. The outbox contains private recipient/content data:
+include matching `record_id` rows in authorized script/contact deletion requests.
+There is no public outbox endpoint. Tests use isolated D1 and fake transport;
+`node --test test/script-emails.test.mjs` sends no real messages.
 
 Incomplete uploads become unusable after one hour and are removed by the daily
 cleanup once 24 hours old. Submitted PDFs remain private and retained for the
@@ -297,7 +368,8 @@ npx wrangler deploy --env staging
 npx wrangler secret bulk /absolute/path/to/private-staging-secrets.json --env staging
 ```
 
-The secrets file is a JSON object containing only the two names above. Store
+The secrets file contains the required Turnstile secrets and, when script mail
+is enabled, the environment's `RESEND_API_KEY`. Store
 it outside tracked files with restrictive filesystem permissions. Staging
 must expose `local:false` and a real, hostname-restricted challenge. Its assets
 reuse the root `_headers`; all staging responses should remain out of search.
@@ -330,6 +402,14 @@ than inheriting Store/Pool accounts or assigning roles from the retired secret.
 Remove the obsolete `COMMUNITY_ADMIN_EMAILS` secret after the new Worker is
 verified. Do not roll back to the allowlist-based Worker without reviewing its
 old secret: that would reinstate the old access policy.
+
+For script mail, apply migration **0004**, provision the environment's sending
+key, deploy the Worker, then publish the frontend language field through Pages.
+The Worker tolerates older forms without language (English fallback). Inspect
+staging first, then production. Preserve queued rows on rollback; restoring an
+older Worker pauses delivery. Before re-enabling after a long pause, reconcile
+uncertain jobs and respect the provider's deduplication window. The script-mail
+release does not migrate login/invitation delivery away from Cloudflare.
 
 For first activation, provision secrets on the uploaded Worker before attaching
 routes. Inspect `wrangler deployments list` and `wrangler rollback` for a Worker

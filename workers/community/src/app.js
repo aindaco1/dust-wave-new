@@ -5,6 +5,7 @@ import { json, headers, bodyJson, verifyOrigin, requireAdmin, authRoute, request
 import { loadUsers, saveUsers, publicAdmin, requireSuperAdmin } from './users.js';
 import { uploadRoute, authorizeUpload } from './uploads.js';
 import { renderCalendar, renderMeetings, unavailableMarkup, monthLabel, monthUrl, copy } from './render.js';
+import { scriptEmailStatements, deliverScriptEmails, EMAIL_CRON } from './script-emails.js';
 
 function checkRevision(data, state) {
   if (!Number.isSafeInteger(data.revision) || data.revision !== state.revision) fail('queue_changed', 409);
@@ -30,9 +31,12 @@ async function submit(request, env, kind, session = null) {
   const record=kind==='script'?newScript(data,upload,new Date(),{admin:Boolean(session)}):newEvent(data,upload);
   after[kind==='script'?'scripts':'events'].push(record);
   if(session)after=applyAction(after,{kind:'script',action:'approve',id:record.id});
+  const emails=kind==='script'&&!session
+    ? [...await scriptEmailStatements(env,'received',record),...await scriptEmailStatements(env,'admin',record)] : [];
   await commitState(env.COMMUNITY_DB,before,after,{actor:session?.email||'public',action:session?'script:create':`submit_${kind}`,precondition:attachmentCondition(upload),extra:[
     attachStatement(env.COMMUNITY_DB,upload),
-    ({guard,revision,mutation})=>env.COMMUNITY_DB.prepare(`INSERT INTO community_receipts(key_hash,payload_hash,record_id,created_at) SELECT ?,?,?,? WHERE ${guard}`).bind(keyHash,payloadHash,record.id,Date.now(),revision,mutation)
+    ({guard,revision,mutation})=>env.COMMUNITY_DB.prepare(`INSERT INTO community_receipts(key_hash,payload_hash,record_id,created_at) SELECT ?,?,?,? WHERE ${guard}`).bind(keyHash,payloadHash,record.id,Date.now(),revision,mutation),
+    ...emails
   ]});
   return json({ok:true,id:record.id,pending:!session},201);
 }
@@ -78,7 +82,9 @@ async function adminRoute(request,env,route) {
       }
     }
     if(data.preview===true) return json({revision:before.revision,meetings:upcoming(after,data.language),queue:activeQueue(after).map(s=>s.id)});
-    await commitState(env.COMMUNITY_DB,before,after,{actor:session.email,action:`${data.kind}:${data.action}`});
+    const firstApproval=data.kind==='script'&&data.action==='approve'&&!before.scripts.find(s=>s.id===data.id)?.approvedAt;
+    const emails=firstApproval?await scriptEmailStatements(env,'approved',after.scripts.find(s=>s.id===data.id)):[];
+    await commitState(env.COMMUNITY_DB,before,after,{actor:session.email,action:`${data.kind}:${data.action}`,extra:emails});
     return json({ok:true,revision:after.revision,...(data.returnState===true?{state:adminState(after,session)}:{})});
   }
   if(route==='/admin/attach'&&request.method==='POST') {
@@ -220,6 +226,8 @@ export function createApp({card}) {
       }
     },
     async scheduled(_event,env) {
+      await deliverScriptEmails(env);
+      if(_event.cron===EMAIL_CRON)return;
       for(let attempt=0;attempt<3;attempt++) {
         const before=await loadState(env.COMMUNITY_DB);const after=allocate(structuredClone(before));
         if(JSON.stringify(before)!==JSON.stringify(after)) {
@@ -246,9 +254,12 @@ export function createApp({card}) {
   };
   return {
     scheduled: app.scheduled,
-    async fetch(request,env) {
+    async fetch(request,env,ctx) {
       const head=request.method==='HEAD';
       const response=await app.fetch(head?new Request(request,{method:'GET'}):request,env);
+      if(response.ok&&request.method==='POST'&&ctx?.waitUntil&&[`${API}/scripts`,`${API}/admin/actions`].includes(new URL(request.url).pathname)) {
+        ctx.waitUntil(deliverScriptEmails(env));
+      }
       return head?new Response(null,response):response;
     }
   };

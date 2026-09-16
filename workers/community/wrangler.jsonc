@@ -16,7 +16,10 @@
   "vars": {
     "SITE_BASE": "https://dustwave.xyz",
     "APP_MODE": "production",
-    "LOGIN_FROM": "community@digest.dustwave.xyz"
+    "LOGIN_FROM": "community@digest.dustwave.xyz",
+    "SCRIPT_EMAILS_ENABLED": "true",
+    "RESEND_FROM": "Dust Wave Writers Group <community@dustwave.xyz>",
+    "RESEND_REPLY_TO": "info@dustwave.xyz"
   },
   "d1_databases": [
     {
@@ -45,7 +48,8 @@
   ],
   "triggers": {
     "crons": [
-      "15 10 * * *"
+      "15 10 * * *",
+      "*/5 * * * *"
     ]
   },
   "env": {
@@ -55,7 +59,11 @@
       "vars": {
         "SITE_BASE": "https://dustwave-community-staging.jogo.workers.dev",
         "APP_MODE": "staging",
-        "LOGIN_FROM": "community@digest.dustwave.xyz"
+        "LOGIN_FROM": "community@digest.dustwave.xyz",
+        "SCRIPT_EMAILS_ENABLED": "true",
+        "RESEND_FROM": "Dust Wave Writers Group <community@dustwave.xyz>",
+        "RESEND_REPLY_TO": "info@dustwave.xyz",
+        "SCRIPT_EMAIL_TEST_RECIPIENTS": "delivered@resend.dev"
       },
       "d1_databases": [
         {
@@ -90,7 +98,8 @@
       },
       "triggers": {
         "crons": [
-          "15 10 * * *"
+          "15 10 * * *",
+          "*/5 * * * *"
         ]
       },
       "routes": []
