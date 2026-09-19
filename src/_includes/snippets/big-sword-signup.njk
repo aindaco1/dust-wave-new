@@ -1,9 +1,9 @@
 {% set es = language == 'es' %}
 <section class="big-sword-contact" id="big-sword-contact" aria-labelledby="big-sword-contact-heading">
   <div>
-    <p class="big-sword-kicker">{{ 'Entra al mundo de Big Sword' if es else 'Step into the world of Big Sword' }}</p>
-    <h2 id="big-sword-contact-heading">{{ 'Sé parte de la aventura.' if es else 'Come along for the ride.' }}</h2>
-    <p>{{ '¿Quieres colaborar, hablar de la película o simplemente seguir el caos? Cuéntanos qué te interesa y recibe novedades de Big Sword mientras llevamos la película del desarrollo a la pantalla.' if es else 'Want to collaborate, cover the film, or just follow the chaos? Tell us what brings you here and get Big Sword updates as we take the film from development to the screen.' }}</p>
+    <p class="big-sword-kicker">{{ 'Novedades de Big Sword' if es else 'Big Sword updates' }}</p>
+    <h2 id="big-sword-contact-heading">{{ '¿Te interesa?' if es else 'Interested?' }}</h2>
+    <p>{{ 'La película sigue en desarrollo y tenemos mucho por hacer. Deja tus datos si quieres colaborar o simplemente enterarte de cómo va. Cuéntanos qué te interesa; nos sirve saber quién anda por aquí.' if es else 'The film is still in development, and we’ve got plenty of work ahead. Leave your info if you’d like to get involved or just hear how it’s going. Tell us what interests you; it helps to know who’s out there.' }}</p>
     <p class="big-sword-note">{{ 'Esta lista es solo para Big Sword. Puedes darte de baja cuando quieras.' if es else 'This list is just for Big Sword. Unsubscribe whenever you like.' }}</p>
   </div>
   <form id="big-sword-signup" data-newsletter-signup data-endpoint="https://dustwave-newsletter.jogo.workers.dev/big-sword">
