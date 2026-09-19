@@ -89,15 +89,16 @@ eleventyComputed:
         <p class="newsletter-page__eyebrow">{{ i18n | t(language, "pages.newsletter.formEyebrow") }}</p>
         <h2 id="newsletter-form-heading">{{ i18n | t(language, "pages.newsletter.heading") }}</h2>
         <p class="newsletter-page__form-intro" id="newsletter-frequency">{{ i18n | t(language, "pages.newsletter.formIntro") }}</p>
-        <form id="newsletter-subscribe-form" class="validate newsletter-form" novalidate>
+        <form id="newsletter-subscribe-form" data-newsletter-signup class="validate newsletter-form" novalidate>
+          {% include 'snippets/newsletter-signup-copy.njk' %}
           <div id="newsletter_signup_scroll">
             <div class="mc-field-group">
               <label for="newsletter-email">{{ i18n | t(language, "pages.newsletter.email") }} <span class="asterisk" aria-hidden="true">*</span></label>
               <input type="email" value="" name="email" class="required email" id="newsletter-email" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" aria-required="true" aria-describedby="newsletter-frequency newsletter-promise" required>
             </div>
             <div id="newsletter-responses" class="clear foot" aria-live="polite">
-              <div class="response" id="newsletter-error-response" role="alert" style="display:none"></div>
-              <div class="response" id="newsletter-success-response" role="status" style="display:none"></div>
+              <div class="response" id="newsletter-error-response" data-signup-error tabindex="-1" role="alert" style="display:none"></div>
+              <div class="response" id="newsletter-success-response" data-signup-success tabindex="-1" role="status" style="display:none"></div>
             </div>
             <div class="optionalParent">
               <div class="clear foot">
@@ -111,48 +112,3 @@ eleventyComputed:
     </section>
   </div>
 </div>
-
-<script>
-(() => {
-  const form = document.getElementById('newsletter-subscribe-form');
-  if (!form) return;
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if (!form.reportValidity()) return;
-
-    const email = form.querySelector('input[type="email"]').value;
-    const errorEl = document.getElementById('newsletter-error-response');
-    const successEl = document.getElementById('newsletter-success-response');
-    const submitBtn = form.querySelector('input[type="submit"]');
-
-    errorEl.style.display = 'none';
-    successEl.style.display = 'none';
-    submitBtn.disabled = true;
-    submitBtn.value = {{ i18n | t(language, "pages.newsletter.subscribing") | safeJsonLd | safe }};
-
-    try {
-      const res = await fetch('https://dustwave-newsletter.jogo.workers.dev', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
-      });
-      const data = await res.json();
-
-      if (res.ok && data.success) {
-        successEl.textContent = data.message || {{ i18n | t(language, "pages.newsletter.success") | safeJsonLd | safe }};
-        successEl.style.display = 'block';
-        form.querySelector('input[type="email"]').value = '';
-      } else {
-        throw new Error(data.error || {{ i18n | t(language, "pages.newsletter.error") | safeJsonLd | safe }});
-      }
-    } catch (err) {
-      errorEl.textContent = err.message;
-      errorEl.style.display = 'block';
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.value = {{ i18n | t(language, "pages.newsletter.subscribe") | safeJsonLd | safe }};
-    }
-  });
-})();
-</script>

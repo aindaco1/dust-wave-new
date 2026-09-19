@@ -1,18 +1,11 @@
 import { handleUnsubscribe, unsubscribeUrl } from './unsubscribe.js';
 import { createWelcomeEmail } from './welcome-email.js';
-import { prepareResendEmail } from '../../../shared/dust-wave-platform/packages/worker-core/src/email.js';
-
-const RESEND_API = 'https://api.resend.com';
-const DEFAULT_WELCOME_FROM = 'Dust Wave <newsletter@dustwave.xyz>';
+import { subscribeBigSword } from './big-sword.js';
+import { requestResend, sendSubscriptionConfirmation } from './resend-client.js';
 
 const json = (body, { status = 200, headers = {} } = {}) => new Response(JSON.stringify(body), {
   status,
   headers: { ...headers, 'Content-Type': 'application/json' },
-});
-
-const resendHeaders = (apiKey) => ({
-  Authorization: `Bearer ${apiKey}`,
-  'Content-Type': 'application/json',
 });
 
 const normalizeEmail = (value) => String(value || '').trim().toLowerCase();
@@ -22,9 +15,7 @@ async function resolveAudienceId(env) {
   if (!audienceId) throw new Error('Newsletter audience is unavailable');
   if (audienceId.includes('-')) return audienceId;
 
-  const response = await fetch(`${RESEND_API}/audiences`, {
-    headers: { Authorization: `Bearer ${env.RESEND_API_KEY}` },
-  });
+  const response = await requestResend(env, '/audiences');
   if (!response.ok) throw new Error('Failed to fetch audiences');
 
   const { data: audiences = [] } = await response.json();
@@ -33,20 +24,16 @@ async function resolveAudienceId(env) {
   return audience.id;
 }
 
-async function findContact(audienceId, email, apiKey) {
-  const response = await fetch(`${RESEND_API}/audiences/${audienceId}/contacts/${encodeURIComponent(email)}`, {
-    headers: { Authorization: `Bearer ${apiKey}` },
-  });
+async function findContact(audienceId, email, env) {
+  const response = await requestResend(env, `/audiences/${audienceId}/contacts/${encodeURIComponent(email)}`);
   if (response.status === 404) return null;
   if (!response.ok) throw new Error('Failed to check newsletter subscription');
   return response.json();
 }
 
-async function createContact(audienceId, email, apiKey) {
-  const response = await fetch(`${RESEND_API}/audiences/${audienceId}/contacts`, {
-    method: 'POST',
-    headers: resendHeaders(apiKey),
-    body: JSON.stringify({ email, unsubscribed: false }),
+async function createContact(audienceId, email, env) {
+  const response = await requestResend(env, `/audiences/${audienceId}/contacts`, {
+    method: 'POST', body: { email, unsubscribed: false },
   });
   const result = await response.json().catch(() => ({}));
 
@@ -55,31 +42,6 @@ async function createContact(audienceId, email, apiKey) {
   }
   if (!response.ok) throw new Error(result.message || 'Failed to subscribe');
   return { created: true, contact: result };
-}
-
-async function sendWelcomeEmail({ apiKey, contactId, email, from, replyTo, unsubscribe }) {
-  const { html, subject, text } = createWelcomeEmail({ unsubscribeUrl: unsubscribe });
-  const response = await fetch(`${RESEND_API}/emails`, {
-    method: 'POST',
-    headers: {
-      ...resendHeaders(apiKey),
-      'Idempotency-Key': `newsletter-welcome/${contactId}`,
-    },
-    body: JSON.stringify(prepareResendEmail({
-      from: from || DEFAULT_WELCOME_FROM,
-      to: [email],
-      subject,
-      html,
-      text,
-      headers: {
-        'List-Unsubscribe': `<${unsubscribe}>`,
-        'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
-      },
-    }, { replyTo })),
-  });
-  const result = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(result.message || 'Failed to send newsletter welcome');
-  return result;
 }
 
 export default {
@@ -105,6 +67,7 @@ export default {
       if (!env.SIGNUP_RATE_LIMIT) return json({ error: 'Signup temporarily unavailable' }, { status: 503, headers: corsHeaders });
       const limited = await env.SIGNUP_RATE_LIMIT.limit({ key: `newsletter-signup:${request.headers.get('CF-Connecting-IP') || 'local'}` });
       if (!limited.success) return json({ error: 'Please wait a minute before trying again.' }, { status: 429, headers: { ...corsHeaders, 'Retry-After': '60' } });
+      if (new URL(request.url).pathname === '/big-sword') return subscribeBigSword(request, env, corsHeaders);
       const { email: submittedEmail } = await request.json();
       const email = normalizeEmail(submittedEmail);
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -112,26 +75,24 @@ export default {
       }
 
       const audienceId = await resolveAudienceId(env);
-      const existingContact = await findContact(audienceId, email, env.RESEND_API_KEY);
+      const existingContact = await findContact(audienceId, email, env);
       if (existingContact) {
         return json({ success: true, status: 'existing', message: "You're already subscribed!" }, { headers: corsHeaders });
       }
 
       if (!env.UNSUBSCRIBE_SECRET || !env.UNSUBSCRIBE_ORIGIN) throw new Error('Newsletter unsubscribe is unavailable');
-      const { created, contact } = await createContact(audienceId, email, env.RESEND_API_KEY);
+      const { created, contact } = await createContact(audienceId, email, env);
       if (!created) {
         return json({ success: true, status: 'existing', message: "You're already subscribed!" }, { headers: corsHeaders });
       }
 
       if (!contact.id) throw new Error('Newsletter contact was created without an ID');
 
-      const welcome = sendWelcomeEmail({
-        apiKey: env.RESEND_API_KEY,
-        contactId: contact.id,
-        email,
-        from: env.RESEND_FROM,
-        replyTo: env.RESEND_REPLY_TO,
-        unsubscribe: await unsubscribeUrl(contact.id, env),
+      const unsubscribe = await unsubscribeUrl(contact.id, env);
+      const welcome = sendSubscriptionConfirmation({
+        env, email, from: env.RESEND_FROM, unsubscribe,
+        idempotencyKey: `newsletter-welcome/${contact.id}`,
+        message: createWelcomeEmail({ unsubscribeUrl: unsubscribe }),
       }).catch((error) => console.error('Newsletter welcome failed', error));
 
       if (context?.waitUntil) context.waitUntil(welcome);

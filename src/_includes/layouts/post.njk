@@ -47,6 +47,7 @@ permalink: "subdir/{{ title | slugify }}/index.html"
                 {% include "snippets/auto-gallery.njk" %}
               {% endset %}
               {{ storyContent | normalizeHeadingSpacing | safe }}
+              {% if projectSignup == 'big-sword' %}{% include 'snippets/big-sword-signup.njk' %}{% endif %}
             </div>
           </div>
         </div>

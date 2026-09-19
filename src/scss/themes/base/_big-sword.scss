@@ -1,0 +1,41 @@
+.big-sword-page {
+  --sword-pink: #ff43df;
+  --sword-ink: #120d16;
+  .p-name { color: var(--sword-pink); }
+  .u-photo { width: 100%; height: auto; aspect-ratio: 1728 / 973; }
+  .project-content { font-size: 1.125rem; }
+  .big-sword-kicker { font: 700 .78rem/1.6 sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--sword-pink); }
+  .big-sword-intro { max-width: 48rem; margin: 1rem auto 4rem; }
+  .big-sword-logline { font-size: clamp(1.3rem, 2.3vw, 1.8rem); line-height: 1.45; }
+  .big-sword-pitches { border: 2px solid var(--sword-pink); padding: clamp(1.4rem, 4vw, 3rem); background: #1b0b1b; box-shadow: 8px 8px 0 var(--sword-pink); margin: 0 8px 5rem 0; }
+  .big-sword-pitches h2 { margin-top: .5rem; }
+  .big-sword-dateline, .big-sword-note { font-size: .9rem; color: #d7bcd7; }
+  .big-sword-button { display: inline-block; border: 2px solid var(--sword-pink); background: var(--sword-pink); color: var(--sword-ink); padding: .85rem 1.2rem; font: 700 1rem/1.4 sans-serif; text-decoration: none; cursor: pointer; }
+  .big-sword-button:hover { color: #fff; background: var(--sword-ink); }
+  .project-content a.big-sword-button { color: var(--sword-ink); }
+  .project-content a.big-sword-button:hover { color: #fff; }
+  .big-sword-button:disabled { opacity: .6; cursor: wait; }
+  .big-sword-world { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); align-items: center; gap: clamp(1.5rem, 4vw, 3rem); margin-bottom: 4rem; }
+  .big-sword-creature { margin: 0; transform: rotate(-4deg); }
+  .big-sword-creature img { display: block; width: 100%; height: auto; }
+  .big-sword-creature figcaption { text-align: center; font-size: .85rem; color: #e8bddf; }
+  .big-sword-thong { display: block; width: 150px; margin: -.5rem 0 -1rem auto; }
+  .big-sword-thong img { display: block; width: 100%; height: auto; }
+  .big-sword-contact { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(1.5rem, 4vw, 4rem); border-top: 2px solid var(--sword-pink); padding-top: 3rem; scroll-margin-top: 7rem; text-align: left; }
+  .big-sword-field { margin-bottom: 1.2rem; }
+  .big-sword-field label { display: block; margin-bottom: .4rem; font-size: .95rem; }
+  .big-sword-field input, .big-sword-field select, .big-sword-field textarea { display: block; width: 100%; min-width: 0; border: 1px solid #977990; border-radius: 0; background: #160e18; color: #fff; padding: .75rem; font: inherit; font-size: 1rem; }
+  .big-sword-field textarea { resize: vertical; }
+  .big-sword-consent { display: flex; gap: .65rem; align-items: flex-start; margin: 1.3rem 0; font-size: .95rem; }
+  .big-sword-consent input { flex: 0 0 auto; width: 1.2rem; height: 1.2rem; margin-top: .15rem; accent-color: var(--sword-pink); }
+  .big-sword-trap { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .big-sword-result { margin-top: 1rem; font-size: 1rem; }
+  .big-sword-result:empty { margin: 0; }
+  .big-sword-result[data-error] { color: #ffb9c7; }
+  #big-sword-signup :focus-visible, .big-sword-button:focus-visible { outline: 3px solid #56e2fa; outline-offset: 4px; }
+  @media (max-width: 767px) {
+    .big-sword-world, .big-sword-contact { grid-template-columns: minmax(0, 1fr); }
+    .big-sword-creature { max-width: 310px; margin: 0 auto 1rem; }
+    .big-sword-contact .big-sword-button { width: 100%; }
+  }
+}

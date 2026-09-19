@@ -1,11 +1,12 @@
 {% include "snippets/site-footer.njk" %}
-	{% if environment == "production" %}
+	{% if environment == "production" and not hideNewsletterPopup %}
 	<!-- Newsletter Signup Popup -->
 	<div class="wrap">
 		<div id="popup" class="lazyload">
 			<div class="popup-content">
 				<div id="newsletter_signup">
-					<form id="popup-subscribe-form" class="validate" novalidate>
+					<form id="popup-subscribe-form" data-newsletter-signup class="validate" novalidate>
+						{% include 'snippets/newsletter-signup-copy.njk' %}
 						<div id="newsletter_signup_scroll">
 								<h5 class="gambado">{{ i18n | t(language, "footer.popupTitle") }}</h5>
 								<div class="mc-field-group">
@@ -13,8 +14,8 @@
 								<input type="email" value="" required aria-required="true" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" name="email" class="required email" id="popup-email">
 							</div>
 							<div id="popup-responses" class="clear foot">
-								<div class="response" id="popup-error-response" style="display:none"></div>
-								<div class="response" id="popup-success-response" style="display:none"></div>
+								<div class="response" id="popup-error-response" data-signup-error tabindex="-1" role="alert" style="display:none"></div>
+								<div class="response" id="popup-success-response" data-signup-success tabindex="-1" role="status" style="display:none"></div>
 							</div>
 							<div class="optionalParent">
 								<div class="clear foot">
@@ -33,6 +34,7 @@
 	<!-- Small cross-browser in-view prefetch helper. -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.3.0/quicklink.umd.js" defer></script>
 
+<script src="/js/newsletter-signup.js?v={{ assets.version | default('dev') }}" defer></script>
 	<!-- App footer bundle -->
 	<script>
 	/* =========================================================================
@@ -51,46 +53,10 @@
 		closeBtn.addEventListener('click', () => popup.classList.remove('show'));
 	}
 
-	// Newsletter form handler
-	const form = document.getElementById('popup-subscribe-form');
-	if (form) {
-		form.addEventListener('submit', async (e) => {
-		e.preventDefault();
-		const email = form.querySelector('input[type="email"]').value;
-		const errorEl = document.getElementById('popup-error-response');
-		const successEl = document.getElementById('popup-success-response');
-		const submitBtn = form.querySelector('input[type="submit"]');
-
-		errorEl.style.display = 'none';
-		successEl.style.display = 'none';
-		submitBtn.disabled = true;
-			submitBtn.value = {{ i18n | t(language, "footer.subscribing") | safeJsonLd | safe }};
-
-		try {
-			const res = await fetch('https://dustwave-newsletter.jogo.workers.dev', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ email })
-			});
-			const data = await res.json();
-
-			if (res.ok && data.success) {
-				successEl.textContent = data.message || {{ i18n | t(language, "footer.success") | safeJsonLd | safe }};
-			successEl.style.display = 'block';
-			form.querySelector('input[type="email"]').value = '';
-			setTimeout(() => popup.classList.remove('show'), 3000);
-			} else {
-				throw new Error(data.error || {{ i18n | t(language, "footer.error") | safeJsonLd | safe }});
-			}
-		} catch (err) {
-			errorEl.textContent = err.message;
-			errorEl.style.display = 'block';
-		} finally {
-			submitBtn.disabled = false;
-				submitBtn.value = {{ i18n | t(language, "footer.subscribe") | safeJsonLd | safe }};
-		}
-		});
-	}
+	// The shared signup controller owns submission; the popup owns its close behavior.
+	popup?.addEventListener('newsletter:subscribed', () => {
+		setTimeout(() => popup.classList.remove('show'), 3000);
+	});
 	})();
 	{% endif %}
 

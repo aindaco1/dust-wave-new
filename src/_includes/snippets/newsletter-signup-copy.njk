@@ -1,0 +1,7 @@
+{% set es = language == 'es' %}
+<script type="application/json" data-newsletter-copy>{
+  "submitting": {{ i18n | t(language, 'footer.subscribing') | safeJsonLd | safe }},
+  "success": {% if projectSignup == 'big-sword' %}{{ ('¡Ya estás en la lista de Big Sword! Si es tu primera inscripción, recibirás un correo de confirmación.' if es else 'You’re on the Big Sword list! If this is your first signup, a confirmation email is on its way.') | safeJsonLd | safe }}{% else %}{{ i18n | t(language, 'footer.success') | safeJsonLd | safe }}{% endif %},
+  "error": {{ ('No pudimos confirmar la inscripción. Tus datos siguen aquí; puedes volver a intentarlo en un minuto.' if es else 'We couldn’t confirm your signup. Your entries are still here; you can try again in a minute.') | safeJsonLd | safe }},
+  "unsubscribed": {{ ('Tu correo está dado de baja de los mensajes de Dust Wave. Escríbenos a info@dustwave.xyz si quieres volver a suscribirte.' if es else 'This address has opted out of Dust Wave emails. Contact info@dustwave.xyz if you’d like to resubscribe.') | safeJsonLd | safe }}
+}</script>

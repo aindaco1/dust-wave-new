@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Added the bilingual Big Sword project page, dated September 19, 2026, with
+  Fantastic Pitches news, supplied artwork and animation, and the car-loop hover.
+  Its dedicated Resend list captures contact details and interest, sends signup
+  confirmations, and supports a Big Sword-only unsubscribe.
+
 - Added Resend confirmations for public script submissions, notices to all
   Community admins, and a writer email on first approval. English/Spanish writer
   messages use a durable delivery queue with bounded retries and duplicate protection.

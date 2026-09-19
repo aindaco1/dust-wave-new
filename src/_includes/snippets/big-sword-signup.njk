@@ -1,0 +1,30 @@
+{% set es = language == 'es' %}
+<section class="big-sword-contact" id="big-sword-contact" aria-labelledby="big-sword-contact-heading">
+  <div>
+    <p class="big-sword-kicker">{{ 'Entra al mundo de Big Sword' if es else 'Step into the world of Big Sword' }}</p>
+    <h2 id="big-sword-contact-heading">{{ 'Sé parte de la aventura.' if es else 'Come along for the ride.' }}</h2>
+    <p>{{ '¿Quieres colaborar, hablar de la película o simplemente seguir el caos? Cuéntanos qué te interesa y recibe novedades de Big Sword mientras llevamos la película del desarrollo a la pantalla.' if es else 'Want to collaborate, cover the film, or just follow the chaos? Tell us what brings you here and get Big Sword updates as we take the film from development to the screen.' }}</p>
+    <p class="big-sword-note">{{ 'Esta lista es solo para Big Sword. Puedes darte de baja cuando quieras.' if es else 'This list is just for Big Sword. Unsubscribe whenever you like.' }}</p>
+  </div>
+  <form id="big-sword-signup" data-newsletter-signup data-endpoint="https://dustwave-newsletter.jogo.workers.dev/big-sword">
+    {% include 'snippets/newsletter-signup-copy.njk' %}
+    <div class="big-sword-field"><label for="big-sword-name">{{ 'Nombre' if es else 'Name' }}</label><input id="big-sword-name" name="name" autocomplete="name" maxlength="100" required></div>
+    <div class="big-sword-field"><label for="big-sword-email">{{ 'Correo electrónico' if es else 'Email' }}</label><input id="big-sword-email" name="email" type="email" autocomplete="email" autocapitalize="off" spellcheck="false" maxlength="254" required></div>
+    <div class="big-sword-field"><label for="big-sword-interest">{{ 'Tipo de interés' if es else 'Nature of interest' }}</label><select id="big-sword-interest" name="interest" required>
+      <option value="">{{ 'Selecciona una opción' if es else 'Select your interest' }}</option>
+      <option value="financing">{{ 'Financiamiento' if es else 'Financing' }}</option>
+      <option value="producing">{{ 'Producción' if es else 'Producing' }}</option>
+      <option value="cast-crew">{{ 'Reparto / equipo técnico' if es else 'Cast / crew' }}</option>
+      <option value="distribution">{{ 'Distribución' if es else 'Distribution' }}</option>
+      <option value="press">{{ 'Prensa' if es else 'Press' }}</option>
+      <option value="updates">{{ 'Novedades generales' if es else 'General updates' }}</option>
+      <option value="other">{{ 'Otro' if es else 'Other' }}</option>
+    </select></div>
+    <div class="big-sword-field"><label for="big-sword-message">{{ 'Mensaje (opcional, máximo 500 caracteres)' if es else 'Message (optional, 500 characters max)' }}</label><textarea id="big-sword-message" name="message" maxlength="500" rows="4"></textarea></div>
+    <div class="big-sword-trap" aria-hidden="true"><label for="big-sword-website">Website</label><input id="big-sword-website" name="website" tabindex="-1" autocomplete="off"></div>
+    <label class="big-sword-consent"><input name="consent" type="checkbox" required><span>{{ 'Quiero recibir correos con novedades de Big Sword.' if es else 'I’d like to receive email updates about Big Sword.' }}</span></label>
+    <button type="submit" class="big-sword-button" disabled>{{ 'Únete a la lista' if es else 'Join the Big Sword list' }}</button>
+    <p class="big-sword-result" data-signup-status role="status" aria-live="polite" tabindex="-1"></p>
+    <noscript><p>{{ 'Activa JavaScript para registrarte.' if es else 'Please enable JavaScript to sign up.' }}</p></noscript>
+  </form>
+</section>

@@ -6,6 +6,7 @@ routes = [{ pattern = "dustwave.xyz/newsletter/unsubscribe*", zone_name = "dustw
 
 [vars]
 RESEND_AUDIENCE_ID = "mailchimp"
+BIG_SWORD_SEGMENT_ID = "63381e63-bf72-4650-84c1-165914c659b7"
 ALLOWED_ORIGIN = "https://dustwave.xyz"
 RESEND_REPLY_TO = "info@dustwave.xyz"
 UNSUBSCRIBE_ORIGIN = "https://dustwave.xyz"

@@ -57,12 +57,59 @@ messages to the hard-coded recipients documented in
 
 - [src/index.js](src/index.js): signup request, contact lookup/creation, and
   welcome dispatch.
+- [src/resend-client.js](src/resend-client.js): shared provider requests and
+  confirmation dispatch for general and project signups and unsubscribe actions.
 - [wrangler.toml](wrangler.toml): entry point and non-secret configuration.
 - [package.json](package.json): local scripts and Node/Wrangler requirements.
 - [Public footer](../../src/_includes/snippets/footer1.njk) and
   [newsletter page](../../src/newsletter.njk): form markup and submission handlers.
 - [Form styles](../../src/scss/themes/base/_style-theme.scss): shared form styling.
 - [Site documentation](../../README.md#documentation): development and publishing.
+
+## Big Sword project list
+
+The bilingual `/project/big-sword.html` page uses the same Worker at
+`POST /big-sword`. It subscribes visitors only to the **Big Sword** Resend segment,
+configured by `BIG_SWORD_SEGMENT_ID`; it does not join the general newsletter or
+send an administrator notification. The project form requires name, email,
+one of the seven interest categories, and explicit signup consent. An optional
+message is limited to 500 characters. The shared origin and edge rate limits
+apply, with additional field/body validation and a honeypot.
+
+All three public signup surfaces use
+[`newsletter-signup.js`](../../src/js/newsletter-signup.js) and the shared
+localized copy snippet. The form supplies its endpoint and fields; validation,
+busy state, duplicate-submit protection, error preservation and success feedback
+stay in one controller. Run `node --test tests/newsletter-signup.test.mjs` from
+the repository root to exercise the real markup for all three in both languages.
+
+The current global Resend Contacts API stores the name plus the custom
+`big_sword_interest` and `big_sword_message` properties. Existing unrelated
+properties, segment memberships, and global opt-outs are preserved. A globally
+unsubscribed contact is directed to the support address instead of silently
+resubscribing them to every list.
+
+[big-sword-email.js](src/big-sword-email.js) is the canonical HTML/plain-text
+confirmation, sent through Resend with the existing sender domain and reply-to.
+`big_sword_welcome_sent` records provider acceptance. A failed send returns a
+retryable error and remains pending; another form submission retries with the
+same Resend idempotency key. A completed signup sends no additional welcome.
+Resend's idempotency window is 24 hours; if the email succeeds but saving its
+delivery marker fails for longer than that, a later retry may send it again.
+There is no background delivery queue for this project flow.
+
+Big Sword welcome emails use the existing signed unsubscribe endpoint with
+`list=big-sword` included in the signature scope. GET is scanner-safe and POST
+removes only the Big Sword segment membership. Existing general-newsletter
+unsubscribe links retain their original global opt-out behavior.
+
+For future Big Sword broadcasts, select **Big Sword** as the recipient segment.
+Do not select `mailchimp`, `General`, or all contacts. The signup confirmation is
+automatic; deploying the Worker does not send a broadcast. Local tests mock
+Resend. Provider checks use only the documented `delivered+label@resend.dev`
+simulation addresses and remove those test subscriptions using their signed
+unsubscribe links afterwards. Simulated delivery is separate from real-inbox
+acceptance.
 
 ## Delivery defaults
 

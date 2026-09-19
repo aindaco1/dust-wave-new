@@ -33,6 +33,7 @@ Its welcome-email send command is a separate provider action.
 |---|---|
 | Project pages, bilingual metadata, taxonomy | `npm run test:project-frontmatter` |
 | Pages CMS collections and editor fields | `npm run test:pages-cms` |
+| General/project newsletter forms and Resend signup | `node --test tests/newsletter-signup.test.mjs` and `npm test --prefix workers/newsletter-subscribe` |
 | Substack HTML cleanup | `npm run test:substack-export` |
 | Public navigation/footer and asset budgets | `npm run test:public-shell` and `node scripts/validate-site-performance.mjs` |
 | Shared heading spacing and legacy article spacers | `npm run test:public-shell`, `npm run build`, and rendered desktop/mobile review of projects, News, Digest cards, and public pages |
