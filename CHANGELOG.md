@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Announced Dead Ballerina's official selection for the inaugural 2026 Out of
+  This World Film Festival, with supplied festival artwork and tentative times.
+- Made ordinary pitch-player clicks, taps and forward navigation advance whole
+  slides while preserving automatic GIF playback.
+
+- Added the standalone Big Sword pitch presentation with password protection
+  for every slide and media asset, and slides that fit the browser viewport.
+
 - Added the bilingual Big Sword project page, dated September 19, 2026, with
   Fantastic Pitches news, supplied artwork and animation, and the car-loop hover.
   Its dedicated Resend list captures contact details and interest, sends signup

@@ -36,6 +36,7 @@ to GitHub Pages.
 | [Testing and performance](documentation/testing.md) | Required checks, focused regression commands, mock API, and browser traces |
 | [Roadmap](documentation/roadmap.md) | Active plans, proposed work, and historical evidence |
 | [Newsletter Worker](workers/newsletter-subscribe/README.md) | Signup behavior, configuration, deployment, and welcome-email testing |
+| [Big Sword pitch](workers/big-sword-pitch/README.md) | Standalone protected presentation, private assets, and independent deployment |
 
 [AGENTS.md](AGENTS.md) contains repository-wide working instructions.
 [CHANGELOG.md](CHANGELOG.md) records releases. Shared-platform documentation

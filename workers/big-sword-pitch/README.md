@@ -1,0 +1,68 @@
+# Big Sword pitch
+
+Independent password-protected Keynote export at `https://dustwave.xyz/big-sword-pitch/`.
+The Worker authenticates every page and asset request before reading private R2.
+It loads only the exported player, with no Eleventy layout, site styles, site
+JavaScript, header, footer, analytics or navigation.
+
+The original export remains outside the repository. **Never put the presentation
+or password in Git, `src/`, `dev/`, `docs/`, or a public bucket.** This repository
+is public. The ignored `.artifacts/big-sword-pitch/` directory holds prepared
+assets, a SHA-256 manifest and upload checkpoints. The R2 bucket must have no
+public development URL or custom domains.
+
+## Prepare and publish
+
+From this directory:
+
+```sh
+npm ci
+npm run prepare:assets -- /path/to/Keynote-export
+npm test
+```
+
+Preparation copies the export, sets its document title and noindex metadata,
+and removes Keynote's normal-window 720px width cap. The existing aspect-ratio
+layout now expands and contracts to fit the viewport. Ordinary clicks, taps,
+forward swipes, Right Arrow and Space advance a complete slide. Keynote's
+automatic animation starts, media, slide order, fullscreen mode and backward
+navigation are preserved. The patch fails if the known player code changes.
+Source files are never edited. A previously prepared export can also be used
+as input when kept outside the generated presentation directory.
+
+Create `dustwave-big-sword-pitch-private` once with `wrangler r2 bucket create`.
+Supply `CLOUDFLARE_ACCOUNT_ID` and a Cloudflare token with R2 write access as
+environment variables, then run `npm run upload`. The uploader verifies hashes
+and writes into an immutable export prefix; it resumes using its local
+checkpoint. After all files upload, set `vars.ASSET_PREFIX` in `wrangler.jsonc`
+to the prefix printed by preparation. Keep the manifest locally for integrity
+checks. To republish after remote deletion, remove the corresponding local
+upload checkpoint first.
+
+Set `PITCH_PASSWORD` and a random `SESSION_SECRET` using `wrangler secret put`.
+Secrets belong only in Cloudflare (or ignored `.dev.vars` for local testing).
+Then run `npm run check` and `npm run deploy`. This Worker deploys independently
+of GitHub Pages and does not require a website build or release.
+
+The gate issues a signed, HttpOnly, Secure, same-site cookie scoped to this
+path for seven days. Changing either secret invalidates sessions. Login
+attempts are limited to ten per IP per minute at the Cloudflare location.
+All responses are private, non-cacheable and noindex. R2 supports authenticated
+video byte ranges. Worker development and preview URLs are disabled.
+
+## Acceptance and rollback
+
+Verify the live password screen, a wrong password, the correct password,
+refresh persistence, direct unauthenticated media denial, video seeking,
+keyboard navigation, and fitted slides at desktop and phone widths. Check that
+requests stay within this route, with no website bundles or external assets.
+Local tests do not establish live provider or browser acceptance.
+
+See the [September 25 acceptance record](../../documentation/archive/2026-09-25-big-sword-pitch.md)
+for the initial deployment checks. Keep the gate's `same-origin` referrer policy:
+`no-referrer` makes browser form POSTs send a null Origin and fail the origin check.
+
+Rollback an asset update by restoring the previous `ASSET_PREFIX` and deploying.
+Use `wrangler rollback` for Worker code. Remove this Worker's route to unpublish;
+the GitHub Pages origin has no presentation copy. Keep private R2 exports until
+their removal is separately intended.
