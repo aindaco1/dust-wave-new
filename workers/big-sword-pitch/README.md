@@ -24,9 +24,13 @@ npm test
 Preparation copies the export, sets its document title and noindex metadata,
 and removes Keynote's normal-window 720px width cap. The existing aspect-ratio
 layout now expands and contracts to fit the viewport. Ordinary clicks, taps,
-forward swipes, Right Arrow and Space advance a complete slide. Keynote's
-automatic animation starts, media, slide order, fullscreen mode and backward
-navigation are preserved. The patch fails if the known player code changes.
+forward swipes, Right Arrow and Space advance a complete slide. Left Arrow,
+backward swipes and right-click return to the previous complete slide, including
+after automatic animations. Input during a transition waits for a safe state.
+Only the leftmost 24 pixels of a swipe open the slide menu. The team collage
+plays once and holds on the full team; preparation removes its GIF repeat
+metadata without re-encoding any frames. Other animations and media remain intact.
+The patch fails if the known player code changes.
 Source files are never edited. A previously prepared export can also be used
 as input when kept outside the generated presentation directory.
 
@@ -57,6 +61,14 @@ refresh persistence, direct unauthenticated media denial, video seeking,
 keyboard navigation, and fitted slides at desktop and phone widths. Check that
 requests stay within this route, with no website bundles or external assets.
 Local tests do not establish live provider or browser acceptance.
+
+With the prepared private export served locally on port 8799, run
+`node workers/big-sword-pitch/scripts/verify-player.mjs` from the repository root.
+This browser regression uses the site's Puppeteer dependency to check all 27
+slides in both directions, slide boundaries, right-click, phone swipe events,
+viewport fit, and the team collage's final frame across multiple cycle lengths.
+Also verify those controls in the deployed browser; simulated swipe events do
+not establish physical-device acceptance.
 
 See the [September 25 acceptance record](../../documentation/archive/2026-09-25-big-sword-pitch.md)
 for the initial deployment checks. Keep the gate's `same-origin` referrer policy:

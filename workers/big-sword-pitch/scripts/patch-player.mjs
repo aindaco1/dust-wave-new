@@ -21,5 +21,24 @@ export function patchKeynotePlayer(source) {
     'this.resetMediaCache(),null==B&&(B=!1),this.jumpToScene(C,B)',
     'this.resetMediaCache(),null==B&&(B=!!this.script.events[C].automaticPlay),this.jumpToScene(C,B)',
     'selected slide autoplay');
+  // Keynote treats back from a completed build as "restart this slide".
+  // With automatic builds that traps the viewer on the same slide. Wait for
+  // a safe idle state, then select the previous actual slide instead.
+  player = replaceKnown(player,
+    'goBackToPreviousSlide(A){if(!this.script)return!1;if(this.script.showMode!==ng){var B=this.currentSceneIndex;switch(this.state){case tg:B+=1;case"Playing":case ig:var g,C=this.scriptManager.slideIndexFromSceneIndex(B),Q=this.scriptManager.sceneIndexFromSlideIndex(C);g=0===C?B>0?0:this.script.loopSlideshow?this.script.slideCount-1:0:-1===C&&B>0?this.script.slideCount-1:B>Q?this.currentSlideIndex:this.currentSlideIndex-1,this.jumpToSlide(g+1);break;default:null!==this.queuedUserAction&&void 0!==this.queuedUserAction||(this.queuedUserAction=this.goBackToPreviousSlide.bind(this,A))}}}',
+    'goBackToPreviousSlide(A){if(!this.script)return!1;if(this.script.showMode!==ng){switch(this.state){case tg:case ig:if(this.currentSlideIndex===0&&!this.script.loopSlideshow)return;var g=this.currentSlideIndex>0?this.currentSlideIndex-1:this.script.slideCount-1;this.jumpToSlide(g+1);break;default:null!==this.queuedUserAction&&void 0!==this.queuedUserAction||(this.queuedUserAction=this.goBackToPreviousSlide.bind(this,A))}}}',
+    'previous whole slide');
+  for (const input of ['handleSwipeEvent', 'onMouseDown', 'onKeyPress']) {
+    player = replaceKnown(player, `this.goBackToPreviousBuild("${input}")`,
+      `this.goBackToPreviousSlide("${input}")`, `${input} backward navigation`,
+      input === 'onMouseDown' ? 1 : 2);
+  }
+  player = replaceKnown(player,
+    'B.swipeStartX&&B.swipeStartX<150',
+    'B.swipeStartX!=null&&B.swipeStartX<24', 'swipe menu edge');
+  player = replaceKnown(player,
+    'handleContextMenuEvent(A){A.stopPropagation()}',
+    'handleContextMenuEvent(A){A.stopPropagation(),A.preventDefault(),this.isRecording||this.goBackToPreviousSlide("handleContextMenuEvent")}',
+    'right-click navigation');
   return player;
 }

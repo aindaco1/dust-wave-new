@@ -5,7 +5,7 @@
   "compatibility_date": "2026-09-25",
   "workers_dev": false,
   "preview_urls": false,
-  "vars": { "ASSET_PREFIX": "exports/68a70154a417f0ee9f73" },
+  "vars": { "ASSET_PREFIX": "exports/bafe5eb8eb25c1141ee3" },
   "r2_buckets": [{ "binding": "PITCH_FILES", "bucket_name": "dustwave-big-sword-pitch-private" }],
   "ratelimits": [{ "name": "LOGIN_LIMITER", "namespace_id": "291702", "simple": { "limit": 10, "period": 60 } }],
   "routes": [{ "pattern": "dustwave.xyz/big-sword-pitch*", "zone_name": "dustwave.xyz" }]

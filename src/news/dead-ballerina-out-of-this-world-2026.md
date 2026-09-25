@@ -6,9 +6,9 @@ img: /img/stills/deadballerinastill.jpg
 imgAlt: A surreal animated mouth surrounding a pyramid-shaped keyboard figure
 ---
 
-[_Dead Ballerina_](/project/dead-ballerina.html) is an **Official Selection** of the inaugural [Out of This World Film Festival](https://filmfreeway.com/OutOfThisWorldFilmFestival)! The festival celebrates independent sci-fi and fantasy cinema, and we're excited to be part of its first year.
+[_Dead Ballerina_](/project/dead-ballerina.html) is coming to the Guild! Our animated music video for BLARF is an **Official Selection** of the first [Out of This World Film Festival](https://filmfreeway.com/OutOfThisWorldFilmFestival), a new festival for independent sci-fi and fantasy films right here in Albuquerque.
 
-Our animated music video for BLARF was directed and animated by [Dusty Deen](https://www.dustydeen.com/), written by Alonso Indacochea, with 3D animation by Jay Renteria. Congratulations to the team, and thank you to the festival for selecting the film!
+[Dusty Deen](https://www.dustydeen.com/) directed and animated the video, Alonso Indacochea wrote it, and Jay Renteria did the 3D animation. Big congrats to the team, and thanks to the festival organizers for including us in their first year!
 
 <div class="row g-4 align-items-center">
   <div class="col-12 col-md-6">
@@ -21,8 +21,8 @@ Our animated music video for BLARF was directed and animated by [Dusty Deen](htt
 
 ### Festival details
 
-The festival takes place on **December 12, 2026**, at **the Guild Cinema**, 3405 Central Ave NE, Albuquerque, NM 87106.
+Mark your calendar for **December 12, 2026**, at **the Guild Cinema**, 3405 Central Ave NE, Albuquerque, NM 87106.
 
-The organizers' tentative schedule has doors opening at **3 p.m.**, with the festival running from **3:30 to 9 p.m.** The final screening order and block times are still to be confirmed, including the exact time for _Dead Ballerina_.
+For now, the plan is to open doors at **3 p.m.** and run the festival from **3:30 to 9 p.m.** Those times are tentative. The screening order and block times are still being worked out, so we don't have an exact time for _Dead Ballerina_ yet.
 
-Follow the [festival listing](https://filmfreeway.com/OutOfThisWorldFilmFestival) for updates, and help spread the word with **#OutOfThisWorldFilmFest**.
+Keep an eye on the [festival listing](https://filmfreeway.com/OutOfThisWorldFilmFestival) for updates. If you'd like to share the news, the festival is using **#OutOfThisWorldFilmFest**.

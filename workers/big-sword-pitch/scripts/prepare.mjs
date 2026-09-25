@@ -3,6 +3,7 @@ import { resolve, relative, join } from 'node:path';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { patchKeynotePlayer } from './patch-player.mjs';
+import { gifPlayOnce } from './gif-play-once.mjs';
 
 const worker = fileURLToPath(new URL('../', import.meta.url));
 const source = resolve(process.argv[2] || '');
@@ -20,6 +21,15 @@ let html = await readFile(join(source, 'index.html'), 'utf8');
 html = html.replace('<title>Keynote</title>', '<title>Big Sword — Pitch</title><meta name="robots" content="noindex,nofollow"/><link rel="icon" href="data:,"/>');
 await writeFile(join(output, 'index.html'), html);
 await writeFile(join(output, 'assets/player/main.js'), player);
+// Slide 25 is the team collage. Keynote already marks it as non-looping, but
+// the browser's animated-image element follows the GIF's embedded loop flag.
+const teamAssets = join(output, 'assets/BD3FB420-E07D-4D7B-9729-D86BF3CA4834/assets');
+const teamFiles = (await readdir(teamAssets)).filter(name => /^dust-wave-pop-ups-5-seconds\.gif-0\.0000-5\.0000(?: \d+)?\.gif$/.test(name));
+if (!teamFiles.length) throw new Error('Team collage GIF missing; review this export before publishing.');
+for (const name of teamFiles) {
+  const path = join(teamAssets, name);
+  await writeFile(path, gifPlayOnce(await readFile(path)));
+}
 const files = [];
 async function walk(directory) {
   for (const entry of await readdir(directory, { withFileTypes: true })) {
