@@ -42,6 +42,10 @@ export function patchKeynotePlayer(source) {
     'right-click navigation');
   // Movies are slide content: no hover controls or native fullscreen takeover,
   // and pointer input must reach the presentation rather than pause the movie.
+  // Normalize the later preload addition before checking the complete known
+  // video constructor, so re-preparing an already patched export stays safe.
+  player = player.replace('A.preload="auto",this.src.endsWith(".silent.mp4")&&(A.muted=!0,A.defaultMuted=!0),A.setAttribute("src",window.__pitchMedia?.source(this.src)||this.src),this.element=A}initWebVideo()',
+    'A.setAttribute("src",this.src),this.element=A}initWebVideo()');
   player = replaceKnown(player,
     'initVideo(){const A=document.createElement("video");a(A,"0px","0px",this.width+"px",this.height+"px",Fg,null,"hidden"),E(A,"pointer-events","all"),A.setAttribute("id",this.movieId),A.setAttribute("src",this.src),this.showControls&&(A.addEventListener("mouseover",()=>{A.setAttribute("controls","controls")}),A.addEventListener("mouseleave",()=>{A.removeAttribute("controls")})),this.element=A}',
     'initVideo(){const A=document.createElement("video");a(A,"0px","0px",this.width+"px",this.height+"px",Fg,null,"hidden"),E(A,"pointer-events","none"),A.setAttribute("playsinline",""),A.setAttribute("tabindex","-1"),A.setAttribute("id",this.movieId),A.setAttribute("src",this.src),this.element=A}',
@@ -58,5 +62,18 @@ export function patchKeynotePlayer(source) {
     'this.jumpToSlide(this.digitAccumulator));break',
     'this.jumpToSlide(this.digitAccumulator)),this.hideAndResetSlideNumberController();break',
     'dismiss submitted slide number');
+  // Opaque GIF conversions are silent inline movies; normal clips retain audio.
+  player = replaceKnown(player,
+    'A.setAttribute("src",this.src),this.element=A}initWebVideo()',
+    'A.preload="auto",this.src.endsWith(".silent.mp4")&&(A.muted=!0,A.defaultMuted=!0),A.setAttribute("src",window.__pitchMedia?.source(this.src)||this.src),this.element=A}initWebVideo()',
+    'streaming and prefetched movies');
+  player = replaceKnown(player,
+    'A.setAttribute("id",this.movieId),A.setAttribute("src",this.src)}observeEvents(A)',
+    'A.setAttribute("id",this.movieId),A.setAttribute("src",window.__pitchMedia?.source(this.src)||this.src)}observeEvents(A)',
+    'prefetched animated images');
+  player = replaceKnown(player,
+    'this.textureManager.loadScene(B)}unloadTextures()',
+    'this.textureManager.loadScene(B);const C=this.currentSlideIndex+1;C<A.slideCount&&this.textureManager.loadScene(this.scriptManager.sceneIndexFromSlideIndex(C)),window.__pitchMedia?.warm(this.currentSlideIndex)}unloadTextures()',
+    'preload next actual slide');
   return player;
 }

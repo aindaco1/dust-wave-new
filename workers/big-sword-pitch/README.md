@@ -21,6 +21,21 @@ npm run prepare:assets -- /path/to/Keynote-export
 npm test
 ```
 
+For optimized media and a replacement opening clip (FFmpeg/ffprobe and Python
+with Pillow required):
+
+```sh
+npm run prepare:assets -- /path/to/Keynote-export --optimize-media --opening-video /path/to/captioned-teaser.mp4
+```
+
+The opening clip becomes a fast-start H.264 copy up to 2000 pixels wide, with
+its original audio stream copied intact. Large opaque GIFs become silent,
+inline H.264 loops with their original frames and dimensions (odd dimensions
+receive one padding pixel). Small or transparent GIFs and the team collage
+remain GIFs. Encodes are cached by source hash and recipe in the ignored
+artifact directory. A replacement should match the original clip's duration;
+review new timings/layout when changing to a different edit.
+
 Preparation copies the export, sets its document title and noindex metadata,
 and removes Keynote's normal-window 720px width cap. The existing aspect-ratio
 layout now expands and contracts to fit the viewport. Ordinary clicks, taps,
@@ -29,13 +44,19 @@ backward swipes and right-click return to the previous complete slide, including
 after automatic animations. Input during a transition waits for a safe state.
 Only the leftmost 24 pixels of a swipe open the slide menu. The team collage
 plays once and holds on the full team; preparation removes its GIF repeat
-metadata without re-encoding any frames. Other animations and media remain intact.
+metadata without re-encoding any frames.
 Videos play inline without native controls and pass clicks and taps through to
 slide navigation. Leaving a slide pauses its video so audio cannot continue
 behind the next slide. The original video volume is preserved.
 The patch fails if the known player code changes.
 Source files are never edited. A previously prepared export can also be used
 as input when kept outside the generated presentation directory.
+
+At idle the player preloads the next actual slide's textures and media. Media
+prefetch uses two requests at a time, retains only the current and neighboring
+slides in tab memory, and reuses blob URLs without a second download. A fast
+jump falls back to normal streaming and cancels incomplete duplicate fetches.
+No persistent browser storage or public caching is enabled.
 
 Create `dustwave-big-sword-pitch-private` once with `wrangler r2 bucket create`.
 Supply `CLOUDFLARE_ACCOUNT_ID` and a Cloudflare token with R2 write access as
@@ -45,6 +66,8 @@ checkpoint. After all files upload, set `vars.ASSET_PREFIX` in `wrangler.jsonc`
 to the prefix printed by preparation. Keep the manifest locally for integrity
 checks. To republish after remote deletion, remove the corresponding local
 upload checkpoint first.
+Uploads use bounded batches of four buffered requests, with retries and a
+checkpoint after each batch; an incomplete upload must never be deployed.
 
 Set `PITCH_PASSWORD` and a random `SESSION_SECRET` using `wrangler secret put`.
 Secrets belong only in Cloudflare (or ignored `.dev.vars` for local testing).
@@ -77,8 +100,20 @@ are muted only in the browser test to avoid autoplay-policy false positives.
 Also verify those controls in the deployed browser; simulated swipe events do
 not establish physical-device acceptance.
 
+For optimized exports, also run `node workers/big-sword-pitch/scripts/verify-media.mjs`.
+It checks all 14 converted loops on desktop and phone without forcing playback,
+verifies that the teaser retains audio, and measures the large montage's first
+frame after prefetch while confirming no duplicate media request. Pass the
+live presentation URL and set `PITCH_PASSWORD` in the environment for the same
+deployed checks. Inspect captions and representative frames, compare encoded
+duration/frame counts, and verify fast-start metadata and copied audio before
+uploading. Prefetch timings describe a prepared next slide, not a guarantee on
+every network or a cold direct jump.
+
 See the [September 25 acceptance record](../../documentation/archive/2026-09-25-big-sword-pitch.md)
-for the initial deployment checks. Keep the gate's `same-origin` referrer policy:
+for the initial deployment checks and the
+[September 26 media update](../../documentation/archive/2026-09-26-big-sword-pitch-media.md)
+for encoding, prefetch and live playback evidence. Keep the gate's `same-origin` referrer policy:
 `no-referrer` makes browser form POSTs send a null Origin and fail the origin check.
 
 Rollback an asset update by restoring the previous `ASSET_PREFIX` and deploying.
