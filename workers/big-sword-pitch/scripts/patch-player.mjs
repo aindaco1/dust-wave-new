@@ -40,5 +40,23 @@ export function patchKeynotePlayer(source) {
     'handleContextMenuEvent(A){A.stopPropagation()}',
     'handleContextMenuEvent(A){A.stopPropagation(),A.preventDefault(),this.isRecording||this.goBackToPreviousSlide("handleContextMenuEvent")}',
     'right-click navigation');
+  // Movies are slide content: no hover controls or native fullscreen takeover,
+  // and pointer input must reach the presentation rather than pause the movie.
+  player = replaceKnown(player,
+    'initVideo(){const A=document.createElement("video");a(A,"0px","0px",this.width+"px",this.height+"px",Fg,null,"hidden"),E(A,"pointer-events","all"),A.setAttribute("id",this.movieId),A.setAttribute("src",this.src),this.showControls&&(A.addEventListener("mouseover",()=>{A.setAttribute("controls","controls")}),A.addEventListener("mouseleave",()=>{A.removeAttribute("controls")})),this.element=A}',
+    'initVideo(){const A=document.createElement("video");a(A,"0px","0px",this.width+"px",this.height+"px",Fg,null,"hidden"),E(A,"pointer-events","none"),A.setAttribute("playsinline",""),A.setAttribute("tabindex","-1"),A.setAttribute("id",this.movieId),A.setAttribute("src",this.src),this.element=A}',
+    'video interaction');
+  player = replaceKnown(player,
+    '"video"!==A.target.nodeName.toLowerCase()&&this.processClickOrTapAtDisplayCoOrds(C)',
+    'this.processClickOrTapAtDisplayCoOrds(C)', 'video click navigation', 2);
+  player = replaceKnown(player,
+    'resetMovieCache(){for(var A in this.movieCache)delete this.movieCache[A].videoElement,delete this.movieCache[A];this.movieCache=null}',
+    'resetMovieCache(){for(var A in this.movieCache)this.movieCache[A].stopMovie(),delete this.movieCache[A].videoElement,delete this.movieCache[A];this.movieCache=null}',
+    'stop departed slide videos');
+  // After a numbered jump, the submitted prompt must not swallow the next tap.
+  player = replaceKnown(player,
+    'this.jumpToSlide(this.digitAccumulator));break',
+    'this.jumpToSlide(this.digitAccumulator)),this.hideAndResetSlideNumberController();break',
+    'dismiss submitted slide number');
   return player;
 }

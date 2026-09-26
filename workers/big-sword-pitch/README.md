@@ -30,6 +30,9 @@ after automatic animations. Input during a transition waits for a safe state.
 Only the leftmost 24 pixels of a swipe open the slide menu. The team collage
 plays once and holds on the full team; preparation removes its GIF repeat
 metadata without re-encoding any frames. Other animations and media remain intact.
+Videos play inline without native controls and pass clicks and taps through to
+slide navigation. Leaving a slide pauses its video so audio cannot continue
+behind the next slide. The original video volume is preserved.
 The patch fails if the known player code changes.
 Source files are never edited. A previously prepared export can also be used
 as input when kept outside the generated presentation directory.
@@ -57,16 +60,20 @@ video byte ranges. Worker development and preview URLs are disabled.
 ## Acceptance and rollback
 
 Verify the live password screen, a wrong password, the correct password,
-refresh persistence, direct unauthenticated media denial, video seeking,
-keyboard navigation, and fitted slides at desktop and phone widths. Check that
+refresh persistence, direct unauthenticated media denial, video byte ranges,
+hidden video controls even on hover, navigation during active video playback,
+and fitted slides at desktop and phone widths. Check that
 requests stay within this route, with no website bundles or external assets.
 Local tests do not establish live provider or browser acceptance.
 
 With the prepared private export served locally on port 8799, run
 `node workers/big-sword-pitch/scripts/verify-player.mjs` from the repository root.
 This browser regression uses the site's Puppeteer dependency to check all 27
-slides in both directions, slide boundaries, right-click, phone swipe events,
+slides in both directions, slide boundaries, right-click, phone tap/swipe input,
 viewport fit, and the team collage's final frame across multiple cycle lengths.
+It starts every video, checks that hover does not expose controls, navigates
+while playback is active, and verifies the departed video is paused. Test videos
+are muted only in the browser test to avoid autoplay-policy false positives.
 Also verify those controls in the deployed browser; simulated swipe events do
 not establish physical-device acceptance.
 
