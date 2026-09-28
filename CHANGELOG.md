@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Added synchronized CC0 sword swishes, metallic sheath, heartbeat and tearing
+  effects to the four Big Sword pitch transitions, preserving video fidelity
+  and stopping their audio when the viewer advances.
+
 - Announced Dead Ballerina's official selection for the inaugural 2026 Out of
   This World Film Festival, with supplied festival artwork and tentative times.
 - Made ordinary pitch-player clicks, taps and forward navigation advance whole

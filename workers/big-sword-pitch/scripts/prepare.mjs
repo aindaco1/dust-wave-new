@@ -39,6 +39,14 @@ if (process.argv.includes('--optimize-media') || openingIndex >= 0) {
   const result = spawnSync('python3', args, { stdio: 'inherit' });
   if (result.status !== 0) throw new Error('Media preparation failed; do not publish this export.');
 }
+const soundsIndex = process.argv.indexOf('--transition-audio');
+if (soundsIndex >= 0) {
+  if (!process.argv[soundsIndex + 1]) throw new Error('--transition-audio requires the CC0 source directory.');
+  const args = [fileURLToPath(new URL('add-transition-audio.py', import.meta.url)), output,
+    resolve(process.argv[soundsIndex + 1])];
+  const result = spawnSync('python3', args, { stdio: 'inherit' });
+  if (result.status !== 0) throw new Error('Transition audio failed; do not publish this export.');
+}
 const media = [];
 for (const id of header.slideList) {
   const slide = JSON.parse(await readFile(join(output, 'assets', id, id + '.json'), 'utf8'));

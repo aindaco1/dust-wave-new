@@ -1,0 +1,72 @@
+{
+  "license": "CC0-1.0",
+  "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "sources": {
+    "swoosh": {
+      "title": "Swosh Sword Swing",
+      "author": "qubodup",
+      "url": "https://freesound.org/people/qubodup/sounds/59992/",
+      "download": "https://cdn.freesound.org/previews/59/59992_71257-hq.mp3",
+      "sha256": "9503cb8193bcaa66f594a0f6c764359527cabbe4020f15b058ee98509e38cfb5"
+    },
+    "sheath": {
+      "title": "Machette drawn from a sheath",
+      "author": "Mafon2",
+      "url": "https://freesound.org/people/Mafon2/sounds/245204/",
+      "download": "https://cdn.freesound.org/previews/245/245204_1196472-hq.mp3",
+      "sha256": "9478730e56a6bd7cde2faecec362a31b70e4b96f3bef0718c94b97db79f90424"
+    },
+    "heartbeat": {
+      "title": "heartbeat-100bpm-limited.wav",
+      "author": "loudernoises",
+      "url": "https://freesound.org/people/loudernoises/sounds/332809/",
+      "download": "https://cdn.freesound.org/previews/332/332809_5859881-hq.mp3",
+      "sha256": "6ea34c66da8c57d797c5675c01fedf6a0c07c54750d7faf6310a95ed2e3b3cc5"
+    },
+    "tear": {
+      "title": "Paper Ripping",
+      "author": "piedoom",
+      "url": "https://freesound.org/people/piedoom/sounds/234221/",
+      "download": "https://cdn.freesound.org/previews/234/234221_1427986-hq.mp3",
+      "sha256": "7a586cbbe19fd89fb8eaa5fa1e77b104299829b72e38f2a2c56f0d43b53fb1da"
+    }
+  },
+  "transitions": [
+    {
+      "slide": 3, "name": "Spinning sword", "duration": 2.4,
+      "cues": [
+        {"source":"swoosh","in":0,"out":0.415,"at":0.16,"gain":0.27,"pan":-0.7},
+        {"source":"swoosh","in":0,"out":0.415,"at":0.60,"gain":0.34,"pan":-0.35},
+        {"source":"swoosh","in":0,"out":0.415,"at":1.04,"gain":0.40,"pan":0},
+        {"source":"swoosh","in":0,"out":0.415,"at":1.48,"gain":0.34,"pan":0.35},
+        {"source":"swoosh","in":0,"out":0.415,"at":1.92,"gain":0.26,"pan":0.7}
+      ]
+    },
+    {
+      "slide": 10, "name": "Heart pierce and downward tear", "duration": 2.88,
+      "cues": [
+        {"source":"tear","in":0.035,"out":0.24,"at":0.17,"gain":0.42,"highpass":140},
+        {"source":"swoosh","in":0,"out":0.24,"at":0.13,"gain":0.17},
+        {"source":"heartbeat","in":0.20,"out":0.44,"at":0.37,"gain":0.48},
+        {"source":"heartbeat","in":0,"out":0.43,"at":0.65,"gain":0.62},
+        {"source":"heartbeat","in":0,"out":0.43,"at":1.35,"gain":0.62},
+        {"source":"tear","in":0.05,"out":1.13,"at":1.92,"tempo":1.9,"gain":0.75,"highpass":100},
+        {"source":"swoosh","in":0,"out":0.40,"at":1.93,"gain":0.14}
+      ]
+    },
+    {
+      "slide": 14, "name": "Horizontal sword wipe", "duration": 1.633333,
+      "cues": [
+        {"source":"swoosh","in":0,"out":0.415,"at":0.08,"tempo":0.65,"gain":0.34},
+        {"source":"sheath","in":1.04,"out":1.58,"at":0.50,"gain":0.40,"highpass":160}
+      ]
+    },
+    {
+      "slide": 27, "name": "Final center split", "duration": 1.633008,
+      "cues": [
+        {"source":"swoosh","in":0,"out":0.415,"at":0.17,"gain":0.23},
+        {"source":"sheath","in":2.63,"out":3.30,"at":0.17,"gain":0.58,"highpass":160}
+      ]
+    }
+  ]
+}

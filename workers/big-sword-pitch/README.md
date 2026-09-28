@@ -36,6 +36,25 @@ remain GIFs. Encodes are cached by source hash and recipe in the ignored
 artifact directory. A replacement should match the original clip's duration;
 review new timings/layout when changing to a different edit.
 
+For the four sword transitions, download the CC0 recordings listed in
+[`scripts/transition-audio.json`](scripts/transition-audio.json) into a private
+directory as `swoosh.mp3`, `sheath.mp3`, `heartbeat.mp3`, and `tear.mp3`, then run:
+
+```sh
+npm run prepare:assets -- /path/to/export --transition-audio /path/to/cc0-recordings
+```
+
+This option also requires macOS with Xcode command-line tools. FFmpeg decodes
+the verified sources; the recipe trims, fades, levels and places each cue at
+the sword movement or heart pulse. AVFoundation adds AAC audio in passthrough
+mode, preserving the original video packets, timing and HEVC alpha codec
+configuration. Generic FFmpeg remuxing loses this export's auxiliary alpha
+metadata even with video stream copy, so preparation verifies both packet
+hashes and codec configuration before replacing each generated clip. Source
+checksums, timing mismatches, silent cues and insufficient headroom fail the
+preparation. Audio sources, mixes and previews remain in ignored artifacts.
+All other media, including the captioned teaser and silent loops, are unchanged.
+
 Preparation copies the export, sets its document title and noindex metadata,
 and removes Keynote's normal-window 720px width cap. The existing aspect-ratio
 layout now expands and contracts to fit the viewport. Ordinary clicks, taps,
@@ -110,10 +129,21 @@ duration/frame counts, and verify fast-start metadata and copied audio before
 uploading. Prefetch timings describe a prepared next slide, not a guarantee on
 every network or a cold direct jump.
 
+Run `node workers/big-sword-pitch/scripts/verify-transition-audio.mjs` for the
+sound update. It checks decoded audio through Web Audio analysis without
+calling `play()`, muting videos or overriding autoplay policy. Normal keyboard
+and phone-emulated tap entry must produce audio on all four transitions;
+leaving must stop playback, and revisiting must finish once without looping.
+It accepts the live URL and `PITCH_PASSWORD` like the media verifier. Physical
+speakers, physical iOS behavior and subjective sound balance still require
+listening; a private combined preview is useful for that review.
+
 See the [September 25 acceptance record](../../documentation/archive/2026-09-25-big-sword-pitch.md)
 for the initial deployment checks and the
 [September 26 media update](../../documentation/archive/2026-09-26-big-sword-pitch-media.md)
-for encoding, prefetch and live playback evidence. Keep the gate's `same-origin` referrer policy:
+for encoding, prefetch and live playback evidence. The
+[September 27 sound update](../../documentation/archive/2026-09-27-big-sword-pitch-sound.md)
+records the transition cues and audio acceptance. Keep the gate's `same-origin` referrer policy:
 `no-referrer` makes browser form POSTs send a null Origin and fail the origin check.
 
 Rollback an asset update by restoring the previous `ASSET_PREFIX` and deploying.

@@ -1,5 +1,20 @@
 # Third-party notices
 
+## Big Sword transition sound effects
+
+The independently hosted, private pitch uses edited recordings published under
+[CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/):
+
+- [Swosh Sword Swing](https://freesound.org/people/qubodup/sounds/59992/) by qubodup.
+- [Machette drawn from a sheath](https://freesound.org/people/Mafon2/sounds/245204/) by Mafon2.
+- [heartbeat-100bpm-limited.wav](https://freesound.org/people/loudernoises/sounds/332809/) by loudernoises.
+- [Paper Ripping](https://freesound.org/people/piedoom/sounds/234221/) by piedoom.
+
+The per-recording license declarations were checked September 27, 2026.
+Download URLs, SHA-256 checksums and edit timings are recorded in
+`workers/big-sword-pitch/scripts/transition-audio.json`. Audio and private
+presentation assets are not distributed in this public repository.
+
 ## Font Awesome Free 6.5.2 icons
 
 The inline SVG icon paths in `lib/inline-icon.cjs` come from Font Awesome Free
