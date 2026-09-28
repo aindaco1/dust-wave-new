@@ -44,9 +44,24 @@ Written by Alonso Indacochea<br>
 
 <br>
 
-### Awards
+### Awards & Festival Selections
 
-[2026 Silver City Community Film Festival](https://silvercityfilmfest.org/)
+#### [2026 Out of This World Film Festival](https://filmfreeway.com/OutOfThisWorldFilmFestival)
+
+**Official Selection** of the inaugural festival for independent sci-fi and fantasy films in Albuquerque.
+
+The festival takes place on **December 12, 2026**, at **the Guild Cinema**, 3405 Central Ave NE, Albuquerque, NM 87106. Tentative times are **3 p.m.** for doors and **3:30 to 9 p.m.** for the festival. The exact screening time for _Dead Ballerina_ has not yet been announced.
+
+[Read the festival announcement](/dead-ballerina-selected-for-the-2026-out-of-this-world-film-festival.html).
+
+<div class="row g-2">
+  <div class="col-12 col-md-6">
+    <img src="/img/news/out-of-this-world-2026/ootwff-laurel.png" class="img-fluid rounded" width="1024" height="1024" alt="2026 Out of This World Film Festival Official Selection laurel" loading="lazy" decoding="async">
+  </div>
+</div>
+
+#### [2026 Silver City Community Film Festival](https://silvercityfilmfest.org/)
+
 * **Audience Choice Award**
 * Official Selection
 

@@ -46,8 +46,17 @@ galleryImages:
 Escrito por Alonso Indacochea<br/>
 Animación 3D por Jay Renteria</p>
 <p><br/></p>
-<h3>Premios</h3>
-<p><a href="https://silvercityfilmfest.org/">Silver City Community Film Festival 2026</a></p>
+<h3>Premios y selecciones en festivales</h3>
+<h4><a href="https://filmfreeway.com/OutOfThisWorldFilmFestival">Out of This World Film Festival 2026</a></h4>
+<p><strong>Selección Oficial</strong> de la primera edición de este festival de cine independiente de ciencia ficción y fantasía en Albuquerque.</p>
+<p>El festival se celebra el <strong>12 de diciembre de 2026</strong> en el <strong>Guild Cinema</strong>, 3405 Central Ave NE, Albuquerque, NM 87106. Los horarios tentativos son: apertura de puertas a las <strong>3 p. m.</strong> y funciones de <strong>3:30 a 9 p. m.</strong> Aún no se ha anunciado la hora exacta de la proyección de <em>Dead Ballerina</em>.</p>
+<p><a href="/dead-ballerina-selected-for-the-2026-out-of-this-world-film-festival.html">Lee el anuncio del festival (en inglés)</a>.</p>
+<div class="row g-2">
+<div class="col-12 col-md-6">
+<img src="/img/news/out-of-this-world-2026/ootwff-laurel.png" class="img-fluid rounded" width="1024" height="1024" alt="Laurel de Selección Oficial del Out of This World Film Festival 2026" loading="lazy" decoding="async"/>
+</div>
+</div>
+<h4><a href="https://silvercityfilmfest.org/">Silver City Community Film Festival 2026</a></h4>
 <ul>
 <li><strong>Premio del Público</strong></li>
 <li>Selección Oficial</li>
