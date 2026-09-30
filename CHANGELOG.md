@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Announced Red Razor on Soft Skin's 2026 Way OUT West Film Fest selection,
+  dated September 22, with the existing laurel, screening details and ticket links.
 - Announced Red Razor on Soft Skin's 2026 Santa Fe International Film Festival
   selection and added screening times, ticket links, the festival laurel and
   updated poster to its English and Spanish project pages.
