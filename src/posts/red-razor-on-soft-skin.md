@@ -2,7 +2,7 @@
 title: Red Razor on Soft Skin
 date: 2026-10-15
 img: /img/digest/header/digest-header-2.jpg
-summary: Giallo short shot on 16mm
+summary: Giallo short shot on 16mm. Official Selection, SFIFF 2026.
 directors:
   - Luca Silver
 tags:
@@ -29,7 +29,7 @@ galleryImages:
     alt: "description"
 poster: /img/red_razor_on_soft_skin/poster.jpg
 posterHeading: "Poster"
-posterAlt: "poster"
+posterAlt: "Illustrated Red Razor on Soft Skin poster with a terrified man holding a straight razor, a woman behind him, and a shadowy barber"
 projectVideos:
   - heading: "Trailer"
     id: vmiSH7eNYng
@@ -43,7 +43,12 @@ movieHeading: "Movie"
 
 _Red Razor on Soft Skin_ is a giallo short film shot on 16mm at McCall's Barbershop in Albuquerque, New Mexico.
 
-<br>
+### Santa Fe International Film Festival 2026
+
+The film is an **Official Selection** of the [2026 Santa Fe International Film Festival](https://sfiff.eventive.org/films/6aaadeead5c4f683fead2ad0), screening in the **New Mexico Shorts After Dark** program:
+
+* **Thursday, October 15, 2026, at 8PM MT** — CCA Cinema, Santa Fe. [Tickets and program](https://sfiff.eventive.org/schedule/6aad94ad7de28aad2f64a48f).
+* **Monday, October 19, 2026, at 7:30PM MT** — Guild Cinema, Albuquerque. [Tickets and program](https://sfiff.eventive.org/schedule/6ab1b2ad3ad61c491ecc61bc).
 
 ### Crew
 
@@ -97,14 +102,18 @@ Walt McComb -- John Dewar
 
 ### Awards
 
+* Official Selection — [Santa Fe International Film Festival (2026)](https://sfiff.eventive.org/films/6aaadeead5c4f683fead2ad0)
 * Official Selection — Altered Images - Experimental Film and Music Fest (2026)
 * Official Selection — Way OUT West Film Fest (2026)
 
 <div class="row g-4 align-items-center">
-  <div class="col-12 col-md-6">
+  <div class="col-12 col-md-4">
+    <img src="{{ '/img/red_razor_on_soft_skin/sfiff-official-selection-2026.png' | toWebp }}" class="img-fluid w-100" width="2400" height="1800" alt="Santa Fe International Film Festival 2026 Official Selection laurel" loading="lazy" decoding="async">
+  </div>
+  <div class="col-12 col-md-4">
     <img src="{{ '/img/red_razor_on_soft_skin/altered-images-official-selection-2026.png' | toWebp }}" class="img-fluid w-100" width="4958" height="3292" alt="Altered Images - Experimental Film and Music Fest 2026 Official Selection laurel" loading="lazy" decoding="async">
   </div>
-  <div class="col-12 col-md-6">
+  <div class="col-12 col-md-4">
     <img src="{{ '/img/red_razor_on_soft_skin/way-out-west-official-selection-2026.png' | toWebp }}" class="img-fluid w-100" width="1735" height="1152" alt="Way OUT West Film Fest 2026 Official Selection laurel" loading="lazy" decoding="async">
   </div>
 </div>

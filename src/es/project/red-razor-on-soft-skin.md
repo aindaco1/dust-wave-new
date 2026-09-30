@@ -2,7 +2,7 @@
 title: Red Razor on Soft Skin
 date: 2026-01-30
 img: /img/digest/header/digest-header-2.jpg
-summary: Cortometraje giallo filmado en 16 mm
+summary: Cortometraje giallo filmado en 16 mm. Selección oficial, SFIFF 2026.
 layout: layouts/post.njk
 navbar: navbar1
 footer: footer1
@@ -33,7 +33,7 @@ galleryImages:
     alt: "descripción"
 poster: /img/red_razor_on_soft_skin/poster.jpg
 posterHeading: "Cartel"
-posterAlt: "póster"
+posterAlt: "Cartel ilustrado de Red Razor on Soft Skin con un hombre aterrado que sostiene una navaja de afeitar, una mujer detrás de él y un barbero entre sombras"
 projectVideos:
   - heading: "Tráiler"
     id: vmiSH7eNYng
@@ -47,7 +47,12 @@ movieHeading: "Película"
 
 <div class="project-translation project-translation--es">
 <p><em>Red Razor on Soft Skin</em> es un cortometraje en giallo filmado en 16 mm en McCall's Barbershop en Albuquerque, Nuevo México.</p>
-<p><br/></p>
+<h3>Santa Fe International Film Festival 2026</h3>
+<p>La película forma parte de la <strong>selección oficial</strong> del <a href="https://sfiff.eventive.org/films/6aaadeead5c4f683fead2ad0">Santa Fe International Film Festival 2026</a> y se proyectará en el programa <strong>New Mexico Shorts After Dark</strong>:</p>
+<ul>
+<li><strong>Jueves 15 de octubre de 2026, a las 8PM MT</strong> — CCA Cinema, Santa Fe. <a href="https://sfiff.eventive.org/schedule/6aad94ad7de28aad2f64a48f">Entradas y programa</a>.</li>
+<li><strong>Lunes 19 de octubre de 2026, a las 7:30PM MT</strong> — Guild Cinema, Albuquerque. <a href="https://sfiff.eventive.org/schedule/6ab1b2ad3ad61c491ecc61bc">Entradas y programa</a>.</li>
+</ul>
 <h3>Equipo</h3>
 <p>Escrito, Dirigido &amp; Editado por Luca Silver<br/>
 Executive Producers -- Alonso Indacochea, Shelley Holt, Luca Silver<br/>
@@ -96,14 +101,18 @@ Moira Lazar -- Shelley Holt<br/>
 Walt McComb -- John Dewar  </p>
 <h3>Premios</h3>
 <ul>
+<li>Selección oficial — <a href="https://sfiff.eventive.org/films/6aaadeead5c4f683fead2ad0">Santa Fe International Film Festival (2026)</a></li>
 <li>Selección oficial — Altered Images - Experimental Film and Music Fest (2026)</li>
 <li>Selección oficial — Way OUT West Film Fest (2026)</li>
 </ul>
 <div class="row g-4 align-items-center">
-  <div class="col-12 col-md-6">
+  <div class="col-12 col-md-4">
+    <img src="{{ '/img/red_razor_on_soft_skin/sfiff-official-selection-2026.png' | toWebp }}" class="img-fluid w-100" width="2400" height="1800" alt="Laurel de selección oficial del Santa Fe International Film Festival 2026" loading="lazy" decoding="async">
+  </div>
+  <div class="col-12 col-md-4">
     <img src="{{ '/img/red_razor_on_soft_skin/altered-images-official-selection-2026.png' | toWebp }}" class="img-fluid w-100" width="4958" height="3292" alt="Laurel de selección oficial de Altered Images - Experimental Film and Music Fest 2026" loading="lazy" decoding="async">
   </div>
-  <div class="col-12 col-md-6">
+  <div class="col-12 col-md-4">
     <img src="{{ '/img/red_razor_on_soft_skin/way-out-west-official-selection-2026.png' | toWebp }}" class="img-fluid w-100" width="1735" height="1152" alt="Laurel de selección oficial de Way OUT West Film Fest 2026" loading="lazy" decoding="async">
   </div>
 </div>

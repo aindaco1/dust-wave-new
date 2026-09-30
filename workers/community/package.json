@@ -25,6 +25,7 @@
     "wrangler": "4.129.1"
   },
   "overrides": {
+    "undici": "7.30.0",
     "miniflare": {
       "sharp": "0.35.4"
     }

@@ -4,6 +4,7 @@ date: 2026-01-14
 author: Alonso Indacochea
 summary: 1% for the rest of us
 img: /img/news/indie-fifty.png
+imgAlt: "The Indie 50 illustrated banknote, with In Corman We Trust above the title"
 syndicate:
   - substack
   - fediverse

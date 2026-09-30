@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Announced Red Razor on Soft Skin's 2026 Santa Fe International Film Festival
+  selection and added screening times, ticket links, the festival laurel and
+  updated poster to its English and Spanish project pages.
+- Replaced The Indie 50 artwork with the supplied banknote design.
+- Updated brace-expansion to 5.0.12, markdown-it to 14.3.2 and the Community
+  and Newsletter development tools' undici dependency to 7.30.0 to resolve
+  dependency security advisories.
+
 - Updated the English and Spanish Dead Ballerina project pages with the 2026
   Out of This World Film Festival selection, laurel and tentative screening details.
 
