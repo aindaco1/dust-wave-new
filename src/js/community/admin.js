@@ -24,7 +24,7 @@ function renderTabs(){
   const role=state.currentUser.role;if(role===tabsRole)return;
   tabsRole=role;
   const root=$('[data-admin-tabs]'),list=el('div','',{role:'tablist','aria-label':copy.title});
-  for(const name of ['events','queue','meetings',...(role==='super_admin'?['users']:[])])list.append(el('button',copy[name],{type:'button',id:`community-tab-${name}`,role:'tab','data-tab':name,'aria-controls':`community-${name}`}));
+  for(const name of ['queue','meetings',...(role==='super_admin'?['users']:[])])list.append(el('button',copy[name],{type:'button',id:`community-tab-${name}`,role:'tab','data-tab':name,'aria-controls':`community-${name}`}));
   root.querySelector('[role=tablist]').replaceWith(list);root.querySelector('.community-admin__mobile-tabs')?.remove();
   if(role==='super_admin')root.append(userPanel);else userPanel.remove();
   mountAccessibleTabs(root,{
@@ -41,7 +41,7 @@ function formatDate(date){return new Intl.DateTimeFormat(language,{dateStyle:'fu
 function statusLabel(value){return value==='read'?copy.readStatus:copy[value]||value;}
 function showSession(active){
   authenticated=active;login.hidden=active;workspace.hidden=!active;workspace.inert=active&&!state;workspace.setAttribute('aria-busy',String(active&&!state));$('[data-admin-logout]').hidden=!active;
-  if(!active){state=null;queueIds=[];editorDirty=false;clearTimeout(editorTimer);editor.close();editorUpload=null;editing=null;users.setUser(null);client.clearCsrfToken();for(const root of document.querySelectorAll('[data-admin-events],[data-admin-scripts],[data-admin-meetings],[data-admin-queue],[data-editor-fields]'))root.replaceChildren();}
+  if(!active){state=null;queueIds=[];editorDirty=false;clearTimeout(editorTimer);editor.close();editorUpload=null;editing=null;users.setUser(null);client.clearCsrfToken();for(const root of document.querySelectorAll('[data-admin-scripts],[data-admin-meetings],[data-admin-queue],[data-editor-fields]'))root.replaceChildren();}
 }
 async function refresh({force=false}={}){
   if(busy&&!force)return;
@@ -88,10 +88,7 @@ setInterval(()=>void syncAdmin(),30000);
 editor.addEventListener('close',()=>void syncAdmin());
 function render(focusId='',focusControl=''){
   renderTabs();
-  const eventRoot=$('[data-admin-events]'),scriptRoot=$('[data-admin-scripts]'),meetingRoot=$('[data-admin-meetings]');
-  const events=state.events.filter(e=>e.kind==='event').sort((a,b)=>a.date.localeCompare(b.date));
-  eventRoot.replaceChildren(...events.map(e=>recordCard(e,'event')));
-  if(!events.length)eventRoot.append(el('p',copy.noSubmissions));
+  const scriptRoot=$('[data-admin-scripts]'),meetingRoot=$('[data-admin-meetings]');
   const inactive=state.scripts.filter(s=>!state.queue.includes(s.id)).sort((a,b)=>a.status==='pending'?-1:b.status==='pending'?1:0);
   scriptRoot.replaceChildren(...inactive.map(s=>recordCard(s,'script')));
   if(!inactive.length)scriptRoot.append(el('p',copy.noSubmissions));
@@ -107,7 +104,6 @@ function recordCard(item,kind){
   if(item.pages)meta.push(`${item.pages} ${copy.pages}`);card.append(el('p',meta.join(' · '),{class:'community-admin-card__meta'}));
   if(kind==='script'&&item.fileName)card.append(fileNameLabel(item));
   if(item.description)card.append(el('p',item.description));
-  if(item.imageId){card.append(el('img','',{src:`${API}/admin/images/${item.imageId}`,alt:'',width:80,height:80}));}
   if(item.agenda?.length){const list=el('ol');for(const s of item.agenda)list.append(el('li',`${s.title} — ${s.author}`));card.append(list);}
   const actions=el('div','',{class:'community-admin__actions'});
   actions.append(button(copy.edit,()=>openEditor(item,kind)));
@@ -118,7 +114,6 @@ function recordCard(item,kind){
     if(item.status==='approved')actions.append(button(copy.withdraw,()=>mutate(item,kind,'withdraw')),button(copy.read,()=>mutate(item,kind,'read')));
     if(['read','withdrawn'].includes(item.status))actions.append(button(copy.requeue,()=>mutate(item,kind,'requeue')));
   }else{
-    if(item.kind==='event')actions.append(button(copy.image,()=>replaceFile(item,kind)));
     if(item.status!=='published')actions.append(button(item.status==='cancelled'?copy.restore:copy.approve,()=>mutate(item,kind,'approve')));
     if(item.status==='pending')actions.append(button(copy.reject,()=>mutate(item,kind,'reject')));
     if(item.status==='published')actions.append(button(copy.cancelEvent,()=>mutate(item,kind,'cancel')));
@@ -132,7 +127,7 @@ function fileNameLabel(item){return el('p',item.fileName,{class:'community-admin
 function scriptFileButtons(item){
   return [button(copy.download,async()=>{
     try{triggerBlobDownload(await requestCredentialedBlob(`${API}/admin/scripts/${item.id}/pdf`,{allowedContentTypes:['application/pdf'],maximumBytes:10*1024*1024}),'writers-group-script.pdf');}catch(error){report(error);}
-  }),button(copy.replacePdf,()=>replaceFile(item,'script'))];
+  }),button(copy.replacePdf,()=>replaceFile(item))];
 }
 async function mutate(item,kind,action){
   if(busy||!discard())return;
@@ -236,9 +231,9 @@ function openEditor(item,kind,{meeting=false}={}){
   if(busy||!discard())return;
   if(queueDirty()){queueIds=[...state.queue];queueUncertain=false;renderQueue();queueStatus.textContent='';queueRetry.hidden=true;queueDiscard.hidden=true;}
   clearTimeout(editorTimer);
-  editing={id:item?.id,kind,revision:state.revision,submissionKey:crypto.randomUUID(),createAction:meeting?'create_meeting':'create_event'};editorDirty=false;editorUpload=null;editorError=false;editorUncertain=false;
+  editing={id:item?.id,kind,revision:state.revision,submissionKey:crypto.randomUUID(),createAction:'create_meeting'};editorDirty=false;editorUpload=null;editorError=false;editorUncertain=false;
   const addingScript=kind==='script'&&!item;
-  $('#community-editor-heading').textContent=item?copy.edit:addingScript?copy.addScript:meeting?copy.addMeeting:copy.addEvent;
+  $('#community-editor-heading').textContent=item?copy.edit:addingScript?copy.addScript:copy.addMeeting;
   if(meeting&&!item)item={...state.meetingDefaults};
   const root=$('[data-editor-fields]');root.replaceChildren(field('title',kind==='script'?copy.scriptTitle:copy.eventName,item?.title));
   if(kind==='script'&&item)root.prepend(el('p',copy.autosaveIntro));
@@ -363,17 +358,16 @@ $('[data-editor-refresh]').addEventListener('click',async()=>{
     editorDirty=false;busy=false;openEditor(item,editing.kind);
   }catch(error){$('[data-editor-status]').textContent=errorText(error);}finally{busy=false;}
 });
-function replaceFile(item,kind){
+function replaceFile(item){
   if(busy||!discard())return;
-  const input=el('input','',{type:'file',accept:kind==='script'?'application/pdf,.pdf':'image/jpeg,image/png,image/webp'});
+  const input=el('input','',{type:'file',accept:'application/pdf,.pdf'});
   input.addEventListener('change',async()=>{
     if(!input.files[0]||busy)return;busy=true;status.textContent=copy.sending;
     const revision=state.revision;
-    try{const upload=await uploadFile(input.files[0],kind==='script'?'pdf':'image','',{admin:true});await client.request('/admin/attach',{method:'POST',body:{revision,id:item.id,kind,uploadId:upload.id,uploadToken:upload.token}});await refresh({force:true});status.textContent=copy.actionDone;}
+    try{const upload=await uploadFile(input.files[0],'pdf','',{admin:true});await client.request('/admin/attach',{method:'POST',body:{revision,id:item.id,kind:'script',uploadId:upload.id,uploadToken:upload.token}});await refresh({force:true});status.textContent=copy.actionDone;}
     catch(error){report(error);}finally{busy=false;input.remove();}
   });input.hidden=true;document.body.append(input);input.click();
 }
-$('[data-admin-create]').addEventListener('click',()=>openEditor(null,'event'));
 $('[data-admin-add-script]').addEventListener('click',()=>openEditor(null,'script'));
 $('[data-admin-add-meeting]').addEventListener('click',()=>openEditor(null,'event',{meeting:true}));
 $('[data-admin-logout]').addEventListener('click',async()=>{if(busy||!guard.confirmTransition(copy.unsaved))return;try{await session.logout();state=null;queueIds=[];showSession(false);}catch(error){report(error);}});

@@ -91,13 +91,13 @@ test('concurrent submission retries create one receipt and one set of emails; va
   assert.match(JSON.parse((await f.jobs()).find(j => j.kind === 'received').payload).subject, /We received/);
 });
 
-test('admin additions and event proposals do not send script mail; legacy pending scripts can receive first approval', async t => {
+test('admin additions and retired event proposals do not send script mail; legacy pending scripts can receive first approval', async t => {
   const f = await fixture(t);
   const adminBody = await f.submission({ revision: (await f.state()).revision });
   const created = await f.ok('/admin/scripts', adminBody, { authenticated: true });
   await f.action(created.id, 'approve');
   const event = await f.submission({ date: '2026-10-01', time: '19:00', description: 'Event proposal' }, 'image');
-  await f.ok('/events', event);
+  assert.equal((await f.call('/events', event)).status,410);
   assert.equal((await f.jobs()).length, 0);
   const original = await f.state(), next = structuredClone(original);
   const legacy = { ...next.scripts[0], id: crypto.randomUUID(), status: 'pending', approvedAt: '' };

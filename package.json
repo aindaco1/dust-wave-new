@@ -64,7 +64,7 @@
     "clean-prod": "rm -rf docs/*",
     "test:contact": "node --test tests/contact-form.test.mjs",
     "test:community:admin": "node --test tests/community-admin.test.mjs",
-    "test:community": "node --test tests/community-contract.test.mjs tests/community-calendar-navigation.test.mjs tests/community-challenge-layout.test.mjs tests/community-submission.test.mjs && npm run test:community:admin && npm test --prefix workers/community && npm audit --prefix workers/community --audit-level=high",
+    "test:community": "node --test tests/community-contract.test.mjs tests/community-challenge-layout.test.mjs tests/community-submission.test.mjs && npm run test:community:admin && npm test --prefix workers/community && npm audit --prefix workers/community --audit-level=high",
     "build:community-staging": "COMMUNITY_STAGING_BUILD=true npm run build:ci && node scripts/prepare-community-staging.mjs docs",
     "qa:responsive": "node scripts/audit-site-responsive.mjs"
   },

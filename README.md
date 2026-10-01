@@ -54,8 +54,9 @@ for acceptance checks.
 
 See [LICENSE](LICENSE) and [third-party notices](THIRD_PARTY_NOTICES.md).
 
-## Community calendars
+## Writers Group
 
-The Microcinema calendar and Writers Group queue share one independent
-[Community Worker](workers/community/README.md). See its guide for admin access,
-private submissions, testing, deployment and rollback.
+The [Community Worker](workers/community/README.md) owns private script
+submissions, the reading queue and its admin. Microcinema events have moved to
+[dustwavemicrocinema.com](https://dustwavemicrocinema.com/); the former URLs redirect
+there. See the Worker guide for retirement details and independent deployment.

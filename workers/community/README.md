@@ -1,58 +1,54 @@
-# Community calendar and Writers Group
+# Writers Group and Community admin
 
-This independently deployed Worker serves the Microcinema calendar, Writers
-Group agendas, submissions, and `/admin/community/` API. Eleventy owns the
-English/Spanish page shells; the Worker injects fresh public markup and month
-metadata into their versioned `data-community-slot="1"` slots.
+This independently deployed Worker serves Writers Group reading agendas,
+private script submissions, and `/admin/community/`. Eleventy owns the
+English/Spanish page shells; the Worker injects current readings into their
+versioned `data-community-slot="1"` slots.
 
-Both pages use the same meeting records. Approved scripts fill two slots per
-meeting in queue order. The recurring anchor is September 21, 2026, every
-other Monday from 19:00–21:00 in `America/Denver`. A daily trigger extends the
-materialized schedule six months ahead. Cancelled, rescheduled and deleted
-records retain their IDs so the daily trigger cannot recreate an exception.
-Deleted records disappear from both public calendars and the admin lists.
-Started agendas retain title/author snapshots, even when an admin changes the
-meeting date or deletes the meeting; already-read scripts stay out of the queue.
-Only future meetings without a historical agenda are reallocated. Admin reordering saves automatically; an atomic revision
-check commits the queue and agendas together.
+## Microcinema retirement
 
-The Writers Group script submission and Microcinema event proposal forms are
-always visible, with no trailing divider. Both initialize the same shared
-responsive Turnstile control immediately. Public PDF
-upload grants require server-side Turnstile verification, and the resulting
-grant is consumed with the script submission. Retrying a submission reuses that
-grant instead of consuming the Turnstile token twice. Success removes the
-widget and disconnects its resize observer.
+Microcinema events now belong to [dustwavemicrocinema.com](https://dustwavemicrocinema.com/)
+and its separate [admin](https://dustwavemicrocinema.com/admin/). The former
+English/Spanish `microcinema.html` URLs return permanent 301 redirects to the
+matching new homepage, dropping obsolete month parameters. The small Eleventy
+redirect documents are origin fallbacks, excluded from the sitemap. Navigation
+links directly to the new site.
+
+The Events tab, event proposal form, image uploads, calendar rendering and month
+cards are retired. Their API endpoints return 410 with the new site URL; old
+admin event writes are rejected, including image attachment. Admin state only
+includes Writers Group meetings. Existing event rows, receipts and attached R2
+objects remain stored and are never migrated or deleted by this release. There
+is no schema migration. The Community Worker and its route bindings must stay
+active for redirects and Writers Group; deleting it would break both.
+
+Writers Group retains its independent queue, user directory, private PDFs,
+script emails, and reading schedule. The Microcinema event listing does not
+synchronize this schedule automatically. A changed meeting date must also be
+updated in the independent Microcinema admin when it affects that listing.
+
+Approved scripts fill two slots per meeting in queue order. The recurring
+anchor is September 21, 2026, every other Monday from 19:00–21:00 in
+`America/Denver`. A daily trigger extends meetings six months ahead. Cancelled,
+rescheduled and deleted records retain their IDs so recurrence cannot recreate
+an exception. Started agendas retain title/author snapshots; only future
+meetings without historical agendas are reallocated. Queue writes and agenda
+updates share an atomic revision check.
+
+The script form is always visible. Public PDF upload grants require server-side
+Turnstile verification and are consumed on submission. A retry reuses the grant
+instead of consuming the challenge twice. Success removes the widget and its
+resize observer. PDFs are parsed with pdf-lib, must be unencrypted, at most
+35 pages and 10 MB, and have no public download route.
 
 ## Shared code
 
-The repository's immutable Platform pin supplies Worker Core crypto, cookies,
-time-zone handling, HTTP headers and Turnstile verification. The browser uses
-Admin Shell's API client, passwordless session, responsive Turnstile, tabs,
-confirmation dialog, unsaved-change guard and private download
-helper. The existing site share panel and calendar use `src/js/share-actions.js`.
-Community owns its D1 schema, R2 bucket, user directory, domain policy and
-deployment. It shares no Store, Pool, Podcast or Newsletter memberships,
-sessions or data. Role policy follows Store; the pinned Platform has no shared
-user-directory component, so Community composes its existing fields and
-Platform session, tabs and unsaved-change controls.
-
-Images are signature-checked, decoded, cropped to 320/640-pixel squares and
-converted to WebP through the Images binding. PDFs are parsed with pdf-lib,
-must be unencrypted, at most 35 pages and 10 MB, and have no public route.
-Public events require approval; only published image derivatives are served.
-Month cards are actual 1200×630 PNGs rendered with resvg WASM and bundled Inter.
-Their URLs include a digest of the public month content. No browser execution
-is needed for month-specific Open Graph tags or readable calendar navigation.
-With JavaScript, month links and the month picker fetch this same server-rendered
-markup and replace only the calendar. Scroll position, list view and entered
-proposal details are preserved; browser history, language links and share
-metadata track the selected month. Failed requests leave the current month
-readable and allow retrying the same controls. Share/copy URLs include
-`#calendar`: opening one in a new page uses native fragment scrolling to the
-selected month; in-place month controls update history without following the
-fragment again. Canonical and Open Graph URLs retain the month query without
-a fragment.
+The immutable Platform pin supplies Worker Core crypto, cookies, time zones,
+HTTP headers and Turnstile verification. Admin Shell supplies the browser API
+client, passwordless session, responsive challenge, tabs, confirmation dialog,
+unsaved-change guard and private download helper. Community owns its D1 schema,
+R2 bucket, user directory, domain policy and deployment. It shares no
+Microcinema, Store, Pool, Podcast or Newsletter memberships, sessions or data.
 
 ## Local development and checks
 
@@ -81,7 +77,7 @@ npm run migrate:local
 npm run dev -- --port 8787 --test-scheduled
 ```
 
-Open `http://localhost:8787/microcinema.html`, `/writers-group.html`, or
+Open `http://localhost:8787/writers-group.html` or
 `/admin/community/`. Explicit loopback local mode returns a test sign-in link
 instead of sending an email. That bypass is unavailable in staging/production.
 After requesting sign-in, click **Open local test sign-in** on the page.
@@ -112,13 +108,13 @@ git diff --check
 Tests use synthetic data and an isolated workerd/D1/R2 runtime, with a fixed
 clock. They cover privacy, file validation, session replay, CSRF/Origin,
 idempotent submissions, concurrent revision claims, scheduling and DST,
-archive limits, server markup and actual PNG rendering. They send no emails.
+retired event denials, bilingual redirects and escaped reading markup. They send no emails.
 
 Miniflare's `sharp` dependency is overridden to `0.35.4` to address
 [GHSA-rgj7-g3m4-5g8c](https://github.com/advisories/GHSA-rgj7-g3m4-5g8c)
 while retaining the reviewed Miniflare/Wrangler versions. Remove the override
 when an adopted upstream release pins a patched version. This only affects
-local/CI tooling; production image processing uses the Cloudflare Images binding.
+local/CI tooling; production no longer has an Images binding.
 
 ### Console diagnostics
 
@@ -169,8 +165,8 @@ token. Tokens and private upload grants must never be logged or committed.
 
 ### Users and roles
 
-- **Super-admin** (`super_admin`) can manage events, meetings, scripts and users.
-- **Limited-admin** (`limited_admin`) has the same event, meeting and script
+- **Super-admin** (`super_admin`) can manage meetings, scripts and users.
+- **Limited-admin** (`limited_admin`) has the same meeting and script
   access, including private PDFs, but cannot see or call the Users API.
 
 **Users → Add user** starts with Limited-admin selected. Name is optional
@@ -185,7 +181,7 @@ autosave. Revision checks prevent one admin from replacing another admin's
 newer changes. A conflict retains the draft and offers **Use saved version**.
 An atomic D1 batch saves the directory, audit entry, and revocations: deleted
 accounts and changed emails/roles lose existing sessions and pending sign-in
-links. Public calendars never include this directory or private account fields.
+links. Public readings never include this directory or private account fields.
 
 New users and changed email addresses receive a 15-minute sign-in email after
 saving in staging/production. If email delivery fails, the account stays saved
@@ -194,17 +190,18 @@ the sign-in page. Local mode skips invitations. A save retry reads back the
 directory before reporting a failed response, avoiding duplicate additions or
 automatic duplicate invitations.
 
-### Events, meetings and scripts
+### Meetings and scripts
 
-Admin controls create/edit/moderate events, add scripts directly to the approved
-queue, edit script title/author/contact details, replace PDFs/images, download
-private PDFs, reorder with drag or keyboard buttons, and
-add/edit/delete Writers Group meetings, including past meetings.
-**Add event** lives in **Events**; each tab has its own heading and primary action.
+Admin controls add scripts directly to the approved queue, edit script
+metadata and private contacts, replace/download private PDFs, reorder with drag
+or keyboard buttons, and add/edit/delete Writers Group meetings. The default
+section is Script queue; Meetings and Users retain their own actions. The old
+Events tab is removed, and its stored selection falls back to Script queue.
+A link above the dashboard opens the independent Microcinema admin.
 The pinned Platform tab component provides keyboard navigation, session-based
 tab selection and a native section picker below 576 pixels. Controls and editor
 fields follow Scheduler's spacing, focus and 44-pixel minimum target patterns,
-while keeping the site's existing typography. Event date/time fields share a row
+while keeping the site's existing typography. Meeting date/time fields share a row
 on larger screens and stack on phones. Users fields stack below 992 pixels;
 the admin page uses less top padding on phones/tablets. Public form inputs use
 at least 16-pixel text so focusing a field does not force an iOS zoom.
@@ -217,24 +214,21 @@ revisions leave the DOM intact, and an older read cannot replace a newer save.
 Recoverable connection failures retry automatically. This uses the existing
 Platform API client and local Community update policy; no shared package fork
 or dependency change is needed.
-**Meetings → Add Writers Group meeting** uses the same event editor and the
+**Meetings → Add Writers Group meeting** uses the meeting editor and the
 recurrence defaults; saving publishes the new meeting and assigns up to two
-queued scripts. Ordinary events are saved as drafts; attach their square image
-and approve them to publish. **Delete** removes either kind from both public
-calendars and moves scripts from a future meeting to the next available slots.
-**Cancel event** retains a visible cancellation notice and can be restored.
-Deletion retains an internal tombstone for recurrence and history; it cannot be
-restored using the active admin controls. No schema migration is required. **Script queue → Add script** requires
-a title, author and PDF under the same 35-page/10-MB limits as public submissions;
+queued scripts. **Delete** removes a meeting from the public readings and
+moves scripts from a future meeting to the next available slots. Cancellation
+retains a notice and can be restored. Deletion retains an internal tombstone
+for recurrence and history. **Script queue → Add script** requires a title,
+author and PDF under the same 35-page/10-MB limits as public submissions;
 contact name and email are optional and private. Saving appends the script to
-the queue and publishes its title/author in the next available slot. The uploaded
-PDF's filename appears privately in admin and is used for downloads. Replacing
-the PDF updates its name, contents and page count together; editing a script's
-public title or author leaves the uploaded filename intact. Older uploads without
-a stored name fall back to a filename derived from the title and author.
-Names are normalized for safe downloads while retaining Unicode letters and
-draft/version markers. Filename metadata uses the existing upload/record JSON;
-no schema migration is needed.
+the queue and publishes its title/author in the next available slot.
+
+PDF filenames appear privately in admin and downloads. Replacing the PDF
+updates its filename, contents and page count together; editing title/author
+leaves the filename intact. Older uploads fall back to a name derived from
+title and author. Names retain Unicode letters and draft/version markers while
+removing unsafe path characters.
 
 Queue moves save automatically, including consecutive drag or keyboard moves
 made while a save is in flight. Desktop pointer users get a visible drag grip
@@ -261,7 +255,7 @@ file validation and atomic attachment path through authenticated
 `POST /api/community/v1/admin/scripts`. The existing approval/allocator commits
 the queue and future agendas with the new record. Retrying the same submission
 after a lost response returns its receipt without duplicating it. Appending a new
-script or event retries once against the latest revision if another admin saved
+script or meeting retries once against the latest revision if another admin saved
 while its form was open. Existing-record edits and queue reorder conflicts retain
 their drafts and require an explicit choice.
 No schema migration or Platform package change is required. Public submissions
@@ -354,7 +348,7 @@ action, revision and time without file contents or tokens.
 ## Deploy and roll back
 
 Build the site and run the checks above first. The site and Worker remain
-separate releases. From the repository root, prepare the six staging shells:
+separate releases. From the repository root, prepare the four active staging shells and two redirect fallbacks:
 
 ```sh
 node scripts/prepare-community-staging.mjs docs
@@ -374,9 +368,8 @@ it outside tracked files with restrictive filesystem permissions. Staging
 must expose `local:false` and a real, hostname-restricted challenge. Its assets
 reuse the root `_headers`; all staging responses should remain out of search.
 
-Verify both languages, current/next two months, invalid months, private-route
-denials, upload normalization, queue/detail autosave, no mobile overflow, and a
-downloadable month-specific PNG. For the roles release, apply the production
+Verify both language redirects, Writers Group readings, private-route denials,
+PDF uploads, queue/detail autosave, retired event writes and no mobile overflow. For the roles release, apply the production
 migration and deploy the Worker before publishing the matching Eleventy shell:
 the previous browser code tolerates the added role fields, while the new code
 needs those fields. Keep this order to avoid an interim broken admin dashboard.
@@ -415,7 +408,7 @@ For first activation, provision secrets on the uploaded Worker before attaching
 routes. Inspect `wrangler deployments list` and `wrangler rollback` for a Worker
 rollback; revert the site commit for the Pages shell. Do not roll back additive
 D1 migrations or delete submitted records as part of a code rollback. Removing
-only Community routes restores the static shell and visible unavailable state.
+Community routes leaves only the static redirect fallbacks and Writers Group unavailable state.
 The existing Podcast/Newsletter/checkout routes must remain untouched.
 
 Local tests, deployed smoke checks, provider acceptance of a login email and

@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Retired the old Microcinema pages with bilingual permanent redirects to
+  dustwavemicrocinema.com. Removed Community event proposals, event admin tools,
+  image uploads and calendar cards while preserving Writers Group scripts,
+  meetings, private files and historical event records.
+
 - Announced Red Razor on Soft Skin's 2026 Way OUT West Film Fest selection,
   dated September 22, with the existing laurel, screening details and ticket links.
 - Announced Red Razor on Soft Skin's 2026 Santa Fe International Film Festival

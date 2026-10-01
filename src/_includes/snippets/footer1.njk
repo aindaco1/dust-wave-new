@@ -371,7 +371,7 @@
 		/* =========================================================================
 		8) Story galleries: lightweight masonry balancer
 		========================================================================= */
-		{% if layout == 'layouts/new.njk' or layout == 'layouts/post.njk' or translationKey == 'microcinema' %}
+		{% if layout == 'layouts/new.njk' or layout == 'layouts/post.njk' %}
 		(() => {
 		const gallerySelector = '.masonry-gallery, .story-content > .row.g-2:not([id])';
 		const itemSelector = [
@@ -465,7 +465,7 @@
 		9) Image lightbox with scroll-snap carousel
 		========================================================================= */
 		(() => {
-		const triggerSelector = '.story-content img, .microcinema-image';
+		const triggerSelector = '.story-content img';
 		const gallerySelector = '.masonry-gallery, .story-content > .row.g-2:not([id])';
 		let lightbox = null;
 		let track = null;

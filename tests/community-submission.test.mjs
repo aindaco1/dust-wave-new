@@ -33,13 +33,13 @@ const server=createServer(async(req,res)=>{
     grants++;json({id:'fixture-upload',token:'private-fixture-grant',url:'/api/community/v1/uploads/fixture-upload'},201);return;
   }
   if(url.pathname==='/api/community/v1/uploads/fixture-upload'){for await(const _ of req){}json({ready:true,pages:1});return;}
-  if(['/api/community/v1/scripts','/api/community/v1/events'].includes(url.pathname)){
+  if(url.pathname==='/api/community/v1/scripts'){
     const chunks=[];for await(const chunk of req)chunks.push(chunk);
     submitted.push(JSON.parse(Buffer.concat(chunks)));submissions++;json(submissions===1?{error:'request_failed'}:{id:'fixture-receipt'},submissions===1?503:201);return;
   }
-  const language=url.pathname.startsWith('/es/')?'es':'en',communityKind=url.searchParams.has('event')?'event':'script';
+  const language=url.pathname.startsWith('/es/')?'es':'en';
   res.setHeader('Content-Type','text/html; charset=utf-8');
-  res.end(`<!doctype html><html lang="${language}"><head><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/theme.css"></head><body class="writers-group-shell"><main class="container writers-group-page"><div class="writers-group-body"><section class="community-section">${renderer.renderString(template,{language,i18n,communityKind})}</section></div></main></body></html>`);
+  res.end(`<!doctype html><html lang="${language}"><head><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/theme.css"></head><body class="writers-group-shell"><main class="container writers-group-page"><div class="writers-group-body"><section class="community-section">${renderer.renderString(template,{language,i18n})}</section></div></main></body></html>`);
 });
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const origin=`http://127.0.0.1:${server.address().port}`;
 const browser=await puppeteer.launch({headless:true,args:process.env.CI?['--no-sandbox']:[]});
@@ -93,14 +93,6 @@ try{
       await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
       assert.equal(await page.evaluate(()=>window.renders),renders);assert.equal(await page.$('[data-fixture-challenge]'),null);
       assert((await page.$eval('[data-form-status]',node=>node.textContent)).includes(copy.success));
-      assert.deepEqual(errors,[]);
-      await page.setViewport({width,height:1000});
-      await page.goto(origin+(language==='es'?'/es/':'/')+'?event');await page.waitForSelector('[data-fixture-challenge]');
-      assert.equal(await page.$eval('[data-community-form]',node=>Boolean(node.closest('details'))),false,'event proposals are immediately available');
-      assert.equal(await page.$eval('.community-submit',node=>getComputedStyle(node).borderBottomWidth),'0px');
-      assert(await page.$eval('[name="title"]',node=>node.checkVisibility()));
-      assert(await page.$eval('[data-community-challenge]',node=>node.getBoundingClientRect().right<innerWidth));
-      if(screenshots)await page.screenshot({path:path.join(screenshots,`${language}-${width}-event-form.png`),fullPage:true});
       assert.deepEqual(errors,[]);
     }finally{await page.close();}
   });

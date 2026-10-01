@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "@dustwave/worker-core": "file:../../shared/dust-wave-platform/packages/worker-core",
-    "@resvg/resvg-wasm": "2.6.2",
     "pdf-lib": "1.17.1"
   },
   "devDependencies": {

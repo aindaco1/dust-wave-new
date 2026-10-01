@@ -9,8 +9,8 @@ test('Community translations cover the same public and admin interface in both l
   assert.deepEqual(keys(en).sort(),keys(es).sort());
   for(const translations of [en,es])for(const value of Object.values(translations))if(typeof value==='string')assert(value.trim());
 });
-test('both server-rendered slots, additive bundles and shared admin modules are build inputs',async()=>{
-  for(const page of ['microcinema','writers-group']){
+test('Writers Group server-rendered slot, additive bundles and shared admin modules are build inputs',async()=>{
+  for(const page of ['writers-group']){
     const source=await read(`src/${page}.njk`);
     assert.match(source,/cssBundle: community/);assert.match(source,/data-community-slot="1"/);assert.match(source,/community\/form.njk/);
   }

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { emptyState, allocate, reorder, activeQueue, applyAction, monthView, instant, eventFields, publicEvent, upcoming } from '../src/domain.js';
+import { emptyState, allocate, reorder, activeQueue, applyAction, currentMonth, instant, eventFields, publicEvent, upcoming } from '../src/domain.js';
 
 const now=new Date('2026-09-08T18:00:00Z');
 const script=i=>({id:`s${i}`,title:`Script ${i}`,author:`Writer ${i}`,status:'approved',position:i,approvedAt:now.toISOString(),email:'private@example.org',pdfId:'private-file',pages:10});
@@ -36,24 +36,13 @@ test('cancellation reallocates only future meetings and regeneration preserves e
   allocate(state,now);assert.equal(state.events[0].status,'cancelled');
 });
 test('public projections exclude contact and PDF data',()=>{
-  const state=initial();const output=JSON.stringify(monthView(state,'2026-09','en',now));
+  const state=initial();const output=JSON.stringify(upcoming(state,'en',now));
   assert.doesNotMatch(output,/private@example|pdfId|email|contactName|private-file/);
   assert.match(output,/Script 1/);
 });
-test('month window includes current and next two months and retains historical empty months',()=>{
-  const state=initial();state.events.push({id:'past',everPublished:true,status:'withdrawn',date:'2025-12-01'});
-  assert.equal(monthView(state,'2026-02','en',now).events.length,0);
-  assert.equal(monthView(state,null,'en',now).last,'2026-11');
-  assert.throws(()=>monthView(state,'2026-12','en',now),/month_unavailable/);
-  assert.throws(()=>monthView(state,'2026-00','en',now),/invalid_month/);
-  assert.equal(monthView(emptyState(),null,'en',now).first,'2026-09');
-});
-test('local month rollover, leap years and six-row calendars',()=>{
-  assert.equal(monthView(emptyState(),null,'en',new Date('2026-10-01T05:59:00Z')).month,'2026-09');
-  assert.equal(monthView(emptyState(),null,'en',new Date('2026-10-01T06:00:00Z')).month,'2026-10');
-  assert.equal(monthView(emptyState(),'2028-02','en',new Date('2028-02-01T12:00Z')).days,29);
-  const august=monthView(emptyState(),'2026-08','en',new Date('2026-08-01T12:00Z'));
-  assert.equal(Math.ceil((august.offset+august.days)/7),6);
+test('local month rollover follows Albuquerque time',()=>{
+  assert.equal(currentMonth(new Date('2026-10-01T05:59:00Z')),'2026-09');
+  assert.equal(currentMonth(new Date('2026-10-01T06:00:00Z')),'2026-10');
 });
 test('invalid dates, nonexistent DST times and ambiguous times fail explicitly',()=>{
   assert.throws(()=>instant('2026-02-30','19:00'),/invalid_date/);
@@ -65,30 +54,25 @@ test('in-progress meetings remain on upcoming list until local end',()=>{
   const state=initial();assert.equal(upcoming(state,'en',new Date('2026-09-22T01:30Z'))[0].date,'2026-09-21');
   assert.equal(upcoming(state,'en',new Date('2026-09-22T03:01Z'))[0].date,'2026-10-05');
 });
-test('admins create and reschedule meetings, delete either event kind, and keep recurring deletions absent',()=>{
+test('admins create and reschedule meetings, delete meetings, and keep recurring deletions absent',()=>{
   let state=initial();
   const fields={title:'Extra Writers Group',description:'An extra evening of readings.',date:'2026-09-14',time:'19:00',endTime:'21:00'};
   state=applyAction(state,{kind:'event',action:'create_meeting',fields},now);
   const added=state.events.find(e=>e.title===fields.title);
   assert.equal(added.status,'published');assert.deepEqual(added.readings,['s1','s2']);
   assert.equal(upcoming(state,'en',now)[0].id,added.id);
-  assert(monthView(state,'2026-09','en',now).events.some(e=>e.id===added.id));
+  assert(upcoming(state,'en',now).filter(e=>e.date.startsWith('2026-09')).some(e=>e.id===added.id));
   state=applyAction(state,{kind:'event',action:'edit',id:added.id,fields:{...fields,title:'Updated meeting',date:'2026-09-28'}},now);
   assert.deepEqual(state.events.find(e=>e.id===added.id).readings,['s3','s4']);
   state=applyAction(state,{kind:'event',action:'cancel',id:'writers-2026-09-21'},now);
-  assert(monthView(state,'2026-09','en',now).events.some(e=>e.status==='cancelled'));
+  assert(upcoming(state,'en',now).filter(e=>e.date.startsWith('2026-09')).some(e=>e.status==='cancelled'));
   for(const id of ['writers-2026-09-21',added.id])state=applyAction(state,{kind:'event',action:'delete',id},now);
   state=allocate(state,new Date('2026-09-09T18:00:00Z'));
-  assert.equal(monthView(state,'2026-09','en',now).events.length,0);
+  assert.equal(upcoming(state,'en',now).filter(e=>e.date.startsWith('2026-09')).length,0);
   assert.equal(upcoming(state,'en',now)[0].date,'2026-10-05');
   assert.deepEqual(upcoming(state,'en',now)[0].readings,[{title:'Script 1',author:'Writer 1'},{title:'Script 2',author:'Writer 2'}]);
   for(const action of ['edit','approve','delete'])assert.throws(()=>applyAction(state,{kind:'event',action,id:added.id,fields},now),/not_found/);
-  state=applyAction(state,{kind:'event',action:'create_event',fields:{...fields,title:'Screening'}},now);
-  const event=state.events.find(e=>e.title==='Screening');assert.equal(event.status,'draft');
-  state=applyAction(state,{kind:'event',action:'approve',id:event.id},now);
-  assert.equal(monthView(state,'2026-09','en',now).events[0].title,'Screening');
-  state=applyAction(state,{kind:'event',action:'delete',id:event.id},now);
-  assert.equal(monthView(state,'2026-09','en',now).events.length,0);
+  assert.throws(()=>applyAction(state,{kind:'event',action:'create_event',fields},now),/microcinema_moved/);
 });
 test('editing and deleting started meetings preserve their reading history and queue exclusions',()=>{
   const later=new Date('2026-09-22T02:00:00Z');
@@ -102,8 +86,4 @@ test('editing and deleting started meetings preserve their reading history and q
   assert.deepEqual(activeQueue(state,later).map(s=>s.id),['s3','s4','s5','s6']);
   assert(!upcoming(state,'en',later).some(e=>e.id===first.id));
   assert.deepEqual(state.events.find(e=>e.id===first.id).agenda,agenda);
-});
-test('deleted events do not extend the public archive range',()=>{
-  const state=initial();state.events.push({id:'deleted-history',everPublished:true,status:'deleted',date:'2025-12-01'});
-  assert.equal(monthView(state,null,'en',now).first,'2026-09');
 });

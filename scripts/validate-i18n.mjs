@@ -20,7 +20,10 @@ assert.equal(config.defaultLang, "en");
 for (const [translationKey, routes] of Object.entries(config.pages)) {
   assert.equal(typeof routes.en, "string", `${translationKey} needs an English route`);
   assert.equal(typeof routes.es, "string", `${translationKey} needs a Spanish route`);
-  assert(routes.es.startsWith("/es/"), `${translationKey} Spanish route must use /es/`);
+  if (translationKey === "microcinema") {
+    assert.equal(routes.en, "https://dustwavemicrocinema.com/");
+    assert.equal(routes.es, "https://dustwavemicrocinema.com/es/");
+  } else assert(routes.es.startsWith("/es/"), `${translationKey} Spanish route must use /es/`);
 }
 
 assert.deepEqual(
@@ -126,7 +129,6 @@ const localizedMarketingTemplates = new Map([
   ["news.njk", "news"],
   ["partners.njk", "partners"],
   ["contact.njk", "contact"],
-  ["microcinema.njk", "microcinema"],
   ["branded-content.njk", "brandedContent"],
   ["writers-group.njk", "writersGroup"],
   ["newsletter.njk", "newsletter"],

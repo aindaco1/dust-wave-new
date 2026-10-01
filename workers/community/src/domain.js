@@ -69,11 +69,6 @@ export function eventFields(input) {
 export function scriptFields(input) {
   return { title: plain(input.title, 100), author: plain(input.author, 100) };
 }
-export function newEvent(input, upload, now = new Date()) {
-  return { id: id(), kind: 'event', ...eventFields(input), imageId: upload.id,
-    contactName: plain(input.contactName, 100), email: email(input.email), status: 'pending',
-    createdAt: now.toISOString(), everPublished: false, readings: [] };
-}
 export function scriptContactFields(input, { required = true } = {}) {
   const address = plain(input.email, 254, required);
   return { contactName: plain(input.contactName, 100, required), email: address ? email(address) : '' };
@@ -150,19 +145,6 @@ export function publicEvent(event, state, language = 'en') {
     status: event.status, image: event.imageId ? `${API}/images/${event.imageId}/320.webp` : '/img/newsletter/meetup-03.jpg',
     readings: event.agenda || (event.readings || []).map(key => scripts.get(key)).filter(Boolean).map(s => ({ title: s.title, author: s.author })) };
 }
-export function monthView(state, month, language = 'en', now = new Date()) {
-  const current = currentMonth(now);
-  const last = addMonths(current, 2);
-  const historical = state.events.filter(e => e.everPublished && e.status !== 'deleted').map(e => e.date.slice(0,7)).sort()[0];
-  const first = historical && historical < current ? historical : current;
-  const selected = month == null ? current : monthKey(month);
-  if (selected < first || selected > last) fail('month_unavailable', 404);
-  const days = new Date(Date.UTC(Number(selected.slice(0,4)), Number(selected.slice(5)), 0)).getUTCDate();
-  const offset = (new Date(`${selected}-01T12:00:00Z`).getUTCDay() + 6) % 7;
-  return { month: selected, current, first, last, days, offset, language: locale(language),
-    events: state.events.filter(e => PUBLIC_STATES.has(e.status) && e.date.startsWith(selected)).map(e => publicEvent(e, state, language))
-      .sort((a,b) => a.startsAt.localeCompare(b.startsAt) || a.id.localeCompare(b.id)) };
-}
 export function upcoming(state, language = 'en', now = new Date()) {
   return state.events.filter(e => e.kind === 'meeting' && PUBLIC_STATES.has(e.status) && e.endsAt > now.toISOString())
     .sort((a,b) => a.startsAt.localeCompare(b.startsAt) || a.id.localeCompare(b.id)).map(e => publicEvent(e, state, language));
@@ -173,10 +155,10 @@ export function applyAction(state, input, now = new Date()) {
   if (input.action === 'extend') return allocate(next, now);
   const collection = input.kind === 'script' ? next.scripts : next.events;
   let item = collection.find(e => e.id === input.id);
-  if (['create_event', 'create_meeting'].includes(input.action)) {
+  if (input.action === 'create_event' || (input.kind === 'event' && item && item.kind !== 'meeting')) fail('microcinema_moved',410);
+  if (input.action === 'create_meeting') {
     if(input.kind!=='event') fail('invalid_action');
-    const meeting = input.action === 'create_meeting';
-    item = { id: id(), kind: meeting ? 'meeting' : 'event', ...eventFields(input.fields), imageId: '', status: meeting ? 'published' : 'draft', everPublished: meeting, createdAt: now.toISOString(), readings: [] };
+    item = { id: id(), kind: 'meeting', ...eventFields(input.fields), imageId: '', status: 'published', everPublished: true, createdAt: now.toISOString(), readings: [] };
     next.events.push(item); return allocate(next, now);
   }
   if (!item || item.status === 'deleted') fail('not_found', 404);

@@ -130,13 +130,13 @@ async function waitForHeldAction(){
   assert(releaseAction,'the autosave request reached the server');
 }
 try{
-  for(const [lang,width] of [['en',1440],['en',768],['es',768],['es',320]])await test(`event and meeting creation, editing and deletion (${lang}, ${width}px)`,async()=>{
+  for(const [lang,width] of [['en',1440],['en',768],['es',768],['es',320]])await test(`meeting creation, editing and deletion (${lang}, ${width}px)`,async()=>{
     const f=await fixture(lang,width),{page,copy}=f;
     try{
       await openScript(page,'Queued script','Queue author');await saveScript(page,1);
       await selectTab(page,'meetings');
       assert.equal(await page.$('[data-admin-refresh]'),null);
-      assert.equal(await(await page.$('[data-admin-create]')).isVisible(),false);
+      assert.equal(await page.$('[data-admin-create]'),null);
       await page.click('[data-admin-add-meeting]');await page.waitForSelector('[data-admin-editor][open]');
       assert.equal(await page.$eval('[name="time"]',node=>node.value),'19:00');
       async function fields(values){await page.evaluate(values=>{for(const [key,value] of Object.entries(values)){const input=document.querySelector(`[data-admin-editor-form] [name="${key}"]`);input.value=value;input.dispatchEvent(new Event('input',{bubbles:true}));}},values);}
@@ -162,16 +162,10 @@ try{
       await page.waitForFunction(()=>document.querySelector('[data-admin-meetings]').textContent.includes('Revised reading'));
       if(screenshots)await page.screenshot({path:path.join(screenshots,`${lang}-${width}-meetings.png`),fullPage:true});
       await confirmDelete('Revised reading','[data-admin-meetings]');
-      const ids=await page.evaluate(async()=>{const [meetings,calendar]=await Promise.all(['/meetings','/calendar?month=2026-09'].map(path=>fetch('/api/community/v1'+path).then(r=>r.json())));return [...meetings.meetings,...calendar.events].map(e=>e.title);});
+      const ids=await page.evaluate(async()=>{const meetings=await fetch('/api/community/v1/meetings').then(r=>r.json());return meetings.meetings.map(e=>e.title);});
       assert(!ids.includes('Extra reading'));assert(!ids.includes('Revised reading'));
-      await selectTab(page,'events');await page.click('[data-admin-create]');
-      await fields({title:'New screening',description:'A one-night screening.',date:'2026-09-18',time:'20:00'});await fits(page);await save();
-      await page.waitForFunction(()=>document.querySelector('[data-admin-events]').textContent.includes('New screening'));
-      await action('New screening',copy.edit);await fields({title:'Edited screening'});await save();
-      await page.waitForFunction(()=>document.querySelector('[data-admin-events]').textContent.includes('Edited screening'));
-      await confirmDelete('Edited screening','[data-admin-events]');
-      await page.reload();await page.waitForSelector('[data-admin-workspace][aria-busy="false"]:not([hidden])');
-      assert(!await page.$eval('[data-admin-events]',node=>node.textContent.includes('Edited screening')));
+      assert.equal(await page.$('[data-admin-events]'),null);
+      assert.equal(await page.$('[data-admin-create]'),null);
       await selectTab(page,'meetings');assert(!await page.$eval('[data-admin-meetings]',node=>node.textContent.includes('Revised reading')));
     }finally{await f.close();}
   });
@@ -324,14 +318,14 @@ try{
     const f=await fixture('en',1440),{page}=f;
     try{
       assert.equal(await page.$('[data-admin-refresh]'),null);
-      assert.equal(await(await page.$('[data-admin-create]')).isVisible(),false);
+      assert.equal(await page.$('[data-admin-create]'),null);
       await page.focus('#community-tab-queue');await page.keyboard.press('ArrowRight');
       assert.equal(await page.$eval('#community-meetings',node=>node.hidden),false);
       await page.keyboard.press('Home');
-      assert.equal(await(await page.$('[data-admin-create]')).isVisible(),true);
-      assert.equal(await page.$eval('[data-admin-create]',node=>node.closest('[role="tabpanel"]').id),'community-events');
+      assert.equal(await(await page.$('[data-admin-add-script]')).isVisible(),true);
+      assert.equal(await page.$eval('[data-admin-add-script]',node=>node.closest('[role="tabpanel"]').id),'community-queue');
       await page.setViewport({width:320,height:1000});
-      assert.equal(await page.$eval('.community-admin__mobile-tabs select',node=>node.value),'events');
+      assert.equal(await page.$eval('.community-admin__mobile-tabs select',node=>node.value),'queue');
       await selectTab(page,'meetings');await fits(page);
       await page.reload();await page.waitForSelector('[data-admin-workspace][aria-busy="false"]:not([hidden])');
       assert.equal(await page.$eval('#community-meetings',node=>node.hidden),false);
@@ -429,9 +423,9 @@ try{
       const forbidden=await page.evaluate(()=>fetch('/api/community/v1/admin/users').then(response=>response.status));assert.equal(forbidden,403);
       await openScript(page,'Limited admin script','Local writer');await saveScript(page,1);
       assert.deepEqual(await titles(page),['Limited admin script']);
-      await page.evaluate(()=>sessionStorage.setItem('community:admin-tab','users'));await page.reload();
+      await page.evaluate(()=>sessionStorage.setItem('community:admin-tab','events'));await page.reload();
       await page.waitForSelector('[data-admin-workspace][aria-busy="false"]');assert.equal(await page.$('#community-tab-users'),null);
-      assert.equal(await page.$eval('#community-events',node=>node.hidden),false);
+      assert.equal(await page.$eval('#community-queue',node=>node.hidden),false);
     }finally{await f.close();}
   });
   await test('Users drafts survive tab actions and concurrent edits; revoked access clears private user data',async()=>{
@@ -439,12 +433,12 @@ try{
     try{
       await selectTab(page,'users');await page.waitForSelector('[data-user-card]');
       await page.$eval('[data-user-card] [name=name]',node=>{node.value='My draft';node.dispatchEvent(new Event('input',{bubbles:true}));});
-      await selectTab(page,'events');
+      await selectTab(page,'meetings');
       let prompts=0;page.on('dialog',async dialog=>{prompts++;await dialog.dismiss();});
-      await page.click('[data-admin-create]');await page.waitForSelector('[data-admin-editor][open]');
+      await page.click('[data-admin-add-meeting]');await page.waitForSelector('[data-admin-editor][open]');
       await page.keyboard.press('Escape');await page.waitForSelector('[data-admin-editor]:not([open])');
       await selectTab(page,'users');
-      assert.equal(prompts,0,'opening an event does not discard a Users draft');
+      assert.equal(prompts,0,'opening a meeting does not discard a Users draft');
       assert.equal(await page.$eval('[data-user-card] [name=name]',node=>node.value),'My draft');
       let directory=JSON.parse((await db.prepare('SELECT users FROM community_admin_directory').first()).users);
       directory[0].name='Saved elsewhere';

@@ -19,11 +19,11 @@ test('real Worker + D1 + R2: moderation, private files, sessions, atomic schedul
   await migrateFixture(db);
   let cookie='',csrf='';
   async function request(path,{body,method=body?'POST':'GET',auth=false,headers={}}={}){
-    return mf.dispatchFetch(origin+path,{method,headers:{Origin:origin,...(body?{'Content-Type':'application/json'}:{}),...(auth?{Cookie:cookie,'x-dustwave-csrf':csrf}:{}),...headers},body:body?JSON.stringify(body):undefined});
+    return mf.dispatchFetch(origin+path,{method,redirect:'manual',headers:{Origin:origin,...(body?{'Content-Type':'application/json'}:{}),...(auth?{Cookie:cookie,'x-dustwave-csrf':csrf}:{}),...headers},body:body?JSON.stringify(body):undefined});
   }
   const api=(path,options)=>request('/api/community/v1'+path,options);
   async function ok(path,options){const response=await api(path,options);const data=await response.json();assert(response.ok,JSON.stringify(data));return data;}
-  const initial=await ok('/calendar');assert.equal(initial.events[0].id,'writers-2026-09-21');
+  const initial=await ok('/meetings');assert.equal(initial.meetings[0].id,'writers-2026-09-21');
   assert.equal((await api('/admin/state')).status,401);
   assert.equal((await api('/uploads',{body:{kind:'pdf'},headers:{Origin:'https://elsewhere.test'}})).status,403);
   const start=await ok('/admin/auth/start',{body:{email:'admin@example.test'}});
@@ -67,11 +67,18 @@ test('real Worker + D1 + R2: moderation, private files, sessions, atomic schedul
   a.scripts[0].title='Winning A';b.scripts[0].title='Winning B';
   const results=await Promise.allSettled([commitState(db,raceBefore,a),commitState(db,raceBefore,b)]);
   assert.equal(results.filter(r=>r.status==='fulfilled').length,1);assert.equal((await loadState(db)).revision,raceBefore.revision+1);
-  const html=await (await request('/microcinema.html?month=2026-09')).text();
-  assert.match(html,/September 2026 · Dust Wave/);assert.match(html,/data-community-calendar/);assert.match(html,/month=2026-09/);
-  assert(!html.includes('private@example.test'));assert(!html.includes('pdfId'));
-  assert.equal((await api('/calendar?month=2026-13')).status,400);
-  assert.equal((await api('/calendar?month=2026-09&month=2026-10')).status,400);
+  for(const prefix of ['', '/es'])for(const method of ['GET','HEAD']){
+    const redirect=await request(`${prefix}/microcinema.html?month=2026-09`,{method});
+    assert.equal(redirect.status,301);
+    assert.equal(redirect.headers.get('Location'),`https://dustwavemicrocinema.com${prefix}/`);
+    assert.equal(await redirect.text(),'');
+  }
+  const html=await(await request('/writers-group.html')).text();
+  assert.match(html,/community-meetings/);assert(!html.includes('private@example.test'));
+  for(const path of ['/calendar','/calendar?month=invalid','/images/legacy/320.webp','/cards/en/2026-09/legacy.png','/admin/images/legacy'])assert.equal((await api(path)).status,410);
+  assert.equal((await api('/events',{body:{}})).status,410);
+  for(const path of ['/uploads','/admin/uploads'])assert.equal((await api(path,{auth:true,body:{kind:'image'}})).status,410);
+  assert.equal((await db.prepare("SELECT count(*) AS n FROM community_uploads WHERE kind='image'").first()).n,0);
 
   await t.test('admins add approved scripts with required private PDFs and optional contact details',async()=>{
     assert.equal((await api('/admin/scripts',{body:{}})).status,401);
@@ -151,43 +158,45 @@ test('real Worker + D1 + R2: moderation, private files, sessions, atomic schedul
     assert(editedDownload.headers.get('Content-Disposition').includes(encodeURIComponent('Another Script - draft 1.pdf')),'editing metadata must not rename the uploaded PDF');
     assert.deepEqual((await ok('/meetings')).meetings[0].readings[0],{title:'Revised Title',author:'Revised Author'});
   });
-  await t.test('event and meeting CRUD updates both public projections and persists deletion through the daily trigger',async()=>{
+  await t.test('meeting CRUD updates public readings and persists deletion through the daily trigger',async()=>{
     const fields={title:'Added meeting',description:'An extra script reading.',date:'2026-09-14',time:'19:00',endTime:'21:00'};
     async function action(body){const current=await ok('/admin/state',{auth:true});return ok('/admin/actions',{auth:true,body:{kind:'event',revision:current.revision,...body,returnState:true}});}
     let result=await action({action:'create_meeting',fields});
     const meeting=result.state.events.find(e=>e.title===fields.title);
     assert.equal(meeting.status,'published');assert.equal(meeting.readings.length,2);
-    for(const endpoint of ['/meetings','/calendar?month=2026-09'])assert(JSON.stringify(await ok(endpoint)).includes('Added meeting'));
+    for(const endpoint of ['/meetings'])assert(JSON.stringify(await ok(endpoint)).includes('Added meeting'));
     await action({action:'edit',id:meeting.id,fields:{...fields,title:'Edited meeting',time:'18:00',endTime:'20:00'}});
-    for(const prefix of ['','/es'])for(const page of ['/writers-group.html','/microcinema.html?month=2026-09']){
+    for(const prefix of ['','/es'])for(const page of ['/writers-group.html']){
       const html=await(await request(prefix+page)).text();
-      if(page.includes('microcinema')){assert.match(html,/Edited meeting/);assert.doesNotMatch(html,/Added meeting/);}
-      else {assert.match(html,/datetime="2026-09-14"/);assert.match(html,/6:00|18:00/);}
+      assert.match(html,/datetime="2026-09-14"/);assert.match(html,/6:00|18:00/);
     }
-    result=await action({action:'create_event',fields:{...fields,title:'Public screening'}});
-    const event=result.state.events.find(e=>e.title==='Public screening');
-    assert.equal((await api('/admin/actions',{auth:true,body:{kind:'event',revision:result.revision,id:event.id,action:'approve'}})).status,400,'ordinary events still require their square artwork');
-    // The image pipeline is covered in files.test; seed its attached result here.
+    // Retained historical events stay stored but cannot be read or changed via old controls.
     const before=await loadState(db),after=structuredClone(before);
-    after.events.find(e=>e.id===event.id).imageId=crypto.randomUUID();
-    await commitState(db,before,after);
-    await action({action:'approve',id:event.id});
-    assert(JSON.stringify(await ok('/calendar?month=2026-09')).includes('Public screening'));
+    const event={...meeting,id:crypto.randomUUID(),kind:'event',title:'Legacy screening',imageId:crypto.randomUUID(),contactName:'Private contact',email:'private@example.test'};
+    after.events.push(event);await commitState(db,before,after);
+    const retiredState=await ok('/admin/state',{auth:true});
+    assert(!retiredState.events.some(e=>e.id===event.id));
+    for(const body of [{action:'create_event',fields},...['edit','approve','reject','cancel','delete'].map(action=>({action,id:event.id,fields}))]){
+      assert.equal((await api('/admin/actions',{auth:true,body:{kind:'event',revision:retiredState.revision,...body}})).status,410);
+    }
+    assert.equal((await api('/admin/attach',{auth:true,body:{kind:'event',id:event.id,revision:retiredState.revision}})).status,410);
+    assert.deepEqual((await loadState(db)).events.find(e=>e.id===event.id),event);
+    assert.equal((await loadState(db)).revision,retiredState.revision);
     await action({action:'cancel',id:'writers-2026-09-21'});
-    for(const id of [meeting.id,event.id,'writers-2026-09-21']){
+    for(const id of [meeting.id,'writers-2026-09-21']){
       const current=await ok('/admin/state',{auth:true});
       assert.equal((await api('/admin/actions',{auth:true,body:{kind:'event',id,action:'delete',revision:current.revision-1}})).status,409);
       result=await action({action:'delete',id});assert(!result.state.events.some(e=>e.id===id));
     }
     await mf.getWorker().then(worker=>worker.scheduled({cron:'15 7 * * *'}));
-    const saved=await loadState(db);assert.equal(saved.events.find(e=>e.id==='writers-2026-09-21').status,'deleted');
+    const saved=await loadState(db);assert.deepEqual(saved.events.find(e=>e.id===event.id),event,'daily scheduling retains the retired event unchanged');assert.equal(saved.events.find(e=>e.id==='writers-2026-09-21').status,'deleted');
     const publicMeetings=(await ok('/meetings')).meetings;
     assert.equal(publicMeetings[0].date,'2026-10-05');assert.equal(publicMeetings[0].readings.length,2);
-    for(const endpoint of ['/meetings','/calendar?month=2026-09']){
+    for(const endpoint of ['/meetings']){
       const data=JSON.stringify(await ok(endpoint));
       for(const title of ['Added meeting','Edited meeting','Public screening','writers-2026-09-21'])assert(!data.includes(title));
     }
-    for(const prefix of ['','/es'])for(const page of ['/writers-group.html','/microcinema.html?month=2026-09']){
+    for(const prefix of ['','/es'])for(const page of ['/writers-group.html']){
       const html=await(await request(prefix+page)).text();assert.doesNotMatch(html,/Edited meeting|Public screening/);
       if(page.includes('writers-group'))assert.doesNotMatch(html,/datetime="2026-09-(14|21)"/);
     }

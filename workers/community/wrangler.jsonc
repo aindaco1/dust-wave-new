@@ -4,15 +4,6 @@
   "main": "src/index.js",
   "compatibility_date": "2026-09-07",
   "workers_dev": false,
-  "rules": [
-    {
-      "type": "Data",
-      "globs": [
-        "**/*.ttf"
-      ],
-      "fallthrough": true
-    }
-  ],
   "vars": {
     "SITE_BASE": "https://dustwave.xyz",
     "APP_MODE": "production",
@@ -35,9 +26,6 @@
       "bucket_name": "dustwave-community-private"
     }
   ],
-  "images": {
-    "binding": "IMAGES"
-  },
   "send_email": [
     {
       "name": "EMAIL",
@@ -79,9 +67,6 @@
           "bucket_name": "dustwave-community-staging-private"
         }
       ],
-      "images": {
-        "binding": "IMAGES"
-      },
       "send_email": [
         {
           "name": "EMAIL",

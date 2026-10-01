@@ -67,11 +67,11 @@ But first: I know, I know -- it's been a while since the last newsletter. In our
 
 <section class="digest-feature digest-feature--media-left" style="--digest-columns: .25fr .75fr; --digest-columns-compact: .25fr .75fr;">
   <div class="digest-feature__media">
-    <a href="/microcinema.html" target="_blank" rel="noopener noreferrer"><img class="w-100 shadow-1-strong rounded" src="/img/microcinema/microcinema-1.jpg" alt="The Dust Wave microcinema entrance at the studio" loading="lazy" decoding="async"></a>
+    <a href="https://dustwavemicrocinema.com/" target="_blank" rel="noopener noreferrer"><img class="w-100 shadow-1-strong rounded" src="/img/microcinema/microcinema-1.jpg" alt="The Dust Wave microcinema entrance at the studio" loading="lazy" decoding="async"></a>
     <div class="caption digest-feature__caption">Screenings coming soon!</div>
   </div>
   <div class="digest-feature__text">
-    <p>Finally, we started a <a href="/microcinema.html">microcinema inside the Dust Wave studio</a> -- a real 30-seat screening room where we can show independent work, gather people together, and make a little more space for the movies we want to exist. <strong>Want to screen something here? Reach out to <a href="mailto:info@dustwave.xyz">info@dustwave.xyz</a>.</strong></p>
+    <p>Finally, we started a <a href="https://dustwavemicrocinema.com/">microcinema inside the Dust Wave studio</a> -- a real 30-seat screening room where we can show independent work, gather people together, and make a little more space for the movies we want to exist. <strong>Want to screen something here? Reach out to <a href="mailto:info@dustwave.xyz">info@dustwave.xyz</a>.</strong></p>
   </div>
 </section>
 
@@ -648,7 +648,7 @@ And without further ado:
 
 <section class="digest-feature digest-feature--media-right digest-feature--contain-media" style="--digest-columns: 1.1fr .9fr; --digest-columns-compact: 1.1fr .9fr;">
   <div class="digest-feature__media">
-    <a href="/microcinema.html" target="_blank" rel="noopener noreferrer"><img class="w-100 shadow-1-strong rounded" src="/img/microcinema/microcinema-2.jpg" alt="A skeleton sits beside a glowing Dust Wave display inside the studio microcinema" loading="lazy" decoding="async"></a>
+    <a href="https://dustwavemicrocinema.com/" target="_blank" rel="noopener noreferrer"><img class="w-100 shadow-1-strong rounded" src="/img/microcinema/microcinema-2.jpg" alt="A skeleton sits beside a glowing Dust Wave display inside the studio microcinema" loading="lazy" decoding="async"></a>
     <div class="caption digest-feature__caption">Waiting patiently for the next screening. Extremely patiently.</div>
   </div>
   <div class="digest-feature__text">

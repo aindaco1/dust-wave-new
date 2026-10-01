@@ -164,8 +164,8 @@ control.
 ## Responsive review
 
 Run `npm run qa:responsive` against the local Community preview on port 8787.
-It checks nine public/admin entry points, including News, in both languages at 320,
-390, 768, 1024 and 1440 pixels (90 page/viewport combinations), saves screenshots
+It checks eight public/admin entry points, including News, in both languages at 320,
+390, 768, 1024 and 1440 pixels (80 page/viewport combinations), saves screenshots
 at phone/tablet/desktop widths, and reports document or visible-element overflow.
 Set `QA_ORIGIN`, `QA_OUTPUT`, `QA_WIDTHS` or `QA_ROUTES` to target a deployed
 origin, retain a named run, or narrow a follow-up. It blocks outgoing submissions;
@@ -188,54 +188,28 @@ The normal local command remains headless; the tablet test explicitly enables
 touch input and verifies the reorder buttons.
 See the [September 10 review](qa/2026-09-10-responsive-community.md).
 
-## Community calendar and queue
+## Writers Group and Microcinema retirement
 
 Install `npm ci --prefix workers/community`, then run `npm run test:community`.
-This covers EN/ES contracts, domain tests, PDF limits, real PNG cards, and an
-isolated workerd/D1/R2 workflow with session, privacy, retry and concurrency
-checks. A headless browser regression covers in-place month navigation, scroll
-position, browser history, retained proposals, metadata, request races and
-connection failures at desktop and phone widths in both languages.
-`npm run test:community:admin` also renders the real admin template and styles
-against an isolated Worker/D1/R2 instance. It covers event and Writers Group
-meeting creation, editing and deletion, as well as adding scripts, required
-PDFs and optional contacts, drag/keyboard reordering with automatic scheduling,
-private download/replacement (including uploaded filenames), and detail autosave
-in English/Spanish at desktop and 320-pixel widths.
-It checks rapid changes, invalid drafts, stale revisions and lost-response retries
-and real desktop mouse drags with before/after insertion feedback. Navigation
-checks cover keyboard tabs, the mobile picker, saved selection and tab-specific
-actions. Automatic-update checks exercise focus/interval/reconnection, retained
-editors and failed queue drafts, keyboard focus, stale reads after saves, and
-recovery when the initial data load fails. It blocks external requests
-and uses only synthetic PDFs and local sign-in links. Set
-`COMMUNITY_ADMIN_SCREENSHOTS=.artifacts/community-admin` to retain screenshots.
-Role tests cover Super-admin user creation/editing/deletion in both languages,
-Limited-admin operational access with no Users tab or mobile option, retained
-drafts across tabs, conflicts, failed/lost saves, and private-data cleanup after
-session revocation. The Worker tests directly exercise permission denials,
-unique emails, self-account and last-Super-admin protection, atomic concurrent
-user writes, session/link revocation, and independence from legacy allowlists
-and other apps. They run all schema migrations, including the initial
-`alonso@dustwave.xyz` Super-admin. Invitation tests use a fake email binding;
-they do not verify real provider acceptance or inbox delivery.
-Script email tests use isolated D1 and fake Resend responses to cover atomic
-submission/approval enqueueing, both admin roles, language, repeat/concurrent
-requests, immutable retries, leases, rate limits, permanent failures, retry-window
-expiry and local/staging recipient restrictions. They do not send email.
-The submission browser test renders the shared form in English and Spanish
-at 320 and 1440 pixels, checking always-visible script and event forms,
-immediate challenge mounting, token expiry,
-retry, success cleanup and the absence of a trailing form divider. A provider
-fixture verifies that missing, invalid, reused or wrong-action tokens cannot
-issue public upload grants. Worker tests also check deletion across both public
-projections, the daily recurrence trigger, and preserved past reading history.
-Run
-`npm run build:community-staging` for the production WebP pipeline.
-After deploying, `node scripts/smoke-community.mjs <origin>` checks all six
-current/upcoming month cards, both page languages, admin headers and private
-route denials. Also inspect the rendered UI at desktop and phone widths.
-See the [Worker guide](../workers/community/README.md) for setup and release order.
+Tests use isolated D1/R2 and synthetic scripts, never real mail. Coverage includes
+EN/ES forms, upload verification, PDF limits/privacy, retries and atomic writes,
+queue scheduling, DST, roles, access revocation and delivery through fake transports.
+The browser admin tests exercise script uploads, downloads/replacement, detail
+and queue autosave, meeting editing/deletion, retained drafts, keyboard tabs,
+the mobile picker and recovery from failed/lost responses. The removed Events
+tab falls back to Script queue; a separate link opens the Microcinema admin.
+
+Retirement tests assert English/Spanish GET and HEAD redirects, 410 responses
+for old calendar/event/image/card endpoints, rejected event writes, hidden
+historical events, and unchanged retained records after Writers Group edits and
+scheduled updates. Public script submission and private file access remain tested.
+
+Run `npm run build:community-staging` for production CSS/WebP assets and the
+four active shells plus two redirect fallbacks. After deploying, run
+`node scripts/smoke-community.mjs <origin>` for redirect destinations, bilingual
+readings and forms, retired routes, admin headers and private-route denials.
+Inspect desktop and phone layouts. See the [Worker guide](../workers/community/README.md)
+for deployment and rollback; no data deletion or schema migration is needed.
 
 ## Contact form
 

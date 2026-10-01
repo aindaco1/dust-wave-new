@@ -1,10 +1,11 @@
 import { sha256Hex } from '@dustwave/worker-core/crypto';
-import { API, MEETING_DEFAULTS, CommunityError, fail, locale, newEvent, newScript, scriptContactFields, scriptPdfFields, pdfFilename, applyAction, allocate, monthView, upcoming, activeQueue, email, plain } from './domain.js';
+import { API, MEETING_DEFAULTS, CommunityError, fail, locale, newScript, scriptContactFields, scriptPdfFields, pdfFilename, applyAction, allocate, upcoming, activeQueue } from './domain.js';
 import { loadState, commitState, getUpload } from './repository.js';
-import { json, headers, bodyJson, verifyOrigin, requireAdmin, authRoute, requestLimit, siteOrigin, localMode, sendLogin } from './security.js';
+import { json, headers, bodyJson, verifyOrigin, requireAdmin, authRoute, requestLimit, localMode, sendLogin } from './security.js';
 import { loadUsers, saveUsers, publicAdmin, requireSuperAdmin } from './users.js';
 import { uploadRoute, authorizeUpload } from './uploads.js';
-import { renderCalendar, renderMeetings, unavailableMarkup, monthLabel, monthUrl, copy } from './render.js';
+import { renderMeetings, unavailableMarkup } from './render.js';
+import { microcinemaUrl, retiredMicrocinema } from './retired-microcinema.js';
 import { scriptEmailStatements, deliverScriptEmails, EMAIL_CRON } from './script-emails.js';
 
 function checkRevision(data, state) {
@@ -12,8 +13,8 @@ function checkRevision(data, state) {
 }
 const attachmentCondition = upload => ({sql:"EXISTS (SELECT 1 FROM community_uploads WHERE id=? AND state='ready' AND expires_at>?)", args:[upload.id,Date.now()]});
 const attachStatement = (db,upload) => ({guard,revision,mutation}) => db.prepare(`UPDATE community_uploads SET state='attached' WHERE id=? AND ${guard}`).bind(upload.id,revision,mutation);
-const adminState = (state,session) => ({...state,events:state.events.filter(e=>e.status!=='deleted'),queue:activeQueue(state).map(s=>s.id),meetingDefaults:MEETING_DEFAULTS,currentUser:publicAdmin(session),usersRevision:session.usersRevision});
-async function submit(request, env, kind, session = null) {
+const adminState = (state,session) => ({...state,events:state.events.filter(e=>e.kind==='meeting'&&e.status!=='deleted'),queue:activeQueue(state).map(s=>s.id),meetingDefaults:MEETING_DEFAULTS,currentUser:publicAdmin(session),usersRevision:session.usersRevision});
+async function submit(request, env, session = null) {
   verifyOrigin(request,env); await requestLimit(request,env,'submit',20,3600);
   const data=await bodyJson(request);
   if (!/^[a-f0-9-]{36}$/u.test(data.submissionKey || '')) fail('invalid_fields');
@@ -25,15 +26,15 @@ async function submit(request, env, kind, session = null) {
     return json({ok:true,id:previous.record_id,pending:!session});
   }
   const upload=await authorizeUpload(env.COMMUNITY_DB,data.uploadId,data.uploadToken,{ready:true});
-  if(upload.kind!==(kind==='script'?'pdf':'image')) fail('invalid_upload');
+  if(upload.kind!=='pdf') fail('invalid_upload');
   const before=await loadState(env.COMMUNITY_DB); let after=structuredClone(before);
   if(session)checkRevision(data,before);
-  const record=kind==='script'?newScript(data,upload,new Date(),{admin:Boolean(session)}):newEvent(data,upload);
-  after[kind==='script'?'scripts':'events'].push(record);
+  const record=newScript(data,upload,new Date(),{admin:Boolean(session)});
+  after.scripts.push(record);
   if(session)after=applyAction(after,{kind:'script',action:'approve',id:record.id});
-  const emails=kind==='script'&&!session
+  const emails=!session
     ? [...await scriptEmailStatements(env,'received',record),...await scriptEmailStatements(env,'admin',record)] : [];
-  await commitState(env.COMMUNITY_DB,before,after,{actor:session?.email||'public',action:session?'script:create':`submit_${kind}`,precondition:attachmentCondition(upload),extra:[
+  await commitState(env.COMMUNITY_DB,before,after,{actor:session?.email||'public',action:session?'script:create':'submit_script',precondition:attachmentCondition(upload),extra:[
     attachStatement(env.COMMUNITY_DB,upload),
     ({guard,revision,mutation})=>env.COMMUNITY_DB.prepare(`INSERT INTO community_receipts(key_hash,payload_hash,record_id,created_at) SELECT ?,?,?,? WHERE ${guard}`).bind(keyHash,payloadHash,record.id,Date.now(),revision,mutation),
     ...emails
@@ -60,7 +61,7 @@ async function adminRoute(request,env,route) {
     }
     fail('not_found',404);
   }
-  if(route==='/admin/scripts'&&request.method==='POST')return submit(request,env,'script',session);
+  if(route==='/admin/scripts'&&request.method==='POST')return submit(request,env,session);
   if(route==='/admin/state'&&request.method==='GET') {
     const state=await loadState(env.COMMUNITY_DB);
     return json(adminState(state,session));
@@ -68,18 +69,11 @@ async function adminRoute(request,env,route) {
   if(route==='/admin/actions'&&request.method==='POST') {
     const data=await bodyJson(request,128*1024); const before=await loadState(env.COMMUNITY_DB);checkRevision(data,before);
     if(data.kind!=='script'&&data.kind!=='event') fail('invalid_fields');
-    if(data.action==='approve'&&data.kind==='event') {
-      const event=before.events.find(e=>e.id===data.id);
-      if(event?.kind==='event'&&!event.imageId) fail('invalid_image');
-    }
+    if(data.kind==='event'&&(data.action==='create_event'||before.events.some(e=>e.id===data.id&&e.kind!=='meeting')))return retiredMicrocinema();
     const after=applyAction(before,data);
     if(data.action==='edit') {
       const item=(data.kind==='script'?after.scripts:after.events).find(r=>r.id===data.id);
       if(data.kind==='script')Object.assign(item,scriptContactFields({...item,...data.fields},{required:false}));
-      else {
-        if(data.fields.email!==undefined)item.email=email(data.fields.email);
-        if(data.fields.contactName!==undefined)item.contactName=plain(data.fields.contactName,100);
-      }
     }
     if(data.preview===true) return json({revision:before.revision,meetings:upcoming(after,data.language),queue:activeQueue(after).map(s=>s.id)});
     const firstApproval=data.kind==='script'&&data.action==='approve'&&!before.scripts.find(s=>s.id===data.id)?.approvedAt;
@@ -88,12 +82,13 @@ async function adminRoute(request,env,route) {
     return json({ok:true,revision:after.revision,...(data.returnState===true?{state:adminState(after,session)}:{})});
   }
   if(route==='/admin/attach'&&request.method==='POST') {
-    const data=await bodyJson(request); const before=await loadState(env.COMMUNITY_DB);checkRevision(data,before);
+    const data=await bodyJson(request);
+    if(data.kind!=='script')return retiredMicrocinema();
+    const before=await loadState(env.COMMUNITY_DB);checkRevision(data,before);
     const upload=await authorizeUpload(env.COMMUNITY_DB,data.uploadId,data.uploadToken,{ready:true});
-    const after=structuredClone(before); const item=(data.kind==='script'?after.scripts:after.events).find(e=>e.id===data.id);
+    const after=structuredClone(before); const item=after.scripts.find(e=>e.id===data.id);
     if(!item||item.status==='deleted')fail('not_found',404);
     if(data.kind==='script'&&upload.kind==='pdf')Object.assign(item,scriptPdfFields(upload));
-    else if(data.kind==='event'&&upload.kind==='image')item.imageId=upload.id;
     else fail('invalid_upload');
     await commitState(env.COMMUNITY_DB,before,after,{actor:session.email,action:'replace_upload',precondition:attachmentCondition(upload),extra:[attachStatement(env.COMMUNITY_DB,upload)]});
     return json({ok:true,revision:after.revision});
@@ -107,13 +102,6 @@ async function adminRoute(request,env,route) {
     if(!file)fail('not_found',404);
     const filename=upload.fileName || pdfFilename(`${script.title} - ${script.author}`);
     return new Response(file.body,{headers:headers({'Content-Type':'application/pdf','Content-Length':String(file.size),'Content-Disposition':`attachment; filename="writers-group-script.pdf"; filename*=UTF-8''${encodeURIComponent(filename)}`})});
-  }
-  const preview=route.match(/^\/admin\/images\/([^/]+)$/u);
-  if(preview&&request.method==='GET') {
-    const upload=await getUpload(env.COMMUNITY_DB,preview[1]);
-    const file=upload?.imagePrefix?await env.COMMUNITY_FILES.get(`${upload.imagePrefix}/320.webp`):null;
-    if(!file)fail('not_found',404);
-    return new Response(file.body,{headers:headers({'Content-Type':'image/webp'})});
   }
   return null;
 }
@@ -131,85 +119,36 @@ async function originResponse(request,env) {
   // On a production Worker route, fetch forwards to the Pages origin.
   return fetch(request);
 }
-async function composePage(request,env,card) {
-  const url=new URL(request.url); const language=url.pathname.startsWith('/es/')?'es':'en';
-  const isCalendar=url.pathname.endsWith('/microcinema.html');
-  let markup,view,imageUrl,invalid=false,pageStatus=200;
-  try {
-    const state=await loadState(env.COMMUNITY_DB);
-    if(isCalendar) {
-      if(url.searchParams.getAll('month').length>1)fail('invalid_month');
-      view=monthView(state,url.searchParams.get('month'),language);
-      markup=renderCalendar(view,siteOrigin(env));
-      imageUrl=await card(view,env);
-    } else markup=renderMeetings(upcoming(state,language),language);
-  } catch(error) {
-    invalid=['invalid_month','month_unavailable'].includes(error.code);
-    pageStatus=invalid?error.status:markup?200:503;
-    if(!invalid)console.error('community_page_failed',markup?'card':'data');
-    // Image generation failure must not take down a readable calendar.
-    if(!markup)markup=unavailableMarkup(language,invalid);
-  }
+async function composePage(request,env) {
+  const language=new URL(request.url).pathname.startsWith('/es/')?'es':'en';
+  let markup,pageStatus=200;
+  try { markup=renderMeetings(upcoming(await loadState(env.COMMUNITY_DB),language),language); }
+  catch { pageStatus=503;markup=unavailableMarkup(language);console.error('community_page_failed','data'); }
   const source=await originResponse(request,env);
   if(!source.ok||!source.headers.get('Content-Type')?.includes('text/html'))return source;
-  const result=new Response(source.body,{...source,status:pageStatus,headers:source.headers});
+  const result=new Response(source.body,{status:pageStatus,headers:source.headers});
   result.headers.set('Cache-Control','no-store');result.headers.delete('Content-Length');result.headers.delete('ETag');
-  if(invalid||env.APP_MODE==='staging')result.headers.set('X-Robots-Tag','noindex, nofollow, noarchive');
-  const rewriter=new HTMLRewriter().on('[data-community-slot="1"]',{element(element){element.setInnerContent(markup,{html:true});}});
-  if(isCalendar&&view) {
-    const title=`${monthLabel(view.month,language)} · Dust Wave Microcinema`;
-    const canonical=monthUrl(view.month,language,siteOrigin(env));
-    const description=`${copy(language).calendarTitle} · ${monthLabel(view.month,language)} · Albuquerque`;
-    rewriter.on('title',{element(e){e.setInnerContent(title);}})
-      .on('meta[property="og:title"],meta[name="twitter:title"]',{element(e){e.setAttribute('content',title);}})
-      .on('meta[name="description"],meta[property="og:description"],meta[name="twitter:description"]',{element(e){e.setAttribute('content',description);}})
-      .on('meta[property="og:url"]',{element(e){e.setAttribute('content',canonical);}})
-      .on('link[rel="canonical"]',{element(e){e.setAttribute('href',canonical);}})
-      .on('link[rel="alternate"][hreflang]',{element(e){const lang=e.getAttribute('hreflang')==='es'?'es':'en';e.setAttribute('href',monthUrl(view.month,lang,siteOrigin(env)));}})
-      .on('[data-lang-switcher-link]',{element(e){const href=e.getAttribute('href')||'';e.setAttribute('href',monthUrl(view.month,href.includes('/es/')?'es':'en'));}});
-    if(imageUrl) {
-      rewriter.on('meta[property="og:image"],meta[property="og:image:secure_url"],meta[name="twitter:image"]',{element(e){e.setAttribute('content',new URL(imageUrl,siteOrigin(env)).href);}})
-        .on('meta[property="og:image:alt"],meta[name="twitter:image:alt"]',{element(e){e.setAttribute('content',title);}})
-        .on('meta[property="og:image:type"]',{element(e){e.setAttribute('content','image/png');}})
-        .on('meta[property="og:image:width"]',{element(e){e.setAttribute('content','1200');}})
-        .on('meta[property="og:image:height"]',{element(e){e.setAttribute('content','630');}});
-    }
-  }
-  return rewriter.transform(result);
+  if(env.APP_MODE==='staging')result.headers.set('X-Robots-Tag','noindex, nofollow, noarchive');
+  return new HTMLRewriter().on('[data-community-slot="1"]',{element(element){element.setInnerContent(markup,{html:true});}}).transform(result);
 }
-export function createApp({card}) {
+export function createApp() {
   const app = {
     async fetch(request,env) {
       const url=new URL(request.url);
       try {
+        if(/^\/(es\/)?microcinema\.html$/u.test(url.pathname)&&request.method==='GET')return new Response(null,{status:301,headers:{Location:microcinemaUrl(url.pathname.startsWith('/es/')?'es':'en'),'Cache-Control':'public, max-age=3600'}});
         if(url.pathname.startsWith(API)) {
           const route=url.pathname.slice(API.length);
+          if(['/events','/calendar'].includes(route)||/^\/(images|cards|admin\/images)(\/|$)/u.test(route))return retiredMicrocinema();
           if(route==='/config'&&request.method==='GET')return json({siteKey:localMode(env)&&env.LOCAL_CHALLENGE_BYPASS==='true'?'1x00000000000000000000AA':env.TURNSTILE_SITE_KEY||'',local:localMode(env),timezone:'America/Denver'});
           const auth=await authRoute(request,env,route);if(auth)return auth;
           const upload=await uploadRoute(request,env,route);if(upload)return upload;
           const admin=await adminRoute(request,env,route);if(admin)return admin;
-          if(['/events','/scripts'].includes(route)&&request.method==='POST')return await submit(request,env,route==='/scripts'?'script':'event');
-          if(route==='/calendar'&&request.method==='GET') {
-            if(url.searchParams.getAll('month').length>1)fail('invalid_month');
-            return json(monthView(await loadState(env.COMMUNITY_DB),url.searchParams.get('month'),locale(url.searchParams.get('language'))));
-          }
+          if(route==='/scripts'&&request.method==='POST')return await submit(request,env);
           if(route==='/meetings'&&request.method==='GET')return json({meetings:upcoming(await loadState(env.COMMUNITY_DB),locale(url.searchParams.get('language')))});
-          const image=route.match(/^\/images\/([a-f0-9-]{36})\/(320|640)\.webp$/u);
-          if(image&&request.method==='GET') {
-            const state=await loadState(env.COMMUNITY_DB);
-            if(!state.events.some(e=>e.imageId===image[1]&&['published','cancelled'].includes(e.status)))fail('not_found',404);
-            const upload=await getUpload(env.COMMUNITY_DB,image[1]);
-            const file=upload?.imagePrefix?await env.COMMUNITY_FILES.get(`${upload.imagePrefix}/${image[2]}.webp`):null;
-            if(!file)fail('not_found',404);
-            return new Response(file.body,{headers:headers({'Content-Type':'image/webp','Cache-Control':'public, max-age=300'})});
-          }
-          if(/^\/cards\/(en|es)\/\d{4}-\d{2}\/[a-f0-9]{24}\.png$/u.test(route)&&request.method==='GET') {
-            const file=await env.COMMUNITY_FILES.get(route.slice(1));if(!file)fail('not_found',404);
-            return new Response(file.body,{headers:headers({'Content-Type':'image/png','Cache-Control':'public, max-age=31536000, immutable'})});
-          }
           fail('not_found',404);
         }
-        if(/^\/(es\/)?(microcinema|writers-group)\.html$/u.test(url.pathname)&&request.method==='GET')return await composePage(request,env,card);
+        if(/^\/(es\/)?writers-group\.html$/u.test(url.pathname)&&request.method==='GET')return await composePage(request,env);
         const response=await originResponse(request,env);
         if(/^\/(es\/)?admin\/community\/?$/u.test(url.pathname)||env.APP_MODE==='staging'){
           const safe=new Response(response.body,response);
