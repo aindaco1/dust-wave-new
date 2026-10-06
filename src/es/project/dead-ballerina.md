@@ -18,6 +18,9 @@ tags:
 hoverVideoWebm: /img/project-videos/deadballerina.webm
 hoverVideoMp4: /img/project-videos/deadballerina.mp4
 hoverVideoPoster: /img/stills/deadballerinastill.jpg
+poster: /img/dead_ballerina/poster.png
+posterHeading: "Cartel"
+posterAlt: "Cartel en blanco y negro de Dead Ballerina con dos hormigas enmarcando el título geométrico de la película"
 projectVideos:
   - heading: "Music Video"
     id: aiUFb63NXwk
@@ -47,6 +50,14 @@ Escrito por Alonso Indacochea<br/>
 Animación 3D por Jay Renteria</p>
 <p><br/></p>
 <h3>Premios y selecciones en festivales</h3>
+<h4><a href="https://www.darkredhorror.com/">Dark Red Film Festival 2026</a></h4>
+<p><strong>Selección Oficial</strong>.</p>
+<p><a href="/dead-ballerina-selected-for-dark-red-wins-best-animation-at-silver-city.html">Lee el anuncio de la selección en Dark Red y del premio a Mejor Animación en Silver City (en inglés)</a>.</p>
+<div class="row g-2">
+<div class="col-12 col-md-6">
+<img src="{{ '/img/dead_ballerina/dark-red-official-selection-2026.png' | toWebp }}" class="img-fluid rounded" width="2000" height="1334" alt="Laurel de Selección Oficial del Dark Red Film Festival 2026 con manos esqueléticas rojas" loading="lazy" decoding="async"/>
+</div>
+</div>
 <h4><a href="https://filmfreeway.com/OutOfThisWorldFilmFestival">Out of This World Film Festival 2026</a></h4>
 <p><strong>Selección Oficial</strong> de la primera edición de este festival de cine independiente de ciencia ficción y fantasía en Albuquerque.</p>
 <p>El festival se celebra el <strong>12 de diciembre de 2026</strong> en el <strong>Guild Cinema</strong>, 3405 Central Ave NE, Albuquerque, NM 87106. Los horarios tentativos son: apertura de puertas a las <strong>3 p. m.</strong> y funciones de <strong>3:30 a 9 p. m.</strong> Aún no se ha anunciado la hora exacta de la proyección de <em>Dead Ballerina</em>.</p>
@@ -58,14 +69,18 @@ Animación 3D por Jay Renteria</p>
 </div>
 <h4><a href="https://silvercityfilmfest.org/">Silver City Community Film Festival 2026</a></h4>
 <ul>
+<li><strong>Mejor Animación</strong></li>
 <li><strong>Premio del Público</strong></li>
 <li>Selección Oficial</li>
 </ul>
-<div class="row g-2">
-<div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
+<div class="row g-4 align-items-center">
+<div class="col-12 col-lg-4">
+<img src="{{ '/img/dead_ballerina/silver-city-best-animation-2026.png' | toWebp }}" class="img-fluid" width="1092" height="1441" alt="Placa de madera del premio a Mejor Animación del Silver City Community Film Festival 2026, ilustrada con un equipo de rodaje" loading="lazy" decoding="async"/>
+</div>
+<div class="col-12 col-lg-4">
 <img alt="Laurel del Premio del Público del Silver City Community Film Festival 2026" class="w-100 shadow-1-strong rounded mb-2" decoding="async" loading="lazy" src="/img/dead_ballerina/silver-city-audience-choice-2026.png"/>
 </div>
-<div class="col-lg-6 mb-6 mb-lg-0">
+<div class="col-12 col-lg-4">
 <img alt="Laurel de Selección Oficial del Silver City Community Film Festival 2026" class="w-100 shadow-1-strong rounded mb-2" decoding="async" loading="lazy" src="/img/dead_ballerina/silver-city-official-selection-2026.png"/>
 </div>
 </div>

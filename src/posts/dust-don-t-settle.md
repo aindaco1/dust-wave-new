@@ -41,6 +41,18 @@ Alonso Indacochea - Executive Producer
 </br>
 </br>
 
+### Festival Selections
+
+#### [2026 Sovereign Lens Film Festival](https://filmfreeway.com/SOVEREIGNLENS2026)
+
+The **extended teaser version** of _Dust Don't Settle_ is an **Official Selection** of the festival's inaugural edition.
+
+<div class="row g-2">
+  <div class="col-12 col-md-6">
+    <img src="{{ '/img/dust_dont_settle/sovereign-lens-official-selection-2026.png' | toWebp }}" class="img-fluid" width="1735" height="1152" alt="2026 Sovereign Lens Film Festival Official Selection laurel for the extended teaser version of Dust Don't Settle" loading="lazy" decoding="async">
+  </div>
+</div>
+
 ## Social Media
 
 <a href="https://www.instagram.com/dustdontsettledocumentary" class="link-fancy" target="_blank"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a><span> | </span><a href="https://youtube.com/@dustdontsettledocumentary" class="link-fancy" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><svg class="site-footer__social-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a><span> | </span><a href="https://bsky.app/profile/dustdontsettle.bsky.social" class="link-fancy" target="_blank"><i class="fa-brands fa-bluesky" aria-hidden="true"></i></a>

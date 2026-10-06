@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+- Announced Dead Ballerina's 2026 Dark Red Film Festival selection and Silver
+  City Community Film Festival Best Animation award, with the poster, laurel
+  and award plaque on its bilingual project pages and a combined News item.
+- Added the extended teaser version of Dust Don't Settle's selection for the
+  inaugural 2026 Sovereign Lens Film Festival to both project-page languages.
+- Updated build and Worker development dependencies to patched Sharp,
+  shell-quote, source-map-js and CSS selector parser versions.
+- Added an owner-approved, advisory-specific exception for build-time `braces`
+  3.0.3 through October 20, 2026, with fail-closed regression tests; all other
+  high and critical dependency advisories continue to block deployment.
+
 - Retired the old Microcinema pages with bilingual permanent redirects to
   dustwavemicrocinema.com. Removed Community event proposals, event admin tools,
   image uploads and calendar cards while preserving Writers Group scripts,

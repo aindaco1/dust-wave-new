@@ -16,7 +16,7 @@ git diff --check
 ```
 
 `check:podcasts` verifies the exact shared-platform pin, scans tracked text for
-credentials, runs `npm audit --audit-level=high`, and runs the Podcast source,
+credentials, runs the high/critical dependency audit gate, and runs the Podcast source,
 i18n, accessibility, performance, hosting-header, module, and behavior checks.
 
 `build` separately runs project-frontmatter, Pages CMS, and Substack export
@@ -26,6 +26,25 @@ i18n. It does not invoke `check:podcasts`. CI explicitly runs that gate and then
 
 The newsletter Worker has its own [unit tests](../workers/newsletter-subscribe/README.md#testing).
 Its welcome-email send command is a separate provider action.
+
+### Temporary build dependency exception
+
+On October 6, 2026 the owner approved an exception for
+[GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm), limited
+to `braces` 3.0.3 through October 20, 2026 (UTC). No patched upstream version
+was available. Deeply nested brace patterns can exhaust the parser's stack;
+the site's Eleventy/Gulp tools use repository-controlled build/watch patterns,
+and this package is not shipped as visitor-facing site code.
+
+`npm run security:audit` tests and runs `scripts/security-audit.mjs`, which reads
+the complete `npm audit --json` report. It reports the exception explicitly and
+still rejects every other high/critical advisory, changed affected versions,
+invalid reports and use after expiry. Transitive reports of the same advisory
+are resolved to their underlying cause. Moderate findings retain the existing
+non-blocking threshold; `npm audit` shows the unfiltered report.
+
+Update to the upstream fix when available and remove this exception. If still
+needed after October 20, obtain fresh approval before changing its expiry.
 
 ## Focused checks
 

@@ -12,6 +12,9 @@ tags:
 hoverVideoWebm: /img/project-videos/deadballerina.webm
 hoverVideoMp4: /img/project-videos/deadballerina.mp4
 hoverVideoPoster: /img/stills/deadballerinastill.jpg
+poster: /img/dead_ballerina/poster.png
+posterHeading: "Poster"
+posterAlt: "Black-and-white Dead Ballerina poster with two ants framing the film's geometric title"
 projectVideos:
   - heading: "Music Video"
     id: aiUFb63NXwk
@@ -46,6 +49,18 @@ Written by Alonso Indacochea<br>
 
 ### Awards & Festival Selections
 
+#### [2026 Dark Red Film Festival](https://www.darkredhorror.com/)
+
+**Official Selection**.
+
+[Read the Dark Red selection and Silver City Best Animation announcement](/dead-ballerina-selected-for-dark-red-wins-best-animation-at-silver-city.html).
+
+<div class="row g-2">
+  <div class="col-12 col-md-6">
+    <img src="{{ '/img/dead_ballerina/dark-red-official-selection-2026.png' | toWebp }}" class="img-fluid rounded" width="2000" height="1334" alt="2026 Dark Red Film Festival Official Selection laurel with red skeletal hands" loading="lazy" decoding="async">
+  </div>
+</div>
+
 #### [2026 Out of This World Film Festival](https://filmfreeway.com/OutOfThisWorldFilmFestival)
 
 **Official Selection** of the inaugural festival for independent sci-fi and fantasy films in Albuquerque.
@@ -62,14 +77,18 @@ The festival takes place on **December 12, 2026**, at **the Guild Cinema**, 3405
 
 #### [2026 Silver City Community Film Festival](https://silvercityfilmfest.org/)
 
+* **Best Animation**
 * **Audience Choice Award**
 * Official Selection
 
-<div class="row g-2">
-  <div class="col-lg-6 col-md-12 mb-6 mb-lg-0">
+<div class="row g-4 align-items-center">
+  <div class="col-12 col-lg-4">
+    <img src="{{ '/img/dead_ballerina/silver-city-best-animation-2026.png' | toWebp }}" class="img-fluid" width="1092" height="1441" alt="Wooden Best Animation award plaque from the 2026 Silver City Community Film Festival, illustrated with a film crew" loading="lazy" decoding="async">
+  </div>
+  <div class="col-12 col-lg-4">
     <img src="/img/dead_ballerina/silver-city-audience-choice-2026.png" class="w-100 shadow-1-strong rounded mb-2" alt="Silver City Community Film Festival 2026 Audience Choice Award laurel" loading="lazy" decoding="async">
   </div>
-  <div class="col-lg-6 mb-6 mb-lg-0">
+  <div class="col-12 col-lg-4">
     <img src="/img/dead_ballerina/silver-city-official-selection-2026.png" class="w-100 shadow-1-strong rounded mb-2" alt="Silver City Community Film Festival 2026 Official Selection laurel" loading="lazy" decoding="async">
   </div>
 </div>

@@ -41,6 +41,14 @@ Jeanette Aguilar-Harris - Associate Producer
 Alonso Indacochea - Executive Producer
 
 </p>
+<h3>Selecciones en festivales</h3>
+<h4><a href="https://filmfreeway.com/SOVEREIGNLENS2026">Sovereign Lens Film Festival 2026</a></h4>
+<p>La <strong>versión extendida del teaser</strong> de <em>Dust Don't Settle</em> forma parte de la <strong>Selección Oficial</strong> de la primera edición del festival.</p>
+<div class="row g-2">
+<div class="col-12 col-md-6">
+<img src="{{ '/img/dust_dont_settle/sovereign-lens-official-selection-2026.png' | toWebp }}" class="img-fluid" width="1735" height="1152" alt="Laurel de Selección Oficial del Sovereign Lens Film Festival 2026 para la versión extendida del teaser de Dust Don't Settle" loading="lazy" decoding="async"/>
+</div>
+</div>
 <h2>Social Media</h2>
 <p><a class="link-fancy" href="https://www.instagram.com/dustdontsettledocumentary" target="_blank"><i aria-hidden="true" class="fa-brands fa-instagram"></i></a><span> | </span><a class="link-fancy" href="https://youtube.com/@dustdontsettledocumentary" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><svg class="site-footer__social-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a><span> | </span><a class="link-fancy" href="https://bsky.app/profile/dustdontsettle.bsky.social" target="_blank"><i aria-hidden="true" class="fa-brands fa-bluesky"></i></a>
 

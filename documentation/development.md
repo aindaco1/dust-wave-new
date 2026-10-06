@@ -87,7 +87,8 @@ Release checklist:
 
 CI runs `npm run check:podcasts` before `npm run build:ci` as a separate
 step. The gate verifies the shared-platform pin, scans tracked text through
-the shared credential-leak gate, fails on high-severity dependency advisories,
+the shared credential-leak gate, fails on high-severity dependency advisories
+(subject to the [approved, expiring build exception](testing.md#temporary-build-dependency-exception)),
 and validates the bilingual Podcast surfaces. `npm run build` runs its own
 focused content/export and rendered-i18n checks; it does not invoke that full
 gate. See [Testing](testing.md) for the exact command scopes.
