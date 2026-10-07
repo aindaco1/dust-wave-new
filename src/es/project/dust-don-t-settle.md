@@ -46,7 +46,7 @@ Alonso Indacochea - Executive Producer
 <p>La <strong>versión extendida del teaser</strong> de <em>Dust Don't Settle</em> forma parte de la <strong>Selección Oficial</strong> de la primera edición del festival.</p>
 <div class="row g-2">
 <div class="col-12 col-md-6">
-<img src="{{ '/img/dust_dont_settle/sovereign-lens-official-selection-2026.png' | toWebp }}" class="img-fluid" width="1735" height="1152" alt="Laurel de Selección Oficial del Sovereign Lens Film Festival 2026 para la versión extendida del teaser de Dust Don't Settle" loading="lazy" decoding="async"/>
+<img src="{{ '/img/dust_dont_settle/sovereign-lens-official-selection-2026.png' | toWebp }}" class="img-fluid" width="2000" height="2000" alt="Laurel de Selección Oficial del Sovereign Lens Film Festival 2026 para la versión extendida del teaser de Dust Don't Settle" loading="lazy" decoding="async"/>
 </div>
 </div>
 <h2>Social Media</h2>

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Replaced the Sovereign Lens Film Festival laurel with the supplied white
+  artwork on both language versions of the Dust Don't Settle project page.
 - Announced Dead Ballerina's 2026 Dark Red Film Festival selection and Silver
   City Community Film Festival Best Animation award, with the poster, laurel
   and award plaque on its bilingual project pages and a combined News item.

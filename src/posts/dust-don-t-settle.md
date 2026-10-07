@@ -49,7 +49,7 @@ The **extended teaser version** of _Dust Don't Settle_ is an **Official Selectio
 
 <div class="row g-2">
   <div class="col-12 col-md-6">
-    <img src="{{ '/img/dust_dont_settle/sovereign-lens-official-selection-2026.png' | toWebp }}" class="img-fluid" width="1735" height="1152" alt="2026 Sovereign Lens Film Festival Official Selection laurel for the extended teaser version of Dust Don't Settle" loading="lazy" decoding="async">
+    <img src="{{ '/img/dust_dont_settle/sovereign-lens-official-selection-2026.png' | toWebp }}" class="img-fluid" width="2000" height="2000" alt="2026 Sovereign Lens Film Festival Official Selection laurel for the extended teaser version of Dust Don't Settle" loading="lazy" decoding="async">
   </div>
 </div>
 
