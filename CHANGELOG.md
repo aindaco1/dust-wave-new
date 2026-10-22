@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Updated markdown-it to 14.3.3 and pinned Vite to patched 7.3.7. Renewed the
+  owner-approved, build-only `braces` 3.0.3 exception through November 5, 2026
+  (UTC); all other high/critical advisories and the expiry remain enforced.
+
+- Added **Return to queue** for approved scripts assigned to past Writers Group
+  meetings, including cancelled meetings. Returning an unread script preserves
+  its original agenda and private PDF without creating duplicate submissions;
+  admins can then move it to an earlier reading slot.
+
 - Replaced the Sovereign Lens Film Festival laurel with the supplied white
   artwork on both language versions of the Dust Don't Settle project page.
 - Announced Dead Ballerina's 2026 Dark Red Film Festival selection and Silver

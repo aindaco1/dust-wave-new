@@ -11,6 +11,8 @@ import matter from 'gray-matter';
 import nunjucks from 'nunjucks';
 import * as sass from 'sass';
 import puppeteer from 'puppeteer';
+import {loadState,commitState} from '../workers/community/src/repository.js';
+import {allocate,eventFields} from '../workers/community/src/domain.js';
 
 const root=new URL('../',import.meta.url),workerRequire=createRequire(new URL('workers/community/package.json',root));
 const {build}=workerRequire('esbuild'),{Miniflare,convertV4MiniflareOptions}=workerRequire('miniflare'),{PDFDocument}=workerRequire('pdf-lib');
@@ -130,6 +132,60 @@ async function waitForHeldAction(){
   assert(releaseAction,'the autosave request reached the server');
 }
 try{
+  for(const role of ['super_admin','limited_admin'])for(const [lang,width,meetingStatus] of [['en',1440,'published'],['es',320,'cancelled']])await test(`return unread scripts from a past ${meetingStatus} meeting (${role}, ${lang}, ${width}px)`,async()=>{
+    const f=await fixture(lang,width,{role}),{page,copy,db}=f;
+    try{
+      for(let i=1;i<=3;i++){await openScript(page,`Script ${i}`,`Writer ${i}`);await saveScript(page,i);}
+      const before=await loadState(db),next=structuredClone(before);
+      const byTitle=title=>next.scripts.find(s=>s.title===title),ids=[byTitle('Script 1').id,byTitle('Script 2').id];
+      const past={id:'past-reading',kind:'meeting',...eventFields({title:'Past reading',description:'Unread scripts',date:'2026-09-07',time:'19:00',endTime:'21:00'}),status:meetingStatus,
+        readings:ids,agenda:ids.map(id=>{const s=next.scripts.find(s=>s.id===id);return {title:s.title,author:s.author};})};
+      next.events.push(past);
+      await commitState(db,before,allocate(next,new Date('2026-09-10T12:00:00Z')));
+      await page.evaluate(()=>dispatchEvent(new Event('online')));
+      await page.waitForFunction(()=>document.querySelectorAll('[data-admin-queue] strong').length===1);
+      assert.deepEqual(await titles(page),['Script 3']);
+      async function startReturn(id){
+        await page.$$eval(`[data-record-id="${id}"] button`,(nodes,label)=>nodes.find(node=>node.textContent===label).click(),copy.requeue);
+        await page.waitForSelector('.dw-admin-dialog[open]');
+        assert((await page.$eval('.dw-admin-dialog[open]',node=>node.textContent)).includes(copy.requeueDescription));
+        await fits(page);
+      }
+      async function confirm(){await page.$$eval('.dw-admin-dialog[open] button',(nodes,label)=>nodes.find(node=>node.textContent===label).click(),copy.requeue);}
+      await startReturn(ids[0]);
+      if(screenshots)await page.screenshot({path:path.join(screenshots,`${role}-${lang}-${width}-return.png`),fullPage:true});
+      await page.$$eval('.dw-admin-dialog[open] button',(nodes,label)=>nodes.find(node=>node.textContent===label).click(),copy.cancel);
+      assert.deepEqual(await titles(page),['Script 3'],'cancelling confirmation leaves the queue alone');
+      nextActionMode='fail';await startReturn(ids[0]);await confirm();
+      await page.waitForFunction(message=>document.querySelector('[data-admin-status]').textContent===message,{},copy.errors.request_failed);
+      assert.deepEqual(await titles(page),['Script 3']);
+      nextActionMode='lose';await startReturn(ids[0]);await confirm();
+      await page.waitForFunction(()=>document.querySelectorAll('[data-admin-queue] strong').length===2);
+      assert.deepEqual(await titles(page),['Script 3','Script 1'],'a lost response is read back without repeating the return');
+      await startReturn(ids[1]);await confirm();
+      await page.waitForFunction(()=>document.querySelectorAll('[data-admin-queue] strong').length===3);
+      assert.deepEqual(await titles(page),['Script 3','Script 1','Script 2']);
+      for(const title of ['Script 1','Script 2']){
+        await page.click(`[aria-label="${copy.moveUp}: ${title}"]`);
+        await page.waitForFunction(message=>document.querySelector('[data-queue-status]').textContent===message,{},copy.actionDone);
+      }
+      assert.deepEqual(await titles(page),['Script 1','Script 2','Script 3']);
+      assert.deepEqual(await readings(page),past.agenda);
+      await page.reload();await page.waitForSelector('[data-admin-workspace][aria-busy="false"]:not([hidden])');
+      assert.deepEqual(await titles(page),['Script 1','Script 2','Script 3']);
+      const saved=await loadState(db),history=saved.events.find(e=>e.id===past.id);
+      assert.equal(saved.scripts.length,3);assert.deepEqual(history.agenda,past.agenda);assert.deepEqual(history.readings,ids);
+      for(const id of ids){
+        assert.equal(saved.scripts.find(s=>s.id===id).pdfId,before.scripts.find(s=>s.id===id).pdfId);
+        assert.equal(await page.$(`[data-admin-scripts] [data-record-id="${id}"]`),null);
+      }
+      assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM community_email_outbox').first()).n,0);
+      await page.$$eval('[data-admin-queue] li:first-child button',(nodes,label)=>nodes.find(node=>node.textContent===label).click(),copy.download);
+      await page.waitForFunction(()=>Boolean(window.lastDownload));
+      assert.deepEqual(await page.evaluate(()=>window.lastDownload.bytes),[...pdfBytes]);
+      await fits(page);
+    }finally{await f.close();}
+  });
   for(const [lang,width] of [['en',1440],['en',768],['es',768],['es',320]])await test(`meeting creation, editing and deletion (${lang}, ${width}px)`,async()=>{
     const f=await fixture(lang,width),{page,copy}=f;
     try{

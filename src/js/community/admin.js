@@ -112,7 +112,7 @@ function recordCard(item,kind){
     if(['pending','rejected','withdrawn'].includes(item.status))actions.append(button(copy.approve,()=>mutate(item,kind,'approve')));
     if(item.status==='pending')actions.append(button(copy.reject,()=>mutate(item,kind,'reject')));
     if(item.status==='approved')actions.append(button(copy.withdraw,()=>mutate(item,kind,'withdraw')),button(copy.read,()=>mutate(item,kind,'read')));
-    if(['read','withdrawn'].includes(item.status))actions.append(button(copy.requeue,()=>mutate(item,kind,'requeue')));
+    if(['approved','read','withdrawn'].includes(item.status)&&!state.queue.includes(item.id))actions.append(button(copy.requeue,()=>mutate(item,kind,'requeue')));
   }else{
     if(item.status!=='published')actions.append(button(item.status==='cancelled'?copy.restore:copy.approve,()=>mutate(item,kind,'approve')));
     if(item.status==='pending')actions.append(button(copy.reject,()=>mutate(item,kind,'reject')));
@@ -131,11 +131,17 @@ function scriptFileButtons(item){
 }
 async function mutate(item,kind,action){
   if(busy||!discard())return;
-  const deleting=action==='delete';
-  const result=await confirmation.open({title:deleting?copy.deleteEventTitle:copy.confirmAction,description:deleting?`${item.title}. ${copy.deleteEventDescription}`:item.title,confirmLabel:deleting?copy.deleteEvent:copy.confirm});
+  const deleting=action==='delete',requeueing=action==='requeue';
+  const result=await confirmation.open({title:deleting?copy.deleteEventTitle:requeueing?copy.requeue:copy.confirmAction,description:deleting?`${item.title}. ${copy.deleteEventDescription}`:requeueing?`${item.title}. ${copy.requeueDescription}`:item.title,confirmLabel:deleting?copy.deleteEvent:requeueing?copy.requeue:copy.confirm});
   if(!result.confirmed)return;
   busy=true;
-  try{await client.request('/admin/actions',{method:'POST',body:{revision:state.revision,id:item.id,kind,action}});await refresh({force:true});status.textContent=copy.actionDone;}
+  try{
+    const body={revision:state.revision,id:item.id,kind,action};
+    if(requeueing){
+      state=await saveScriptAction(body,current=>current.queue.includes(item.id));queueIds=[...state.queue];render();
+    }else{await client.request('/admin/actions',{method:'POST',body});await refresh({force:true});}
+    status.textContent=copy.actionDone;
+  }
   catch(error){report(error);}finally{busy=false;}
 }
 function clearDrag(){

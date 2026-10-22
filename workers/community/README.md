@@ -263,8 +263,22 @@ still require local-attendance/consent confirmations, contact details and review
 
 Approval
 publishes the approved title/author in the next available reading slot.
-Rejecting/withdrawing a script removes it from future agendas. Requeueing a
-read script preserves the earlier agenda. Only first approval sends a writer
+Rejecting/withdrawing a script removes it from future agendas. Scripts assigned
+to a started meeting leave the active queue even when their status is still
+Approved. In **Script queue**, find the script below the active queue and choose
+**Return to queue** if it was not read or needs another reading. Both admin roles
+can return Approved, Read or Withdrawn scripts. The confirmation appends it to
+the queue; use the existing drag or arrow controls to move it earlier.
+
+For a meeting cancelled after its start, mark it cancelled in **Meetings**, then
+return each unread script. Returning preserves the earlier agenda and original
+script/PDF, records the released historical assignment in `requeuedReadings`,
+and does not create duplicate submissions or mark unread scripts Read. A later
+meeting still removes the script from the queue normally. Retrying a return
+does not move an already-queued script again. No migration is needed; deploy the
+Worker before the matching page assets. Rolling the Worker back restores the
+old queue exclusions until the fixed Worker is redeployed.
+Only first approval sends a writer
 email, as described below; rejection, withdrawal and requeueing do not.
 
 ### Script notification emails

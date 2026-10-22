@@ -87,3 +87,56 @@ test('editing and deleting started meetings preserve their reading history and q
   assert(!upcoming(state,'en',later).some(e=>e.id===first.id));
   assert.deepEqual(state.events.find(e=>e.id===first.id).agenda,agenda);
 });
+
+test('October 19 unread scripts can return from a past cancelled meeting without duplicate submissions',()=>{
+  const later=new Date('2026-10-22T18:00:00Z');
+  let state=allocate({...emptyState(),scripts:Array.from({length:8},(_,i)=>script(i+1))},now);
+  const original=structuredClone(state.events.find(e=>e.id==='writers-2026-10-19'));
+  state=applyAction(state,{kind:'event',action:'cancel',id:original.id},later);
+  assert.deepEqual(activeQueue(state,later).map(s=>s.id),['s7','s8']);
+  for(const id of ['s5','s6'])state=applyAction(state,{kind:'script',action:'requeue',id},later);
+  assert.deepEqual(activeQueue(state,later).map(s=>s.id),['s7','s8','s5','s6']);
+  assert.equal(state.scripts.length,8,'returning a script does not manufacture a read copy');
+  const cancelled=state.events.find(e=>e.id===original.id);
+  assert.equal(cancelled.status,'cancelled');
+  assert.deepEqual(cancelled.readings,original.readings);
+  assert.deepEqual(cancelled.agenda,original.agenda);
+  state=reorder(state,['s5','s6','s7','s8'],later);
+  assert.deepEqual(upcoming(state,'en',later).slice(0,2).map(e=>e.readings.map(s=>s.title)),[['Script 5','Script 6'],['Script 7','Script 8']]);
+  assert.deepEqual(applyAction(state,{kind:'script',action:'requeue',id:'s5'},later),state,'retry preserves the chosen position and history');
+  const afterNext=new Date('2026-11-03T04:00:00Z');
+  assert.deepEqual(activeQueue(state,afterNext).map(s=>s.id),['s7','s8'],'a later reading still locks the returned script normally');
+  state=applyAction(state,{kind:'script',action:'requeue',id:'s5'},afterNext);
+  assert.deepEqual(activeQueue(state,afterNext).map(s=>s.id),['s7','s8','s5']);
+  assert.equal(state.scripts.length,8);
+});
+
+test('returning an unread script preserves a published or rescheduled historical agenda',()=>{
+  const later=new Date('2026-09-22T02:00:00Z');
+  for(const reschedule of [false,true]){
+    let state=initial();
+    const original=structuredClone(state.events[0]);
+    if(reschedule)state=applyAction(state,{kind:'event',action:'edit',id:original.id,fields:{...original,date:'2026-09-28'}},later);
+    delete state.events.find(e=>e.id===original.id).agenda; // Legacy records may lack snapshots.
+    state=applyAction(state,{kind:'script',action:'requeue',id:'s1'},later);
+    state=applyAction(state,{kind:'script',action:'edit',id:'s1',fields:{title:'New title',author:'New author'}},later);
+    assert.deepEqual(state.events.find(e=>e.id===original.id).agenda,original.agenda);
+    assert.deepEqual(activeQueue(state,later).map(s=>s.id),['s3','s4','s5','s6','s1']);
+    assert.equal(state.scripts[0].pdfId,'private-file');
+  }
+});
+
+test('read and withdrawn scripts return once; future agendas do not generate history copies',()=>{
+  for(const action of ['read','withdraw']){
+    let state=applyAction(initial(),{kind:'script',action,id:'s1'},now);
+    state=applyAction(state,{kind:'script',action:'requeue',id:'s1'},now);
+    assert.deepEqual(activeQueue(state,now).map(s=>s.id),['s2','s3','s4','s5','s6','s1']);
+    assert.equal(state.scripts.length,6);
+    assert.deepEqual(applyAction(state,{kind:'script',action:'requeue',id:'s1'},now),state);
+    assert(!state.events.some(e=>e.requeuedReadings?.length));
+  }
+  for(const status of ['pending','rejected']){
+    const state=initial();state.scripts[0].status=status;
+    assert.throws(()=>applyAction(state,{kind:'script',action:'requeue',id:'s1'},now),/invalid_action/);
+  }
+});

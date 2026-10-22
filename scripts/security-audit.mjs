@@ -2,10 +2,10 @@ import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 
-// Approved October 6, 2026 for trusted build-time glob patterns only.
+// Renewed by the owner October 22, 2026 for trusted build-time glob patterns only.
 // See documentation/testing.md. All other high/critical advisories still fail.
 export const BRACES_ADVISORY = 'https://github.com/advisories/GHSA-vfj7-8cjw-p6xm';
-export const EXCEPTION_EXPIRES = Date.parse('2026-10-21T00:00:00Z');
+export const EXCEPTION_EXPIRES = Date.parse('2026-11-06T00:00:00Z');
 const severities = ['info', 'low', 'moderate', 'high', 'critical'];
 const isBlocking = severity => severity === 'high' || severity === 'critical';
 
@@ -71,7 +71,7 @@ function main() {
   const { allowed, blocked } = evaluateAudit(report, lockfile);
   console.log('npm audit vulnerability counts:', JSON.stringify(report.metadata.vulnerabilities));
   for (const advisory of allowed) {
-    console.warn(`APPROVED EXCEPTION through October 20, 2026 (UTC): ${advisory.name} 3.0.3 — ${advisory.url}`);
+    console.warn(`APPROVED EXCEPTION through November 5, 2026 (UTC): ${advisory.name} 3.0.3 — ${advisory.url}`);
   }
   for (const advisory of blocked) console.error(`BLOCKED ${advisory.severity}: ${advisory.name} — ${advisory.url}`);
   if (blocked.length) process.exitCode = 1;

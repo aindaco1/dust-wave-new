@@ -31,8 +31,10 @@ Its welcome-email send command is a separate provider action.
 
 On October 6, 2026 the owner approved an exception for
 [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm), limited
-to `braces` 3.0.3 through October 20, 2026 (UTC). No patched upstream version
-was available. Deeply nested brace patterns can exhaust the parser's stack;
+to `braces` 3.0.3 through October 20, 2026 (UTC). On October 22, the owner
+explicitly renewed the same exception through November 5, 2026 (UTC) to publish
+the Writers Group queue fix. The registry still had no patched upstream version.
+Deeply nested brace patterns can exhaust the parser's stack;
 the site's Eleventy/Gulp tools use repository-controlled build/watch patterns,
 and this package is not shipped as visitor-facing site code.
 
@@ -44,7 +46,7 @@ are resolved to their underlying cause. Moderate findings retain the existing
 non-blocking threshold; `npm audit` shows the unfiltered report.
 
 Update to the upstream fix when available and remove this exception. If still
-needed after October 20, obtain fresh approval before changing its expiry.
+needed after November 5, obtain fresh approval before changing its expiry.
 
 ## Focused checks
 
@@ -214,7 +216,9 @@ Tests use isolated D1/R2 and synthetic scripts, never real mail. Coverage includ
 EN/ES forms, upload verification, PDF limits/privacy, retries and atomic writes,
 queue scheduling, DST, roles, access revocation and delivery through fake transports.
 The browser admin tests exercise script uploads, downloads/replacement, detail
-and queue autosave, meeting editing/deletion, retained drafts, keyboard tabs,
+and queue autosave, returning unread scripts from past meetings in both admin
+roles/languages, preserved agendas and PDFs, lost-response recovery, meeting
+editing/deletion, retained drafts, keyboard tabs,
 the mobile picker and recovery from failed/lost responses. The removed Events
 tab falls back to Script queue; a separate link opens the Microcinema admin.
 

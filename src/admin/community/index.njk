@@ -38,7 +38,7 @@ eleventyComputed:
       <p id="community-queue-instructions">{{ c.dragHint }}</p>
       <p data-queue-status role="status"></p><div class="community-admin__actions"><button type="button" data-queue-retry hidden>{{ c.retrySave }}</button><button type="button" data-queue-discard hidden>{{ c.useSavedOrder }}</button></div>
       <ol data-admin-queue class="community-admin-queue"></ol>
-      <h2>{{ c.pending }}</h2><div data-admin-scripts></div>
+      <h2>{{ c.otherScripts }}</h2><p>{{ c.otherScriptsIntro }}</p><div data-admin-scripts></div>
     </section>
     <section id="community-meetings" role="tabpanel" aria-labelledby="community-tab-meetings" hidden>
       <div class="community-admin__toolbar"><h2>{{ c.meetings }}</h2><button type="button" class="community-admin__primary" data-admin-add-meeting>{{ c.addMeeting }}</button></div>

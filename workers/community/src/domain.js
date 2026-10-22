@@ -113,7 +113,8 @@ export function ensureMeetings(state, now = new Date()) {
   return state;
 }
 export function activeQueue(state, now = new Date()) {
-  const locked = new Set(state.events.filter(e => e.kind === 'meeting' && (e.agendaLocked || e.startsAt <= now.toISOString())).flatMap(e => e.readings || []));
+  const locked = new Set(state.events.filter(e => e.kind === 'meeting' && (e.agendaLocked || e.startsAt <= now.toISOString()))
+    .flatMap(e => (e.readings || []).filter(key => !e.requeuedReadings?.includes(key))));
   return state.scripts.filter(s => s.status === 'approved' && !locked.has(s.id))
     .sort((a, b) => a.position - b.position || a.approvedAt.localeCompare(b.approvedAt) || a.id.localeCompare(b.id));
 }
@@ -183,15 +184,19 @@ export function applyAction(state, input, now = new Date()) {
     // Retain the record ID so recurrence generation cannot recreate a deletion.
     if (input.action === 'delete') item.deletedAt = now.toISOString();
   } else if (input.action === 'requeue' && input.kind === 'script') {
+    if (!['approved', 'read', 'withdrawn'].includes(item.status)) fail('invalid_action');
+    // A retry or stale browser must not move an already-queued script again.
+    if (activeQueue(next, now).some(s => s.id === item.id)) return allocate(next, now);
     for (const e of next.events) {
-      if ((e.readings || []).includes(item.id)) {
-        // Preserve the historical title/author as a separate immutable read record.
-        const historyId = `${item.id}-history-${id()}`;
-        next.scripts.push({ ...item, id: historyId, status: 'read' });
-        e.readings = e.readings.map(key => key === item.id ? historyId : key);
+      if (e.kind === 'meeting' && (e.agendaLocked || e.startsAt <= now.toISOString()) && (e.readings || []).includes(item.id)) {
+        // Keep the original agenda and script identity without inventing a read
+        // submission. Only this historical assignment releases its queue lock.
+        e.agenda ||= (e.readings || []).map(key => next.scripts.find(s => s.id === key)).filter(Boolean).map(s => ({ title: s.title, author: s.author }));
+        e.requeuedReadings = [...new Set([...(e.requeuedReadings || []), item.id])];
       }
     }
-    item.status = 'approved'; item.position = Math.max(-1, ...next.scripts.map(s => s.position)) + 1;
+    item.status = 'approved'; item.approvedAt ||= now.toISOString();
+    item.position = Math.max(-1, ...next.scripts.map(s => s.position)) + 1;
   } else fail('invalid_action');
   return allocate(next, now);
 }
