@@ -105,15 +105,19 @@ Walt McComb -- John Dewar
 * Official Selection — [Santa Fe International Film Festival (2026)](https://sfiff.eventive.org/films/6aaadeead5c4f683fead2ad0)
 * Official Selection — Altered Images - Experimental Film and Music Fest (2026)
 * Official Selection — Way OUT West Film Fest (2026)
+* Official Selection — [Anomaly - The Rochester Genre Film Festival (2026)](https://filmfreeway.com/AnomalyFilmFest)
 
 <div class="row g-4 align-items-center">
-  <div class="col-12 col-md-4">
+  <div class="col-12 col-md-6 col-xl-3">
     <img src="{{ '/img/red_razor_on_soft_skin/sfiff-official-selection-2026.png' | toWebp }}" class="img-fluid w-100" width="2400" height="1800" alt="Santa Fe International Film Festival 2026 Official Selection laurel" loading="lazy" decoding="async">
   </div>
-  <div class="col-12 col-md-4">
+  <div class="col-12 col-md-6 col-xl-3">
     <img src="{{ '/img/red_razor_on_soft_skin/altered-images-official-selection-2026.png' | toWebp }}" class="img-fluid w-100" width="4958" height="3292" alt="Altered Images - Experimental Film and Music Fest 2026 Official Selection laurel" loading="lazy" decoding="async">
   </div>
-  <div class="col-12 col-md-4">
+  <div class="col-12 col-md-6 col-xl-3">
     <img src="{{ '/img/red_razor_on_soft_skin/way-out-west-official-selection-2026.png' | toWebp }}" class="img-fluid w-100" width="1735" height="1152" alt="Way OUT West Film Fest 2026 Official Selection laurel" loading="lazy" decoding="async">
+  </div>
+  <div class="col-12 col-md-6 col-xl-3">
+    <img src="{{ '/img/red_razor_on_soft_skin/anomaly-official-selection-2026.png' | toWebp }}" class="img-fluid w-100" width="1735" height="1152" alt="Anomaly - The Rochester Genre Film Festival 2026 Official Selection laurel" loading="lazy" decoding="async">
   </div>
 </div>

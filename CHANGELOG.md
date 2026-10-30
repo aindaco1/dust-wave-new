@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Added Red Razor on Soft Skin's 2026 Anomaly - The Rochester Genre Film
+  Festival official selection, festival link and supplied laurel to both
+  project-page languages.
+- Updated Puppeteer to 25.16.0 so its browser tooling uses patched Zod instead
+  of the vulnerable 3.x dependency, restoring the deployment security gate.
+
 - Updated markdown-it to 14.3.3 and pinned Vite to patched 7.3.7. Renewed the
   owner-approved, build-only `braces` 3.0.3 exception through November 5, 2026
   (UTC); all other high/critical advisories and the expiry remain enforced.
