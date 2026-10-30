@@ -7,6 +7,8 @@
   project-page languages.
 - Updated Puppeteer to 25.16.0 so its browser tooling uses patched Zod instead
   of the vulnerable 3.x dependency, restoring the deployment security gate.
+- Updated the Community and Newsletter development tools' Undici override to
+  7.30.1 to resolve the advisories blocking their CI dependency audits.
 
 - Updated markdown-it to 14.3.3 and pinned Vite to patched 7.3.7. Renewed the
   owner-approved, build-only `braces` 3.0.3 exception through November 5, 2026
