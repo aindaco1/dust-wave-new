@@ -5,7 +5,7 @@ img: /img/software/record.png
 imgAlt: Ícono de Record con una cámara VHS de hombro de los años ochenta
 imgDisplay: compact
 imgInvert: true
-summary: Grabación de pantalla, capturas de imagen y transcripción local para Mac
+summary: Graba la pantalla de tu Mac, guarda el audio en pistas separadas o dicta una nota rápida
 layout: layouts/post.njk
 navbar: navbar1
 footer: footer1
@@ -19,40 +19,24 @@ tags:
   - localized-project
 ---
 
-[_Record_](https://github.com/aindaco1/record) es una grabadora sencilla y privada de pantalla y audio para Mac que también permite tomar capturas de imagen. Está en la barra de menús, lista para capturar trabajo creativo sin complicar la producción.
+Supongamos que quieres explicarle a alguien cómo quedó un montaje. Abre la camarita VHS en la barra de menús de tu Mac, elige la ventana de edición y comenta el corte mientras corre. Record guarda la imagen en un video, tu voz en un WAV de 24 bits y el audio de la Mac en otro. Si el sonido de la escena tapa tu explicación, después puedes bajarle el volumen.
 
-### Plataformas compatibles
+También puedes grabar toda la pantalla o solo una esquina, copiar una captura al portapapeles o grabar únicamente el sonido. Si grabas solo el audio de una entrevista con la app de Zoom abierta, Record usa por defecto la señal del micrófono sin procesar para evitar interferencias con Zoom.
 
-Macs con Apple Silicon y macOS 15 o posterior.
+### Cuando solo necesitas el texto
 
-### Qué puedes crear
+Con **Dictado rápido** puedes decir lo que ibas a anotar, leer la transcripción y copiarla. Las grabaciones más largas quedan en **Sesiones**. Ahí puedes buscar una entrevista por título o fecha, escucharla y copiar el texto. Si ya tienes una carpeta llena de entrevistas, puedes importar los audios de una vez. Los originales se quedan donde están.
 
-* **Captura un proceso creativo.** Graba una pantalla, ventana, aplicación o área seleccionada, junto con el micrófono y el audio de la computadora, para tutoriales, presentaciones, actuaciones, demos, revisiones o trabajos en proceso.
-* **Toma una captura y sigue trabajando.** Captura una pantalla completa, ventana, aplicación o área seleccionada. Las imágenes se guardan como PNG a resolución nativa y se copian al portapapeles, listas para pegar. También puedes elegir JPEG en Ajustes.
-* **Graba sonido sin la pantalla.** Cambia al modo de solo audio para conversaciones, ensayos, notas de voz y grabaciones tipo podcast.
-* **Mantén el sonido flexible para editar.** El micrófono y el audio de la computadora se guardan en archivos WAV separados, sin comprimir y de 24 bits, para facilitar el balance de voces, música, reproducción y demostraciones.
-* **Crea una transcripción local.** Convierte una grabación terminada en texto que puedes buscar sin enviarla a un servicio de transcripción. Descarga y configura Parakeet v3 desde Ajustes una sola vez; después, la transcripción se hace en tu Mac. También puedes usar MacWhisper si lo tienes instalado con su herramienta de línea de comandos.
-* **Haz más fácil la lectura.** En Macs compatibles con macOS 26 o posterior y Apple Intelligence activado, la limpieza opcional de transcripciones elimina muletillas y repeticiones inmediatas. La transcripción original se conserva junto a la copia de lectura.
-* **Recupera sesiones interrumpidas.** Si la grabación se detiene de forma inesperada, Record conserva el material recuperable en lugar de perder toda la sesión.
-* **Evita que la interfaz aparezca en la captura.** Los controles opcionales pueden ocultar notificaciones, elementos del Escritorio o la barra de menús.
-* **Entrega el material rápidamente.** Elige una carpeta para las capturas de imagen y las sesiones terminadas, vuelve a abrir la grabación más reciente o envía un video terminado a Gifski cuando esté instalado.
+La transcripción se hace en tu Mac después de descargar Parakeet una sola vez. Si Record se equivoca cada vez que oye un nombre, enséñale cómo se escribe. Puedes aplicar esa corrección a entrevistas anteriores sin volver a transcribirlas y consultar la transcripción original cuando quieras. También puedes iniciar o detener la grabación con el teclado, con Atajos de Apple o desde la terminal.
 
-### Novedades de la versión 1.4.0
+### Descarga y código fuente
 
-Publicada el 3 de septiembre de 2026, la versión 1.4.0 de Record cambia el ícono con forma de disco por una cámara VHS de los años ochenta. Un punto rojo en la barra de menús parpadea mientras grabas y desaparece al pausar. Si tienes activada la opción Reducir movimiento, el punto de grabación se mantiene fijo.
+Record funciona en Mac con Apple Silicon y macOS 15 o posterior. La interfaz está disponible en español e inglés.
 
-Las instalaciones nuevas usan **Opción-Comando-Mayúsculas-4** para capturar un área, sin coincidir con el atajo de Apple. Si ya usas Record, conservas tus atajos, incluidos los que hayas desactivado. Puedes cambiar el atajo de área o elegir **Restore Defaults** en Settings → Screenshots para adoptar el nuevo valor predeterminado.
-
-### Código abierto
-
-Record es gratis para usar, compartir y modificar bajo la licencia MIT.
+* [Descargar Record para Mac](https://github.com/aindaco1/record/releases/latest/download/Record.dmg)
+* [Guía de uso de Record](https://github.com/aindaco1/record/blob/main/docs/user-guide.md)
+* [Código fuente en GitHub](https://github.com/aindaco1/record) · Licencia MIT
 
 ### Desarrollador principal
 
 [Alonso Indacochea](https://www.instagram.com/alonso_inda/)
-
-### Explorar
-
-* [Descargar Record para Mac](https://github.com/aindaco1/record/releases/latest/download/Record.dmg)
-* [Código fuente en GitHub](https://github.com/aindaco1/record)
-* [Notas de la versión 1.4.0](https://github.com/aindaco1/record/releases/tag/v1.4.0)

@@ -6,7 +6,7 @@ imgAlt: Ícono de CutNotes con una flecha blanca hacia abajo que cruza una líne
 imgDisplay: compact
 og_image_width: 1024
 og_image_height: 1024
-summary: Convierte comentarios hablados sobre un primer corte en notas con códigos de tiempo para quien edita
+summary: Comenta un primer corte en voz alta y entrega tus notas con códigos de tiempo
 layout: layouts/post.njk
 navbar: navbar1
 footer: footer1
@@ -20,31 +20,25 @@ tags:
   - localized-project
 ---
 
-[_CutNotes_](https://github.com/aindaco1/cutnotes) convierte comentarios hablados sobre un primer corte en una transcripción y notas organizadas para quien edita. Mira el corte, di los códigos de tiempo en voz alta y graba tus comentarios sobre la marcha. Las notas reúnen un resumen general y cambios específicos en orden cronológico.
+Si estás comentando un corte en inglés y quieres que un plano dure un poco más, puedes decir «three twenty-four, hold on her face a little longer» y seguir viendo la película. Al terminar, CutNotes te da una transcripción y puede colocar esa nota en el **03:24** de un archivo Markdown para quien edita. Las observaciones sobre la película en general van al principio.
 
-### Plataformas compatibles
+Puedes grabar desde la app para Mac, hacer una pausa para volver a ver una escena o importar el audio de una sesión anterior. También sirve un video o una transcripción en texto plano. Si vas a grabar, ponte audífonos para que el diálogo de la película no se cuele en tus comentarios sobre el diálogo.
 
-Macs con Apple Silicon y macOS 15 o posterior. Para organizar las notas localmente con Apple Intelligence se necesita macOS 26 o posterior, Apple Intelligence activado y un modelo de lenguaje del sistema disponible. La transcripción puede hacerse localmente sin Apple Intelligence.
+### De la grabación al montaje
 
-### Qué puedes crear
+Parakeet transcribe en tu Mac. Si solo necesitas la transcripción, ahí puedes parar. Para preparar las notas, Gemma 4 lee el texto en tu Mac, ordena los comentarios por código de tiempo y señala los códigos que se pueden interpretar de varias maneras. Lee las notas antes de enviarlas. CutNotes guarda la grabación, la transcripción y las versiones anteriores de las notas por si quieres volver a escuchar lo que dijiste.
 
-* **Comenta un primer corte en voz alta.** Elige un micrófono y graba tus observaciones mientras miras. Puedes pausar cuando lo necesites y retomar la misma sesión.
-* **Importa una revisión existente.** Abre una grabación de audio o video, o parte de una transcripción en texto plano que ya tengas.
-* **Entrega notas claras a quien edita.** Convierte los códigos de tiempo hablados en marcas consistentes y organiza los comentarios en un resumen seguido de notas cronológicas.
-* **Transcribe en tu Mac.** Configura Parakeet v3 una vez y transcribe localmente. El inglés tiene soporte completo; los otros 24 idiomas disponibles son experimentales.
-* **Elige cómo terminar.** Guarda solo la transcripción, organiza las notas localmente con Apple Intelligence o elige explícitamente MacWhisper o Codex, si los tienes instalados, para la etapa que corresponda.
-* **Conserva tu material de trabajo.** Cada sesión tiene sus propios archivos, y el audio o las transcripciones terminadas siguen disponibles si una etapa posterior falla. Los medios importados no se modifican.
-* **Trabaja desde la app o la terminal.** La app nativa para Mac y la herramienta de línea de comandos ofrecen los mismos flujos de grabación, importación y organización de notas. Las notas se guardan en Markdown para compartirlas o seguir editándolas.
+Las mismas herramientas funcionan desde la terminal. Si ya usas MacWhisper para transcribir o Codex para darle forma a las notas, puedes elegirlos para esa parte del trabajo.
 
-### Código abierto
+### Qué necesitas
 
-CutNotes es gratis para usar, compartir y modificar bajo la licencia MIT.
+Una Mac con Apple Silicon y macOS 15 o posterior. Para transcribir en tu equipo, descarga Parakeet una vez. Si también quieres preparar las notas con Gemma 4 12B, la descarga es de 9.76 GB. Necesitas 11 GB libres en disco para instalarlo y al menos 16 GB de memoria unificada (se recomiendan 24 GB). Una vez instalados los modelos, puedes trabajar sin conexión. La transcripción en inglés tiene soporte completo. Los otros 24 idiomas, incluido el español, son experimentales.
+
+### Descarga y código fuente
+
+* [Descargar CutNotes para Mac](https://github.com/aindaco1/cutnotes/releases/latest)
+* [Código e instrucciones en GitHub](https://github.com/aindaco1/cutnotes) · Licencia MIT
 
 ### Desarrollador principal
 
 [Alonso Indacochea](https://www.instagram.com/alonso_inda/)
-
-### Explorar
-
-* [Descargar CutNotes para Mac](https://github.com/aindaco1/cutnotes/releases/latest)
-* [Código fuente en GitHub](https://github.com/aindaco1/cutnotes)

@@ -1,10 +1,10 @@
 ---
-title: ASCII-VJ Remix
+title: ASCII VJ Remix
 date: 2026-06-20
 img: /img/software/ascii-vj-remix.gif
 og_image: /img/software/ascii-vj-remix.jpg
 imgAlt: Dos intérpretes representados como figuras ASCII de colores sobre negro
-summary: Visuales ASCII y por celdas en vivo para VJs, DJs y artistas de medios
+summary: Convierte la señal de una cámara o un clip de video en visuales ASCII para un show en vivo
 layout: layouts/post.njk
 navbar: navbar1
 footer: footer1
@@ -21,30 +21,24 @@ hoverVideoMp4: /img/project-videos/ascii-vj-remix.mp4
 hoverVideoPoster: /img/software/ascii-vj-remix.jpg
 ---
 
-_ASCII-VJ Remix_ convierte imágenes, video, cámaras y música en visuales ASCII y por celdas para presentaciones, instalaciones, videos musicales y experimentación.
+Apunta una cámara a la banda y pasa la señal por ASCII VJ Remix. El baterista sigue tocando, pero ahora unas letras dibujan el contorno de la batería. Puedes hacer que la imagen se mueva con el bombo, ajustar cuánto espacio queda entre los caracteres o meter a toda la banda en un túnel con sus caras en las paredes.
 
-### Plataformas compatibles
+También puedes partir de una foto o de un video en bucle. Guarda unas cuantas combinaciones y pasa de una a otra con un fundido mientras sigue el video. El volumen, el silencio y la reproducción en bucle se mantienen. Y si tienes curiosidad por ver qué más da de sí ese clip, pulsa **WTF** y deja que la app elija.
 
-macOS, Windows y Linux.
+### Cómo llevar la imagen al proyector
 
-### Qué puedes crear
+Con **Pop Out** puedes proyectar la imagen limpia y quedarte con los controles en la laptop. NDI te permite recibir video de otra computadora en la red local o mandarle el resultado. En Mac, Syphon hace lo mismo entre aplicaciones. Ambos transmiten solo video. Puedes seguir proyectando mientras compartes la señal.
 
-* **Transforma casi cualquier fuente visual.** Usa imágenes, clips de video, una cámara en vivo o varias cámaras como materia prima para una presentación.
-* **Cambia entre distintos lenguajes visuales.** Crea looks con caracteres ASCII clásicos, patrones densos de celdas, píxeles sólidos, paletas de color y tratamientos más abstractos.
-* **Haz que la imagen responda al sonido.** Deja que el ritmo y las distintas partes de la música afecten el brillo, la densidad, el color y el movimiento.
-* **Crea y recupera un vocabulario visual.** Parte de los presets incluidos, guarda tus propios looks, duplícalos, ajústalos y cambia entre ellos con transiciones suaves.
-* **Mantén el control durante la presentación.** Ajusta la imagen en vivo, experimenta con el modo WTF aleatorio o usa el control MIDI opcional para una sesión más táctil.
-* **Envía una imagen limpia al espacio.** Lleva la salida visual a un proyector, tarjeta de captura o segunda pantalla mientras los controles permanecen en tu pantalla principal.
+Si la vista previa de WebGPU se congela en pleno show, la app intenta recuperarla con el mismo clip y los mismos ajustes.
 
-### Código abierto
+### Descargas y licencia
 
-ASCII-VJ Remix es gratis para usar y modificar bajo la licencia pública del proyecto. La licencia incluye una restricción contra publicidad; el repositorio contiene los términos completos.
+La versión de escritorio es gratuita y funciona en Mac con Apple Silicon (macOS 13 o posterior), Windows x64 (versión preliminar) y Linux x86_64. Este remix nació de ASCILINE, de YusufB5. Su licencia permite usar y modificar el programa. Prohíbe usarlo para distribuir o mostrar anuncios digitales, contenido patrocinado o material de marketing comercial al público.
+
+* [Ver ASCII VJ Remix en acción](https://asciivj.com/es/)
+* [Descargar la app de escritorio](https://github.com/aindaco1/ascii-vj-remix/releases/latest)
+* [Código fuente](https://github.com/aindaco1/ascii-vj-remix) · [Licencia completa](https://github.com/aindaco1/ascii-vj-remix/blob/main/LICENSE)
 
 ### Desarrollador principal
 
 [Alonso Indacochea](https://www.instagram.com/alonso_inda/)
-
-### Explorar
-
-* [Visita ASCII-VJ Remix](https://asciivj.com)
-* [Código fuente y versiones en GitHub](https://github.com/aindaco1/ascii-vj-remix)

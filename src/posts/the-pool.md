@@ -3,51 +3,34 @@ title: The Pool
 date: 2026-01-14
 img: /img/software/the-pool.jpg
 imgAlt: The funded Worst Movie Ever campaign page on The Pool
-summary: Open-source crowdfunding for creative projects
+summary: The crowdfunding software we built so our audience could meddle with a movie
 tags:
   - open-source
   - crowdfunding
 ---
 
-[_The Pool_](https://thepool.fund) helps artists raise money for films, albums, events, tools, and other creative work without sending their communities to a one-size-fits-all crowdfunding platform.
-<br><br>
+Nata Aguilar had an idea for [*The Worst Movie Ever*](https://pool.dustwave.xyz/campaigns/worst-movie-ever/). For a dollar, you could give us a frame and we'd have to put it in the movie. For $20, you could stick us with a sound effect. I built The Pool so we could take those pledges and our friends could back the film without having to remember another password. We hit our $2,500 goal in nine days and finished with $3,372 from 44 pledges, with the profits going to FUSION.
 
-### Supported platforms
+### How a pledge works
 
-The web, in modern desktop and mobile browsers.
-<br><br>
+Pick a reward or just put money toward a project. You can back two films in one checkout and each keeps its own goal and deadline. Your card gets charged after a campaign ends if it made its goal. Until the deadline you can use the private link in your email to change your pledge or cancel it. The Pool takes no percentage of the money raised. Stripe charges a processing fee.
 
-### What creatives can do
+On the filmmaker's side, you can save a draft, show a private preview to the rest of the crew, then publish when everyone's ready. A production diary gives backers somewhere to follow the shoot and see what's happening in post. Daily pledge emails and spreadsheet exports show what Stripe takes and how much is left for the movie, with estimates marked as such. The campaign pages, checkout and dashboard work in English and Spanish.
 
-* **Build a campaign around the work.** Set a goal and deadline, tell the project's story, and shape the page around a film, album, event, publication, tool, or another creative undertaking.
-* **Offer meaningful ways to participate.** Combine direct support with digital or physical rewards, add-ons, merchandise, and unusual creative contributions.
-* **Bring the audience into the process.** Share production phases, stretch goals, diary updates, protected previews, and supporter decisions or votes.
-* **Make pledging simple.** Supporters can contribute without creating an account, manage their pledge from a secure email link, and are charged only when the campaign reaches its goal.
-* **Reach people wherever the project lives.** Share campaign pages directly or embed a campaign on another website.
-* **Manage the work after launch.** Keep track of supporters, campaign totals, marketing links, fulfillment, shipping, and the information needed to deliver rewards.
-<br><br>
+### What people have made with it
 
-### Projects funded through The Pool
+[*Tecolote*](https://pool.dustwave.xyz/campaigns/tecolote/), a New Mexico western with a monster in it, cleared its $2,000 goal by nine dollars. Darling Film Co. and Soft Boiled Pics raised $2,590 for [*Sunder*](https://pool.dustwave.xyz/campaigns/sunder/), their horror short with a practical creature suit. [*Their Love*](https://pool.dustwave.xyz/campaigns/their-love/) brought in $2,630 for an independent romantic drama.
 
-[**The Worst Movie Ever**](https://pool.dustwave.xyz/campaigns/worst-movie-ever/) was The Pool's first campaign. It invited supporters to buy creative decisions that the filmmakers had to include in the movie. The campaign reached its $2,500 goal in nine days and finished with $3,372 from 44 pledges, with profits supporting FUSION.
+Then there was Kiwi. Maddy Parrulli-Garcia's [*Deinonychus*](https://pool.dustwave.xyz/campaigns/deinonychus/) drew $6,730 in pledges for a short about a woman cornered by a dinosaur. Some of that budget was for fixing up Kiwi, the animatronic playing the dinosaur.
 
-[**Sunder**](https://pool.dustwave.xyz/campaigns/sunder/), a horror short from Darling Film Co. and Soft Boiled Pics, brought its audience into a story that shifts between live action and animation as Mina searches for her missing brother and confronts her guilt in physical form. The campaign reached its goal with three days remaining, helping cover its practical monster costume, locations, equipment, and production needs.
+In November 2026, Jace Strickland launched [*POSSESSIONS*](https://pool.dustwave.xyz/campaigns/possessions/), a dark comedy set over one night in a New Mexico diner.
 
-[**Tecolote**](https://pool.dustwave.xyz/campaigns/tecolote/) reached its $2,000 goal to help finish a New Mexico western, thriller, and monster movie. [**Their Love**](https://pool.dustwave.xyz/campaigns/their-love/) also passed its $2,500 goal while building a community around an independent romantic drama.
-<br><br>
+### Back a project or run your own
 
-### Open source
-
-The Pool is free to use, copy, modify, and rebrand under the MIT License. Anyone can adapt it for a different creative community or kind of campaign.
-<br><br>
+* [Browse the campaigns on Dust Wave's Pool](https://pool.dustwave.xyz/)
+* [Read the story behind The Pool](/making-the-pool.html)
+* [Set up The Pool for your community](https://thepool.fund/) · [Get the MIT-licensed source code](https://github.com/aindaco1/pool)
 
 ### Primary developer
 
 [Alonso Indacochea](https://www.instagram.com/alonso_inda/)
-<br><br>
-
-### Explore
-
-* [More info](https://thepool.fund)
-* [Support a project on Dust Wave's Pool](https://pool.dustwave.xyz)
-* [Source code on GitHub](https://github.com/aindaco1/pool)

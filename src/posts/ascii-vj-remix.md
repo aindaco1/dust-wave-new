@@ -7,43 +7,31 @@ imgAlt: Two performers rendered as colorful ASCII figures against black
 hoverVideoWebm: /img/project-videos/ascii-vj-remix.webm
 hoverVideoMp4: /img/project-videos/ascii-vj-remix.mp4
 hoverVideoPoster: /img/software/ascii-vj-remix.jpg
-summary: Live ASCII and cell-based visuals for VJs, DJs, and media artists
+summary: Turn a camera feed or video clip into live ASCII visuals for a set
 tags:
-  - open-source
   - ascii
   - audio-reactive
   - cross-platform
 ---
 
-[_ASCII VJ Remix_](https://asciivj.com) turns images, video, cameras, and music into live ASCII and cell-based visuals for performances, installations, music videos, and experimentation.
-<br><br>
+Point a camera at the band and put the feed through ASCII VJ Remix. The drummer is still playing, only now the outline of the kit is made of letters. You can let the kick move the image, change how densely the characters fill the screen, or send the whole band down a tunnel with their faces on the walls.
 
-### Supported platforms
+A still or a video loop works too. Save a few looks and crossfade between them while the clip keeps playing. Volume, mute and loop stay where you put them. If you want to see what else the footage can do, hit **WTF** and let the app pick the next look.
 
-macOS Apple Silicon, Windows, and Linux.
-<br><br>
+### Getting the picture out
 
-### What creatives can do
+Use **Pop Out** to put the clean picture on a projector while you work the controls on your laptop. NDI lets you pick up a feed from another machine on the local network or send your finished picture back to it. On a Mac, Syphon does the same between apps. Both carry video only, and you can keep the projector running while you share the picture.
 
-* **Transform almost any visual source.** Use images, video clips, a live camera, or multiple cameras as the raw material for a set.
-* **Move between visual languages.** Build looks from classic ASCII characters, dense cell patterns, solid pixels, color palettes, and more abstract treatments.
-* **Make visuals respond to sound.** Let rhythm and different parts of the music affect brightness, density, color, movement, and jitter.
-* **Build and recall a visual vocabulary.** Start from included presets, save your own looks, duplicate and refine them, and move between them with smooth transitions.
-* **Keep control during a performance.** Adjust the image while it is live, experiment with randomized WTF mode, or use optional MIDI control for a more hands-on set.
-* **Send a clean image to the room.** Put the visual output on a projector, capture card, or second display while the controls remain on your main screen.
-<br><br>
+If the WebGPU preview stalls mid-set, the app tries to bring it back with the same clip and preset.
 
-### Open source
+### Downloads and license
 
-ASCII VJ Remix is free to use and modify under its public project license.
-<br><br>
+The free desktop release runs on Apple Silicon Macs (macOS 13 or later), Windows x64 (preview), and Linux x86_64. This remix grew out of YusufB5's ASCILINE. Its license lets you use and modify the software and prohibits using it to serve, deliver, or display digital ads, sponsored content, or commercial marketing to end users.
+
+* [See ASCII VJ Remix in action](https://asciivj.com)
+* [Download the desktop app](https://github.com/aindaco1/ascii-vj-remix/releases/latest)
+* [Source code](https://github.com/aindaco1/ascii-vj-remix) · [Full license](https://github.com/aindaco1/ascii-vj-remix/blob/main/LICENSE)
 
 ### Primary developer
 
 [Alonso Indacochea](https://www.instagram.com/alonso_inda/)
-<br><br>
-
-### Explore
-
-* [More info](https://asciivj.com)
-* [Source code and releases on GitHub](https://github.com/aindaco1/ascii-vj-remix)

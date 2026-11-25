@@ -3,7 +3,7 @@ title: The Pool
 date: 2026-07-14
 img: /img/software/the-pool.jpg
 imgAlt: La campaña financiada de The Worst Movie Ever en The Pool
-summary: Crowdfunding de código abierto para proyectos creativos
+summary: La plataforma de financiamiento que hicimos para que el público pudiera meter mano en una película
 layout: layouts/post.njk
 navbar: navbar1
 footer: footer1
@@ -17,39 +17,28 @@ tags:
   - localized-project
 ---
 
-_The Pool_ ayuda a artistas a recaudar fondos para películas, álbumes, eventos, herramientas y otros proyectos creativos sin enviar a su comunidad a una plataforma de crowdfunding igual para todo el mundo.
+A Nata Aguilar se le ocurrió una idea para [*The Worst Movie Ever*](https://pool.dustwave.xyz/es/campaigns/worst-movie-ever/). Por un dólar podías mandarnos un fotograma y teníamos que meterlo en la película. Por $20 nos tocaba usar el efecto de sonido que eligieras. Hice The Pool para que pudiéramos aceptar esas aportaciones y nuestros amigos pudieran apoyar la película sin tener que acordarse de otra contraseña. Llegamos a la meta de $2,500 en nueve días y cerramos con $3,372 de 44 aportaciones. Las ganancias se destinaron a FUSION.
 
-### Plataformas compatibles
+### Cómo funciona una aportación
 
-La web, en navegadores modernos de escritorio y móviles.
+Puedes elegir una recompensa o simplemente aportar dinero. Si apoyas dos películas en el mismo pedido, cada una conserva su meta y su fecha de cierre. El cargo se hace después del cierre si la campaña alcanzó su meta. Hasta esa fecha puedes cambiar o cancelar tu aportación desde el enlace privado que recibes por correo. The Pool no se queda con un porcentaje de lo recaudado. Stripe cobra una comisión por procesar el pago.
 
-### Qué puedes crear
+Si estás haciendo la película, puedes guardar un borrador de la campaña, enseñárselo en privado al equipo y publicarlo cuando esté listo. En el diario de producción, quienes te apoyaron pueden seguir el rodaje y enterarse de cómo va la posproducción. Los correos diarios y los informes que puedes descargar en formato CSV detallan la comisión de Stripe y cuánto queda para la película. Si una cifra es aproximada, aparece indicada como tal. Las páginas de las campañas, el proceso de pago y el panel de administración están disponibles en español e inglés.
 
-* **Construye una campaña alrededor de la obra.** Define una meta y una fecha límite, cuenta la historia y adapta la página a una película, álbum, evento, publicación, herramienta u otro proyecto creativo.
-* **Ofrece maneras significativas de participar.** Combina el apoyo directo con recompensas digitales o físicas, extras, mercancía y aportaciones creativas poco comunes.
-* **Invita al público al proceso.** Comparte fases de producción, metas adicionales, diarios, avances protegidos y decisiones o votaciones para quienes apoyan.
-* **Haz que aportar sea sencillo.** El público puede contribuir sin crear una cuenta, administrar su aportación desde un enlace seguro por correo y solo recibe el cargo si la campaña alcanza su meta.
-* **Llega a la audiencia donde ya está el proyecto.** Comparte la página directamente o inserta la campaña en otro sitio web.
-* **Administra el trabajo después del lanzamiento.** Da seguimiento a quienes apoyan, los totales, los enlaces de promoción, el cumplimiento, los envíos y la información necesaria para entregar recompensas.
+### Qué se ha financiado
 
-### Proyectos financiados con The Pool
+[*Tecolote*](https://pool.dustwave.xyz/es/campaigns/tecolote/), un western de Nuevo México con monstruo y todo, superó su meta de $2,000 por nueve dólares. Darling Film Co. y Soft Boiled Pics recaudaron $2,590 para [*Sunder*](https://pool.dustwave.xyz/es/campaigns/sunder/), un corto de terror en el que la criatura lleva un traje hecho para el rodaje. [*Their Love*](https://pool.dustwave.xyz/es/campaigns/their-love/) reunió $2,630 para un drama romántico independiente.
 
-[**The Worst Movie Ever**](https://pool.dustwave.xyz/campaigns/worst-movie-ever/) fue la primera campaña de The Pool. Invitó al público a comprar decisiones creativas que el equipo tenía que incluir en la película. Alcanzó su meta de $2,500 en nueve días y terminó con $3,372 de 44 aportaciones; las ganancias apoyaron a FUSION.
+Y luego está Kiwi. La campaña de [*Deinonychus*](https://pool.dustwave.xyz/es/campaigns/deinonychus/), de Maddy Parrulli-Garcia, cerró con $6,730 en aportaciones para un corto sobre una mujer acorralada por un dinosaurio. Parte del presupuesto era para poner a punto a Kiwi, el animatrónico que hace de dinosaurio.
 
-[**Sunder**](https://pool.dustwave.xyz/campaigns/sunder/), un cortometraje de terror de Darling Film Co. y Soft Boiled Pics, invitó al público a apoyar una historia que combina acción real y animación mientras Mina busca a su hermano desaparecido y enfrenta la forma física de su culpa. La campaña alcanzó su meta cuando todavía quedaban tres días, lo que ayudó a cubrir el vestuario práctico del monstruo, locaciones, equipo y otras necesidades de producción.
+En noviembre de 2026, Jace Strickland lanzó la campaña de [*POSSESSIONS*](https://pool.dustwave.xyz/es/campaigns/possessions/), una comedia negra que transcurre en una sola noche en un restaurante de carretera de Nuevo México.
 
-[**Tecolote**](https://pool.dustwave.xyz/campaigns/tecolote/) alcanzó su meta de $2,000 para ayudar a terminar un western, thriller y película de monstruos hecha en Nuevo México. [**Their Love**](https://pool.dustwave.xyz/campaigns/their-love/) también superó su meta de $2,500 mientras formaba una comunidad alrededor de un drama romántico independiente.
+### Apoya un proyecto u organiza tu propia campaña
 
-### Código abierto
-
-The Pool es gratis para usar, copiar, modificar y adaptar bajo la licencia MIT. Cualquier comunidad creativa puede transformarlo para otro tipo de campaña.
+* [Ver las campañas en The Pool de Dust Wave](https://pool.dustwave.xyz/es/)
+* [Leer cómo nació The Pool (en inglés)](/making-the-pool.html)
+* [Instalar The Pool para tu comunidad](https://thepool.fund/?lang=es) · [Código fuente con licencia MIT](https://github.com/aindaco1/pool)
 
 ### Desarrollador principal
 
 [Alonso Indacochea](https://www.instagram.com/alonso_inda/)
-
-### Explorar
-
-* [Más información](https://thepool.fund)
-* [Apoya un proyecto en The Pool de Dust Wave](https://pool.dustwave.xyz)
-* [Código fuente en GitHub](https://github.com/aindaco1/pool)
