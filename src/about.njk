@@ -34,17 +34,15 @@ eleventyComputed:
         <article class="image_wrapper member-card">
           <img src="{{ member.data.img | toWebp }}" class="w-100 shadow-1-strong rounded" alt="{{ member.data.name }}" decoding="async">
           <div class="overlay overlay_3 white-text">
-            <h3>{{ member.data.name }}</h3>
-            {%- if member.data.instagram -%}
-            &nbsp;
-            &nbsp;
-            <h3><a href="https://www.instagram.com/{{ member.data.instagram }}" class="link-fancy" target="_blank" rel="noopener noreferrer" aria-label="{{ i18n | t(language, 'pages.about.instagramAria', { name: member.data.name }) }}"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a></h3>
-            {%- endif -%}
-            {%- if member.data.website -%}
-            &nbsp;
-            &nbsp;
-            <h3><a href="{{ member.data.website }}" class="link-fancy" target="_blank" rel="noopener noreferrer" aria-label="{{ i18n | t(language, 'pages.about.websiteAria', { name: member.data.name }) }}"><i class="fa-solid fa-globe" aria-hidden="true"></i></a></h3>
-            {%- endif -%}
+            <div class="member-card__caption h3 d-flex align-items-center gap-2">
+              <h3 class="mb-0">{{ member.data.name }}</h3>
+              {%- if member.data.instagram -%}
+              <a href="https://www.instagram.com/{{ member.data.instagram }}" class="link-fancy d-inline-flex" target="_blank" rel="noopener noreferrer" aria-label="{{ i18n | t(language, 'pages.about.instagramAria', { name: member.data.name }) }}"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a>
+              {%- endif -%}
+              {%- if member.data.website -%}
+              <a href="{{ member.data.website }}" class="link-fancy d-inline-flex" target="_blank" rel="noopener noreferrer" aria-label="{{ i18n | t(language, 'pages.about.websiteAria', { name: member.data.name }) }}"><i class="fa-solid fa-globe" aria-hidden="true"></i></a>
+              {%- endif -%}
+            </div>
           </div>
         </article>
         {%- endfor -%}

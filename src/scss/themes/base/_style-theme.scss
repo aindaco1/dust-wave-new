@@ -2007,6 +2007,11 @@ input[type=submit],
   height: auto;
 }
 
+.member-card__caption {
+  margin: 0;
+  @media only screen and (max-width: 1024px) { margin-bottom: 25px; }
+}
+
 @media (min-width: 992px) {
   .member-columns { column-count: 2; }
 }

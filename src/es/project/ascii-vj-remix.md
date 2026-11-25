@@ -29,11 +29,9 @@ También puedes partir de una foto o de un video en bucle. Guarda unas cuantas c
 
 Con **Pop Out** puedes proyectar la imagen limpia y quedarte con los controles en la laptop. NDI te permite recibir video de otra computadora en la red local o mandarle el resultado. En Mac, Syphon hace lo mismo entre aplicaciones. Ambos transmiten solo video. Puedes seguir proyectando mientras compartes la señal.
 
-Si la vista previa de WebGPU se congela en pleno show, la app intenta recuperarla con el mismo clip y los mismos ajustes.
-
 ### Descargas y licencia
 
-La versión de escritorio es gratuita y funciona en Mac con Apple Silicon (macOS 13 o posterior), Windows x64 (versión preliminar) y Linux x86_64. Este remix nació de ASCILINE, de YusufB5. Su licencia permite usar y modificar el programa. Prohíbe usarlo para distribuir o mostrar anuncios digitales, contenido patrocinado o material de marketing comercial al público.
+La versión de escritorio es gratuita y funciona en Mac con Apple Silicon (macOS 13 o posterior), Windows x64 (versión preliminar) y Linux x86_64.
 
 * [Ver ASCII VJ Remix en acción](https://asciivj.com/es/)
 * [Descargar la app de escritorio](https://github.com/aindaco1/ascii-vj-remix/releases/latest)

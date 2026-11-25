@@ -22,11 +22,9 @@ A still or a video loop works too. Save a few looks and crossfade between them w
 
 Use **Pop Out** to put the clean picture on a projector while you work the controls on your laptop. NDI lets you pick up a feed from another machine on the local network or send your finished picture back to it. On a Mac, Syphon does the same between apps. Both carry video only, and you can keep the projector running while you share the picture.
 
-If the WebGPU preview stalls mid-set, the app tries to bring it back with the same clip and preset.
-
 ### Downloads and license
 
-The free desktop release runs on Apple Silicon Macs (macOS 13 or later), Windows x64 (preview), and Linux x86_64. This remix grew out of YusufB5's ASCILINE. Its license lets you use and modify the software and prohibits using it to serve, deliver, or display digital ads, sponsored content, or commercial marketing to end users.
+The free desktop release runs on Apple Silicon Macs (macOS 13 or later), Windows x64 (preview), and Linux x86_64.
 
 * [See ASCII VJ Remix in action](https://asciivj.com)
 * [Download the desktop app](https://github.com/aindaco1/ascii-vj-remix/releases/latest)

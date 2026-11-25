@@ -17,7 +17,7 @@ tags:
   - localized-project
 ---
 
-A Nata Aguilar se le ocurrió una idea para [*The Worst Movie Ever*](https://pool.dustwave.xyz/es/campaigns/worst-movie-ever/). Por un dólar podías mandarnos un fotograma y teníamos que meterlo en la película. Por $20 nos tocaba usar el efecto de sonido que eligieras. Hice The Pool para que pudiéramos aceptar esas aportaciones y nuestros amigos pudieran apoyar la película sin tener que acordarse de otra contraseña. Llegamos a la meta de $2,500 en nueve días y cerramos con $3,372 de 44 aportaciones. Las ganancias se destinaron a FUSION.
+A [Nata Aguilar](https://www.instagram.com/natagram505) se le ocurrió una idea para [*The Worst Movie Ever*](https://pool.dustwave.xyz/es/campaigns/worst-movie-ever/). Por un dólar podías mandarnos un fotograma y teníamos que meterlo en la película. Por $20 nos tocaba usar el efecto de sonido que eligieras. Hicimos The Pool para que pudiéramos aceptar esas aportaciones y nuestros amigos pudieran apoyar la película sin tener que acordarse de otra contraseña. Llegamos a la meta de $2,500 en nueve días y cerramos con $3,372 de 44 aportaciones. Las ganancias se destinaron a [FUSION](https://www.fusionnm.org/).
 
 ### Cómo funciona una aportación
 

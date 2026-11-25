@@ -9,7 +9,7 @@ tags:
   - crowdfunding
 ---
 
-Nata Aguilar had an idea for [*The Worst Movie Ever*](https://pool.dustwave.xyz/campaigns/worst-movie-ever/). For a dollar, you could give us a frame and we'd have to put it in the movie. For $20, you could stick us with a sound effect. I built The Pool so we could take those pledges and our friends could back the film without having to remember another password. We hit our $2,500 goal in nine days and finished with $3,372 from 44 pledges, with the profits going to FUSION.
+[Nata Aguilar](https://www.instagram.com/natagram505) had an idea for [*The Worst Movie Ever*](https://pool.dustwave.xyz/campaigns/worst-movie-ever/). For a dollar, you could give us a frame and we'd have to put it in the movie. For $20, you could stick us with a sound effect. We built The Pool so we could take those pledges and our friends could back the film without having to remember another password. We hit our $2,500 goal in nine days and finished with $3,372 from 44 pledges, with the profits going to [FUSION](https://www.fusionnm.org/).
 
 ### How a pledge works
 
