@@ -1,10 +1,10 @@
 import {
   AdminApiClient as PodcastApiClient,
   AdminApiError as PodcastApiError
-} from "./dust-wave-admin-shell/api-client.js?v=0.10.2";
+} from "./dust-wave-admin-shell/api-client.js?v=0.20.2";
 import {
   responsiveTurnstileSize
-} from "./dust-wave-admin-shell/turnstile.js?v=0.10.2";
+} from "./dust-wave-admin-shell/turnstile.js?v=0.20.2";
 import {
   loadPodcastTurnstile,
   resetPodcastTurnstile

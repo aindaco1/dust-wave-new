@@ -1,5 +1,5 @@
-import { AdminApiError } from "./dust-wave-admin-shell/api-client.js?v=0.10.2";
-import { AdminDownloadError } from "./dust-wave-admin-shell/credentialed-download.js?v=0.10.2";
+import { AdminApiError } from "./dust-wave-admin-shell/api-client.js?v=0.20.2";
+import { AdminDownloadError } from "./dust-wave-admin-shell/credentialed-download.js?v=0.20.2";
 import { adminText } from "./podcast-admin-text.js";
 
 export function friendlyPodcastAdminError(error) {

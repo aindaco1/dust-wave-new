@@ -1,7 +1,7 @@
 import {
   requestCredentialedBlob,
   triggerBlobDownload
-} from "./dust-wave-admin-shell/credentialed-download.js?v=0.10.2";
+} from "./dust-wave-admin-shell/credentialed-download.js?v=0.20.2";
 import {
   renderContextualAnalyticsEpisodes
 } from "./podcast-admin-contextual-editing.js";
