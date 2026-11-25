@@ -45,6 +45,8 @@ test('local month rollover follows Albuquerque time',()=>{
   assert.equal(currentMonth(new Date('2026-10-01T06:00:00Z')),'2026-10');
 });
 test('invalid dates, nonexistent DST times and ambiguous times fail explicitly',()=>{
+  assert.throws(()=>instant('1899-12-31','12:00'),/invalid_date/);
+  assert.throws(()=>instant('2026-09-21','25:00'),/invalid_time/);
   assert.throws(()=>instant('2026-02-30','19:00'),/invalid_date/);
   assert.throws(()=>instant('2026-03-08','02:30'),/invalid_time/);
   assert.throws(()=>instant('2026-11-01','01:30'),/ambiguous_time/);

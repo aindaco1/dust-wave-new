@@ -1,4 +1,4 @@
-import { dateAtTimeInTimeZone, getTimeZoneDateKey, getTimeZoneParts } from '@dustwave/worker-core/date-time';
+import { classifyLocalTime, getTimeZoneDateKey } from '@dustwave/worker-core/date-time';
 
 export const TIMEZONE = 'America/Denver';
 export const FIRST_MEETING = '2026-09-21';
@@ -45,17 +45,10 @@ export function addMonths(month, count) {
 export function currentMonth(now = new Date()) { return getTimeZoneDateKey(now, TIMEZONE).slice(0, 7); }
 export function instant(date, time) {
   dateKey(date);
-  if (!/^([01]\d|2[0-3]):[0-5]\d$/u.test(time || '')) fail('invalid_time');
-  const [hour, minute] = time.split(':').map(Number);
-  const d = dateAtTimeInTimeZone(date, TIMEZONE, hour, minute);
-  const parts = getTimeZoneParts(d, TIMEZONE);
-  if (getTimeZoneDateKey(d, TIMEZONE) !== date || parts.hour !== hour || parts.minute !== minute) fail('invalid_time');
-  // The repeated fall-back hour is ambiguous; require a different explicit local start.
-  if (getTimeZoneDateKey(new Date(+d + 3600000), TIMEZONE) === date) {
-    const later = getTimeZoneParts(new Date(+d + 3600000), TIMEZONE);
-    if (later.hour === hour && later.minute === minute) fail('ambiguous_time');
-  }
-  return d.toISOString();
+  const result = classifyLocalTime(date, time, TIMEZONE);
+  if (result.kind === 'repeated') fail('ambiguous_time');
+  if (result.kind === 'missing') fail('invalid_time');
+  return result.instant;
 }
 export function eventFields(input) {
   const date = dateKey(input.date);

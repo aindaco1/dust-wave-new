@@ -20,15 +20,16 @@ npm ci
 
 Clone with `--recurse-submodules` when possible. Existing checkouts must initialize the recorded `shared/dust-wave-platform` commit before installing or testing; CI pins that gitlink and does not follow the shared repository's moving branch.
 
-The current immutable pin is Dust Wave Platform `v0.36.0` at
-`556fadad0755556bfbe3f177a9f60c208a6031a5`. An executable contract verifies
-that gitlink plus the exact Admin Shell and Media Core versions used by this
-site. Dust Wave retains its content, templates, Podcast UI policy, Newsletter
+The current immutable pin is Dust Wave Platform `v0.64.0` at
+`2dc1b4348617b72202029ffe87e2a28b28fc7f79`. An executable contract verifies
+that gitlink plus the exact Admin Shell, Media Core and Community Worker Core
+versions. Dust Wave retains its content, templates, Podcast UI policy, Newsletter
 Worker credentials, Pages deployment, and independent one-commit rollback.
 
-The site consumes Admin Shell `0.10.2` directly for characterized Podcast admin
-browser assets and Media Core `0.4.0` as an exact package dependency for media
-contracts. It does not inherit Pool, Store, or Podcast routes, data, sessions,
+The site consumes Admin Shell `0.20.2` directly for characterized Podcast admin
+browser assets and Media Core `0.7.1` as an exact package dependency for media
+contracts. The Community Worker uses Worker Core `0.21.0` for event-time
+classification. It does not inherit Pool, Store, or Podcast routes, data, sessions,
 credentials, product policy, or deployments through Platform.
 
 The shared repository's [README](../shared/dust-wave-platform/README.md) and

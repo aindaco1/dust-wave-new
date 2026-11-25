@@ -233,9 +233,8 @@ removing unsafe path characters.
 Queue moves save automatically, including consecutive drag or keyboard moves
 made while a save is in flight. Desktop pointer users get a visible drag grip
 and before/after insertion indicator; arrow buttons remain available at all
-widths, and a focused grip supports Up/Down. Admin Shell `0.10.2` has no
-reorder component, so this small native drag adapter stays with Community;
-the API, session, confirmation and unsaved-change controls remain shared.
+widths, and a focused grip supports Up/Down. Community owns the queue reorder
+adapter. The API, session, confirmation and unsaved-change controls remain shared.
 Existing script title, author and contact edits
 save after a short typing pause; **Close** finishes any pending valid edit.
 Incomplete fields stay in the editor until corrected. New scripts still use
